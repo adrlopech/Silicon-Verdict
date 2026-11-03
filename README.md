@@ -1,102 +1,77 @@
-# ⚡ Silicon Verdict: Autonomous YouTube Production Pipeline
+# Silicon Verdict — Autonomous Hardware Telemetry & Media Engine
 
-Pipeline 100% autónomo y contenerizado para el canal **Silicon Verdict** (Hardware de PC, arquitectura de semiconductores y telemetría de rendimiento). Genera guiones modulares en inglés técnico nativo, gráficos de benchmarks estilo Obsidian Black / Neon Cyan, montaje en FFmpeg (1080p y Shorts 9:16) y subida desatendida mediante **YouTube Data API v3** en servidores VPS Ubuntu.
+<p align="center">
+  <strong>Empirical PC Hardware Benchmarks • 1% Low Frametime Telemetry • Autonomous Video Production</strong>
+</p>
 
----
-
-## ⚡ Despliegue Rápido en VPS (4 Comandos)
-
-En tu servidor VPS Ubuntu:
-
-```bash
-# 1. Clonar el repositorio y acceder
-git clone https://github.com/tu-usuario/yt-automation.git /opt/yt-automation && cd /opt/yt-automation
-
-# 2. Configurar variables de entorno (claves de Gemini, ElevenLabs y Pexels)
-cp .env.example .env && nano .env
-
-# 3. Subir el token OAuth 2.0 generado previamente desde tu PC local
-scp token.json root@TU_VPS_IP:/opt/yt-automation/token.json
-
-# 4. Aprovisionar el servidor (instala Docker + Cron) y arrancar el pipeline
-sudo bash scripts/setup_server.sh && docker compose run --rm yt-runner
-```
+<p align="center">
+  <a href="https://adrlopech.github.io/Silicon-Verdict/">Web Portal</a> •
+  <a href="https://adrlopech.github.io/Silicon-Verdict/terms.html">Terms of Service</a> •
+  <a href="https://adrlopech.github.io/Silicon-Verdict/privacy.html">Privacy Policy</a> •
+  <a href="https://www.tiktok.com/@siliconverdict">TikTok</a> •
+  <a href="https://youtube.com/@SiliconVerdict">YouTube</a>
+</p>
 
 ---
 
-## 🔑 Autenticación con YouTube Data API v3 (Paso Único Local)
+## ⚡ What is Silicon Verdict?
 
-Antes de desplegar en el servidor VPS, ejecuta la autorización interactiva en tu máquina local:
+**Silicon Verdict** is an internal software system and automated media production pipeline engineered for empirical PC hardware analysis and microarchitectural comparisons. 
 
-1. Ve a [Google Cloud Console](https://console.cloud.google.com/) > Crea un proyecto > Habilita **YouTube Data API v3**.
-2. Ve a **APIs & Services > Credentials** > Crea credenciales **OAuth 2.0 Client ID** de tipo **Desktop App**.
-3. Descarga el archivo JSON y guárdalo en la raíz del proyecto como `client_secrets.json`.
-4. Ejecuta el script de autenticación local:
-   ```bash
-   pip install -r requirements.txt
-   python scripts/authenticate_yt.py
-   ```
-5. El navegador se abrirá en `http://localhost:8080` solicitando el consentimiento del canal Silicon Verdict.
-6. El script serializará el `token.json` con acceso `offline` y `refresh_token` duradero.
+The platform continuously evaluates modern computing hardware—including GPUs, CPUs, VRAM bandwidth allocations, memory latencies, and bus topologies—transforming raw PresentMon and FrameView telemetry into high-fidelity vertical video content formatted for **TikTok** and **YouTube Shorts**.
 
-### 🧪 Verificación y Pruebas Offline
-
-```bash
-# 1. Test Visual Offline (Apple Liquid Glass): Renderiza frame y vídeo 1080p60 sin consumir APIs
-python scripts/test_render_clip.py
-
-# 2. Test de Subida Privada a YouTube: Valida credenciales con clip sintético
-python scripts/test_upload.py
-
-# 3. Test de Diagnóstico de Credenciales: Valida Gemini, Pixabay, ElevenLabs y YouTube
-python scripts/verify_credentials.py
-```
+Silicon Verdict operates strictly as an internal developer application and content automation suite for the official **Silicon Verdict** channels (`@siliconverdict`). It does not offer multi-tenant consumer SaaS, public user accounts, or third-party data processing.
 
 ---
 
-## 🏗️ Estructura del Proyecto
+## 🔬 Core Capabilities & Telemetry Pipeline
 
-```text
-yt-automation/
-├── core/
-│   ├── schemas.py          # Modelos Pydantic v2 (ChartData, Scene, ShortMetadata, VideoProject)
-│   ├── topic_engine.py     # Descubrimiento de mercado autónomo sin duplicados (Gemini 2.0 Flash)
-│   └── generator.py        # Generación de guion técnico en inglés y metadatos Silicon Verdict
-├── engine/
-│   ├── charts.py           # Renderizado de gráficos de benchmarks con Matplotlib (16:9 y 9:16)
-│   └── renderer.py         # Ensamble FFmpeg (vídeo 1080p, gráficos intercalados y Shorts 9:16)
-├── services/
-│   ├── tts.py              # Síntesis neural escena por escena (ElevenLabs API)
-│   ├── media.py            # Búsqueda y descarga de B-roll macro en HD (Pexels API)
-│   ├── youtube.py          # Clase YouTubeService con auto-refresh y subida resumable
-│   └── notifier.py         # Difusión de métricas y prompts a Discord Webhook y Telegram
-├── config/
-│   └── settings.py         # Configuración centralizada vía Pydantic Settings
-├── scripts/
-│   ├── authenticate_yt.py  # Script interactivo OAuth 2.0 (client_secrets.json -> token.json)
-│   ├── test_upload.py      # Verificador sintético de subida privada a YouTube
-│   └── setup_server.sh     # Aprovisionamiento para Ubuntu VPS (Docker + Docker Compose + Cron)
-├── Dockerfile              # Imagen Python 3.11-slim + FFmpeg + fuentes TrueType
-├── docker-compose.yml      # Definición de contenedor con volúmenes persistentes
-├── history.json            # Registro persistente de temas producidos
-├── topics.txt              # Cola FIFO de temas para producción desatendida
-├── token.json              # Token OAuth persistente con refresh_token
-├── requirements.txt
-├── .env.example
-└── main.py                 # Orquestador del pipeline end-to-end
-```
+* **Empirical 1% & 0.1% Low Frametime Analysis**: Evaluates micro-stutter phenomena, memory saturation bottlenecks (e.g., 8GB vs 16GB VRAM), and cache scaling (such as 3D V-Cache vs high-clock monolithic dies) across demanding modern gaming engines at 1440p and 4K Ultra.
+* **Apple Liquid Glass Visual Compositing**: Custom 60 FPS graphics engine generating dynamic, glassmorphic benchmark comparison charts with specular rim lighting, Zero-Collision typographic scaling, and strict defensive layout boundaries.
+* **Vertical Safe Zone Compliance (1080x1920)**: All UI cards, telemetry bars, and kinetic subtitles are mathematically constrained within safe display coordinates (Y: 220–1420), preventing visual interference with native TikTok and YouTube Shorts user interfaces.
+* **Kinetic Word-Level Subtitles**: Fast neural transcription utilizing word-level timestamps to generate focused, high-retention subtitle captions positioned above the interaction zone.
+* **Official Creator API Publishing**: Integrates directly with the **TikTok Content Posting API v2** and **YouTube Data API v3** to stage, verify, and publish original benchmark productions to official channel accounts.
 
 ---
 
-## ⚙️ Modos de Ejecución
+## 📜 Legal, Terms & Platform Compliance
 
-```bash
-# Modo 100% Autónomo: Descubre tema de hardware, genera benchmarks y sube a YouTube
-docker compose run --rm yt-runner
+Silicon Verdict is designed and operated in strict conformity with third-party platform developer policies, including the **TikTok Developer Terms of Service**, **TikTok Partner Policies**, and the **Google API Services User Data Policy**.
 
-# Modo Tema Específico: Forzar un análisis concreto
-docker compose run --rm yt-runner --topic "Why PCIe 5.0 GPUs Are a Waste of Money in 2026"
+### 1. Terms of Service
+Silicon Verdict operates as an internal developer application for technical hardware journalism and benchmark visualization. Use of the website and interaction with published media is governed by our complete Terms of Service:
+* 🔗 **Read the full [Terms of Service](https://adrlopech.github.io/Silicon-Verdict/terms.html)**
 
-# Modo Dry-Run: Renderiza vídeo, gráficos y Shorts en local sin subir a YouTube
-docker compose run --rm yt-runner --dry-run
-```
+### 2. Privacy Policy & Zero Data Collection Guarantee
+Silicon Verdict upholds rigorous digital privacy standards:
+* **Zero User Data Collected**: We do not collect, capture, track, profile, monetize, or sell any personal data, IP addresses, or browsing behaviors of visitors or platform users.
+* **No Tracking Cookies**: Our public documentation and web portal contain zero tracking pixels, commercial advertising trackers, or fingerprinting scripts.
+* **Secure Local Credentials**: All API credentials and OAuth access tokens (for TikTok and YouTube) are retained exclusively within isolated, local configuration environments protected by `.gitignore` rules and local access controls.
+* **TikTok API Compliance**: Any data or identifiers processed via the TikTok Content Posting API are used exclusively to publish authorized video files to the official `@siliconverdict` channel. No public user profiles, comments, or audience metrics are scraped, shared, or stored.
+* 🔗 **Read the complete [Privacy Policy](https://adrlopech.github.io/Silicon-Verdict/privacy.html)**
+
+---
+
+## ⚖️ Nominative Fair Use & Trademark Notice
+
+All product names, logos, silicon architectures, and gaming titles referenced across Silicon Verdict projects (including, but not limited to, AMD, NVIDIA, Intel, Ryzen, GeForce, Cyberpunk 2077, Starfield, and Baldur's Gate 3) are trademarks™ or registered® trademarks of their respective holders. 
+
+Their appearance in Silicon Verdict benchmarks and content does not imply any affiliation with, sponsorship by, or endorsement from these entities. All hardware testing, benchmarks, and architectural analyses are conducted independently for journalistic, educational, and empirical evaluation under nominative fair use doctrine.
+
+---
+
+## 📬 Contact & Official Links
+
+* **Web Portal**: [https://adrlopech.github.io/Silicon-Verdict/](https://adrlopech.github.io/Silicon-Verdict/)
+* **Terms of Service**: [https://adrlopech.github.io/Silicon-Verdict/terms.html](https://adrlopech.github.io/Silicon-Verdict/terms.html)
+* **Privacy Policy**: [https://adrlopech.github.io/Silicon-Verdict/privacy.html](https://adrlopech.github.io/Silicon-Verdict/privacy.html)
+* **Official TikTok**: [@siliconverdict](https://www.tiktok.com/@siliconverdict)
+* **Official YouTube**: [@SiliconVerdict](https://youtube.com/@SiliconVerdict)
+* **General Inquiries**: `contact@siliconverdict.com`
+* **Data Privacy Office**: `privacy@siliconverdict.com`
+
+---
+
+<p align="center">
+  <sub>&copy; 2026 Silicon Verdict. All rights reserved.</sub>
+</p>
