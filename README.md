@@ -67,8 +67,7 @@ Their appearance in Silicon Verdict benchmarks and content does not imply any af
 * **Privacy Policy**: [https://adrlopech.github.io/Silicon-Verdict/privacy.html](https://adrlopech.github.io/Silicon-Verdict/privacy.html)
 * **Official TikTok**: [@siliconverdict](https://www.tiktok.com/@siliconverdict)
 * **Official YouTube**: [@SiliconVerdict](https://youtube.com/@SiliconVerdict)
-* **General Inquiries**: `contact@siliconverdict.com`
-* **Data Privacy Office**: `privacy@siliconverdict.com`
+* **Developer & Contact Email**: `imnotchego@gmail.com`
 
 ---
 
