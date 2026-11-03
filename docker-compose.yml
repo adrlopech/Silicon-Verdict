@@ -1,0 +1,20 @@
+services:
+  yt-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: yt-automation-pipeline
+    env_file:
+      - .env
+    volumes:
+      # Persistent YouTube OAuth token in root
+      - ./token.json:/app/token.json
+      # Fallback tokens directory
+      - ./tokens:/app/tokens
+      # Mount topics.txt so processed topics are updated on the host
+      - ./topics.txt:/app/topics.txt
+      # Mount history.json to ensure topic duplication prevention is preserved across runs
+      - ./history.json:/app/history.json
+      # Mount host logs directory for persistent run logs
+      - ./logs:/app/logs
+    restart: "no"

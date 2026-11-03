@@ -1,0 +1,27 @@
+# Environment & Secrets
+.env
+client_secrets.json
+client_secret.json
+token.json
+tokens/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Video & Temporary Processing Files
+temp/
+/tmp/yt_automation/
+*.mp4
+*.mp3
+*.png
+*.jpg
+logs/
+*.log
+.DS_Store

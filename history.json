@@ -1,0 +1,30 @@
+[
+  {
+    "topic": "Why 8GB VRAM is Officially Dead for Modern PC Gaming",
+    "hook_angle": "Test smoke execution",
+    "target_audience": "PC Enthusiasts & Hardware Engineers",
+    "suggested_benchmarks": [
+      "1% Lows at 1080p",
+      "VRAM allocation limits"
+    ],
+    "created_at": "2026-11-02T22:25:49.885720+00:00"
+  },
+  {
+    "topic": "3D V-Cache vs High-Clock Monolithic Dies Frame Pacing",
+    "hook_angle": "CACHE VS CLOCK",
+    "target_audience": "PC Enthusiasts & Hardware Engineers",
+    "suggested_benchmarks": [
+      "3D V-Cache (L3 96MB) vs Monolithic (6.0GHz)"
+    ],
+    "created_at": "2026-11-03T00:33:23.960694+00:00"
+  },
+  {
+    "topic": "128-bit vs 256-bit memory bus bandwidth choking high-res textures at 1440p",
+    "hook_angle": "MEMORY BANDWIDTH",
+    "target_audience": "PC Enthusiasts & Hardware Engineers",
+    "suggested_benchmarks": [
+      "256-bit Bus (576 GB/s) vs 128-bit Bus (288 GB/s)"
+    ],
+    "created_at": "2026-11-03T11:01:26.330932+00:00"
+  }
+]
