@@ -163,7 +163,7 @@ class TikTokAct5(BaseModel):
 class TikTokLongProject(BaseModel):
     """Complete 61-68s specification for TikTok Creator Rewards Program."""
     topic: str
-    title: str = Field(..., max_length=100, description="High-CTR TikTok title with hashtags")
+    title: str = Field(..., max_length=150, description="High-CTR TikTok title with hashtags")
     description: str = Field(..., description="TikTok description")
     tags: List[str] = Field(..., description="Technical and viral hashtags")
     act1: TikTokAct1
@@ -171,14 +171,63 @@ class TikTokLongProject(BaseModel):
     act3: TikTokAct3
     act4: TikTokAct4
     act5: TikTokAct5
+    gemini_input_tokens: int = Field(default=0)
+    gemini_output_tokens: int = Field(default=0)
+    entities: List[str] = Field(default_factory=list)
 
-    def get_total_words(self) -> int:
-        """Computes aggregate narration word count across all 5 acts."""
-        all_text = " ".join([
+    def get_full_script_text(self) -> str:
+        """Returns the concatenated narration text of all 5 acts."""
+        return " ".join([
             self.act1.voiceover,
             self.act2.voiceover,
             self.act3.voiceover,
             self.act4.voiceover,
             self.act5.voiceover,
         ])
-        return len(all_text.split())
+
+    def get_total_words(self) -> int:
+        """Computes aggregate narration word count across all 5 acts."""
+        return len(self.get_full_script_text().split())
+
+    def get_entities(self) -> List[str]:
+        """Returns semantic hardware entities extracted or inferred from topic and tags."""
+        if self.entities:
+            return self.entities
+        extracted = []
+        for t in [self.topic] + self.tags:
+            for w in t.lower().replace("#", "").replace("_", " ").replace("-", " ").split():
+                if len(w) > 2 and w not in ["the", "and", "for", "with", "por", "que", "con", "los", "las"]:
+                    extracted.append(w)
+        return list(dict.fromkeys(extracted))[:8]
+
+
+class MotionVisualTrigger(BaseModel):
+    """Word-synchronized procedural visual trigger for Remotion."""
+    asset_id: str = Field(..., description="ID of the procedural vector: silicon_die, latency_bars, frametime_gauge, preset_card, vcsel_projector, rf_collision, subsea_cable, gps_relativity, nfc_token, spectrum_bands")
+    label: str = Field(..., description="Short uppercase telemetry badge text, e.g. 'ISM BAND 2.45 GHz CONFLICT'")
+    word_anchor: str = Field(..., description="Key word or phrase in script where this graphic triggers")
+    duration_seconds: float = Field(default=12.0, description="On-screen duration in seconds")
+    motion_preset: str = Field(default="hero", description="hero, metric, or diagram")
+    game_title: Optional[str] = Field(default=None, description="For asset_id 'game_frame': exact game name whose real screenshot is shown, e.g. 'DOOM' or 'Skyrim'")
+    annotation: Optional[str] = Field(default=None, description="For 'game_frame': 2-6 word uppercase callout about the technical detail, e.g. 'ONE FRAME = 4,000 DRAW CALLS'")
+    image_src: Optional[str] = Field(default=None, description="Set by the pipeline, never by the model")
+
+
+class MotionStoryProject(BaseModel):
+    """Complete unified project specification for Remotion Kinetic Motion Graphics (1080x1920 @ 60 FPS)."""
+    topic: str
+    category_id: int = Field(default=3, description="1: Hardware Deep Dive, 2: Gaming & Optimization, 3: Tech Curiosities")
+    category_name: str = Field(..., description="Display category name: HARDWARE DEEP DIVE, GAMING OPTIMIZATION, TECH CURIOSITIES")
+    header_banner: str = Field(..., description="Uppercase high-impact hook header, e.g. 'WHY MICROWAVES DESTROY 2.4 GHz WI-FI'")
+    title: str = Field(..., max_length=150, description="High CTR YouTube / TikTok title with hashtags")
+    description: str = Field(..., description="Video description with technical context")
+    tags: List[str] = Field(..., description="Technical and algorithmic tags")
+    pinned_comment: str = Field(..., description="High-engagement debate question for comments")
+    full_script: str = Field(..., description="High-octane 140-160 word narration script in 100% US English with dramatic pacing")
+    visual_triggers: List[MotionVisualTrigger] = Field(..., description="Synchronized vector graphic trigger points")
+    gemini_input_tokens: int = Field(default=0)
+    gemini_output_tokens: int = Field(default=0)
+
+    def get_total_words(self) -> int:
+        return len(self.full_script.split())
+
