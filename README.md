@@ -1,76 +1,166 @@
-# Silicon Verdict — Autonomous Hardware Telemetry & Media Engine
+# Silicon Verdict
 
-<p align="center">
-  <strong>Empirical PC Hardware Benchmarks • 1% Low Frametime Telemetry • Autonomous Video Production</strong>
-</p>
-
-<p align="center">
-  <a href="https://adrlopech.github.io/Silicon-Verdict/">Web Portal</a> •
-  <a href="https://adrlopech.github.io/Silicon-Verdict/terms.html">Terms of Service</a> •
-  <a href="https://adrlopech.github.io/Silicon-Verdict/privacy.html">Privacy Policy</a> •
-  <a href="https://www.tiktok.com/@siliconverdict">TikTok</a> •
-  <a href="https://youtube.com/@SiliconVerdict">YouTube</a>
-</p>
+> Pipeline automatizado end-to-end para la generación, renderizado y publicación multicanal de microcontenido técnico y divulgativo sobre arquitectura de hardware y ciencias de la computación.
 
 ---
 
-## ⚡ What is Silicon Verdict?
+## 🌐 Enlaces Oficiales y Redirecciones
 
-**Silicon Verdict** is an internal software system and automated media production pipeline engineered for empirical PC hardware analysis and microarchitectural comparisons. 
-
-The platform continuously evaluates modern computing hardware—including GPUs, CPUs, VRAM bandwidth allocations, memory latencies, and bus topologies—transforming raw PresentMon and FrameView telemetry into high-fidelity vertical video content formatted for **TikTok** and **YouTube Shorts**.
-
-Silicon Verdict operates strictly as an internal developer application and content automation suite for the official **Silicon Verdict** channels (`@siliconverdict`). It does not offer multi-tenant consumer SaaS, public user accounts, or third-party data processing.
-
----
-
-## 🔬 Core Capabilities & Telemetry Pipeline
-
-* **Empirical 1% & 0.1% Low Frametime Analysis**: Evaluates micro-stutter phenomena, memory saturation bottlenecks (e.g., 8GB vs 16GB VRAM), and cache scaling (such as 3D V-Cache vs high-clock monolithic dies) across demanding modern gaming engines at 1440p and 4K Ultra.
-* **Apple Liquid Glass Visual Compositing**: Custom 60 FPS graphics engine generating dynamic, glassmorphic benchmark comparison charts with specular rim lighting, Zero-Collision typographic scaling, and strict defensive layout boundaries.
-* **Vertical Safe Zone Compliance (1080x1920)**: All UI cards, telemetry bars, and kinetic subtitles are mathematically constrained within safe display coordinates (Y: 220–1420), preventing visual interference with native TikTok and YouTube Shorts user interfaces.
-* **Kinetic Word-Level Subtitles**: Fast neural transcription utilizing word-level timestamps to generate focused, high-retention subtitle captions positioned above the interaction zone.
-* **Official Creator API Publishing**: Integrates directly with the **TikTok Content Posting API v2** and **YouTube Data API v3** to stage, verify, and publish original benchmark productions to official channel accounts.
+| Recurso | Enlace / Identificador |
+| :--- | :--- |
+| **Portal Web Oficial** | [adrlopech.github.io/Silicon-Verdict](https://adrlopech.github.io/Silicon-Verdict/) |
+| **Términos del Servicio** | [Terms of Service](https://adrlopech.github.io/Silicon-Verdict/terms.html) |
+| **Política de Privacidad** | [Privacy Policy](https://adrlopech.github.io/Silicon-Verdict/privacy.html) |
+| **Canal Oficial de YouTube** | [@SiliconVerdictHQ](https://www.youtube.com/@SiliconVerdictHQ) |
+| **Cuenta Oficial de TikTok** | [@siliconverdict](https://www.tiktok.com/@siliconverdict) |
 
 ---
 
-## 📜 Legal, Terms & Platform Compliance
+## 📌 Visión General
 
-Silicon Verdict is designed and operated in strict conformity with third-party platform developer policies, including the **TikTok Developer Terms of Service**, **TikTok Partner Policies**, and the **Google API Services User Data Policy**.
+**Silicon Verdict** es un framework de automatización audiovisual desarrollado en Python. Su objetivo es convertir especificaciones y análisis técnicos complejos (microarquitectura de CPUs/GPUs, jerarquías de memoria caché, buses PCIe, cuellos de botella y benchmarks) en vídeos verticales de corta duración (60–70s) optimizados algorítmicamente para plataformas como **YouTube Shorts** y **TikTok**.
 
-### 1. Terms of Service
-Silicon Verdict operates as an internal developer application for technical hardware journalism and benchmark visualization. Use of the website and interaction with published media is governed by our complete Terms of Service:
-* 🔗 **Read the full [Terms of Service](https://adrlopech.github.io/Silicon-Verdict/terms.html)**
-
-### 2. Privacy Policy & Zero Data Collection Guarantee
-Silicon Verdict upholds rigorous digital privacy standards:
-* **Zero User Data Collected**: We do not collect, capture, track, profile, monetize, or sell any personal data, IP addresses, or browsing behaviors of visitors or platform users.
-* **No Tracking Cookies**: Our public documentation and web portal contain zero tracking pixels, commercial advertising trackers, or fingerprinting scripts.
-* **Secure Local Credentials**: All API credentials and OAuth access tokens (for TikTok and YouTube) are retained exclusively within isolated, local configuration environments protected by `.gitignore` rules and local access controls.
-* **TikTok API Compliance**: Any data or identifiers processed via the TikTok Content Posting API are used exclusively to publish authorized video files to the official `@siliconverdict` channel. No public user profiles, comments, or audience metrics are scraped, shared, or stored.
-* 🔗 **Read the complete [Privacy Policy](https://adrlopech.github.io/Silicon-Verdict/privacy.html)**
+El sistema elimina la fricción del trabajo editorial manual articulando investigación estructurada, síntesis de voz neuronal, generación cinemática procedimental y publicación programada a través de APIs oficiales.
 
 ---
 
-## ⚖️ Nominative Fair Use & Trademark Notice
+## 🚀 Características Principales
 
-All product names, logos, silicon architectures, and gaming titles referenced across Silicon Verdict projects (including, but not limited to, AMD, NVIDIA, Intel, Ryzen, GeForce, Cyberpunk 2077, Starfield, and Baldur's Gate 3) are trademarks™ or registered® trademarks of their respective holders. 
-
-Their appearance in Silicon Verdict benchmarks and content does not imply any affiliation with, sponsorship by, or endorsement from these entities. All hardware testing, benchmarks, and architectural analyses are conducted independently for journalistic, educational, and empirical evaluation under nominative fair use doctrine.
-
----
-
-## 📬 Contact & Official Links
-
-* **Web Portal**: [https://adrlopech.github.io/Silicon-Verdict/](https://adrlopech.github.io/Silicon-Verdict/)
-* **Terms of Service**: [https://adrlopech.github.io/Silicon-Verdict/terms.html](https://adrlopech.github.io/Silicon-Verdict/terms.html)
-* **Privacy Policy**: [https://adrlopech.github.io/Silicon-Verdict/privacy.html](https://adrlopech.github.io/Silicon-Verdict/privacy.html)
-* **Official TikTok**: [@siliconverdict](https://www.tiktok.com/@siliconverdict)
-* **Official YouTube**: [@SiliconVerdictHQ](https://youtube.com/@SiliconVerdictHQ)
-* **Developer & Contact Email**: `imnotchego@gmail.com`
+* **Generación Editorial Guiada:** Redacción y estructuración automática de guiones técnicos mediante LLM (Gemini API), divididos en bloques de retención (*Hook*, *Technical Context*, *Deep Dive*, *Benchmark/Proof* y *Verdict/CTA*).
+* **Motor de Síntesis Vocal (TTS):** Integración con ElevenLabs API utilizando locuciones neuronales de alta fidelidad, con normalización dinámica de volumen y control estricto de cadencia (WPM).
+* **Subtitulado Cinético Word-Level:** Detección de silencios y alineación temporal exacta de cada palabra mediante `faster-whisper`, exportando metadatos para animaciones y *karaoke-style highlights*.
+* **Composición Visual y Renderizado:**
+  * Soporte multipreset visual (*Apple Liquid Glass*, *Schematic Paper / Technical Grid*, *Minimalist Neon Vector*).
+  * Animación procedural de gráficos, diagramas de bloques y métricas de rendimiento en tiempo real vía FFmpeg / PIL.
+  * Relación de aspecto nativa vertical 9:16 (1080x1920) a 60 FPS.
+* **Distribución Multicanal Automatizada:** Integración directa con las APIs de YouTube Data v3 y TikTok Developer para subida desatendida, categorización y asignación de etiquetas/metadatos.
+* **Control de Calidad y Verificación Local:** Scripts de telemetría y pruebas (`test_editorial_pipeline.py`) para validar límites de duración (cumplimiento de requisitos de monetización >60s), audio balanceado y renderizado antes del despliegue.
 
 ---
 
-<p align="center">
-  <sub>&copy; 2026 Silicon Verdict. All rights reserved.</sub>
-</p>
+## 🏗 Arquitectura del Sistema
+
+```text
+[ Trigger / Topic ]
+        │
+        ▼
+┌──────────────────┐
+│  Gemini Engine   │ ──► Estructuración del guion técnico y metadatos
+└────────┬─────────┘
+         │
+         ├──► [ ElevenLabs API ] ──► Audio Master (.mp3 / .wav)
+         │                                    │
+         │                                    ▼
+         │                          [ faster-whisper ] ──► Subtítulos & Timestamps
+         ▼                                                    │
+┌──────────────────┐                                          │
+│ Compositor / PIL │ ──► Generación de assets vectoriales / UI │
+└────────┬─────────┘                                          │
+         │                                                    │
+         ▼                                                    │
+┌─────────────────────────────────────────────────────────────┴┐
+│                       FFmpeg Pipeline                        │
+│             (Mezcla audiovisual, transiciones, HUD)          │
+└──────────────────────────────┬───────────────────────────────┘
+                               │
+                               ▼
+                   [ Render Final: 1080x1920 ]
+                               │
+         ┌─────────────────────┴─────────────────────┐
+         ▼                                           ▼
+[ YouTube Shorts API ]                     [ TikTok Developer API ]
+```
+
+---
+
+## 🛠 Requisitos Previos e Instalación
+
+### Requisitos del Sistema
+* **Python 3.10+**
+* **FFmpeg** instalado y configurado en el `PATH` del sistema.
+
+### Instalación
+
+1. **Clonar el repositorio:**
+   ```bash
+   git clone https://github.com/adrlopech/Silicon-Verdict.git
+   cd Silicon-Verdict
+   ```
+
+2. **Crear y activar un entorno virtual:**
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate   # En Windows: venv\Scripts\activate
+   ```
+
+3. **Instalar dependencias:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+---
+
+## ⚙️ Configuración (.env)
+
+Crea un archivo `.env` en la raíz del proyecto tomando como plantilla las siguientes variables de entorno:
+
+```env
+# Inteligencia Artificial & Síntesis de Voz
+GEMINI_API_KEY="tu_clave_de_gemini"
+ELEVENLABS_API_KEY="tu_clave_de_elevenlabs"
+ELEVENLABS_VOICE_ID="id_de_la_voz"
+
+# Credenciales de Publicación y Redes Sociales
+YOUTUBE_CLIENT_SECRETS_FILE="client_secrets.json"
+TIKTOK_ACCESS_TOKEN="tu_token_de_acceso_tiktok"
+
+# Parámetros de Renderizado
+DEFAULT_RENDER_STYLE="liquid_glass"  # liquid_glass | schematic_paper | neon_vector
+TARGET_FPS=60
+VIDEO_RESOLUTION="1080x1920"
+```
+
+---
+
+## 💻 Uso
+
+### 1. Generación y Renderizado Completo
+Genera un vídeo completo a partir de un tema técnico específico:
+
+```bash
+python main.py --topic "Diferencias de arquitectura entre caché L2 y 3D V-Cache" --style liquid_glass
+```
+
+### 2. Pruebas y Validación Editorial
+Ejecuta la suite de verificación local para validar coherencia textual, timings de voz y renderizado de prueba sin publicar en plataformas:
+
+```bash
+python scripts/test_editorial_pipeline.py --dry-run
+```
+
+---
+
+## 📂 Estructura del Proyecto
+
+```text
+Silicon-Verdict/
+├── assets/             # Fuentes tipográficas, overlays gráficos, clips base
+├── config/             # Esquemas de configuración, temas visuales y reglas editoriales
+├── modules/
+│   ├── ai/             # Conectores LLM (Gemini) para análisis y guiones
+│   ├── audio/          # Clientes TTS (ElevenLabs) y procesado de onda
+│   ├── compositor/     # Motores de renderizado y layouts de motion graphics
+│   ├── subtitles/      # Detección y parsing temporal con faster-whisper
+│   └── uploader/       # Clientes OAuth para YouTube Data API y TikTok API
+├── scripts/            # Scripts de diagnóstico, telemetría y pruebas unitarias
+├── .env.example
+├── main.py             # Entrypoint CLI del pipeline
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## 📄 Licencia
+
+Distribuido bajo la licencia **MIT**. Para más detalles, consulta el archivo `LICENSE`.
