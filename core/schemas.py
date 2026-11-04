@@ -225,6 +225,7 @@ class MotionStoryProject(BaseModel):
     pinned_comment: str = Field(..., description="High-engagement debate question for comments")
     full_script: str = Field(..., description="High-octane 140-160 word narration script in 100% US English with dramatic pacing")
     visual_triggers: List[MotionVisualTrigger] = Field(..., description="Synchronized vector graphic trigger points")
+    is_fallback: bool = Field(default=False, description="Set by the pipeline when the deterministic story was used")
     gemini_input_tokens: int = Field(default=0)
     gemini_output_tokens: int = Field(default=0)
 

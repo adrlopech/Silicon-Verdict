@@ -1,14 +1,10 @@
 """Mascot-led story videos ('simple' series): natural spoken script + scenes built from animated primitives."""
 import logging
 import re
-import time
 from typing import List, Optional
 
-from google import genai
-from google.genai import types
-
-from config.settings import settings
 from core.schemas import StoryProject, StoryScene
+from services.gemini_client import generate_structured
 
 logger = logging.getLogger(__name__)
 
@@ -56,8 +52,8 @@ def validate_story(story: StoryProject) -> List[str]:
     """Normalizes fields in place and returns blocking problems."""
     problems: List[str] = []
     words = story.full_script.split()
-    if not 135 <= len(words) <= 190:
-        problems.append(f"word count {len(words)} outside 135-190")
+    if not 125 <= len(words) <= 190:
+        problems.append(f"word count {len(words)} outside 125-190")
     script_words = {_clean_word(w) for w in words}
     if not 10 <= len(story.scenes) <= 18:
         problems.append(f"{len(story.scenes)} scenes (need 10-18)")
@@ -132,48 +128,53 @@ def get_emergency_story(topic: Optional[str] = None) -> StoryProject:
     )
 
 
-def generate_story(topic: Optional[str] = None) -> StoryProject:
-    """Generates a story with Gemini (retries with backoff); falls back to the deterministic story."""
+def generate_story_live(topic: Optional[str] = None, avoid_topics: Optional[List[str]] = None) -> StoryProject:
+    """One validated story straight from Gemini (retries + model rotation). Raises GeminiUnavailable."""
+    avoid = [t for t in (avoid_topics or []) if t][-25:]
     prompt = (
         f"Write a video about: {topic}\n" if topic
         else "Pick a small, relatable everyday-tech mystery that almost nobody can explain (USB, Bluetooth, batteries, "
-             "touchscreens, cameras, Wi-Fi, headphones). Avoid topics about phone charging past 80%.\n"
-    ) + "Return a JSON object matching the StoryProject schema."
+             "touchscreens, cameras, Wi-Fi, headphones, QR codes, GPS, speakers).\n"
+    )
+    if avoid:
+        prompt += "Do NOT repeat or closely resemble these topics: " + "; ".join(avoid) + "\n"
+    prompt += "Return a JSON object matching the StoryProject schema."
 
-    client = genai.Client(api_key=settings.GEMINI_API_KEY, http_options=types.HttpOptions(timeout=45000))
-    models = list(dict.fromkeys([settings.GEMINI_MODEL, "gemini-3.5-flash"]))
-    last_problems: List[str] = []
-    for attempt in range(1, 4):
-        for model in models:
-            try:
-                logger.info("Requesting StoryProject via '%s' (attempt %d)...", model, attempt)
-                res = client.models.generate_content(
-                    model=model,
-                    contents=prompt,
-                    config=types.GenerateContentConfig(
-                        system_instruction=SYSTEM_PROMPT,
-                        response_mime_type="application/json",
-                        response_schema=StoryProject,
-                        temperature=0.8,
-                    ),
-                )
-                story = StoryProject.model_validate_json(res.text)
-                problems = validate_story(story)
-                if problems:
-                    last_problems = problems
-                    logger.warning("Story from '%s' rejected: %s", model, problems)
-                    continue
-                usage = getattr(res, "usage_metadata", None)
-                if usage:
-                    story.gemini_input_tokens = getattr(usage, "prompt_token_count", 0) or 0
-                    story.gemini_output_tokens = getattr(usage, "candidates_token_count", 0) or 0
-                logger.info("StoryProject ready: %d words | %d scenes", story.get_total_words(), len(story.scenes))
-                return story
-            except Exception as exc:
-                logger.warning("Story generation via '%s' failed: %s", model, str(exc)[:200])
-        time.sleep(2 * attempt)
+    story, tokens, model = generate_structured(
+        prompt=prompt,
+        system_instruction=SYSTEM_PROMPT,
+        schema=StoryProject,
+        temperature=0.8,
+        validate=validate_story,
+    )
+    story.gemini_input_tokens, story.gemini_output_tokens = tokens
+    logger.info("StoryProject ready via %s: %d words | %d scenes", model, story.get_total_words(), len(story.scenes))
+    return story
 
-    logger.warning("All story attempts failed (%s). Using deterministic fallback story.", last_problems or "API errors")
+
+def generate_story(topic: Optional[str] = None, prefer_bank: bool = False) -> StoryProject:
+    """Live Gemini -> banked story -> deterministic fallback (flagged with is_fallback).
+    With prefer_bank=True the banked (hand-written) stories are used first.
+    """
+    from services.gemini_client import GeminiUnavailable
+    from services.history import get_recently_used_topics_safe
+    if prefer_bank and not topic:
+        from services.bank_manager import take_or_refill
+        banked = take_or_refill("simple")
+        if banked is not None:
+            return banked
+        logger.info("Story bank is empty and could not be refilled; generating live.")
+    try:
+        return generate_story_live(topic, avoid_topics=get_recently_used_topics_safe())
+    except GeminiUnavailable as exc:
+        logger.warning("Gemini unavailable after retries (%s). Trying the story bank...", str(exc)[:150])
+
+    from services.story_bank import pop_story
+    banked = pop_story("simple")
+    if banked is not None:
+        return banked
+
+    logger.warning("Story bank is empty. Using deterministic fallback story.")
     story = get_emergency_story(topic)
     story.category_name = "EVERYDAY CURIOSITIES"
     story.is_fallback = True

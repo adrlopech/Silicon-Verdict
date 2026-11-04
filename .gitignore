@@ -36,3 +36,7 @@ output/
 data/.tiktok_pkce_verifier.txt
 data/*token*.json
 .claude/settings.local.json
+
+# Private scripts and the history DB (it holds the banked scripts)
+data/story_seed/
+data/history.db

@@ -1486,6 +1486,7 @@ def get_emergency_motion_story(category_id: int, topic: Optional[str] = None, se
     if series == "game" and category_id == 3:
         story = get_emergency_game_story(topic)
         story = finalize_game_triggers(story)
+        story.is_fallback = True
         return story
     if category_id == 1:
         story = MotionStoryProject(
@@ -1605,8 +1606,10 @@ def get_emergency_motion_story(category_id: int, topic: Optional[str] = None, se
             gemini_output_tokens=380,
         )
 
+    story.is_fallback = True
+
     # Validate emergency story
-    is_valid, violations = validate_domain_integrity(story)
+    is_valid, violations = validate_domain_integrity(story, series=series)
     if not is_valid:
         logger.error("Emergency motion story failed domain integrity validation: %s", violations)
 
@@ -1648,6 +1651,9 @@ def generate_motion_story(
     category_id: int,
     topic_override: Optional[str] = None,
     series: Optional[str] = None,
+    prefer_bank: bool = False,
+    live_only: bool = False,
+    avoid_topics: Optional[List[str]] = None,
 ) -> MotionStoryProject:
     """Generates an ultra-kinetic, 100% US English motion graphics script and 12-18 visual triggers specification."""
     cat_names = {
@@ -1655,6 +1661,12 @@ def generate_motion_story(
         2: ("GAMING & OPTIMIZATION", "Frame pacing telemetry, 1% lows vs average FPS, frametime spikes, competitive settings, DLSS vs native, micro-stutters"),
         3: ("TECH CURIOSITIES", "Applied physical science, radio frequencies, subsea optical cables, atomic clock relativity, VCSEL depth arrays, inductive coupling"),
     }
+    if prefer_bank and series == "game" and not topic_override:
+        from services.bank_manager import take_or_refill
+        banked = take_or_refill("game")
+        if banked is not None:
+            return rebind_game_images(banked)
+        logger.info("Game story bank is empty and could not be refilled; generating live.")
     cat_name, cat_desc = cat_names.get(category_id, cat_names[3])
     domain = resolve_topic_domain(category_id, topic_override, series)
     allowed_assets = DOMAIN_TAXONOMY[domain]["allowed_assets"]
@@ -1699,63 +1711,61 @@ def generate_motion_story(
         f"Generate a master motion graphics project for Category: {cat_name}.\n"
         f"Domain Scope: {cat_desc} (Domain: {domain}).\n"
         f"{f'Requested Topic: {topic_override}' if topic_override else 'Choose an unexploited, high-CTR technical topic.'}\n"
+        f"{('Do NOT repeat or resemble these topics: ' + '; '.join((avoid_topics or [])[-25:]) + chr(10)) if avoid_topics else ''}"
         "Return a strictly valid JSON object conforming to the MotionStoryProject schema."
     )
 
-    client = genai.Client(api_key=settings.GEMINI_API_KEY, http_options=types.HttpOptions(timeout=10000))
-    fast_candidate_models = [settings.GEMINI_MODEL] if settings.GEMINI_MODEL in CANDIDATE_MODELS else ["gemini-3.5-flash"]
-    for model_name in fast_candidate_models:
-        try:
-            logger.info("Requesting MotionStoryProject via '%s'...", model_name)
-            res = client.models.generate_content(
-                model=model_name,
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    system_instruction=system_instruction,
-                    response_mime_type="application/json",
-                    response_schema=MotionStoryProject,
-                    temperature=0.6,
-                ),
-            )
-            story = MotionStoryProject.model_validate_json(res.text)
-            story.category_id = category_id
-            story.category_name = cat_name
-            usage = getattr(res, "usage_metadata", None)
-            if usage:
-                story.gemini_input_tokens = getattr(usage, "prompt_token_count", 0) or 0
-                story.gemini_output_tokens = getattr(usage, "candidates_token_count", 0) or 0
+    spanish_words = [" el ", " la ", " de ", " en ", " para ", " por ", " con ", " los ", " las ", " sobre "]
 
-            # Language guardrail
-            spanish_words = [" el ", " la ", " de ", " en ", " para ", " por ", " con ", " los ", " las ", " sobre "]
-            if any(w in f" {story.full_script.lower()} " for w in spanish_words):
-                logger.warning("Spanish tokens detected in Gemini story output! Deploying emergency fallback.")
-                return get_emergency_motion_story(category_id, topic=topic_override, series=series)
+    def _validate(st: MotionStoryProject) -> List[str]:
+        problems: List[str] = []
+        if any(w in f" {st.full_script.lower()} " for w in spanish_words):
+            problems.append("Spanish tokens in script")
+        ok, violations = validate_domain_integrity(st, domain)
+        if not ok:
+            problems.extend(violations[:3])
+        if len(st.visual_triggers) < 10:
+            problems.append(f"only {len(st.visual_triggers)} triggers (need 10+)")
+        return problems
 
-            # Domain integrity guardrail
-            is_valid, violations = validate_domain_integrity(story, domain)
-            if not is_valid:
-                logger.warning("Domain integrity check failed for '%s': %s. Deploying emergency fallback.", story.topic, violations)
-                return get_emergency_motion_story(category_id, topic=topic_override, series=series)
+    from services.gemini_client import GeminiUnavailable, generate_structured
+    try:
+        story, tokens, model_name = generate_structured(
+            prompt=prompt,
+            system_instruction=system_instruction,
+            schema=MotionStoryProject,
+            temperature=0.6,
+            validate=_validate,
+        )
+        story.category_id = category_id
+        story.category_name = cat_name if series != "game" else "GAME CURIOSITIES"
+        story.gemini_input_tokens, story.gemini_output_tokens = tokens
 
-            # Brand integrity guardrail & procedural auto-correction
-            _, brand_violations = validate_and_sanitize_brand_integrity(story)
-            if brand_violations:
-                logger.info("Motion story sanitized for brand integrity: %s", brand_violations)
+        _, brand_violations = validate_and_sanitize_brand_integrity(story)
+        if brand_violations:
+            logger.info("Motion story sanitized for brand integrity: %s", brand_violations)
+        if series == "game":
+            story = finalize_game_triggers(story)
+        logger.info("MotionStoryProject generated successfully (%s): %d words | %d triggers", model_name, story.get_total_words(), len(story.visual_triggers))
+        return story
+    except GeminiUnavailable as exc:
+        logger.warning("Gemini unavailable after retries (%s).", str(exc)[:150])
+        if live_only:
+            raise
 
-            # Check trigger count (must have at least 10 triggers to satisfy rhythm rule)
-            if len(story.visual_triggers) < 10:
-                logger.warning("Gemini generated only %d triggers (minimum 10 required for 3s pacing). Falling back to emergency story.", len(story.visual_triggers))
-                return get_emergency_motion_story(category_id, topic=topic_override, series=series)
-
-            if series == "game":
-                story = finalize_game_triggers(story)
-
-            logger.info("MotionStoryProject generated successfully (%s): %d words | %d triggers", model_name, story.get_total_words(), len(story.visual_triggers))
-            return story
-        except Exception as exc:
-            logger.warning("Failed to generate motion story via '%s': %s", model_name, exc)
-            time.sleep(1)
+    if series == "game":
+        from services.story_bank import pop_story
+        banked = pop_story("game")
+        if banked is not None:
+            return rebind_game_images(banked)
 
     logger.warning("Falling back to deterministic MotionStoryProject.")
     return get_emergency_motion_story(category_id, topic=topic_override, series=series)
 
+
+def rebind_game_images(story: MotionStoryProject) -> MotionStoryProject:
+    """Re-selects screenshots for a banked game story (staged files may be gone) and refreshes credits."""
+    for trig in story.visual_triggers:
+        trig.image_src = None
+    story.description = story.description.split("\n\nImages:")[0]
+    return finalize_game_triggers(story)

@@ -1062,3 +1062,18 @@ def get_next_rotated_category(db_path: Optional[Path] = None) -> str:
 
 
 
+
+
+def get_recently_used_topics_safe(limit: int = 25) -> list:
+    """Titles of recently produced videos (best effort; empty list on any error)."""
+    try:
+        init_db()
+        with get_db_connection() as conn:
+            rows = conn.execute("SELECT topic FROM shorts_history WHERE topic IS NOT NULL ORDER BY id DESC LIMIT ?", (limit,)).fetchall()
+        seen = []
+        for r in rows:
+            if r["topic"] and r["topic"] not in seen:
+                seen.append(r["topic"])
+        return seen
+    except Exception:
+        return []

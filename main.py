@@ -309,6 +309,7 @@ def run_master_video_pipeline(
     weekday_index: Optional[int] = None,
     benchmark: bool = False,
     series: Optional[str] = None,
+    prefer_bank: bool = True,
 ) -> Dict[str, Any]:
     """Executes the single unified master video pipeline (60-120s) for YouTube Shorts and TikTok."""
     from datetime import datetime
@@ -348,6 +349,7 @@ def run_master_video_pipeline(
         elif weekday_index is not None:
             cat_id = (weekday_index % 3) + 1
 
+        story_topic_forced = bool(topic)
         # 2. Kinetic Motion Story Generation (100% US English, 140-160 words, Word Anchors)
         t_script_start = time.time()
         from services.content_generator import generate_motion_story, get_emergency_motion_story
@@ -360,12 +362,13 @@ def run_master_video_pipeline(
             story.visual_triggers = story.visual_triggers[:3]
         elif series == "simple" and cat_id == 3:
             from services.story_generator import generate_story
-            story = generate_story(topic_override_or_none(topic))
-            if getattr(story, "is_fallback", False) and not (export_only or dry_run):
-                logger.error("Gemini unavailable: refusing to publish the deterministic fallback story. Re-run later or use --export-only.")
-                sys.exit(2)
+            story = generate_story(topic_override_or_none(topic), prefer_bank=prefer_bank)
         else:
-            story: MotionStoryProject = generate_motion_story(category_id=cat_id, topic_override=topic, series=series)
+            story: MotionStoryProject = generate_motion_story(category_id=cat_id, topic_override=topic, series=series, prefer_bank=prefer_bank)
+        if getattr(story, "is_fallback", False) and not (benchmark or export_only or dry_run):
+            logger.error("Gemini unavailable and the story bank is empty: refusing to publish the deterministic fallback. "
+                         "Re-run later, run scripts/refill_story_bank.py, or use --export-only.")
+            sys.exit(2)
         topic = story.topic
         t_script = time.time() - t_script_start
         logger.info(
@@ -564,6 +567,11 @@ def run_master_video_pipeline(
             print(f" Production Time:      {total_elapsed:.2f} seconds")
             print("=" * 80 + "\n")
 
+        # Story bank policy: this video consumed one banked script, so top the bank back up (best effort).
+        if prefer_bank and series in ("simple", "game") and not benchmark and not story_topic_forced:
+            from services.bank_manager import replenish_after_use
+            replenish_after_use(series)
+
         return {
             "youtube_video": str(yt_master_video.resolve()),
             "youtube_url": youtube_url,
@@ -744,6 +752,16 @@ def parse_args():
         help="Tech Curiosities sub-series: hardware (physics/engineering), game (game tech with real screenshots), simple (everyday).",
     )
     parser.add_argument(
+        "--from-bank",
+        action="store_true",
+        help="(Default now) Use the story bank first. Kept for compatibility.",
+    )
+    parser.add_argument(
+        "--no-bank",
+        action="store_true",
+        help="Skip the story bank and generate the script live with Gemini.",
+    )
+    parser.add_argument(
         "--benchmark",
         action="store_true",
         help="Run high-speed Apple Silicon M2 performance benchmark (telemetry per phase, < 20s target).",
@@ -825,4 +843,5 @@ if __name__ == "__main__":
             preset=args.preset,
             benchmark=args.benchmark,
             series=args.series,
+            prefer_bank=not args.no_bank,
         )
