@@ -231,3 +231,43 @@ class MotionStoryProject(BaseModel):
     def get_total_words(self) -> int:
         return len(self.full_script.split())
 
+
+
+class StoryScene(BaseModel):
+    """One visual beat of a mascot-led story video, triggered by a word in the script."""
+    word_anchor: str = Field(..., description="Exact word from full_script where this beat starts")
+    pose: str = Field(default="idle", description="Mascot pose: idle, surprised, point, shrug, think, wave, cheer")
+    vector_type: str = Field(default="none", description="none, counter, bars, gauge, trio, flow, icon, big_text")
+    icon: Optional[str] = Field(default=None, description="Icon name (bulb, mirror, clock, building, phone, wifi, chip, battery, cable, eye, smile, lock, bolt, cloud, magnifier, gear, heart, arrow, question, star, box, plane, wave, thermometer)")
+    icon2: Optional[str] = Field(default=None, description="Second icon (flow target or trio item 2)")
+    icon3: Optional[str] = Field(default=None, description="Third icon (trio item 3)")
+    label: Optional[str] = Field(default=None, description="Short caption, max 3 words")
+    label2: Optional[str] = Field(default=None, description="Second caption (bars row 2 or trio item 2)")
+    label3: Optional[str] = Field(default=None, description="Third caption (trio item 3)")
+    value_from: Optional[float] = Field(default=None, description="counter start value")
+    value_to: Optional[float] = Field(default=None, description="counter end value; must appear in the script")
+    a: Optional[float] = Field(default=None, description="0..1 fill of bars row 1, or gauge position")
+    b: Optional[float] = Field(default=None, description="0..1 fill of bars row 2")
+    text: Optional[str] = Field(default=None, description="big_text content, max 6 words")
+    flash: bool = Field(default=False, description="Full-screen accent punch; use for the single key reveal only")
+
+
+class StoryProject(BaseModel):
+    """Mascot-led explainer: hook, narrated story, and a sequence of scenes."""
+    topic: str
+    category_name: str = Field(default="EVERYDAY CURIOSITIES")
+    header_banner: str = Field(..., description="3-5 word uppercase hook shown for the first 3 seconds")
+    title: str = Field(..., max_length=150)
+    description: str
+    tags: List[str]
+    pinned_comment: str
+    full_script: str = Field(..., description="150-175 words of natural spoken US English")
+    scenes: List[StoryScene]
+    visual_triggers: List[MotionVisualTrigger] = Field(default_factory=list)
+    category_id: int = 3
+    is_fallback: bool = Field(default=False, description="Set by the pipeline when the deterministic story was used")
+    gemini_input_tokens: int = Field(default=0)
+    gemini_output_tokens: int = Field(default=0)
+
+    def get_total_words(self) -> int:
+        return len(self.full_script.split())

@@ -1,10 +1,24 @@
 import React from 'react';
 import { Composition } from 'remotion';
 import { MainScene, MainSceneProps } from './MainScene';
+import { StoryScene, StorySceneProps } from './story/StoryScene';
 import defaultBundle from '../public/data/bundle.json';
 
 export const Root: React.FC = () => {
   return (
+    <>
+    <Composition
+      id="StoryScene"
+      component={StoryScene as unknown as React.FC<Record<string, unknown>>}
+      durationInFrames={1800}
+      fps={30}
+      width={1080}
+      height={1920}
+      defaultProps={{ category: '', hook: '', audio_src: '', total_frames: 1800, subtitles: [], scenes: [] } as unknown as StorySceneProps}
+      calculateMetadata={async ({ props }) => ({
+        durationInFrames: (props as unknown as StorySceneProps).total_frames || 1800,
+      })}
+    />
     <Composition
       id="MainScene"
       component={MainScene as unknown as React.FC<Record<string, unknown>>}
@@ -28,5 +42,6 @@ export const Root: React.FC = () => {
         };
       }}
     />
+    </>
   );
 };

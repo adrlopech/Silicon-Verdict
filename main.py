@@ -293,6 +293,10 @@ def run_pipeline(
             shutil.rmtree(work_dir, ignore_errors=True)
 
 
+def topic_override_or_none(topic: Optional[str]) -> Optional[str]:
+    return topic or None
+
+
 def run_master_video_pipeline(
     topic: Optional[str] = None,
     category: Optional[str] = None,
@@ -354,6 +358,12 @@ def run_master_video_pipeline(
                 "Routers emit a fraction of a watt, but microwaves blast one thousand watts of RF noise!"
             )
             story.visual_triggers = story.visual_triggers[:3]
+        elif series == "simple" and cat_id == 3:
+            from services.story_generator import generate_story
+            story = generate_story(topic_override_or_none(topic))
+            if getattr(story, "is_fallback", False) and not (export_only or dry_run):
+                logger.error("Gemini unavailable: refusing to publish the deterministic fallback story. Re-run later or use --export-only.")
+                sys.exit(2)
         else:
             story: MotionStoryProject = generate_motion_story(category_id=cat_id, topic_override=topic, series=series)
         topic = story.topic
@@ -370,11 +380,22 @@ def run_master_video_pipeline(
         final_audio_path, final_audio_dur, word_timestamps = synthesize_voice_with_timestamps(
             text=story.full_script,
             output_audio_path=master_audio_raw,
-            voice_id=settings.ELEVENLABS_VOICE_ID,
+            voice_id=(settings.ELEVENLABS_VOICE_3 if series == "simple" else settings.ELEVENLABS_VOICE_ID),
             category=story.category_name.lower().replace(" ", "_"),
             speed=1.02,
             min_duration=5.0 if benchmark else 55.0,
             max_duration=8.5 if benchmark else 70.0,
+            **(
+                dict(
+                    natural=True,
+                    model_id="eleven_multilingual_v2",
+                    stability=0.32,
+                    style=0.5,
+                    similarity_boost=0.8,
+                )
+                if series == "simple" and not benchmark
+                else {}
+            ),
         )
         t_voice = time.time() - t_voice_start
         logger.info("Master narration + alignment synthesized in %.2fs: %.2fs audio", t_voice, final_audio_dur)

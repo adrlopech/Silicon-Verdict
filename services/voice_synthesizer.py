@@ -80,6 +80,10 @@ def synthesize_voice_with_timestamps(
     speed: Optional[float] = 1.02,
     min_duration: Optional[float] = 55.0,
     max_duration: Optional[float] = 70.0,
+    natural: bool = False,
+    stability: float = 0.38,
+    style: float = 0.32,
+    similarity_boost: float = 0.85,
 ) -> Tuple[Path, float, List[Dict[str, Any]]]:
     """Synthesizes high-impact narration with ElevenLabs native timestamps (Zero-Whisper architecture).
 
@@ -111,9 +115,9 @@ def synthesize_voice_with_timestamps(
 
             client = ElevenLabs(api_key=settings.ELEVENLABS_API_KEY)
             voice_settings = VoiceSettings(
-                stability=0.38,
-                similarity_boost=0.85,
-                style=0.32,
+                stability=stability,
+                similarity_boost=similarity_boost,
+                style=style,
                 use_speaker_boost=True,
             )
 
@@ -186,11 +190,14 @@ def synthesize_voice_with_timestamps(
     raw_dur = get_audio_duration(str(raw_mp3_path))
 
     # Duration pacing & buffer modulation
-    effective_speed = speed or 1.02
+    effective_speed = 1.0 if natural else (speed or 1.02)
     atempo = effective_speed
     projected_dur = raw_dur / atempo
 
-    if min_duration and projected_dur < min_duration:
+    if natural:
+        # Natural mode: never time-stretch the voice; the script length controls duration.
+        pass
+    elif min_duration and projected_dur < min_duration:
         atempo = max(0.70, raw_dur / (min_duration + 0.8))
     elif max_duration and projected_dur > max_duration:
         atempo = min(1.35, raw_dur / (max_duration - 1.0))

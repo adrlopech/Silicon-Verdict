@@ -35,3 +35,4 @@ output/
 # Auth material
 data/.tiktok_pkce_verifier.txt
 data/*token*.json
+.claude/settings.local.json

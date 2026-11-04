@@ -170,6 +170,32 @@ def map_visual_triggers_to_frames(
     return mapped
 
 
+def map_story_scenes_to_frames(scenes, word_timestamps, fps: int = 30, total_audio_dur: float = 60.0) -> List[Dict[str, Any]]:
+    """Timing for mascot-story scenes: reuses the anchor-matching logic and attaches vector specs and poses."""
+    dummies = [
+        MotionVisualTrigger(asset_id="scene", label="scene", word_anchor=sc.word_anchor)
+        for sc in scenes
+    ]
+    timing = map_visual_triggers_to_frames(dummies, word_timestamps, fps=fps, total_audio_dur=total_audio_dur)
+    out: List[Dict[str, Any]] = []
+    for sc, t in zip(scenes, timing):
+        vector = None
+        if sc.vector_type != "none":
+            vector = {
+                "type": sc.vector_type, "icon": sc.icon, "icon2": sc.icon2, "icon3": sc.icon3,
+                "label": sc.label, "label2": sc.label2, "label3": sc.label3,
+                "value_from": sc.value_from, "value_to": sc.value_to, "a": sc.a, "b": sc.b, "text": sc.text,
+            }
+        out.append({
+            "start_frame": t["start_frame"],
+            "duration_frames": t["duration_frames"],
+            "pose": sc.pose,
+            "flash": sc.flash,
+            "vector": vector,
+        })
+    return out
+
+
 def render_remotion_video(
     story: MotionStoryProject,
     master_audio_path: Path,
@@ -192,10 +218,12 @@ def render_remotion_video(
     logger.info("Initializing Fast M2 Remotion Pipeline for: %s (%s @ %d FPS)", story.title, story.category_name, fps)
 
     # Pre-render Brand Integrity Sanity Check & procedural correction
-    from services.content_generator import validate_and_sanitize_brand_integrity
-    _, brand_fixes = validate_and_sanitize_brand_integrity(story)
-    if brand_fixes:
-        logger.warning("Pre-render brand integrity corrections applied: %s", brand_fixes)
+    is_story = hasattr(story, "scenes")
+    if not is_story:
+        from services.content_generator import validate_and_sanitize_brand_integrity
+        _, brand_fixes = validate_and_sanitize_brand_integrity(story)
+        if brand_fixes:
+            logger.warning("Pre-render brand integrity corrections applied: %s", brand_fixes)
 
     # 1. Locate Remotion studio directory
     remotion_dir = settings.BASE_DIR / "remotion_studio"
@@ -228,12 +256,15 @@ def render_remotion_video(
         total_frames = max(total_frames, last_word_frame + int(1.2 * fps))
 
     # 4. Map visual triggers to frame offsets
-    mapped_triggers = map_visual_triggers_to_frames(
-        story.visual_triggers,
-        word_timestamps,
-        fps=fps,
-        total_audio_dur=audio_dur,
-    )
+    if is_story:
+        mapped_triggers = map_story_scenes_to_frames(story.scenes, word_timestamps, fps=fps, total_audio_dur=audio_dur)
+    else:
+        mapped_triggers = map_visual_triggers_to_frames(
+            story.visual_triggers,
+            word_timestamps,
+            fps=fps,
+            total_audio_dur=audio_dur,
+        )
 
     # 5. Copy master audio to remotion public audio folder
     public_audio_dir = remotion_dir / "public" / "audio"
@@ -242,15 +273,26 @@ def render_remotion_video(
     shutil.copyfile(master_audio_path, narration_dest)
 
     # 6. Write bundle.json
-    bundle_data = {
-        "category": story.category_name,
-        "header_banner": story.header_banner,
-        "audio_src": "audio/narration.wav",
-        "total_frames": total_frames,
-        "subtitles": word_timestamps,
-        "visual_triggers": mapped_triggers,
-    }
-    bundle_path = remotion_dir / "public" / "data" / "bundle.json"
+    if is_story:
+        bundle_data = {
+            "category": story.category_name,
+            "hook": story.header_banner,
+            "audio_src": "audio/narration.wav",
+            "total_frames": total_frames,
+            "subtitles": word_timestamps,
+            "scenes": mapped_triggers,
+        }
+        bundle_path = remotion_dir / "public" / "data" / "story_bundle.json"
+    else:
+        bundle_data = {
+            "category": story.category_name,
+            "header_banner": story.header_banner,
+            "audio_src": "audio/narration.wav",
+            "total_frames": total_frames,
+            "subtitles": word_timestamps,
+            "visual_triggers": mapped_triggers,
+        }
+        bundle_path = remotion_dir / "public" / "data" / "bundle.json"
     bundle_path.parent.mkdir(parents=True, exist_ok=True)
     with open(bundle_path, "w", encoding="utf-8") as f:
         json.dump(bundle_data, f, indent=2, ensure_ascii=False)
@@ -270,7 +312,7 @@ def render_remotion_video(
     render_cmd = [
         "npx", "remotion", "render",
         str(build_dir.name),
-        "MainScene",
+        "StoryScene" if is_story else "MainScene",
         str(temp_raw_video),
         f"--props={str(bundle_path)}",
         f"--fps={fps}",
@@ -310,6 +352,7 @@ def render_remotion_video(
         "-c:v", "h264_videotoolbox",
         "-prio_speed", "true",
         "-b:v", "7M",
+        "-af", "loudnorm=I=-14:TP=-1.5:LRA=11",
         "-c:a", "aac",
         "-b:a", "192k",
         "-shortest",
@@ -326,6 +369,7 @@ def render_remotion_video(
             "-i", str(master_audio_path),
             "-c:v", "libx264",
             "-preset", "veryfast",
+            "-af", "loudnorm=I=-14:TP=-1.5:LRA=11",
             "-c:a", "aac",
             "-b:a", "192k",
             "-shortest",
