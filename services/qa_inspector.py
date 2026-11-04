@@ -127,18 +127,9 @@ def save_qa_rules(rules: Dict[str, Any]) -> None:
 
 
 def get_latest_tiktok_video() -> Optional[Path]:
-    """Finds the most recently modified MP4 video in output/tiktok/."""
-    tiktok_dir = BASE_DIR / "output" / "tiktok"
-    if not tiktok_dir.is_dir():
-        return None
-
-    mp4_files = list(tiktok_dir.glob("*.mp4"))
-    if not mp4_files:
-        return None
-
-    # Sort by modification time descending
-    mp4_files.sort(key=lambda p: p.stat().st_mtime, reverse=True)
-    return mp4_files[0]
+    """Finds the most recently modified MP4 under output/tiktok/ (one folder per video)."""
+    from services.output_layout import latest_video
+    return latest_video("tiktok")
 
 
 def find_associated_assets(video_path: Path) -> Dict[str, Any]:
@@ -159,7 +150,8 @@ def find_associated_assets(video_path: Path) -> Dict[str, Any]:
         assets["metadata_file"] = txt_path
 
     # 2. YouTube copy
-    yt_path = BASE_DIR / "output" / "youtube" / video_path.name
+    from services.output_layout import mirror_path
+    yt_path = mirror_path(video_path, "youtube")
     if yt_path.is_file():
         assets["youtube_video"] = yt_path
 
@@ -408,7 +400,7 @@ def audit_visuals(video_path: Path, assets: Dict[str, Any], qa_rules: Dict[str, 
     cover_file = video_path.parent / f"{video_path.stem}_cover.jpg"
     if not cover_file.is_file():
         # Check in output/tiktok as well
-        cover_file = BASE_DIR / "output" / "tiktok" / f"{video_path.stem}_cover.jpg"
+        cover_file = video_path.parent / f"{video_path.stem}_cover.jpg"
 
     if not cover_file.is_file():
         issues_desc.append("Fotograma de portada (_cover.jpg) ausente en output/tiktok/")
@@ -514,7 +506,10 @@ def run_full_qa_audit(video_path: Optional[Path] = None) -> Dict[str, Any]:
 def format_qa_report(audit_data: Dict[str, Any]) -> str:
     """Formats the audit findings into the exact user-facing template."""
     v_path = audit_data["video_path"]
-    v_rel = f"output/tiktok/{v_path.name}"
+    try:
+        v_rel = str(v_path.resolve().relative_to(BASE_DIR))
+    except ValueError:
+        v_rel = f"output/tiktok/{v_path.name}"
     dur = audit_data["duration"]
 
     sub_desc = audit_data["subtitles"]["issues_description"]

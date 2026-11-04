@@ -28,8 +28,8 @@ HELP_TEXT = """=================================================================
 
  • limpieza
    Atomic disk cleanup:
-   - Purges staging videos and metadata in output/tiktok/ (*.mp4, *.txt, *_cover.jpg).
-   - Purges videos in output/youtube/ (*.mp4, *_cover.jpg).
+   - Purges every per-video folder in output/tiktok/ (video, cover and metadata).
+   - Purges every per-video folder in output/youtube/.
    - Purges intermediate render frames and cache folders in temp/.
    - PRESERVES intact: data/history.db, credentials (.env), tokens, and assets/broll/.
 
@@ -84,8 +84,8 @@ HELP_TEXT = """=================================================================
 --------------------------------------------------------------------------------
 4. KEY DIRECTORIES & FILES
 --------------------------------------------------------------------------------
- • output/youtube/        Published vertical master video for YouTube Shorts.
- • output/tiktok/         Vertical master video, *_cover.jpg, and *.txt staging metadata.
+ • output/youtube/<title>/ One folder per video (named after its title); video named by date and time.
+ • output/tiktok/<title>/  One folder per video with <date_time>.mp4, _cover.jpg and .txt metadata.
  • data/history.db        SQLite database: 30-topic queue, telemetry, and API costs.
  • data/category_weights.json  Dynamic algorithmic weights driven by real audience retention.
  • data/qa_rules.json     Learned phonetic pronunciation rules and hook filters.

@@ -2,7 +2,7 @@
 """Uploads an already-rendered master video to YouTube using its .txt metadata.
 
 Usage:
-  python scripts/upload_existing.py output/youtube/20261104_Why_High_FPS_Breaks_Skyrim_Physics.mp4
+  python scripts/upload_existing.py "output/youtube/<Video title>/<YYYY-MM-DD_HH-MM-SS>.mp4"
   python scripts/upload_existing.py <video.mp4> --privacy unlisted
 """
 import argparse
@@ -28,7 +28,8 @@ def main() -> None:
     args = ap.parse_args()
 
     video = Path(args.video).resolve()
-    meta = BASE_DIR / "output" / "tiktok" / f"{video.stem}.txt"
+    from services.output_layout import mirror_path
+    meta = mirror_path(video, "tiktok").with_suffix(".txt")
     if not video.is_file() or not meta.is_file():
         sys.exit(f"Missing video or metadata: {video} / {meta}")
 

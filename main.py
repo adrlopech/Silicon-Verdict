@@ -420,27 +420,26 @@ def run_master_video_pipeline(
         logger.info("Remotion Master Render Completed: %s (Duration: %.2fs @ 30 FPS)", final_video.name, actual_dur)
 
         # 5. Multi-Platform Distribution (Single Master Render Output)
-        date_stamp = datetime.now().strftime("%Y%m%d")
-        theme_clean = "".join(c if c.isalnum() or c == "_" else "_" for c in (topic or "silicon_verdict")).strip("_")
+        # One folder per video, named after its title; files are named by creation date and time
+        from services.output_layout import timestamp_stem, video_dir
+        file_stem = timestamp_stem()
+        yt_out_dir = video_dir("youtube", story.title)
+        tiktok_out_dir = video_dir("tiktok", story.title)
 
-        # Destination 1: output/youtube/{YYYYMMDD}_{theme}.mp4 & cover
-        yt_out_dir = BASE_DIR / "output" / "youtube"
-        yt_out_dir.mkdir(parents=True, exist_ok=True)
-        yt_master_video = yt_out_dir / f"{date_stamp}_{theme_clean}.mp4"
+        # Destination 1: output/youtube/<title>/<timestamp>.mp4 & cover
+        yt_master_video = yt_out_dir / f"{file_stem}.mp4"
         shutil.copyfile(final_video, yt_master_video)
-        yt_cover_file = yt_out_dir / f"{date_stamp}_{theme_clean}_cover.jpg"
+        yt_cover_file = yt_out_dir / f"{file_stem}_cover.jpg"
         shutil.copyfile(cover_frame_path, yt_cover_file)
 
-        # Destination 2: output/tiktok/{YYYYMMDD}_{theme}.mp4 & cover
-        tiktok_out_dir = BASE_DIR / "output" / "tiktok"
-        tiktok_out_dir.mkdir(parents=True, exist_ok=True)
-        tiktok_master_video = tiktok_out_dir / f"{date_stamp}_{theme_clean}.mp4"
+        # Destination 2: output/tiktok/<title>/<timestamp>.mp4 & cover
+        tiktok_master_video = tiktok_out_dir / f"{file_stem}.mp4"
         shutil.copyfile(final_video, tiktok_master_video)
-        tiktok_cover_file = tiktok_out_dir / f"{date_stamp}_{theme_clean}_cover.jpg"
+        tiktok_cover_file = tiktok_out_dir / f"{file_stem}_cover.jpg"
         shutil.copyfile(cover_frame_path, tiktok_cover_file)
 
         # Destination 3: output/tiktok/{YYYYMMDD}_{theme}.txt (Manual Publishing Metadata)
-        tiktok_metadata_file = tiktok_out_dir / f"{date_stamp}_{theme_clean}.txt"
+        tiktok_metadata_file = tiktok_out_dir / f"{file_stem}.txt"
 
         tag_list = story.tags if all(t.startswith('#') for t in story.tags) else [f'#{t}' if not t.startswith('#') else t for t in story.tags]
         meta_content = (
@@ -451,7 +450,7 @@ def run_master_video_pipeline(
             f"Measured Duration: {actual_dur:.2f}s (Eligible Creator Rewards / Monetization: 55-70s)\n"
             f"Resolution / FPS:  1080x1920 (9:16 Vertical) @ 60 FPS\n"
             f"Category:          {story.category_name}\n"
-            f"Theme / Topic:     {theme_clean}\n"
+            f"Theme / Topic:     {story.topic}\n"
             f"================================================================================\n\n"
             f"[SUGGESTED TITLE]\n"
             f"{story.title}\n\n"

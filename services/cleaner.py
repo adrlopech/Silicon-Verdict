@@ -55,73 +55,70 @@ def execute_comprehensive_cleanup(
     logger.info("Purgar TikTok: %s (Preservado para subida manual si False) | Dry Run: %s", clean_tiktok, dry_run)
     logger.info("================================================================================")
 
-    # 1. YouTube Output Videos & Covers
-    yt_dir = root / "output" / "youtube"
-    if clean_youtube and yt_dir.is_dir():
-        for vid_file in yt_dir.glob("*.mp4"):
-            try:
-                f_size = vid_file.stat().st_size
-                freed_bytes += f_size
-                deleted_videos.append(str(vid_file))
-                if not dry_run:
-                    vid_file.unlink()
-                    logger.info("[BORRADO] Vídeo YouTube: %s (%.2f MB)", vid_file.name, f_size / (1024 * 1024))
-            except Exception as exc:
-                logger.warning("Error eliminando vídeo YouTube %s: %s", vid_file, exc)
-
-        for cov_file in yt_dir.glob("*_cover.jpg"):
-            try:
-                f_size = cov_file.stat().st_size
-                freed_bytes += f_size
-                deleted_frames.append(str(cov_file))
-                if not dry_run:
-                    cov_file.unlink()
-                    logger.info("[BORRADO] Portada YouTube: %s", cov_file.name)
-            except Exception as exc:
-                logger.warning("Error eliminando portada YouTube %s: %s", cov_file, exc)
-
-    # 2. TikTok Output Videos, Metadata & Covers (Protected unless clean_tiktok=True)
-    tiktok_dir = root / "output" / "tiktok"
-    if tiktok_dir.is_dir():
-        for vid_file in tiktok_dir.glob("*.mp4"):
-            if clean_tiktok:
+    def _purge_platform_dir(platform_dir: Path, label: str, with_meta: bool, delete: bool) -> None:
+        """Handles output/<platform>/: one folder per video (new layout) plus legacy flat files."""
+        nonlocal freed_bytes
+        if not platform_dir.is_dir():
+            return
+        for item in sorted(platform_dir.iterdir()):
+            if item.name.startswith("."):
+                continue
+            if item.is_dir():
+                mp4s = list(item.rglob("*.mp4"))
+                if not delete:
+                    preserved_tiktok.extend(str(m) for m in mp4s)
+                    logger.info("[PRESERVADO] Carpeta %s pendiente de subida manual: %s", label, item.name)
+                    continue
                 try:
-                    f_size = vid_file.stat().st_size
-                    freed_bytes += f_size
-                    deleted_videos.append(str(vid_file))
+                    for f in item.rglob("*"):
+                        if not f.is_file():
+                            continue
+                        size = f.stat().st_size
+                        freed_bytes += size
+                        if f.suffix == ".mp4":
+                            deleted_videos.append(str(f))
+                        elif f.suffix in (".jpg", ".jpeg", ".png"):
+                            deleted_frames.append(str(f))
+                        elif f.suffix == ".txt":
+                            deleted_meta.append(str(f))
+                    deleted_dirs.append(str(item))
                     if not dry_run:
-                        vid_file.unlink()
-                        logger.info("[BORRADO] Vídeo TikTok: %s (%.2f MB)", vid_file.name, f_size / (1024 * 1024))
+                        shutil.rmtree(item, ignore_errors=True)
+                        logger.info("[BORRADO] Carpeta de vídeo %s: %s", label, item.name)
                 except Exception as exc:
-                    logger.warning("Error eliminando vídeo TikTok %s: %s", vid_file, exc)
-            else:
-                preserved_tiktok.append(str(vid_file))
-                logger.info("[PRESERVADO] Vídeo TikTok pendiente de subida manual: %s", vid_file.name)
-
-        if clean_tiktok:
-            # Purge covers in output/tiktok/
-            for cov_file in tiktok_dir.glob("*_cover.jpg"):
+                    logger.warning("Error eliminando carpeta %s: %s", item, exc)
+            elif item.is_file():
+                kind = None
+                if item.suffix == ".mp4":
+                    kind = "video"
+                elif item.name.endswith("_cover.jpg"):
+                    kind = "cover"
+                elif item.suffix == ".txt" and with_meta:
+                    kind = "meta"
+                if kind is None:
+                    continue
+                if kind == "video" and not delete:
+                    preserved_tiktok.append(str(item))
+                    logger.info("[PRESERVADO] Vídeo %s pendiente de subida manual: %s", label, item.name)
+                    continue
+                if not delete:
+                    continue
                 try:
-                    f_size = cov_file.stat().st_size
-                    freed_bytes += f_size
-                    deleted_frames.append(str(cov_file))
+                    size = item.stat().st_size
+                    freed_bytes += size
+                    {"video": deleted_videos, "cover": deleted_frames, "meta": deleted_meta}[kind].append(str(item))
                     if not dry_run:
-                        cov_file.unlink()
-                        logger.info("[BORRADO] Portada TikTok: %s", cov_file.name)
+                        item.unlink()
+                        logger.info("[BORRADO] %s (%s): %s", kind, label, item.name)
                 except Exception as exc:
-                    logger.warning("Error eliminando portada TikTok %s: %s", cov_file, exc)
+                    logger.warning("Error eliminando %s: %s", item, exc)
 
-            if clean_metadata_txt:
-                for txt_file in tiktok_dir.glob("*.txt"):
-                    try:
-                        f_size = txt_file.stat().st_size
-                        freed_bytes += f_size
-                        deleted_meta.append(str(txt_file))
-                        if not dry_run:
-                            txt_file.unlink()
-                            logger.info("[BORRADO] Metadatos TikTok: %s", txt_file.name)
-                    except Exception as exc:
-                        logger.warning("Error eliminando metadatos %s: %s", txt_file, exc)
+    # 1. YouTube output: one folder per video (and legacy flat files)
+    if clean_youtube:
+        _purge_platform_dir(root / "output" / "youtube", "YouTube", with_meta=False, delete=True)
+
+    # 2. TikTok output (protected unless clean_tiktok=True)
+    _purge_platform_dir(root / "output" / "tiktok", "TikTok", with_meta=clean_metadata_txt, delete=clean_tiktok)
 
     # 3. Frames, Audio, and Intermediate Assets in temp/
     if clean_frames_and_scratch:

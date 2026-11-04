@@ -6,7 +6,7 @@
    - Este vídeo cumple simultáneamente los requisitos de YouTube Shorts (indexación vertical hasta 3 min) y de TikTok (elegible para el Creator Rewards Program al superar los 60.5 segundos).
 2. **Distribución Multi-Plataforma Desatendida:**
    - **YouTube:** Publicación directa en YouTube API v3 con estado público (`privacyStatus: "public"`).
-   - **TikTok (Staging):** Se preserva una copia idéntica del archivo en `output/tiktok/{YYYYMMDD}_{theme_name}.mp4` junto a su archivo de metadatos `output/tiktok/{YYYYMMDD}_{theme_name}.txt` con título optimizado, hashtags técnicos (#hardware #pcgaming #pcbuild #techtok #siliconverdict #benchmark) y guion estructurado por actos con timestamps para subida manual vía TikTok Studio Web.
+   - **TikTok (Staging):** Se preserva una copia idéntica del archivo en `output/tiktok/<Título del vídeo>/<AAAA-MM-DD_HH-MM-SS>.mp4` (una carpeta por vídeo, con el título como nombre) junto a su archivo de metadatos `<AAAA-MM-DD_HH-MM-SS>.txt` en la misma carpeta con título optimizado, hashtags técnicos (#hardware #pcgaming #pcbuild #techtok #siliconverdict #benchmark) y guion estructurado por actos con timestamps para subida manual vía TikTok Studio Web.
 3. **Audio y Narración:**
    - Pacing sereno y analítico con ElevenLabs: velocidad `0.92x`, `stability: 0.75`, `similarity_boost: 0.80`, `style: 0.12`.
    - Rotación estricta entre las 3 voces configuradas (`VOICE_1` Daniel, `VOICE_2` Adam, `VOICE_3` Liam) registrada en `data/history.db`.
@@ -24,8 +24,8 @@
    - Es el único disparador autorizado para vaciar la carpeta `output/tiktok/`.
    - Ejecuta de forma inmediata `scripts/cleanup.py` (o `scripts/cleanup_old_videos.py`).
    - Purga de forma atómica:
-     * Vídeos de TikTok en `output/tiktok/*.mp4`, metadatos `output/tiktok/*.txt` y portadas `output/tiktok/*_cover.jpg`.
-     * Vídeos de YouTube en `output/youtube/*.mp4` y portadas `output/youtube/*_cover.jpg`.
+     * Todas las carpetas de vídeo de `output/tiktok/` (vídeo `.mp4`, metadatos `.txt` y portada `_cover.jpg`).
+     * Todas las carpetas de vídeo de `output/youtube/` (vídeo y portada).
      * Todos los frames e imágenes en `temp/`.
      * Todas las pistas de audio intermedias en `temp/`.
      * Todas las carpetas temporales de render (`temp/run_*`, `/tmp/yt_automation/*`).
@@ -250,7 +250,7 @@ Este sistema **NO se ejecuta de forma automática ni silenciosa** durante el pro
 
 ### 2. Generador Automático de Portada (*Cover Frame*) Mobile-First (`services/renderer.py`)
 - **Generación Visual:**
-  - Crea una imagen vertical de 1080x1920 (`output/tiktok/{YYYYMMDD}_{theme}_cover.jpg` y copia en YouTube).
+  - Crea una imagen vertical de 1080x1920 (`output/tiktok/<Título>/<AAAA-MM-DD_HH-MM-SS>_cover.jpg` y copia en YouTube).
   - Fondo: Fotograma central del B-roll seleccionado o lienzo técnico oscuro con tinte negro al 60% (`rgba(0,0,0,0.60)`).
   - Título Hook Masivo: 84-98px en Roboto/Impact extra-bold, con resaltado de palabras clave en cian eléctrico (`#38BDF8`).
   - Badge Superior: Píldora de categoría en azul marino con borde cian (`rgba(15, 23, 42, 0.90)`).
