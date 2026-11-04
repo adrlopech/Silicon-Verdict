@@ -1,0 +1,14 @@
+{
+  "calibrated_at": "2026-11-03T20:37:52.308495+00:00",
+  "category_averages": {
+    "gaming_benchmarks": 65.84,
+    "hardware_benchmarks": 59.86,
+    "tech_curiosities": 83.31
+  },
+  "best_performing_category": "tech_curiosities",
+  "weights": {
+    "tech_curiosities": 0.5,
+    "gaming_benchmarks": 0.25,
+    "hardware_benchmarks": 0.25
+  }
+}

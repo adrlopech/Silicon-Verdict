@@ -77,115 +77,13 @@ def generate_autonomous_short_plan(
     spec: Optional[DailyShortSpec] = None,
 ) -> Dict:
     """Generates an empirical, data-driven hardware debate script for a 35-45s Short."""
+    from services.content_generator import generate_dynamic_short_plan
     history = load_history(history_path)
-    previous_topics = [h.get("topic") for h in history]
-
-    logger.info("Querying Gemini for autonomous PC hardware debate & telemetry data...")
-
-    if topic_override:
-        topic_instruction = f"Target Topic: '{topic_override}'"
-    elif spec:
-        topic_instruction = (
-            f"Daily Pillar: {spec.day_name} ({spec.pillar_title})\n"
-            f"Required Subtheme ({spec.theme_key}): '{spec.theme_description}'\n"
-            f"Mandatory Benchmark Game: '{spec.game_title}'\n"
-            "Build the debate and empirical benchmark directly around this hardware pillar, subtheme, and game."
-        )
-    else:
-        topic_instruction = "Select a fresh, unexploited, high-impact PC hardware debate for enthusiasts."
-
-    prompt = f"""You are the Lead Hardware Telemetry Engineer & Content Director for 'Silicon Verdict', an elite YouTube channel known for empirical PC hardware benchmarks.
-Generate a complete specification for an autonomous 35-45 second YouTube Short.
-Previously covered topics: {previous_topics}
-{topic_instruction}
-
-Debate candidates:
-- 128-bit vs 256-bit memory bus bandwidth choking high-res textures at 1440p
-- PCIe 4.0 x8 vs x16 link width penalties on PCIe 3.0 platforms
-- GDDR6 vs GDDR6X power draw and thermal throttling on memory controllers
-
-Return a strictly valid JSON object conforming exactly to this structure:
-{{
-  "topic": "string (Concise topic name)",
-  "title": "string (High-CTR title under 75 chars, ending with #Shorts)",
-  "description": "string (Technical summary, frame pacing methodology, PresentMon telemetry notes, #Shorts #SiliconVerdict #PCGaming)",
-  "tags": ["string", "string", ... at least 15 technical tags],
-  "pinned_comment": "string (Insightful technical debate prompt)",
-  "scene1": {{
-    "voiceover": "string (~18-22 words, aggressive hook in the first 3 seconds challenging conventional wisdom)",
-    "dilemma_title": "string (uppercase, 2-4 words, e.g. '128-BIT vs 256-BIT BUS')",
-    "dilemma_subtitle": "string (concise technical dilemma, e.g. 'Does narrow bus bandwidth choke 1440p textures?')",
-    "category_pill": "string (uppercase, 2-3 words, e.g. 'BANDWIDTH BOTTLENECK')",
-    "hud_text": "string (uppercase, 2-3 words, e.g. 'MEMORY BANDWIDTH')",
-    "pixabay_query": "string (approved query, e.g. 'gaming pc benchmark gameplay' or 'semiconductor silicon wafer macro')"
-  }},
-  "scene2": {{
-    "voiceover": "string (~35-42 words, empirical comparison citing exact numerical FPS and percentage delta)",
-    "chart_title": "string (uppercase, e.g. '1440p ULTRA TELEMETRY')",
-    "chart_subtitle": "string (e.g. '256-bit Bus vs 128-bit Bus')",
-    "preset_pill": "string (uppercase, e.g. '1440p ULTRA • CYBERPUNK 2077')",
-    "metric_unit": "FPS",
-    "winner_label": "string (e.g. '256-bit Bus (576 GB/s)')",
-    "winner_fps": 94.0,
-    "loser_label": "string (e.g. '128-bit Bus (288 GB/s)')",
-    "loser_fps": 61.0,
-    "winner_badge": "string (e.g. '+54% FASTER')"
-  }},
-  "scene_cta": {{
-    "voiceover": "string (STRICTLY 10-14 words, 2.5-3.0s duration, e.g. 'If you are enjoying this breakdown and want daily hardware insights, subscribe to Silicon Verdict.')",
-    "headline_highlight": "SUBSCRIBE",
-    "headline_rest": "FOR DAILY VERDICTS",
-    "sub_text": "Unfiltered PC Hardware Telemetry & Benchmarks"
-  }},
-  "scene3": {{
-    "voiceover": "string (~18-22 words, definitive technical verdict and recommendation for PC builders)",
-    "hud_text": "string (uppercase, 2-3 words, e.g. 'SILICON VERDICT')",
-    "pixabay_query": "string (approved query, e.g. 'cinematic cpu die silicon' or 'pc gaming graphics 4k')"
-  }}
-}}"""
-
-    response = None
-    candidate_models = ["gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-3.1-flash-lite", settings.GEMINI_MODEL]
-    last_err = None
-
-    for model_name in candidate_models:
-        for attempt in range(1, 3):
-            try:
-                logger.info("Requesting Gemini short script using model '%s' (attempt %d)...", model_name, attempt)
-                response = client.models.generate_content(
-                    model=model_name,
-                    contents=prompt,
-                    config=types.GenerateContentConfig(
-                        response_mime_type="application/json",
-                        temperature=0.7,
-                    ),
-                )
-                break
-            except Exception as exc:
-                last_err = exc
-                if "503" in str(exc) or "UNAVAILABLE" in str(exc) or "demand" in str(exc):
-                    logger.warning("Model '%s' hit 503 high demand spike. Trying next candidate...", model_name)
-                    time.sleep(1)
-                    break
-                else:
-                    time.sleep(1)
-        if response is not None:
-            break
-
-    if response is None:
-        raise RuntimeError(f"All Gemini candidate models failed. Last error: {last_err}")
-
-    data = json.loads(response.text)
-    if "scene_cta" not in data or not isinstance(data["scene_cta"], dict) or not data["scene_cta"].get("voiceover"):
-        data["scene_cta"] = {
-            "voiceover": "If you are enjoying this breakdown and want daily hardware insights, subscribe to Silicon Verdict.",
-            "headline_highlight": "SUBSCRIBE",
-            "headline_rest": "FOR DAILY VERDICTS",
-            "sub_text": "Unfiltered PC Hardware Telemetry & Benchmarks",
-        }
-    logger.info("Autonomous Topic Selected: '%s'", data.get("topic"))
-    logger.info("Short Title: '%s'", data.get("title"))
-    return data
+    return generate_dynamic_short_plan(
+        topic_override=topic_override,
+        spec=spec,
+        history=history,
+    )
 
 
 # ==============================================================================
@@ -514,12 +412,13 @@ def assemble_final_short(
 # ==============================================================================
 # MAIN AUTONOMOUS PIPELINE ENTRYPOINT
 # ==============================================================================
-def main():
-    parser = argparse.ArgumentParser(description="Autonomous YouTube Short Production Pipeline for Silicon Verdict")
-    parser.add_argument("--topic", type=str, help="Optional topic override. If omitted, Gemini discovers an unexploited topic.")
-    parser.add_argument("--privacy", type=str, default="private", choices=["private", "unlisted", "public"], help="YouTube visibility (strictly default: private)")
-    args = parser.parse_args()
-
+def run_autonomous_short(
+    topic: Optional[str] = None,
+    privacy: str = "private",
+    dry_run: bool = False,
+    weekday_index: Optional[int] = None,
+) -> Dict:
+    """Executes the complete autonomous Short production cycle for Silicon Verdict."""
     t_start = time.time()
     run_id = uuid.uuid4().hex[:8]
     work_dir = BASE_DIR / "temp" / f"run_short_{run_id}"
@@ -528,14 +427,15 @@ def main():
 
     logger.info("==================================================================")
     logger.info("=== STARTING AUTONOMOUS SHORT PRODUCTION [Run ID: %s] ===", run_id)
-    logger.info(" Target Privacy Status: '%s' (Strictly Private)", args.privacy)
+    logger.info(" Target Privacy Status: '%s'", privacy)
     logger.info(" Target Output Format:  1080x1920 @ 60 FPS (YouTube Short)")
+    logger.info(" Dry Run Mode:          %s", dry_run)
     logger.info("==================================================================")
 
     try:
         # Step 1: Autonomous Thematic Pillar & Spec Selection
-        current_weekday = datetime.now().weekday()
-        daily_spec = select_daily_short_spec(weekday_index=current_weekday)
+        w_idx = weekday_index if weekday_index is not None else datetime.now().weekday()
+        daily_spec = select_daily_short_spec(weekday_index=w_idx)
         logger.info(
             "Thematic Pillar: %s (%s) | %s: '%s' | Game: '%s' | Voice: %s",
             daily_spec.day_name,
@@ -551,7 +451,7 @@ def main():
         plan = generate_autonomous_short_plan(
             client=client,
             history_path=history_file,
-            topic_override=args.topic,
+            topic_override=topic,
             spec=daily_spec,
         )
         logger.info("Plan generated in %.2fs", time.time() - t_plan_start)
@@ -705,18 +605,31 @@ def main():
             output_final_short=final_short,
         )
 
-        logger.info("Uploading Short to YouTube (Channel: 'Silicon Verdict' | Status: %s)...", args.privacy)
-        youtube_url = upload_video_resumable(
-            file_path=str(final_short),
-            title=plan["title"],
-            description=plan["description"],
-            tags=plan["tags"] + ["Shorts", "TechShorts", "SiliconVerdict", "Hardware"],
-            privacy_status=args.privacy,
-            is_short=True,
-        )
+        # Stash copy in output/youtube/
+        out_yt_dir = BASE_DIR / "output" / "youtube"
+        out_yt_dir.mkdir(parents=True, exist_ok=True)
+        date_str = datetime.now().strftime("%Y%m%d")
+        yt_copy = out_yt_dir / f"{date_str}_{daily_spec.theme_key}.mp4"
+        shutil.copy2(final_short, yt_copy)
+        logger.info("Archived YouTube Short to %s", yt_copy)
 
-        short_id = youtube_url.split("/")[-1].replace("youtu.be/", "")
-        shorts_canonical_url = f"https://youtube.com/shorts/{short_id}"
+        if not dry_run:
+            logger.info("Uploading Short to YouTube (Channel: 'Silicon Verdict' | Status: %s)...", privacy)
+            youtube_url = upload_video_resumable(
+                file_path=str(final_short),
+                title=plan["title"],
+                description=plan["description"],
+                tags=plan["tags"] + ["Shorts", "TechShorts", "SiliconVerdict", "Hardware"],
+                privacy_status=privacy,
+                is_short=True,
+            )
+            short_id = youtube_url.split("/")[-1].replace("youtu.be/", "")
+            shorts_canonical_url = f"https://youtube.com/shorts/{short_id}"
+        else:
+            short_id = f"simulated_short_{int(time.time())}"
+            youtube_url = f"file://{final_short}"
+            shorts_canonical_url = f"https://youtube.com/shorts/{short_id}"
+            logger.info("[DRY RUN] YouTube Short upload simulated: %s", shorts_canonical_url)
 
         # Record to history (JSON and SQLite Database)
         record_topic_in_history(
@@ -737,6 +650,8 @@ def main():
             topic=plan["topic"],
             title=plan["title"],
             video_id=short_id,
+            category=getattr(daily_spec, "category_key", ""),
+            tone=getattr(daily_spec, "tone", "technical"),
         )
 
         total_elapsed = time.time() - t_start
@@ -748,14 +663,40 @@ def main():
         print(f" 📺 YouTube Shorts URL: {shorts_canonical_url}")
         print(f" 🔗 Direct Link:        {youtube_url}")
         print(f" 🏷️ Video Title:        {plan['title']}")
-        print(f" 🔒 Visibility:         {args.privacy.upper()} (Strictly Private)")
+        print(f" 🔒 Visibility:         {privacy.upper()}")
         print(f" 📊 Telemetry Delta:    {plan['scene2']['winner_label']} ({plan['scene2']['winner_fps']} FPS) vs {plan['scene2']['loser_label']} ({plan['scene2']['loser_fps']} FPS) [{plan['scene2']['winner_badge']}]")
         print(f" 🎬 Local Master File:  {final_short.resolve()}")
+        print(f" 📂 Output Archive:     {yt_copy.resolve()}")
         print(f" ⏱️ Video Duration:     {total_audio_duration:.2f} seconds (1080x1920 @ 60 FPS)")
         print("=" * 76 + "\n")
 
+        return {
+            "status": "SUCCESS",
+            "youtube_url": youtube_url,
+            "shorts_url": shorts_canonical_url,
+            "short_id": short_id,
+            "title": plan["title"],
+            "duration": total_audio_duration,
+            "local_file": str(final_short.resolve()),
+            "archive_file": str(yt_copy.resolve()),
+            "spec": daily_spec,
+        }
+
     except Exception as exc:
         logger.critical("Autonomous Short production failed: %s", exc, exc_info=True)
+        raise exc
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Autonomous YouTube Short Production Pipeline for Silicon Verdict")
+    parser.add_argument("--topic", type=str, help="Optional topic override. If omitted, Gemini discovers an unexploited topic.")
+    parser.add_argument("--privacy", type=str, default="private", choices=["private", "unlisted", "public"], help="YouTube visibility (strictly default: private)")
+    parser.add_argument("--dry-run", action="store_true", help="Render video without uploading to YouTube.")
+    args = parser.parse_args()
+
+    try:
+        run_autonomous_short(topic=args.topic, privacy=args.privacy, dry_run=args.dry_run)
+    except Exception:
         sys.exit(1)
 
 

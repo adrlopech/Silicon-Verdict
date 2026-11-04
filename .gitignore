@@ -25,3 +25,13 @@ temp/
 logs/
 *.log
 .DS_Store
+
+remotion_studio/build
+# Remotion / generated render inputs
+remotion_studio/node_modules/
+remotion_studio/public/
+output/
+
+# Auth material
+data/.tiktok_pkce_verifier.txt
+data/*token*.json

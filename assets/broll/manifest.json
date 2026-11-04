@@ -1,0 +1,149 @@
+{
+  "version": "1.0",
+  "clips": [
+    {
+      "file": "test_broll.mp4",
+      "category": "hardware_benchmarks",
+      "component": "motherboard",
+      "brand": "none",
+      "tags": [
+        "hardware",
+        "pc",
+        "motherboard",
+        "benchmarks",
+        "components"
+      ],
+      "conflicts_with": [],
+      "last_used_timestamp": null,
+      "use_count": 0
+    },
+    {
+      "file": "intel_lga1700_detail.mp4",
+      "category": "hardware_benchmarks",
+      "component": "cpu",
+      "brand": "intel",
+      "tags": [
+        "cpu",
+        "intel",
+        "p-cores",
+        "e-cores",
+        "hybrid",
+        "socket",
+        "lga1700",
+        "silicon",
+        "microarchitecture"
+      ],
+      "conflicts_with": [
+        "amd",
+        "ryzen",
+        "am4",
+        "am5",
+        "gpu",
+        "vram",
+        "radeon"
+      ],
+      "last_used_timestamp": "2026-11-03T20:01:06.093906+00:00",
+      "use_count": 1
+    },
+    {
+      "file": "am5_ryzen_socket.mp4",
+      "category": "hardware_benchmarks",
+      "component": "cpu",
+      "brand": "amd",
+      "tags": [
+        "cpu",
+        "amd",
+        "ryzen",
+        "am5",
+        "zen4",
+        "zen5",
+        "x3d",
+        "socket",
+        "ddr5"
+      ],
+      "conflicts_with": [
+        "intel",
+        "lga1700",
+        "core_ultra",
+        "nvidia",
+        "gpu",
+        "radeon"
+      ],
+      "last_used_timestamp": "2026-11-03T20:01:06.094150+00:00",
+      "use_count": 1
+    },
+    {
+      "file": "cyberpunk_4060_gameplay.mp4",
+      "category": "gaming_benchmarks",
+      "component": "gameplay",
+      "brand": "nvidia",
+      "tags": [
+        "gameplay",
+        "gaming",
+        "cyberpunk",
+        "4060",
+        "rtx",
+        "fps",
+        "1080p",
+        "benchmarks",
+        "dlss"
+      ],
+      "conflicts_with": [
+        "datacenter",
+        "submarino",
+        "euv",
+        "fibra",
+        "relatividad"
+      ],
+      "last_used_timestamp": "2026-11-03T20:12:45.127493+00:00",
+      "use_count": 1
+    },
+    {
+      "file": "abstract_neutral.mp4",
+      "category": "abstract",
+      "component": "neutral",
+      "brand": "none",
+      "tags": [
+        "abstract",
+        "neutral",
+        "dark",
+        "grid",
+        "minimal",
+        "engineering",
+        "technology"
+      ],
+      "conflicts_with": [],
+      "last_used_timestamp": null,
+      "use_count": 0
+    },
+    {
+      "file": "rtx_pcie_slot_macro.mp4",
+      "category": "gaming_benchmarks",
+      "component": "gpu",
+      "brand": "nvidia",
+      "tags": [
+        "gpu",
+        "nvidia",
+        "rtx",
+        "pcie",
+        "vram",
+        "bus",
+        "1440p",
+        "dlss",
+        "cuda",
+        "rendering"
+      ],
+      "conflicts_with": [
+        "cpu",
+        "intel",
+        "socket",
+        "ram",
+        "motherboard",
+        "am4",
+        "am5"
+      ],
+      "last_used_timestamp": "2026-11-03T20:01:06.093451+00:00",
+      "use_count": 1
+    }
+  ]
+}

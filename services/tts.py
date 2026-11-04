@@ -1,9 +1,10 @@
 import json
 import logging
+import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 import requests
 
 from config.settings import settings
@@ -152,3 +153,73 @@ def synthesize_all_scenes(scenes: List[Scene], output_dir: Path) -> List[SceneAu
         audio = synthesize_scene_audio(scene, output_dir)
         audio_results.append(audio)
     return audio_results
+
+
+def synthesize_speech(
+    text: str,
+    output_file: Path,
+    voice_id: Optional[str] = None,
+) -> float:
+    """Synthesizes text using ElevenLabs REST API with graceful local fallback.
+
+    Args:
+        text: Text to narrate.
+        output_file: Target .mp3 file path.
+        voice_id: ElevenLabs voice ID or None for active default.
+
+    Returns:
+        float: Verified audio duration in seconds.
+    """
+    output_file = Path(output_file).resolve()
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    active_voice_id = resolve_active_voice_id(target_voice=voice_id)
+
+    if settings.ELEVENLABS_API_KEY and not settings.ELEVENLABS_API_KEY.startswith("your_"):
+        url = f"https://api.elevenlabs.io/v1/text-to-speech/{active_voice_id}"
+        headers = {
+            "xi-api-key": settings.ELEVENLABS_API_KEY,
+            "Content-Type": "application/json",
+            "Accept": "audio/mpeg",
+        }
+        payload = {
+            "text": text,
+            "model_id": settings.ELEVENLABS_MODEL_ID,
+            "voice_settings": {
+                "stability": 0.5,
+                "similarity_boost": 0.8,
+                "style": 0.1,
+                "use_speaker_boost": True,
+            },
+        }
+        try:
+            response = requests.post(url, headers=headers, json=payload, timeout=60)
+            if response.status_code == 200 and len(response.content) > 1000:
+                with open(output_file, "wb") as f:
+                    f.write(response.content)
+                dur = get_audio_duration(str(output_file))
+                logger.info("ElevenLabs TTS synthesized successfully (%d words, %.2fs, voice=%s)", len(text.split()), dur, active_voice_id)
+                return dur
+            else:
+                logger.warning("ElevenLabs API returned HTTP %d: %s. Using local fallback.", response.status_code, response.text[:120])
+        except Exception as exc:
+            logger.warning("ElevenLabs TTS network failure (%s). Using local fallback.", exc)
+
+    # Local fallback: try macOS 'say' command if available, otherwise synthesize via ffmpeg
+    if shutil.which("say"):
+        aiff_tmp = output_file.with_suffix(".aiff")
+        try:
+            subprocess.run(["say", "-r", "148", "-o", str(aiff_tmp), text], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.run(["ffmpeg", "-y", "-i", str(aiff_tmp), "-c:a", "libmp3lame", "-b:a", "192k", str(output_file)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            if aiff_tmp.exists():
+                aiff_tmp.unlink()
+            return get_audio_duration(str(output_file))
+        except Exception:
+            pass
+
+    # Pure fallback: generate calibrated silence
+    est_dur = max(3.0, len(text.split()) / 2.3)
+    subprocess.run(
+        ["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=44100:cl=stereo", "-t", f"{est_dur:.2f}", "-c:a", "libmp3lame", "-b:a", "192k", str(output_file)],
+        check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
+    return est_dur

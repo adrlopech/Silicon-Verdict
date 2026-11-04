@@ -9,7 +9,13 @@ from google import genai
 from google.genai import types
 
 from config.settings import settings
-from core.pillars import WEEKLY_PILLARS, get_pillar_for_weekday, get_theme_description
+from core.pillars import (
+    WEEKLY_PILLARS,
+    get_category_for_theme,
+    get_pillar_for_weekday,
+    get_theme_description,
+    get_tone_for_weekday,
+)
 from core.schemas import (
     ChartData,
     Scene,
@@ -254,6 +260,10 @@ class DailyShortSpec:
     game_title: str
     voice_id: str
     voice_label: str
+    pillar_type: str = "technical"
+    category_key: str = "gpu_architecture"
+    tone: str = "technical"
+    preset: str = "liquid_glass"
 
 
 def get_next_theme_key(weekday_index: int, db_path: Optional[Path] = None) -> str:
@@ -319,6 +329,9 @@ def select_daily_short_spec(
     pillar = get_pillar_for_weekday(weekday_index)
     theme_key = get_next_theme_key(weekday_index, db_path=db_path)
     theme_description = get_theme_description(weekday_index, theme_key)
+    category_key = get_category_for_theme(weekday_index, theme_key)
+    pillar_type = pillar.pillar_type
+    tone = pillar_type
     game_title = select_game_for_weekday(weekday_index, db_path=db_path, ref_date=ref_date)
     voice_id = get_next_voice(db_path=db_path)
     voice_label = get_voice_label(voice_id)
@@ -332,6 +345,10 @@ def select_daily_short_spec(
         game_title=game_title,
         voice_id=voice_id,
         voice_label=voice_label,
+        pillar_type=pillar_type,
+        category_key=category_key,
+        tone=tone,
+        preset=getattr(pillar, "preset", "liquid_glass"),
     )
 
 
@@ -340,6 +357,12 @@ def get_emergency_tiktok_long_project(
     spec: Optional[DailyShortSpec] = None,
 ) -> TikTokLongProject:
     """Provides a deterministic 5-block vertical long project (~162 words, 62-66s) for TikTok Creator Rewards."""
+    cat = getattr(spec, "category_key", "")
+    preset = getattr(spec, "preset", "")
+    if cat == "tech_curiosities" or preset == "schematic_tech" or (topic and any(w in topic.lower() for w in ["luz", "datacenter", "cable", "submarino", "asml", "fibra"])):
+        from services.content_generator import get_emergency_schematic_tiktok_plan
+        return get_emergency_schematic_tiktok_plan(topic=topic, spec=spec)
+
     game = spec.game_title if spec else "Cyberpunk 2077"
     title_topic = topic or "Why 8GB VRAM is Officially Dead: The 1440p Verdict"
     logger.warning("Generating deterministic TikTok 5-act long project for '%s'", title_topic)
@@ -419,68 +442,5 @@ def generate_tiktok_long_plan(
     spec: Optional[DailyShortSpec] = None,
 ) -> TikTokLongProject:
     """Generates an authoritative 5-block vertical long video plan (61-68s, ~145-165 words) for TikTok Creator Rewards."""
-    logger.info("Generating TikTok 5-act long plan (Topic: %s | Spec: %s)...", topic, spec.day_name if spec else "None")
-    client = genai.Client(api_key=settings.GEMINI_API_KEY)
-
-    context_hints = ""
-    if spec:
-        context_hints = (
-            f"Daily Pillar: {spec.day_name} ({spec.pillar_title})\n"
-            f"Required Subtheme ({spec.theme_key}): '{spec.theme_description}'\n"
-            f"Mandatory Benchmark Game: '{spec.game_title}'\n"
-        )
-    if topic:
-        context_hints += f"Target Hardware Debate: '{topic}'\n"
-
-    system_instruction = (
-        "You are the Lead Hardware Telemetry Engineer & Content Director for 'Silicon Verdict'.\n"
-        "Generate a complete 5-act vertical video specification strictly calibrated for the TikTok Creator Rewards Program (>60s).\n\n"
-        "STRICT DURATION & WORD COUNT MANDATES (Total words MUST be between 145 and 165 words):\n"
-        "1. Act 1 [00:00 - 00:05] Technical Hook: Debunk a common myth or expose a counterintuitive silicon anomaly. "
-        "STRICTLY 12 to 16 words (~5s runtime).\n"
-        "2. Act 2 [00:05 - 00:20] Silicon Mechanism: Low-level architecture breakdown (bus width, memory controller saturation, "
-        "L2/L3 cache miss penalties, PCIe link latency). STRICTLY 35 to 42 words (~15s runtime).\n"
-        "3. Act 3 [00:20 - 00:45] Empirical Benchmark: PresentMon empirical telemetry citing exact Average FPS, 1% Lows, "
-        "frametime variance in milliseconds, and percentage difference. STRICTLY 55 to 65 words (~25s runtime).\n"
-        "4. Act 4 [00:45 - 00:58] The Golden Rule: Concrete, practical purchasing mandate for PC builders. "
-        "STRICTLY 30 to 35 words (~13s runtime).\n"
-        "5. Act 5 [00:58 - 00:65] Retention Closing: Highly polarizing community question for comments prompting debate between Option A and Option B. "
-        "STRICTLY 15 to 20 words (~7s runtime).\n\n"
-        "TONE: High-density, authoritative, empirical engineering English. ABSOLUTELY NO FILLER or generic intros."
-    )
-
-    prompt = (
-        f"Create an elite TikTok Creator Rewards long video script (61-68s, 5 acts).\n"
-        f"{context_hints}\n"
-        "Ensure aggregate narration words exceed 140 words (target: 145-165 words) so spoken duration exceeds 60.5 seconds."
-    )
-
-    for model_name in CANDIDATE_MODELS:
-        for attempt in range(2):
-            try:
-                logger.info("Requesting TikTok long plan via '%s' (attempt %d/2)...", model_name, attempt + 1)
-                response = client.models.generate_content(
-                    model=model_name,
-                    contents=prompt,
-                    config=types.GenerateContentConfig(
-                        system_instruction=system_instruction,
-                        response_mime_type="application/json",
-                        response_schema=TikTokLongProject,
-                        temperature=0.6,
-                    ),
-                )
-                project = TikTokLongProject.model_validate_json(response.text)
-                total_w = project.get_total_words()
-                logger.info("TikTok plan received (%s): %d total words across 5 acts", model_name, total_w)
-
-                if total_w < 140:
-                    logger.warning("Word count (%d) below 140 threshold for >60s monetization. Regenerating...", total_w)
-                    continue
-
-                return project
-            except Exception as exc:
-                logger.warning("Attempt on '%s' failed: %s", model_name, exc)
-                time.sleep(1)
-
-    logger.warning("Gemini AI models saturated. Deploying deterministic TikTok Creator Rewards plan.")
-    return get_emergency_tiktok_long_project(topic=topic, spec=spec)
+    from services.content_generator import generate_dynamic_tiktok_plan
+    return generate_dynamic_tiktok_plan(topic_override=topic, spec=spec)

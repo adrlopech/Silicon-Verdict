@@ -32,7 +32,7 @@ class Settings(BaseSettings):
 
     # Gemini AI
     GEMINI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-3.5-flash"
+    GEMINI_MODEL: str = "gemini-3.1-flash-lite"
 
     # ElevenLabs TTS & Voice Rotation Pool (Verified Active Voices)
     ELEVENLABS_API_KEY: str = ""
@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     ELEVENLABS_VOICE_1: str = "onwK4e9ZLuTAKqWW03F9"   # Voice 1: Daniel (Steady Broadcaster)
     ELEVENLABS_VOICE_2: str = "pNInz6obpgDQGcFmaJgB"   # Voice 2: Adam (Dominant, Firm)
     ELEVENLABS_VOICE_3: str = "TX3LPaxmHKxFdv7VOQHJ"   # Voice 3: Liam (Energetic, Social Media Creator)
-    ELEVENLABS_MODEL_ID: str = "eleven_multilingual_v2"
+    ELEVENLABS_MODEL_ID: str = "eleven_turbo_v2_5"
 
     # Media APIs (Pixabay preferred, Pexels optional fallback)
     PIXABAY_API_KEY: str = ""
@@ -49,19 +49,23 @@ class Settings(BaseSettings):
     # YouTube OAuth & Upload
     YOUTUBE_TOKEN_PATH: str = "token.json"
     YOUTUBE_CLIENT_SECRETS_PATH: str = "client_secrets.json"
-    YOUTUBE_PRIVACY_STATUS: str = "private"  # "public", "private", "unlisted"
+    YOUTUBE_PRIVACY_STATUS: str = "public"  # "public", "private", "unlisted"
     YOUTUBE_CATEGORY_ID: str = "28"  # 28: Science & Technology
 
     # TikTok Content Posting API Settings
     TIKTOK_ACCESS_TOKEN: str = ""
     TIKTOK_CLIENT_KEY: str = ""
     TIKTOK_CLIENT_SECRET: str = ""
-    TIKTOK_PRIVACY_LEVEL: str = "SELF_ONLY"  # "SELF_ONLY" (Draft), "PUBLIC_TO_EVERYONE"
+    TIKTOK_TOKEN_PATH: str = "data/tiktok_token.json"
+    TIKTOK_PRIVACY_LEVEL: str = "PUBLIC_TO_EVERYONE"  # "SELF_ONLY" (Draft), "PUBLIC_TO_EVERYONE"
 
     # Notifications (Discord or Telegram)
     DISCORD_WEBHOOK_URL: Optional[str] = None
     TELEGRAM_BOT_TOKEN: Optional[str] = None
     TELEGRAM_CHAT_ID: Optional[str] = None
+
+    # Scheduling & Execution
+    PUBLISH_TIME: str = "14:00"  # Target UTC or local execution time (HH:MM)
 
     # Video Rendering Settings
     VIDEO_FPS: int = 30
@@ -72,25 +76,52 @@ class Settings(BaseSettings):
     FONT_PATH: str = "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf"
 
     def resolve_token_path(self) -> Path:
-        """Resolves token.json location checking root first, then fallback directories."""
+        """Resolves token.json location checking data/ first, then root and tokens/."""
         p = Path(self.YOUTUBE_TOKEN_PATH)
         if not p.is_absolute():
             p = self.BASE_DIR / p
         if not p.is_file():
-            alt = self.BASE_DIR / "tokens" / "token.json"
-            if alt.is_file():
-                return alt
+            fallbacks = [
+                self.BASE_DIR / "data" / "token.json",
+                self.BASE_DIR / "token.json",
+                self.BASE_DIR / "tokens" / "token.json",
+            ]
+            for fb in fallbacks:
+                if fb.is_file():
+                    return fb
         return p
 
     def resolve_client_secrets_path(self) -> Path:
-        """Resolves client_secrets.json location checking root first, then fallbacks."""
+        """Resolves client_secrets.json location checking data/ first, then root and fallbacks."""
         p = Path(self.YOUTUBE_CLIENT_SECRETS_PATH)
         if not p.is_absolute():
             p = self.BASE_DIR / p
         if not p.is_file():
-            alt = self.BASE_DIR / "tokens" / "client_secret.json"
-            if alt.is_file():
-                return alt
+            fallbacks = [
+                self.BASE_DIR / "data" / "client_secrets.json",
+                self.BASE_DIR / "client_secrets.json",
+                self.BASE_DIR / "tokens" / "client_secret.json",
+            ]
+            for fb in fallbacks:
+                if fb.is_file():
+                    return fb
+        return p
+
+    def resolve_tiktok_token_path(self) -> Path:
+        """Resolves tiktok_token.json location checking data/ first, then root and tokens/."""
+        p = Path(self.TIKTOK_TOKEN_PATH)
+        if not p.is_absolute():
+            p = self.BASE_DIR / p
+        if not p.is_file():
+            alt1 = self.BASE_DIR / "data" / "tiktok_token.json"
+            if alt1.is_file():
+                return alt1
+            alt2 = self.BASE_DIR / "tiktok_token.json"
+            if alt2.is_file():
+                return alt2
+            alt3 = self.BASE_DIR / "tokens" / "tiktok_token.json"
+            if alt3.is_file():
+                return alt3
         return p
 
     def validate_required_keys(self) -> dict:

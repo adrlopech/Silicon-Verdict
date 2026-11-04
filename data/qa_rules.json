@@ -1,0 +1,55 @@
+{
+  "version": "1.0",
+  "phonetic_corrections": {
+    "Siliconvertingt": "Silicon Verdict",
+    "Siliconverdict": "Silicon Verdict",
+    "14 to 40 p": "1440p",
+    "14 to 40": "1440p",
+    "10 to 80 p": "1080p",
+    "Present -mont": "PresentMon",
+    "Present - mont": "PresentMon",
+    "Present mont": "PresentMon",
+    "PE Cores": "P-Cores",
+    "PE cores": "P-Cores",
+    "P cores": "P-Cores",
+    "E cores": "E-Cores",
+    "TB.": "TE VE.",
+    "TB": "TE VE",
+    "-STARVES": "STARVES",
+    "-RANGE": "RANGE"
+  },
+  "audio_rules": {
+    "max_clipping_threshold_db": -0.5,
+    "target_max_volume_db": -1.5,
+    "target_mean_volume_db": -17.0,
+    "music_ducking_gain_db": -22.0
+  },
+  "visual_rules": {
+    "min_metric_font_px": 96,
+    "max_subtitle_y": 1536,
+    "min_margin_v": 384
+  },
+  "retention_rules": {
+    "min_duration_sec": 60.0,
+    "max_duration_sec": 120.0,
+    "prohibit_midroll_subscribe_banner": true
+  },
+  "history_fixes_applied": [
+    {
+      "timestamp": "2026-11-03 19:56:27 UTC",
+      "video": "20261103_gps_relatividad.mp4",
+      "fixes": [
+        "Subtítulos corregidos en ASS (2 términos)",
+        "Vídeo máster re-renderizado con subtítulos corregidos",
+        "Metadatos .txt actualizados con correcciones ortográficas"
+      ],
+      "phonetic_added": [
+        "TB.",
+        "TB"
+      ]
+    }
+  ],
+  "ineffective_hook_patterns": [
+    "Baja retención inicial (43.5% abandono en T<3s): 'Arquitectura AM5 vs LGA1700: comparativa técnica'"
+  ]
+}

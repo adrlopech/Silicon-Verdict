@@ -1,4 +1,0 @@
-Why PCIe 5.0 GPUs Are a Waste of Money in 2026: Empirical Benchmark Telemetry
-AMD 3D V-Cache vs Intel Hybrid Cores: The Forensic Frame Pacing Verdict
-DDR5 Memory Latency Fallacy: Does CL28 Actually Fix 1% Lows in Modern Engines?
-The Real Cause of GPU VRM Degradation: High-Transient Spikes Under Continuous Load

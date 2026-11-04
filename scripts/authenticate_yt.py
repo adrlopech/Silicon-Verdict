@@ -20,12 +20,17 @@ logging.basicConfig(
 )
 logger = logging.getLogger("auth_yt")
 
-# Strict scope required for video and Shorts upload
-SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
+# Strict scopes required for video upload, playlist/metadata inspection, and analytics retention reports
+SCOPES = [
+    "https://www.googleapis.com/auth/youtube.upload",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/yt-analytics.readonly",
+]
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 CLIENT_SECRETS_FILE = BASE_DIR / "client_secrets.json"
-TOKEN_OUTPUT_FILE = BASE_DIR / "token.json"
+TOKEN_OUTPUT_FILE = BASE_DIR / "data" / "token.json"
+TOKEN_LEGACY_FILE = BASE_DIR / "token.json"
 
 
 def authenticate_local() -> None:
@@ -85,8 +90,12 @@ def authenticate_local() -> None:
         else:
             logger.info("Refresh token successfully acquired!")
 
-        # Serialize complete credentials to token.json
+        # Serialize complete credentials to data/token.json and token.json
+        TOKEN_OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
         with open(TOKEN_OUTPUT_FILE, "w", encoding="utf-8") as f:
+            f.write(credentials.to_json())
+
+        with open(TOKEN_LEGACY_FILE, "w", encoding="utf-8") as f:
             f.write(credentials.to_json())
 
         # Also sync to tokens/token.json if tokens directory exists
@@ -95,10 +104,10 @@ def authenticate_local() -> None:
             with open(tokens_dir / "token.json", "w", encoding="utf-8") as f:
                 f.write(credentials.to_json())
 
-        logger.info("SUCCESS: YouTube credentials saved to: %s", TOKEN_OUTPUT_FILE)
+        logger.info("SUCCESS: YouTube credentials saved to: %s and %s", TOKEN_OUTPUT_FILE, TOKEN_LEGACY_FILE)
         print("\n" + "=" * 80)
         print(f"[✓] SUCCESS! token.json generated at: {TOKEN_OUTPUT_FILE}")
-        print("Your pipeline is now 100% authorized for unattended YouTube uploads.")
+        print("Your pipeline is now 100% authorized for unattended YouTube uploads and YouTube Analytics reports.")
         print("=" * 80 + "\n")
 
     except Exception as exc:

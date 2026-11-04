@@ -50,6 +50,8 @@ def resolve_system_font(size: int, weight: str = "regular") -> ImageFont.FreeTyp
         "/System/Library/Fonts/SFNS.ttf",
         "/Library/Fonts/Arial Bold.ttf",
         "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
+        "/usr/share/fonts/truetype/custom/Inter-Bold.ttf",
+        "/usr/share/fonts/truetype/custom/Inter-Regular.ttf",
         "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
     ]
@@ -57,6 +59,7 @@ def resolve_system_font(size: int, weight: str = "regular") -> ImageFont.FreeTyp
         "/System/Library/Fonts/SFNS.ttf",
         "/Library/Fonts/Arial.ttf",
         "/System/Library/Fonts/Supplemental/Arial.ttf",
+        "/usr/share/fonts/truetype/custom/Inter-Regular.ttf",
         "/usr/share/fonts/truetype/freefont/FreeSans.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
     ]
