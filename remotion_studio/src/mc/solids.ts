@@ -42,6 +42,15 @@ const propSolids = (p: PropSpec): Solid[] => {
       return [{ box: rotBox(p.at[0], p.at[1], 0.5, 0.55, p.rotY ?? 0, 0, 0.05), y0: 0, y1: p.height, what: 'ladder' }];
     case 'door':
       return p.frame === false ? [] : [-1, 1].map((dx) => ({ box: rotBox(p.at[0], p.at[1], 0.5, 0.5, p.rotY ?? 0, dx, 0), y0: 0, y1: 3, what: 'door frame' }));
+    case 'stall':
+      return [
+        { box: rotBox(p.at[0], p.at[1], 1.0, 0.5, p.rotY ?? 0), y0: 0, y1: 1, what: 'stall counter' },
+        ...[-1.3, 1.3].map((dx) => ({ box: rotBox(p.at[0], p.at[1], 0.125, 0.125, p.rotY ?? 0, dx, 0.45), y0: 0, y1: 2.2, what: 'stall post' })),
+      ];
+    case 'library':
+      return [{ box: [p.at[0] - 1.5, p.at[1] - 0.5, p.at[0] + 1.5, p.at[1] + 0.5] as Box, y0: 0, y1: 2, what: 'library' }];
+    case 'house':
+      return [{ box: [p.at[0] - p.w / 2, p.at[1] - p.d / 2, p.at[0] + p.w / 2, p.at[1] + p.d / 2] as Box, y0: 0, y1: (p.h ?? 3) + 1.5, what: 'house' }];
     case 'vein':
       return p.cells.map(([y, z]) => ({ box: [p.x, z, p.x + 1, z + 1] as Box, y0: y, y1: y + 1, what: 'ore block' }));
   }

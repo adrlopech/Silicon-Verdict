@@ -14,7 +14,7 @@ import { lerpAngle, pos01, ramp, shortestDelta, sstep } from './core';
 import { Box, Vec2, planPath, segClear, uniqBoxes } from './collision';
 
 export type { Box, Vec2 };
-export type ActKind = 'mine' | 'attack' | 'reach' | 'wave' | 'use' | 'jump' | 'climb';
+export type ActKind = 'mine' | 'attack' | 'reach' | 'wave' | 'use' | 'jump' | 'climb' | 'cheer' | 'nod' | 'shake' | 'point' | 'read' | 'show';
 
 export type Step =
   | { t: 'wait'; frames: number }
@@ -81,7 +81,7 @@ export interface Track {
 }
 
 const angleTo = (to: number | Vec2, from: Vec2) => (typeof to === 'number' ? to : Math.atan2(to[0] - from[0], to[1] - from[1]));
-const DEFAULT_CYCLE: Record<ActKind, number> = { mine: 16, attack: 12, reach: 0, wave: 28, use: 0, jump: 0, climb: 0 };
+const DEFAULT_CYCLE: Record<ActKind, number> = { mine: 16, attack: 12, reach: 0, wave: 28, use: 0, jump: 0, climb: 0, cheer: 0, nod: 0, shake: 0, point: 0, read: 0, show: 0 };
 
 /** Rounds the corners of a polyline with quadratic curves, shrinking a corner (down to sharp) if the curve would cut into a solid. */
 const roundPath = (pts: Vec2[], r: number, boxes: Box[], rad: number): Vec2[] => {

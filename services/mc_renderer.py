@@ -46,13 +46,19 @@ def render_mc_video(story: McStory, output_video_path: Path, output_cover_path: 
     if voice_clips:  # narration over ducked game sounds, each line at its beat's start frame
         from services.mc_director import compile_script
         beats = compile_script(story.to_script())["beats"]
-        ins, parts, labels = ["-stream_loop", "-1", "-i", str(settings.BASE_DIR / "assets" / "audio" / "schematic_ambient.wav")], ["[0:a]volume=0.4[g]", "[1:a]volume=0.28,afade=t=in:d=1.5[bed]"], ["[g]", "[bed]"]
+        music = settings.BASE_DIR / "assets" / "audio" / "mc_bed.wav"  # original loop from scripts/make_mc_music.py; the old ambient bed is the fallback
+        bed = music if music.is_file() else settings.BASE_DIR / "assets" / "audio" / "schematic_ambient.wav"
+        ins = ["-stream_loop", "-1", "-i", str(bed)]
+        parts, voices = ["[0:a]volume=0.4[g]", "[1:a]volume=0.5,afade=t=in:d=1.5[bed0]"], []
         for n, (bi, clip, _d) in enumerate(voice_clips, start=2):
             ins += ["-i", str(clip)]
             ms = int(beats[bi]["from"] / FPS * 1000) + 120
             parts.append(f"[{n}:a]adelay={ms}|{ms},volume=1.6[v{n}]")
-            labels.append(f"[v{n}]")
-        parts.append("".join(labels) + f"amix=inputs={len(labels)}:duration=first:normalize=0,loudnorm=I=-14:TP=-2:LRA=11[a]")
+            voices.append(f"[v{n}]")
+        # the music ducks under the narration (side-chain compression), then everything is mixed and normalised
+        parts.append("".join(voices) + f"amix=inputs={len(voices)}:duration=longest:normalize=0,asplit=2[vox1][vox2]")
+        parts.append("[bed0][vox1]sidechaincompress=threshold=0.02:ratio=10:attack=15:release=450[bed]")
+        parts.append("[g][bed][vox2]amix=inputs=3:duration=first:normalize=0,loudnorm=I=-14:TP=-2:LRA=11[a]")
         mux = [ff, "-y", "-i", str(raw), *ins, "-filter_complex", ";".join(parts), "-map", "0:v", "-map", "[a]", "-ar", "48000", "-t", f"{beats[-1]['to'] / FPS:.2f}",
                "-c:v", "libx264", "-preset", "medium", "-crf", "24", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(output_video_path)]
     else:

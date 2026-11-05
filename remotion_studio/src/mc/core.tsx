@@ -43,11 +43,12 @@ export const BASE_TEXTURES = [
   'grass_top', 'grass_side', 'dirt', 'stone', 'dirt_path_top', 'dirt_path_side', 'oak_planks', 'oak_log', 'oak_log_top', 'leaves',
   'coal_ore', 'iron_ore', 'gold_ore', 'redstone_ore', 'lapis_ore', 'diamond_ore', 'torch', 'chest', 'sign', 'skin', 'widgets',
   'item_diamond_pickaxe', 'item_iron_pickaxe', 'item_iron_sword', 'item_coal', 'item_raw_iron', 'item_gold_ingot',
-  'item_redstone', 'item_lapis_lazuli', 'item_diamond', 'item_apple', 'item_stick',
+  'item_redstone', 'item_lapis_lazuli', 'item_diamond', 'item_apple', 'item_stick', 'item_emerald', 'item_bread', 'item_diamond_sword', 'item_wheat',
+  'bookshelf', 'bookshelf_empty', 'item_book', 'item_writable_book', 'item_paper', 'cobblestone', 'red_wool', 'white_wool', 'barrel_side', 'barrel_top', 'hay_block_side', 'crafting_table_front',
   'clouds', 'icons', 'plant_grass', 'plant_poppy', 'plant_dandelion', 'plant_azure_bluet', 'plant_oxeye_daisy',
   'destroy_0', 'destroy_1', 'destroy_2', 'destroy_3', 'destroy_4', 'destroy_5', 'destroy_6', 'destroy_7', 'destroy_8', 'destroy_9',
   'mob_zombie', 'mob_skeleton', 'mob_creeper', 'mob_pig', 'mob_cow', 'mob_chicken',
-  'mob_sheep', 'mob_sheep_fur', 'mob_spider', 'mob_cave_spider', 'mob_villager',
+  'mob_sheep', 'mob_sheep_fur', 'mob_spider', 'mob_cave_spider', 'mob_villager', 'mob_villager_farmer', 'mob_villager_librarian', 'mob_villager_toolsmith', 'mob_villager_cleric', 'mob_villager_fisherman', 'mob_villager_mason', 'mob_villager_cartographer', 'mob_villager_armorer', 'skin_alex', 'skin_ari', 'skin_efe', 'skin_kai', 'skin_makena', 'skin_noor', 'skin_sunny', 'skin_zuri', 'skin_tuxduck', 'skin_shadow', 'skin_duck', 'skin_smiley', 'skin_potato', 'skin_goth',
   'ladder', 'water_still', 'door_oak_lower', 'door_oak_upper',
 ];
 export type Imgs = Record<string, HTMLImageElement>;
@@ -113,17 +114,27 @@ export const SUN = (() => {
   const l = Math.hypot(...v);
   return v.map((a) => a / l);
 })();
-const AMBIENT = [0.6, 0.75, 1.0];
-const SUN_COLOR = [1.0, 0.9, 0.8];
+/** Time of day: colours of the ambient light, the sun/moon, the sky and fog, and the tonemapping exposure. */
+export type TimeOfDay = 'day' | 'dusk' | 'night';
+export const TIMES: Record<TimeOfDay, { ambient: number[]; sun: number[]; sunK: number; sky: string; fog: string; exposure: number }> = {
+  day: { ambient: [0.6, 0.75, 1.0], sun: [1.0, 0.9, 0.8], sunK: 1, sky: '#78a7ff', fog: '#c0d8ff', exposure: 0.8 },
+  dusk: { ambient: [0.78, 0.62, 0.8], sun: [1.0, 0.56, 0.3], sunK: 0.8, sky: '#e0875f', fog: '#e6a283', exposure: 0.85 },
+  night: { ambient: [0.36, 0.46, 0.85], sun: [0.5, 0.6, 0.95], sunK: 0.28, sky: '#0b1433', fog: '#0f1b3d', exposure: 1.05 },
+};
+let timeKey: TimeOfDay = 'day';
+/** Set before the scene renders: materials and world vertex colours bake the light of the time of day (their caches are keyed by it). */
+export const setTimeOfDay = (t?: TimeOfDay) => { timeKey = t && TIMES[t] ? t : 'day'; };
+export const lightKey = () => timeKey;
 const FACE_N: Record<string, number[]> = { px: [1, 0, 0], nx: [-1, 0, 0], py: [0, 1, 0], ny: [0, -1, 0], pz: [0, 0, 1], nz: [0, 0, -1] };
 /** Cool ambient + warm sun; `ao` darkens corners, `sunAmt` is 0 inside a shadow. */
 export const faceLight = (n: string, ao = 1, sunAmt = 1): [number, number, number] => {
   const N = FACE_N[n];
   const ndl = Math.max(0, N[0] * SUN[0] + N[1] * SUN[1] + N[2] * SUN[2]);
   const dir = n === 'py' ? 1 : n === 'ny' ? 0.55 : 0.82;
+  const T = TIMES[timeKey];
   const a = 0.68 * ao * (0.7 + 0.3 * dir);
-  const sn = 0.72 * ndl * sunAmt;
-  return [AMBIENT[0] * a + SUN_COLOR[0] * sn, AMBIENT[1] * a + SUN_COLOR[1] * sn, AMBIENT[2] * a + SUN_COLOR[2] * sn];
+  const sn = 0.72 * ndl * sunAmt * T.sunK;
+  return [T.ambient[0] * a + T.sun[0] * sn, T.ambient[1] * a + T.sun[1] * sn, T.ambient[2] * a + T.sun[2] * sn];
 };
 
 /* ---------------- textured boxes (entities, ore blocks, chest, signs) ---------------- */
@@ -140,7 +151,7 @@ const boxRegions = (u: number, v: number, w: number, h: number, d: number): Reco
 /** Materials with the per-face light baked in, shared by every box that uses the same texture (and tint). */
 const matCache = new Map<string, THREE.MeshBasicMaterial[]>();
 export const shadedMats = (tex: THREE.Texture, alphaTest = 0, tint?: [number, number, number]) => {
-  const key = `${tex.uuid}|${alphaTest}|${tint?.join(',') ?? ''}`;
+  const key = `${timeKey}|${tex.uuid}|${alphaTest}|${tint?.join(',') ?? ''}`;
   let m = matCache.get(key);
   if (!m) {
     m = FACE_ORDER.map((f) => {

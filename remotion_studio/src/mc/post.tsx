@@ -23,8 +23,8 @@ class LumaTonemap extends Effect {
   }
 }
 /** `focus` = world distance from the camera to the subject; `bokeh` = blur strength (0 disables depth of field, like the animated trailers use ~2). */
-export const Post: React.FC<{ focus?: number; bokeh?: number }> = ({ focus = 8, bokeh = 0 }) => {
-  const tone = useMemo(() => new LumaTonemap(0.8, 1.08), []);
+export const Post: React.FC<{ focus?: number; bokeh?: number; exposure?: number }> = ({ focus = 8, bokeh = 0, exposure = 0.8 }) => {
+  const tone = useMemo(() => new LumaTonemap(exposure, 1.08), [exposure]);
   return (
     <EffectComposer multisampling={0}>
       {bokeh > 0 ? <DepthOfField worldFocusDistance={focus} worldFocusRange={Math.max(2.2, focus * 0.5)} bokehScale={bokeh} /> : <></>}

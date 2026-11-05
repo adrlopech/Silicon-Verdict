@@ -73,10 +73,11 @@ python3 scripts/caption_game_media.py     # vision-model description of every it
 python3 scripts/build_game_facts.py       # Wikipedia + Steam source dossier per game (paced, cached)
 ```
 
-Minecraft videos also need the game assets extracted once (see `docs/minecraft_assets.md`):
+Minecraft videos also need the game assets extracted once (see `docs/minecraft_assets.md`) and the original background music generated once:
 
 ```bash
-python3 scripts/extract_minecraft_assets.py
+python3 scripts/extract_minecraft_assets.py   # textures, sounds, skins (also converts the extra skins in assets/skins/)
+python3 scripts/make_mc_music.py              # writes assets/audio/mc_bed.wav (without it the old ambient bed is used)
 ```
 
 ### Everyday commands
@@ -93,6 +94,30 @@ python3 scripts/extract_minecraft_assets.py
 ```
 
 `GEMINI.md` documents the chat triggers (`genera`, `corregir`, `limpieza`, `help`).
+
+## Minecraft explainers (series 5)
+
+A computing concept acted out in a small Minecraft village, ~64 s, vertical, narrated, always from a brand-new Gemini script. Gemini writes an `McStory`
+(`core/schemas.py`); the director (`remotion_studio/src/mc/director.ts`) compiles it into layout, choreography, camera, props and sounds. Full reference: `docs/minecraft_video_kit.md`.
+
+```bash
+.venv/bin/python main.py --series minecraft --topic "what a CPU cache is" --export-only
+.venv/bin/python scripts/test_mc_director.py            # director tests (incl. "the camera keeps the hero in frame")
+node scripts/mc_compile.mjs script.json                 # compile a script and print errors, warnings, quality notes and camera framing
+```
+
+* **Stations** (the world the script is built from): `sign`, `mine`, `chest`, `pond`, `door`, `ladder`, `pen`, plus **`stall`** (village market stall with a shopkeeper, optional counter items,
+  per-beat `stock` that pops new items in with sparkles and `tag` value plaques with the old value struck through) and **`library`** (a wall of bookshelves, always full of books).
+  Village houses are added in the background automatically. Every station must be used by an action: unused stations are rejected, so nothing in the video is decorative.
+* **Actions with a purpose**: besides walking, mining, opening and swimming there are `give` and `fetch` (take an item from one station and hand it over at another: it flies in an arc),
+  `show`, `search`, `read`, `take_book` / `put_book`, `point`, `pace`, `cheer`. A beat the script leaves empty gets an action chosen from the meaning of its line and from what exists in the world;
+  long gaps are filled with reading, a short walk or looking around, so the hero is never frozen.
+* **Cast**: extra characters with `cast.skin`: nine vanilla player skins, six character skins from NameMC (`assets/skins/namemc/`, see its `SOURCES.md`) and eight villager professions.
+* **Look**: `time: day | dusk | night` (night adds torches with warm light that also reaches the actors), chunked subtitles of 2-3 words that follow the narration word by word
+  (ElevenLabs timestamps), a giant pixel-font concept title, held items drawn at their real size.
+* **Camera**: planned from the real animation tracks; whenever the hero moves, the shot follows him, so he never leaves the frame (`low` is an extra low-angle close-up).
+* **Audio**: game sounds + narration + an original music loop (`scripts/make_mc_music.py`) that ducks under the voice. The call to action is voiced once.
+* **Assets are not in git**: textures, sounds and skins are generated or downloaded locally (`remotion_studio/public/` and `*.png` are ignored). The NameMC skins are creations of their authors: check their terms before using them in monetised videos.
 
 ## Motion Graphics (series 6)
 
@@ -164,8 +189,9 @@ A demo of all four: `remotion_studio/src/motion/sample_formats.json`. `easter` i
 | `services/gemini_client.py` | The single LLM entry point: Gemini + Groq + Cloudflare fallbacks, cooldowns, batching, image input |
 | `engine/` | Chart and legacy rendering engine |
 | `remotion_studio/` | Remotion project (React): compositions (`MotionGraphic`, mascot story, Minecraft kit, hardware main scene) |
-| `scripts/` | Maintenance (cleanup, bank refill, footage fetch/caption, facts), `render_motion.mjs`, authentication, scheduler, analytics, tests |
+| `scripts/` | Maintenance (cleanup, bank refill, footage fetch/caption, facts), `render_motion.mjs`, Minecraft assets / music / director tests, authentication, scheduler, analytics |
 | `docs/` | Design notes (Minecraft kit and assets) |
+| `assets/` | Fonts, audio beds and effects, B-roll manifest, `skins/` (extra Minecraft skins with their sources) |
 | `data/` | History database, quality rules, `game_facts/` and `gemini_state.json` caches (private data is git-ignored) |
 
 ## Privacy & platform compliance

@@ -40,7 +40,8 @@ export const humanoidPose = (T: Track, f: number, o: HumanoidOpts = {}): Pose =>
   const mineAmt = T.amt('mine', f), attackAmt = T.amt('attack', f);
   const m = Math.max(mineAmt, attackAmt);
   const swingKind = attackAmt > mineAmt ? 'attack' : 'mine';
-  const r = T.amt('reach', f), wv = T.amt('wave', f), use = T.amt('use', f);
+  const r = T.amt('reach', f), wv = T.amt('wave', f), use = T.amt('use', f), ch = T.amt('cheer', f);
+  const nd = T.amt('nod', f), sk = T.amt('shake', f), pt = T.amt('point', f), rd = T.amt('read', f), shw = T.amt('show', f);
   const sw = T.swim(f), cl = T.amt('climb', f);
   const jp = T.amt('jump', f) * Math.sin(Math.PI * T.prog('jump', f)); // 0..1 over the air time
 
@@ -93,6 +94,34 @@ export const humanoidPose = (T: Track, f: number, o: HumanoidOpts = {}): Pose =>
     rax = rax * (1 - wv) + -2.7 * wv;
     raz = raz * (1 - wv) + (-0.25 + Math.sin(f * 0.34) * 0.45) * wv;
     headRy += -0.12 * wv; bodyRx -= 0.03 * wv;
+  }
+  if (ch > 0.001) { // cheer: both arms up, waving and bouncing a little
+    const sw2 = Math.sin(f * 0.42) * 0.28;
+    rax = rax * (1 - ch) + (-2.95 + sw2) * ch;
+    lax = lax * (1 - ch) + (-2.95 - sw2) * ch;
+    raz = raz * (1 - ch) + -0.22 * ch;
+    laz = laz * (1 - ch) + 0.22 * ch;
+    headRx += -0.16 * ch; bodyRx -= 0.05 * ch;
+  }
+  if (nd > 0.001) headRx += Math.sin(f * 0.55) * 0.32 * nd; // nod yes
+  if (sk > 0.001) headRy += Math.sin(f * 0.62) * 0.55 * sk; // shake no
+  if (pt > 0.001) { // point at something: right arm straight out
+    rax = rax * (1 - pt) + -1.58 * pt;
+    raz = raz * (1 - pt) + -0.08 * pt;
+    headRy += -0.1 * pt; bodyRx -= 0.02 * pt;
+  }
+  if (shw > 0.001) { // show: hold the item up in front of him, towards the viewer
+    rax = rax * (1 - shw) + (-1.95 + Math.sin(f * 0.12) * 0.04) * shw;
+    raz = raz * (1 - shw) + -0.1 * shw;
+    lax = lax * (1 - shw) + -0.6 * shw;
+    headRx += -0.08 * shw; bodyRx -= 0.04 * shw;
+  }
+  if (rd > 0.001) { // read: both hands up in front, head bowed over the book
+    rax = rax * (1 - rd) + (-1.3 + Math.sin(f * 0.15) * 0.03) * rd;
+    lax = lax * (1 - rd) + -1.15 * rd;
+    laz = laz * (1 - rd) + 0.3 * rd;
+    raz = raz * (1 - rd) + -0.12 * rd;
+    headRx += 0.42 * rd; bodyRx += 0.05 * rd;
   }
   if (use > 0.001) { // eat / drink: hand to the mouth, chewing bob
     rax = rax * (1 - use) + (-1.45 + Math.sin(f * 0.6) * 0.07) * use;
