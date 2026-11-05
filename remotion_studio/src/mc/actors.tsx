@@ -21,6 +21,12 @@ const Shadow: React.FC<{ r: number; track: Track; f: number }> = ({ r, track, f 
   );
 };
 
+/** Size of the item in the hand: tools are drawn big, small items (books, ingots, gems, food) much smaller. */
+const HELD_SCALE: Record<string, number> = { item_book: 0.42, item_writable_book: 0.42, item_paper: 0.42, item_emerald: 0.5, item_diamond: 0.5, item_gold_ingot: 0.5, item_redstone: 0.5, item_coal: 0.5, item_bread: 0.55, item_apple: 0.55, item_wheat: 0.55 };
+
+/** Warm colour multiplier for an actor near torches (null = none). `warm` is quantised by the caller so the shared material cache stays small. */
+const warmTint = (w: number): [number, number, number] | undefined => (w > 0.01 ? [1 + w * 1.0, 1 + w * 0.6, 1 + w * 0.15] : undefined);
+
 /* ------------------------------ humanoids ------------------------------ */
 
 export const Humanoid: React.FC<{
@@ -30,11 +36,12 @@ export const Humanoid: React.FC<{
   skin?: string; // texture name (player: 'skin')
   hand?: string; // item sprite held in the right hand, e.g. 'item_diamond_pickaxe'
   sneak?: boolean;
-}> = ({ track, f, kind = 'player', skin, hand, sneak }) => {
+  warm?: number; // 0..~0.6: torch light reaching this actor (warm colour boost)
+}> = ({ track, f, kind = 'player', skin, hand, sneak, warm = 0 }) => {
   const P = humanoidPose(track, f, { hold: kind === 'player' && !!hand, armsForward: kind === 'zombie', sneak, kind });
   const i = track.at(f);
   const U1 = KINDS[kind].unit; // players render at 0.9375, zombies and skeletons at full size
-  const tint = track.hurt(f) > 0.05 ? HURT_TINT : undefined;
+  const tint = track.hurt(f) > 0.05 ? HURT_TINT : warmTint(warm);
   const tex = skin ?? (kind === 'player' ? 'skin' : `mob_${kind}`);
   const thin = kind === 'skeleton';
   const ts: [number, number] = kind === 'skeleton' ? [64, 32] : [64, 64];
@@ -53,7 +60,7 @@ export const Humanoid: React.FC<{
         {overlays && <TexBox {...T(right ? [40, 32] : [48, 48], limb, [dx, -4, 0], 0.5)} />}
         {right && hand && (
           <group position={[-U1, -9 * U1, U1]} rotation={[-0.55, 0, 0]}>
-            <Sprite3D name={hand} scale={0.95} position={[0, -0.295, 0.04]} rotation={[0, Math.PI / 2, (-3 * Math.PI) / 4]} />
+            <Sprite3D name={hand} scale={HELD_SCALE[hand] ?? 0.95} position={[0, HELD_SCALE[hand] ? -0.2 : -0.295, 0.04]} rotation={[0, Math.PI / 2, (-3 * Math.PI) / 4]} />
           </group>
         )}
       </group>
@@ -141,7 +148,7 @@ const MOBS: Record<MobKind, { parts: PartDef[]; tex: [number, number]; shadow: n
   villager: {
     tex: [64, 64], shadow: 0.45,
     parts: [
-      { id: 'head', pivot: [0, 0, 0], boxes: [{ origin: [0, 0], box: [-4, -10, -4, 8, 10, 8] }, { origin: [24, 0], box: [-1, -3, -6, 2, 4, 2] }] },
+      { id: 'head', pivot: [0, 0, 0], boxes: [{ origin: [0, 0], box: [-4, -10, -4, 8, 10, 8] }, { origin: [32, 0], box: [-4, -10, -4, 8, 10, 8], inflate: 0.5 }, { origin: [24, 0], box: [-1, -3, -6, 2, 4, 2] }] },
       { id: 'body', pivot: [0, 0, 0], boxes: [{ origin: [16, 20], box: [-4, 0, -3, 8, 12, 6] }, { origin: [0, 38], box: [-4, 0, -3, 8, 18, 6], inflate: 1.0 }] },
       { id: 'arms', pivot: [0, 3, -1], rot: [-0.75, 0, 0], boxes: [{ origin: [44, 22], box: [-8, -2, -2, 4, 8, 4] }, { origin: [44, 22], box: [4, -2, -2, 4, 8, 4], mirror: true }, { origin: [40, 38], box: [-4, 2, -2, 8, 4, 4] }] },
       { id: 'l0', pivot: [-2, 12, 0], boxes: [{ origin: [0, 22], box: [-2, 0, -2, 4, 12, 4] }] },
@@ -180,13 +187,13 @@ const MOBS: Record<MobKind, { parts: PartDef[]; tex: [number, number]; shadow: n
   },
 };
 
-export const Mob: React.FC<{ track: Track; f: number; kind: MobKind; skin?: string; swell?: number }> = ({ track, f, kind, skin, swell = 0 }) => {
+export const Mob: React.FC<{ track: Track; f: number; kind: MobKind; skin?: string; swell?: number; warm?: number }> = ({ track, f, kind, skin, swell = 0, warm = 0 }) => {
   const def = kind === 'cave_spider' ? { ...MOBS.spider, scale: 0.7, texName: 'mob_cave_spider' } : MOBS[kind];
   const pose: MobPose =
     kind === 'chicken' ? chickenPose(track, f) : kind === 'villager' ? villagerPose(track, f) : kind === 'spider' || kind === 'cave_spider' ? spiderPose(track, f) : quadrupedPose(track, f, kind);
   const i = track.at(f);
   const U1 = KINDS[kind === 'cave_spider' ? 'spider' : kind].unit; // villagers render at 0.9375, other mobs at 1 px = 1/16 block
-  const tint = track.hurt(f) > 0.05 ? HURT_TINT : undefined;
+  const tint = track.hurt(f) > 0.05 ? HURT_TINT : warmTint(warm);
   const tex = skin ?? def.texName ?? `mob_${kind}`;
   const angle = (id: string): Rot => {
     if (id === 'head') return pose.head;

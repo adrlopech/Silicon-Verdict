@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, PrivateAttr
 
 
 class ChartData(BaseModel):
@@ -273,29 +273,42 @@ class StoryProject(BaseModel):
 
 class McAction(BaseModel):
     """One thing an actor does inside a beat (see remotion_studio/src/mc/director.ts)."""
-    act: str = Field(..., description="go, sprint, mine, open_chest, swim, open_door, climb, wave, jump, use, attack, look, wait")
+    act: str = Field(..., description="go, sprint, mine, open_chest, swim, open_door, climb, wave, jump, use, attack, look, wait, cheer, give, point, read, pace, take_book, put_book, fetch, show, search")
     actor: Optional[str] = Field(default=None, description="Actor id; omit for the hero (steve)")
     target: Optional[str] = Field(default=None, description="Station id (go/mine/open_chest/swim/open_door/climb/attack) or station/actor id (look)")
-    seconds: Optional[float] = Field(default=None, description="Duration for wave/use/attack/wait")
+    seconds: Optional[float] = Field(default=None, description="Duration for wave/use/attack/wait/cheer")
+    to: Optional[str] = Field(default=None, description="fetch: station or actor id where the item is brought; target = where it is taken from")
+    item: Optional[str] = Field(default=None, description="give/fetch/show: item handed over (item_emerald, item_diamond, item_gold_ingot, item_bread, item_redstone...); target = station or actor id")
     swings: Optional[int] = Field(default=None, description="mine: blocks to break, 1-6")
     fast: Optional[bool] = Field(default=None, description="mine: faster swings")
+
+
+class McTag(BaseModel):
+    now: str = Field(..., description="New value shown on the stall plaque, 1-12 characters, e.g. '0.1 ms'")
+    was: Optional[str] = Field(default=None, description="Old value, struck through, 1-12 characters, e.g. '10 ms'")
+    icon: Optional[str] = Field(default=None, description="Optional item icon: item_emerald, item_bread, item_diamond, item_gold_ingot...")
 
 
 class McBeat(BaseModel):
     text: str = Field(..., description="On-screen subtitle, at most 60 characters")
     hl: Optional[str] = Field(default=None, description="One word of the text to highlight")
     seconds: Optional[float] = Field(default=None, description="Minimum on-screen seconds")
-    shot: Optional[str] = Field(default=None, description="Camera hint: sign, close, orbit, wide, follow, pan")
+    shot: Optional[str] = Field(default=None, description="Camera hint: sign, close, low, orbit, wide, follow, pan")
     focus: Optional[str] = Field(default=None, description="Station or actor id the camera looks at")
     actions: List[McAction] = Field(default_factory=list)
     sound: Optional[str] = Field(default=None, description="Optional Minecraft sound event, e.g. entity.pig.ambient")
+    stock: List[str] = Field(default_factory=list, description="Needs a stall: from this beat the counter shows these items (max 6); new ones pop in with sparkles, e.g. copying data to the cache")
+    tag: Optional[McTag] = Field(default=None, description="Needs a stall: from this beat a plaque shows the old value struck through and the new one")
+    stall: Optional[str] = Field(default=None, description="Stall station id for stock/tag (default: the first stall)")
 
 
 class McStation(BaseModel):
     id: str = Field(..., description="Short lowercase slug, e.g. 'mina'")
-    type: str = Field(..., description="sign, mine, chest, pond, door, ladder, pen")
+    type: str = Field(..., description="sign, mine, chest, pond, door, ladder, pen, stall, library")
     label: List[str] = Field(default_factory=list, description="Sign text, up to 4 lines of at most 12 characters")
     ores: List[str] = Field(default_factory=list, description="mine: coal, iron, gold, redstone, lapis, diamond")
+    keeper: Optional[str] = Field(default=None, description="stall: shopkeeper villager profession (farmer, librarian, toolsmith, cleric, fisherman, mason, cartographer, armorer)")
+    items: List[str] = Field(default_factory=list, description="stall: up to 4 counter items: item_emerald, item_bread, item_diamond, item_gold_ingot, item_diamond_sword, item_redstone, item_apple, item_coal, item_wheat, item_book, item_paper")
     kinds: List[str] = Field(default_factory=list, description="pen: pig, cow, chicken, sheep, villager, spider, zombie, skeleton, creeper")
     gap: Optional[float] = Field(default=None, description="Free blocks before the station (default 8)")
 
@@ -304,6 +317,7 @@ class McCast(BaseModel):
     id: str
     kind: str = Field(..., description="player, zombie, skeleton, villager, pig, cow, chicken, sheep, creeper, spider")
     at: Optional[str] = None
+    skin: Optional[str] = Field(default=None, description="player: steve, alex, ari, efe, kai, makena, noor, sunny, zuri, tuxduck (duck in a tuxedo), shadow (dark hooded figure), duck, smiley (yellow smiley person), potato (potato man), goth (grey-haired goth girl); villager: farmer, librarian, toolsmith, cleric, fisherman, mason, cartographer, armorer")
 
 
 class McInventory(BaseModel):
@@ -324,6 +338,7 @@ class McStory(BaseModel):
     screen_title: str = Field(..., description="On-screen title, uppercase, at most 28 characters")
     cta: str = Field(..., description="Closing call to action, uppercase, at most 32 characters")
     seconds: float = Field(default=64.0)
+    time: str = Field(default="day", description="Time of day: day, dusk or night (night/dusk add torches by signs and stalls)")
     stations: List[McStation]
     cast: List[McCast] = Field(default_factory=list)
     beats: List[McBeat]
@@ -331,6 +346,7 @@ class McStory(BaseModel):
     is_fallback: bool = Field(default=False)
     gemini_input_tokens: int = Field(default=0)
     gemini_output_tokens: int = Field(default=0)
+    _word_times: dict = PrivateAttr(default_factory=dict)  # beat index -> [[start, end], ...] seconds from the start of its narration clip (not part of the Gemini schema)
 
     @property
     def full_script(self) -> str:
@@ -343,9 +359,14 @@ class McStory(BaseModel):
         """The JSON the Remotion composition McStory receives."""
         s = {
             "id": self.script_id, "title": self.screen_title, "cta": self.cta, "seconds": self.seconds,
+            "time": self.time if self.time in ("day", "dusk", "night") else "day",
             "stations": [x.model_dump(exclude_none=True, exclude_defaults=True) | {"id": x.id, "type": x.type} for x in self.stations],
             "cast": [c.model_dump(exclude_none=True) for c in self.cast],
-            "beats": [b.model_dump(exclude_none=True, exclude_defaults=True) | {"text": b.text} for b in self.beats],
+            "beats": [
+                b.model_dump(exclude_none=True, exclude_defaults=True) | {"text": b.text}
+                | ({"words": [{"s": w[0], "e": w[1]} for w in self._word_times[i]]} if self._word_times.get(i) else {})
+                for i, b in enumerate(self.beats)
+            ],
         }
         if self.inventory and (self.inventory.items or self.inventory.grow_at_beat is not None):
             s["inventory"] = self.inventory.model_dump(exclude_none=True, exclude_defaults=True)

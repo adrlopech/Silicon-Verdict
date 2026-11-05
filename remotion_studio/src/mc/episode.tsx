@@ -11,17 +11,17 @@ import * as THREE from 'three';
 import { Humanoid, Mob } from './actors';
 import { ActorPlan, Track, finishTrack, planTrack } from './choreo';
 import { Body, Box, Solid, applyHits, inBox, minGap, separate, uniqBoxes } from './collision';
-import { AssetsCtx, PIXEL, SoundMapCtx, clamp, shortestDelta, sstep, useAssets } from './core';
+import { AssetsCtx, PIXEL, SoundMapCtx, Sprite3D, TIMES, setTimeOfDay, clamp, shortestDelta, sstep, useAssets } from './core';
 import { ActorKind, KINDS, isHumanoid } from './kinds';
 import { blockingBoxes, episodeSolids, planningSolids } from './solids';
 import { CUT_FRAMES, Rig, Shot, cameraAt, cutIntensity } from './camera';
-import { Hotbar, Subtitle } from './hud';
+import { BigTitle, Hotbar, Subtitle } from './hud';
 import { Post } from './post';
-import { Chest, Door, Ladder, ORE_ITEM, PropSpec, SignPost, Vein, veinBreaks } from './props';
+import { Burst, Chest, Door, House, Ladder, Library, ORE_ITEM, PropSpec, SignPost, Stall, Vein, veinBreaks } from './props';
 import { SoundEvent, Sounds } from './sfx';
-import { Clouds, Plants, SunShadow, Water, World, WorldSpec } from './world';
+import { Clouds, Plants, SunShadow, Torches, Water, World, WorldSpec } from './world';
 
-export interface Beat { from: number; to: number; text: string; hl?: string }
+export interface Beat { from: number; to: number; text: string; hl?: string; words?: { s: number; e: number }[] } // words: start/end frame of each word relative to `from` (narration timing)
 export type { ActorKind };
 export interface ActorSpec {
   id: string;
@@ -33,6 +33,7 @@ export interface ActorSpec {
   priority?: number; // who gives way on contact (default from kinds.ts: player 3, other humanoids/villager 2, mobs 1)
   plan: ActorPlan;
 }
+export interface Transfer { f0: number; f1: number; from: string; to: [number, number]; item: string }
 export interface HotbarSpec {
   base: string[]; // initial items (texture names), slot 0 is selected
   row2At?: number; // frame when the second row appears ("bigger inventory")
@@ -51,6 +52,7 @@ export interface EpisodeSpec {
   hotbar?: HotbarSpec;
   sounds?: SoundEvent[]; // extra sounds (mob ambience, UI...)
   surface?: string; // footstep surface for players: 'grass' (default), 'stone', 'sand', 'gravel', 'wood', 'snow'...
+  transfers?: Transfer[]; // items handed from an actor to a point (the 'give' action)
   titleFrames?: number;
   dof?: number; // depth-of-field blur strength (default 2; 0 disables)
 }
@@ -229,14 +231,44 @@ export const validateEpisode = (spec: EpisodeSpec, tracks: Record<string, Track>
   return w;
 };
 
-const Actor: React.FC<{ a: ActorSpec; T: Track; f: number }> = ({ a, T, f }) =>
+/** An item flying in an arc from the giver's hand to the receiver, with a green sparkle on arrival. */
+const Handover: React.FC<{ t: Transfer; f: number; T: Track }> = ({ t, f, T }) => {
+  if (f < t.f0 || f > t.f1 + 16) return null;
+  const k = Math.min(1, (f - t.f0) / Math.max(1, t.f1 - t.f0));
+  const e = k * k * (3 - 2 * k);
+  const [px, pz] = T.pos(Math.min(f, t.f1));
+  const x = px + (t.to[0] - px) * e, z = pz + (t.to[1] - pz) * e;
+  const y = 1.0 + 0.25 * e + Math.sin(Math.PI * e) * 0.35;
+  return (
+    <>
+      {f <= t.f1 && <Sprite3D name={t.item} scale={0.45} position={[x, y, z]} rotation={[0, f * 0.18, 0]} />}
+      <Burst p={[t.to[0], 1.15, t.to[1]]} age={f - t.f1} color="#55ff55" seed={t.f0} />
+    </>
+  );
+};
+
+/** Torch light on an actor: sum of falloffs of the torches within 4 blocks, quantised to 0.08 steps (bounded material cache). */
+const torchWarm = (world: WorldSpec, T: Track, f: number) => {
+  if (!world.torches?.length) return 0;
+  const [x, z] = T.pos(f);
+  let w = 0;
+  world.torches.forEach(([tx, ty, tz]) => {
+    const d = Math.hypot(tx - x, ty - 1.0, tz - z);
+    if (d < 4) w += Math.pow(1 - d / 4, 2) * 0.55;
+  });
+  return Math.min(0.56, Math.round(w / 0.08) * 0.08);
+};
+
+const Actor: React.FC<{ a: ActorSpec; T: Track; f: number; world: WorldSpec }> = ({ a, T, f, world }) =>
   isHumanoid(a.kind) ? (
-    <Humanoid track={T} f={f} kind={a.kind} skin={a.skin} hand={typeof a.hand === 'string' || !a.hand ? a.hand : [...a.hand].reverse().find((h) => h.f <= f)?.item ?? a.hand[0].item} sneak={a.sneak} />
+    <Humanoid track={T} f={f} kind={a.kind} skin={a.skin} hand={typeof a.hand === 'string' || !a.hand ? a.hand : [...a.hand].reverse().find((h) => h.f <= f)?.item ?? a.hand[0].item} sneak={a.sneak} warm={torchWarm(world, T, f)} />
   ) : (
-    <Mob track={T} f={f} kind={a.kind as Exclude<ActorKind, 'player' | 'zombie' | 'skeleton'>} skin={a.skin} swell={a.swell} />
+    <Mob track={T} f={f} kind={a.kind as Exclude<ActorKind, 'player' | 'zombie' | 'skeleton'>} skin={a.skin} swell={a.swell} warm={torchWarm(world, T, f)} />
   );
 
 const Inner: React.FC<{ spec: EpisodeSpec }> = ({ spec }) => {
+  setTimeOfDay(spec.world.time);
+  const TOD = TIMES[spec.world.time ?? 'day'];
   const f = useCurrentFrame();
   const { width, height, durationInFrames } = useVideoConfig();
   const tracks = useMemo(() => buildTracks(spec), [spec]);
@@ -270,39 +302,38 @@ const Inner: React.FC<{ spec: EpisodeSpec }> = ({ spec }) => {
 
   const beat = spec.beats.find((b) => f >= b.from && f < b.to) ?? spec.beats[spec.beats.length - 1];
   const subIn = beat ? interpolate(f - beat.from, [0, 6], [0, 1], clamp) : 0;
-  const tf = spec.titleFrames ?? 60;
-  const titleOp = interpolate(f, [0, 8, tf - 14, tf], [0, 1, 1, 0], clamp);
-  const ctaOp = interpolate(f, [durationInFrames - 50, durationInFrames - 38], [0, 1], clamp);
+  const tf = spec.titleFrames ?? 75;
+    const ctaOp = interpolate(f, [durationInFrames - 50, durationInFrames - 38], [0, 1], clamp);
   const cut = cutIntensity(spec.shots, f);
   const cam = cameraAt(spec.shots, tracks, f);
   const focus = Math.hypot(cam.pos[0] - cam.look[0], cam.pos[1] - cam.look[1], cam.pos[2] - cam.look[2]);
 
   return (
-    <AbsoluteFill style={{ backgroundColor: '#78a7ff' }}>
+    <AbsoluteFill style={{ backgroundColor: TOD.sky }}>
       <div style={{ position: 'absolute', inset: 0, filter: `blur(${cut * 2.5}px)` }}>
         <ThreeCanvas width={width} height={height} shadows camera={{ fov: 52, position: [0, 2, 8], near: 0.1, far: 200 }} gl={{ antialias: false, toneMapping: THREE.NoToneMapping }}>
           <Rig f={f} shots={spec.shots} tracks={tracks} />
-          <color attach="background" args={['#78a7ff']} />
-          <fog attach="fog" args={['#c0d8ff', 28, 75]} />
+          <color attach="background" args={[TOD.sky]} />
+          <fog attach="fog" args={[TOD.fog, 28, 75]} />
           <World spec={spec.world} />
           <Plants spec={spec.world} avoid={camPath} />
           <Water spec={spec.world} f={f} />
-          <Clouds f={f} />
+          {spec.world.time !== 'night' && <Clouds f={f} />}
+          <Torches spec={spec.world} f={f} />
           {spec.props.map((p, i) =>
-            p.type === 'chest' ? <Chest key={i} f={f} spec={p} /> : p.type === 'sign' ? <SignPost key={i} spec={p} /> : p.type === 'ladder' ? <Ladder key={i} spec={p} /> : p.type === 'door' ? <Door key={i} f={f} spec={p} /> : <Vein key={i} f={f} spec={p} tracks={tracks} index={i} />,
+            p.type === 'chest' ? <Chest key={i} f={f} spec={p} /> : p.type === 'sign' ? <SignPost key={i} spec={p} /> : p.type === 'ladder' ? <Ladder key={i} spec={p} /> : p.type === 'door' ? <Door key={i} f={f} spec={p} /> : p.type === 'stall' ? <Stall key={i} f={f} spec={p} /> : p.type === 'house' ? <House key={i} spec={p} /> : p.type === 'library' ? <Library key={i} f={f} spec={p} /> : <Vein key={i} f={f} spec={p} tracks={tracks} index={i} />,
           )}
           {spec.actors.map((a) => (
-            <Actor key={a.id} a={a} T={tracks[a.id]} f={f} />
+            <Actor key={a.id} a={a} T={tracks[a.id]} f={f} world={spec.world} />
           ))}
+          {(spec.transfers ?? []).map((t, i) => <Handover key={i} t={t} f={f} T={tracks[t.from]} />)}
           <SunShadow spec={spec.world} />
-          <Post focus={focus} bokeh={spec.dof ?? 2} />
+          <Post focus={focus} bokeh={spec.dof ?? 2} exposure={TOD.exposure} />
         </ThreeCanvas>
       </div>
 
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse at 50% 42%, rgba(255,240,205,0.10) 0%, rgba(255,255,255,0) 45%, rgba(0,10,30,0.34) 100%)' }} />
-      <div style={{ position: 'absolute', top: 210, left: 0, right: 0, textAlign: 'center', opacity: titleOp }}>
-        <span style={{ fontFamily: PIXEL, fontSize: 46, color: '#fff', textShadow: '6px 6px 0 #3f3f3f', letterSpacing: 2 }}>{spec.title}</span>
-      </div>
+      <BigTitle text={spec.title} f={f} frames={tf} />
 
       {spec.hotbar && row2 > 0 && (
         <div style={{ position: 'absolute', inset: 0, opacity: row2, transform: `translateY(${(1 - row2) * 30}px)` }}>
@@ -314,7 +345,7 @@ const Inner: React.FC<{ spec: EpisodeSpec }> = ({ spec }) => {
 
       {beat && (
         <div style={{ position: 'absolute', inset: 0, opacity: subIn, transform: `translateY(${(1 - subIn) * 16}px)` }}>
-          <Subtitle text={beat.text} hl={beat.hl} />
+          <Subtitle text={beat.text} hl={beat.hl} words={beat.words} t={f - beat.from} progress={Math.min(1, (f - beat.from) / Math.max(1, beat.to - beat.from - 11))} />
         </div>
       )}
       <div style={{ position: 'absolute', bottom: 150, left: 0, right: 0, textAlign: 'center', opacity: ctaOp }}>

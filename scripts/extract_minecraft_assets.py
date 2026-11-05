@@ -122,12 +122,14 @@ def build_index(assets: Path) -> None:
 # ---------------------------------------------------------------------------------------------------------------------
 GRASS_TINT = "#91bd59"
 FOLIAGE_TINT = "#77ab2f"
-ITEMS = ["diamond_pickaxe", "iron_pickaxe", "iron_sword", "coal", "raw_iron", "gold_ingot", "redstone", "lapis_lazuli", "diamond", "apple", "stick"]
-BLOCKS_COPY = ["ladder", "dirt", "stone", "oak_planks", "oak_log", "oak_log_top", "dirt_path_top", "dirt_path_side", "coal_ore", "iron_ore", "gold_ore", "redstone_ore", "lapis_ore", "diamond_ore", "torch"]
+ITEMS = ["diamond_pickaxe", "iron_pickaxe", "iron_sword", "coal", "raw_iron", "gold_ingot", "redstone", "lapis_lazuli", "diamond", "apple", "stick", "emerald", "bread", "diamond_sword", "wheat", "book", "writable_book", "paper"]
+BLOCKS_COPY = ["ladder", "dirt", "stone", "oak_planks", "oak_log", "oak_log_top", "dirt_path_top", "dirt_path_side", "coal_ore", "iron_ore", "gold_ore", "redstone_ore", "lapis_ore", "diamond_ore", "torch", "red_wool", "white_wool", "barrel_side", "barrel_top", "hay_block_side", "crafting_table_front", "bookshelf"]
 MOBS = {"mob_zombie": "entity/zombie/zombie", "mob_skeleton": "entity/skeleton/skeleton", "mob_creeper": "entity/creeper/creeper",
         "mob_pig": "entity/pig/pig", "mob_cow": "entity/cow/cow", "mob_chicken": "entity/chicken",
         "mob_sheep": "entity/sheep/sheep", "mob_sheep_fur": "entity/sheep/sheep_fur", "mob_spider": "entity/spider/spider",
         "mob_cave_spider": "entity/spider/cave_spider", "mob_villager": "entity/villager/villager"}
+PROFESSIONS = ["farmer", "librarian", "toolsmith", "cleric", "fisherman", "mason", "cartographer", "armorer"]
+PLAYER_SKINS = ["alex", "ari", "efe", "kai", "makena", "noor", "sunny", "zuri"]
 WATER_TINT = "#3f76e4"
 PLANT_COPY = ["poppy", "dandelion", "azure_bluet", "oxeye_daisy"]
 
@@ -142,6 +144,36 @@ def tint(img, hex_color):
             R, G, B, A = px[x, y]
             px[x, y] = (R * r // 255, G * g // 255, B * b // 255, A)
     return img
+
+
+def import_extra_skins(out) -> None:
+    """Skins from assets/skins/*/ (NameMC...) -> public/mc/skin_<name>.png. Slim (3 px) arms are widened to the classic 4 px arms of the kit's player model."""
+    from PIL import Image
+    for src in sorted((ROOT / "assets" / "skins").glob("*/*.png")):
+        im = Image.open(src).convert("RGBA")
+        if im.size != (64, 64):
+            print(f"  skin {src.name}: not 64x64, skipped")
+            continue
+        slim = all(im.getpixel((x, y))[3] == 0 for x in (54, 55) for y in range(20, 32))
+        if slim:  # arm boxes: right (40,16) + overlay (40,32), left (32,48) + overlay (48,48)
+            for ox, oy in ((40, 16), (40, 32), (32, 48), (48, 48)):
+                regions = {  # slim face -> (x, y, w, h) and where the classic layout puts it
+                    "top": ((ox + 4, oy, 3, 4), (ox + 4, oy)), "bottom": ((ox + 7, oy, 3, 4), (ox + 8, oy)),
+                    "right": ((ox, oy + 4, 4, 12), (ox, oy + 4)), "front": ((ox + 4, oy + 4, 3, 12), (ox + 4, oy + 4)),
+                    "left": ((ox + 7, oy + 4, 4, 12), (ox + 8, oy + 4)), "back": ((ox + 11, oy + 4, 3, 12), (ox + 12, oy + 4)),
+                }
+                crops = {k: im.crop((a, b, a + w, b + h)) for k, ((a, b, w, h), _) in regions.items()}
+                im.paste((0, 0, 0, 0), (ox, oy, ox + 16, oy + 16))
+                for k, crop in crops.items():
+                    w, h = crop.size
+                    if w == 3:  # widen by repeating the last column
+                        wide = Image.new("RGBA", (4, h))
+                        wide.paste(crop, (0, 0))
+                        wide.paste(crop.crop((2, 0, 3, h)), (3, 0))
+                        crop = wide
+                    im.paste(crop, regions[k][1])
+        im.save(out / f"skin_{src.stem}.png")
+        print(f"  skin {src.stem} ({'slim -> classic' if slim else 'classic'})")
 
 
 def build_selection() -> None:
@@ -180,6 +212,23 @@ def build_selection() -> None:
     shutil.copy(tex / "environment/clouds.png", out / "clouds.png")
     for name, rel in MOBS.items():
         shutil.copy(tex / f"{rel}.png", out / f"{name}.png")
+    shelf = op("block/bookshelf").convert("RGBA")  # empty shelf: same planks frame, dark compartments instead of books
+    planks = op("block/oak_planks").convert("RGBA")
+    empty = planks.copy()
+    for (x0, y0, x1, y1) in ((1, 1, 15, 7), (1, 9, 15, 15)):
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                shade = 38 - (y - y0) * 3
+                empty.putpixel((x, y), (shade + 18, shade + 8, shade, 255))
+    empty.save(out / "bookshelf_empty.png")
+    base = op("entity/villager/villager").convert("RGBA")  # villager = base texture + profession layer (hat and robe)
+    for prof in PROFESSIONS:
+        v = base.copy()
+        v.alpha_composite(op(f"entity/villager/profession/{prof}").convert("RGBA"))
+        v.save(out / f"mob_villager_{prof}.png")
+    for n in PLAYER_SKINS:
+        shutil.copy(tex / f"entity/player/wide/{n}.png", out / f"skin_{n}.png")
+    import_extra_skins(out)
     if not (out / "skin.png").exists():  # the user's own skin stays; default to Steve
         shutil.copy(tex / "entity/player/wide/steve.png", out / "skin.png")
     print(f"  selection written -> {out.relative_to(ROOT)}")

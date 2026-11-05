@@ -75,5 +75,20 @@ ok = r["ok"] and not r["quality"]
 fails += 0 if ok else 1
 print(("PASS " if ok else "FAIL ") + "hitboxes: no overlaps, nobody inside a block, camera clear" + ("" if ok else f" {r['quality']}"))
 
+# the camera must keep up with the hero: he is never outside the safe part of the frame while walking, searching or carrying things
+s = copy.deepcopy(base)
+s["stations"] = [{"id": "lib", "type": "library"}, {"id": "shop", "type": "stall", "gap": 8}, {"id": "mine", "type": "mine", "gap": 9}]
+s["beats"] = [{"text": "Walk to the library", "actions": [{"act": "go", "target": "lib"}]},
+              {"text": "Search the catalog slowly", "actions": [{"act": "search", "target": "lib"}]},
+              {"text": "Bring a book to the shop", "actions": [{"act": "fetch", "target": "lib", "to": "shop", "item": "item_book"}]},
+              {"text": "Walk all the way to the mine", "actions": [{"act": "go", "target": "mine"}]},
+              {"text": "Sprint back to the shop", "actions": [{"act": "sprint", "target": "shop"}]}]
+s["seconds"] = 45
+r = compile_script(s)
+fr = r.get("framing", {})
+ok = r["ok"] and fr.get("hidden", 99) == 0
+fails += 0 if ok else 1
+print(("PASS " if ok else "FAIL ") + f"camera keeps the hero in frame while he moves ({fr})")
+
 print("OK" if not fails else f"{fails} FAILED")
 sys.exit(1 if fails else 0)

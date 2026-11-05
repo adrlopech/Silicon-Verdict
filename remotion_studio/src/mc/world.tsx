@@ -3,7 +3,7 @@
  */
 import React, { useContext, useEffect, useMemo } from 'react';
 import * as THREE from 'three';
-import { AssetsCtx, FACES, SUN, faceLight, getTex, Imgs, rnd } from './core';
+import { AssetsCtx, FACES, SUN, Sprite3D, TimeOfDay, faceLight, getTex, Imgs, rnd } from './core';
 
 export interface WorldSpec {
   flatX: [number, number]; // area kept flat (hills grow outside it)
@@ -14,6 +14,8 @@ export interface WorldSpec {
   plantArea: [number, number, number, number]; // x0, z0, x1, z1
   sunTarget: [number, number]; // x, z the shadow camera is centred on
   sunSpan?: number; // half width covered by the shadow map (blocks)
+  time?: TimeOfDay; // day (default), dusk, night
+  torches?: [number, number, number][]; // x, y, z: warm light baked into the terrain around them, with a flickering glow
   ponds?: [number, number, number, number, number][]; // x0, z0, x1, z1 (blocks) and depth: carved into the terrain and filled with water
 }
 
@@ -111,7 +113,7 @@ const makeBlocks = (spec: WorldSpec) => {
   return { blocks: m, onPath, heightAt };
 };
 
-const buildWorldGeometry = (blocks: Map<string, string>) => {
+const buildWorldGeometry = (blocks: Map<string, string>, torches: [number, number, number][] = []) => {
   const pos: number[] = [];
   const uv: number[] = [];
   const col: number[] = [];
@@ -156,6 +158,13 @@ const buildWorldGeometry = (blocks: Map<string, string>) => {
           }
         }
         const L = faceLight(f.n, [0.5, 0.68, 0.84, 1][ao], lit);
+        torches.forEach(([tx, ty, tz]) => { // warm torch light, brighter on faces that look at the torch
+          const dx = tx - vx, dy = ty - vy, dz = tz - vz, dd = Math.hypot(dx, dy, dz);
+          if (dd > 4) return;
+          const facing = Math.max(0.25, (f.d[0] * dx + f.d[1] * dy + f.d[2] * dz) / (dd || 1) + 0.35);
+          const k = Math.pow(1 - dd / 4, 2) * 0.5 * Math.min(1.2, facing) * [0.6, 0.78, 0.9, 1][ao];
+          L[0] += 1.0 * k; L[1] += 0.6 * k; L[2] += 0.25 * k;
+        });
         pos.push(x + c[0], y + c[1], z + c[2]);
         col.push(L[0], L[1], L[2]);
         uv.push(i === 0 || i === 3 ? u0 : u1, i < 2 ? v0 : v1);
@@ -173,7 +182,7 @@ const buildWorldGeometry = (blocks: Map<string, string>) => {
 
 export const World: React.FC<{ spec: WorldSpec }> = ({ spec }) => {
   const A = useContext(AssetsCtx);
-  const geo = useMemo(() => buildWorldGeometry(buildBlocks(spec).blocks), [spec]);
+  const geo = useMemo(() => buildWorldGeometry(buildBlocks(spec).blocks, spec.torches), [spec]);
   useEffect(() => () => geo.dispose(), [geo]);
   return (
     <mesh geometry={geo}>
@@ -344,5 +353,36 @@ export const Water: React.FC<{ spec: WorldSpec; f: number }> = ({ spec, f }) => 
     <mesh geometry={geo}>
       <meshBasicMaterial map={tex} transparent opacity={0.92} depthWrite={false} side={THREE.DoubleSide} />
     </mesh>
+  );
+};
+
+/** Torch sprites with a flickering additive glow. */
+export const Torches: React.FC<{ spec: WorldSpec; f: number }> = ({ spec, f }) => {
+  const glow = useMemo(() => {
+    const c = document.createElement('canvas');
+    c.width = c.height = 64;
+    const g = c.getContext('2d')!;
+    const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gr.addColorStop(0, 'rgba(255,190,90,0.95)');
+    gr.addColorStop(0.35, 'rgba(255,140,50,0.35)');
+    gr.addColorStop(1, 'rgba(255,100,20,0)');
+    g.fillStyle = gr;
+    g.fillRect(0, 0, 64, 64);
+    return new THREE.CanvasTexture(c);
+  }, []);
+  return (
+    <>
+      {(spec.torches ?? []).map(([x, y, z], i) => {
+        const fl = 1 + Math.sin(f * 0.33 + i * 2.1) * 0.08 + Math.sin(f * 0.71 + i) * 0.05;
+        return (
+          <React.Fragment key={i}>
+            <Sprite3D name="torch" scale={0.8} position={[x, y - 0.15, z]} />
+            <sprite position={[x, y + 0.12, z]} scale={[2.0 * fl, 2.0 * fl, 1]}>
+              <spriteMaterial map={glow} blending={THREE.AdditiveBlending} depthWrite={false} transparent opacity={0.4} />
+            </sprite>
+          </React.Fragment>
+        );
+      })}
+    </>
   );
 };
