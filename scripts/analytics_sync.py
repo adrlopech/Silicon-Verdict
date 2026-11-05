@@ -19,12 +19,10 @@ Usage:
 import argparse
 import json
 import logging
-import os
-import random
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 # Ensure project root is in sys.path
 BASE_DIR = Path(__file__).resolve().parent.parent

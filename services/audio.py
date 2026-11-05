@@ -15,18 +15,15 @@ Calibrated for:
 - Validates and enforces runtime strictly between 60.0 and 120.0 seconds.
 """
 import logging
-import os
 import re
 import shutil
 import subprocess
-import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
-import requests
 
 from config.settings import settings
-from services.tts import get_audio_duration, resolve_active_voice_id
+from services.tts import get_audio_duration
 from services.voice import get_ffmpeg_bin
 
 logger = logging.getLogger(__name__)
@@ -108,136 +105,6 @@ def synthesize_master_narration(
         max_duration=max_duration,
     )
     return final_p, final_dur
-
-    is_curiosity = (category == "tech_curiosities")
-    effective_min_dur = min_duration if min_duration is not None else 55.0
-    effective_max_dur = max_duration if max_duration is not None else 70.0
-    effective_speed = speed if speed is not None else 1.02
-
-    voice_settings = {
-        "stability": 0.38,
-        "similarity_boost": 0.85,
-        "style": 0.32,
-        "use_speaker_boost": True,
-    }
-
-    active_voice = resolve_active_voice_id(target_voice=voice_id)
-    word_count = len(normalized_text.split())
-
-    logger.info(
-        "Synthesizing Master Narration (%d words | Category: %s | Target Duration: %.1fs-%.1fs | Speed: %.2fx)...",
-        word_count, category, effective_min_dur, effective_max_dur, effective_speed,
-    )
-
-    synthesized_remotely = False
-    if settings.ELEVENLABS_API_KEY and not settings.ELEVENLABS_API_KEY.startswith("your_"):
-        url = f"https://api.elevenlabs.io/v1/text-to-speech/{active_voice}"
-        headers = {
-            "xi-api-key": settings.ELEVENLABS_API_KEY,
-            "Content-Type": "application/json",
-            "Accept": "audio/mpeg",
-        }
-        payload = {
-            "text": normalized_text,
-            "model_id": settings.ELEVENLABS_MODEL_ID or "eleven_turbo_v2_5",
-            "voice_settings": voice_settings,
-        }
-        try:
-            res = requests.post(url, headers=headers, json=payload, timeout=75)
-            if res.status_code == 200 and len(res.content) > 1000:
-                with open(raw_path, "wb") as f:
-                    f.write(res.content)
-                synthesized_remotely = True
-                logger.info("ElevenLabs Master Audio synthesized successfully (%d bytes)", len(res.content))
-            else:
-                logger.warning(
-                    "ElevenLabs API returned HTTP %d (%s). Falling back to local synthesizer.",
-                    res.status_code, res.text[:120],
-                )
-        except Exception as exc:
-            logger.warning("ElevenLabs connection error (%s). Falling back to local synthesizer.", exc)
-
-    if not synthesized_remotely:
-        # Local TTS fallback: macOS 'say' with native US English voice
-        if shutil.which("say"):
-            aiff_tmp = output_path.with_suffix(".aiff")
-            try:
-                rate = "172"
-                subprocess.run(
-                    ["say", "-v", "Samantha", "-r", rate, "-o", str(aiff_tmp), normalized_text],
-                    check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                )
-                ffmpeg_bin = get_ffmpeg_bin()
-                subprocess.run(
-                    [ffmpeg_bin, "-y", "-i", str(aiff_tmp), "-c:a", "libmp3lame", "-b:a", "192k", str(raw_path)],
-                    check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                )
-                if aiff_tmp.exists():
-                    aiff_tmp.unlink()
-                synthesized_remotely = True
-                logger.info("macOS 'say' synthesizer generated raw audio successfully.")
-            except Exception as exc:
-                logger.warning("macOS 'say' fallback failed: %s", exc)
-
-    if not synthesized_remotely:
-        # Ultimate fallback: calibrated silence
-        ffmpeg_bin = get_ffmpeg_bin()
-        fallback_dur = max(65.0, word_count / 1.9)
-        subprocess.run(
-            [ffmpeg_bin, "-y", "-f", "lavfi", "-i", "anullsrc=r=44100:cl=stereo", "-t", f"{fallback_dur:.2f}", "-c:a", "libmp3lame", "-b:a", "192k", str(raw_path)],
-            check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        )
-        logger.info("Generated calibrated fallback audio track (%.2fs)", fallback_dur)
-
-    # Apply tempo modulation and enforce [min_duration, max_duration]
-    ffmpeg_bin = get_ffmpeg_bin()
-    raw_dur = get_audio_duration(str(raw_path))
-    logger.info("Raw audio duration: %.2fs (Target speed: %.2fx)", raw_dur, effective_speed)
-
-    # If speed adjustment is needed and duration allows:
-    # Notice: speed < 1.0 (e.g. 0.92) lengthens audio (atempo=0.92)
-    # Notice: speed > 1.0 (e.g. 1.05) shortens audio (atempo=1.05)
-    atempo = effective_speed
-    projected_dur = raw_dur / atempo
-
-    # Check bounds against category-calibrated targets
-    if projected_dur < effective_min_dur:
-        # Need to slow down more to hit min_duration
-        atempo = max(0.65, raw_dur / (effective_min_dur + 1.0))
-        logger.info("Adjusting atempo to %.3f to ensure duration exceeds %.1fs", atempo, effective_min_dur)
-    elif projected_dur > effective_max_dur:
-        # Need to speed up to fit within max_duration
-        atempo = min(1.40, raw_dur / (effective_max_dur - 1.5))
-        logger.info("Adjusting atempo to %.3f to fit within %.1fs ceiling", atempo, effective_max_dur)
-
-    # Process with FFmpeg atempo and trailing room buffer to prevent syllable cutoffs
-    mod_dur = raw_dur / atempo
-    filter_parts = []
-    if abs(atempo - 1.0) > 0.01:
-        filter_parts.append(f"atempo={atempo:.3f}")
-    # Add trailing buffer (400ms) so final syllables/words are never truncated by audio cutoffs
-    filter_parts.append("apad=pad_dur=0.40")
-    total_pad_dur = mod_dur + 0.40
-    fade_st = max(0.0, total_pad_dur - 0.15)
-    filter_parts.append(f"afade=t=out:st={fade_st:.2f}:d=0.15")
-
-    filter_str = ",".join(filter_parts)
-    cmd_process = [
-        ffmpeg_bin, "-y",
-        "-i", str(raw_path),
-        "-filter:a", filter_str,
-        "-c:a", "libmp3lame",
-        "-b:a", "192k",
-        str(output_path),
-    ]
-    subprocess.run(cmd_process, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
-
-    final_dur = get_audio_duration(str(output_path))
-    logger.info(
-        "Master audio finalized: %s (Duration: %.2fs | Monitored: %.1fs - %.1fs)",
-        output_path.name, final_dur, effective_min_dur, effective_max_dur,
-    )
-    return output_path, final_dur
 
 
 def mix_schematic_soundtrack(

@@ -21,7 +21,7 @@ import logging
 import os
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -43,12 +43,9 @@ if venv_bin.is_dir() and str(venv_bin) not in os.environ.get("PATH", ""):
 
 from config.settings import settings
 from core.generator import select_daily_short_spec
-from core.pillars import WEEKLY_PILLARS
-from main import run_master_video_pipeline, run_vertical_long_pipeline
-from scripts.produce_autonomous_short import run_autonomous_short
+from main import run_master_video_pipeline
 from services.cleaner import purge_previous_day_videos
 from services.history import init_db
-from services.tiktok import TikTokService
 
 # Configure dual logging: console stdout + structured logs/pipeline.log
 log_format = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
@@ -234,7 +231,7 @@ def execute_daily_production(
         cost_usd = results["tiktok"].get("estimated_cost_usd", 0.0)
         broll_used = results["tiktok"].get("broll_used", "")
         print(" [2] TIKTOK (Staging Local para Subida Manual)")
-        print(f"     • Modo:           STAGING / EXPORTACIÓN LOCAL")
+        print("     • Modo:           STAGING / EXPORTACIÓN LOCAL")
         print(f"     • Ruta Vídeo MP4: {v_path.resolve() if v_path.is_file() else v_path}")
         print(f"     • Portada Cover:  {c_path.resolve() if c_path.is_file() else c_path}")
         print(f"     • Ruta Metadatos: {m_path.resolve() if m_path.is_file() else m_path}")

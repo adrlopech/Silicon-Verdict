@@ -11,7 +11,6 @@ from typing import List, Optional, Tuple
 import numpy as np
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 
-from config.settings import settings
 from core.schemas import ChartData
 
 logger = logging.getLogger(__name__)

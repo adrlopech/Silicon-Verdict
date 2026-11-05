@@ -9,7 +9,6 @@ Performs ultra-lightweight, non-costly probe requests:
 """
 import json
 import logging
-import os
 import sys
 from pathlib import Path
 

@@ -5,7 +5,6 @@ Generates a synthetic 5-second test video with FFmpeg and uploads it as 'private
 to confirm that OAuth credentials and auto-refresh mechanisms function properly.
 """
 import logging
-import os
 import subprocess
 import sys
 from pathlib import Path

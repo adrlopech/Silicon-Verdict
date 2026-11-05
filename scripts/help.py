@@ -3,7 +3,6 @@
 
 Lists all configured chat triggers, interactive options, CLI scripts, and directory structures.
 """
-import sys
 
 HELP_TEXT = """================================================================================
  ⚡ SILICON VERDICT: COMMAND CENTER & OPERATIONAL PIPELINE MANUAL

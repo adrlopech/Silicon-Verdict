@@ -9,7 +9,6 @@ import os
 import sys
 import json
 import time
-import base64
 import hashlib
 import secrets
 import logging

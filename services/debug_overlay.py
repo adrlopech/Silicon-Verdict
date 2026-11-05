@@ -7,7 +7,6 @@ Generates an RGBA overlay template (1080x1920) mapping YouTube Shorts UI collisi
 - Usable Safe Zone: X=60..880, Y=220..1420 (Outlined in Electric Cyan)
 """
 import logging
-import os
 import subprocess
 from pathlib import Path
 from typing import Optional

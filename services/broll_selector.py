@@ -15,7 +15,6 @@ from typing import Any, Dict, List, Optional, Set
 # Ensure project root is in sys.path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-from config.settings import settings
 
 logger = logging.getLogger("broll_selector")
 

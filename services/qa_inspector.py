@@ -29,10 +29,9 @@ import re
 import shutil
 import subprocess
 import sys
-import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 # Ensure project root is in sys.path
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -112,7 +111,7 @@ def load_qa_rules() -> Dict[str, Any]:
         "retention_rules": {
             "min_duration_sec": 60.0,
             "max_duration_sec": 120.0,
-            "prohibit_midroll_subscribe_banner": true,
+            "prohibit_midroll_subscribe_banner": True,
         },
         "history_fixes_applied": [],
     }

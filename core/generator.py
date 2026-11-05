@@ -1,4 +1,3 @@
-import json
 import logging
 import time
 from dataclasses import dataclass
@@ -10,11 +9,9 @@ from google.genai import types
 
 from config.settings import settings
 from core.pillars import (
-    WEEKLY_PILLARS,
     get_category_for_theme,
     get_pillar_for_weekday,
     get_theme_description,
-    get_tone_for_weekday,
 )
 from core.schemas import (
     ChartData,

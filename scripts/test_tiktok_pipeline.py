@@ -19,13 +19,11 @@ Validates the full 5-act vertical production workflow:
 import argparse
 import logging
 import os
-import shutil
 import subprocess
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import List, Tuple
 
 # Ensure project root is in sys.path
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,7 +35,6 @@ venv_bin = BASE_DIR / ".venv" / "bin"
 if venv_bin.is_dir() and str(venv_bin) not in os.environ.get("PATH", ""):
     os.environ["PATH"] = f"{venv_bin}:{os.environ.get('PATH', '')}"
 
-from config.settings import settings
 from core.generator import (
     DailyShortSpec,
     generate_tiktok_long_plan,
@@ -46,7 +43,6 @@ from core.generator import (
 )
 from core.schemas import ChartData, TikTokLongProject
 from engine.charts import (
-    generate_glass_whoosh_sfx,
     render_animated_benchmark_video,
 )
 from engine.renderer import (
@@ -68,7 +64,6 @@ from services.tiktok import (
 )
 from services.voice import (
     get_ffmpeg_bin,
-    get_ffprobe_bin,
     measure_audio_duration,
     validate_and_enforce_long_video_duration,
 )
@@ -485,7 +480,7 @@ def main():
     print(f" 🎯 Safezone Debug Video:   {safezone_tiktok_output.resolve()}")
     print(f" 📝 Kinetic ASS Subtitles:  {subtitles_ass.resolve()}")
     print(f" ⏱️ Exact Video Duration:   {actual_duration:.2f} seconds (STRICTLY > 60.5s)")
-    print(f" 💰 Monetization Status:    ELIGIBLE (TikTok Creator Rewards Program)")
+    print(" 💰 Monetization Status:    ELIGIBLE (TikTok Creator Rewards Program)")
     print(f" 📱 Staged TikTok URL:      {tiktok_url}")
     print(f" 🏷️ Title:                  {project.title}")
     print(f" 📊 Act 1: Dilemma Hook     {act_durations[0]:.2f}s | {project.act1.dilemma_title}")

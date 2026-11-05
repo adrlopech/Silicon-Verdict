@@ -15,7 +15,6 @@ Executes a complete 100% autonomous cycle:
    with privacyStatus = 'private' to YouTube.
 """
 import argparse
-import json
 import logging
 import os
 import shutil
@@ -38,7 +37,6 @@ if venv_bin.is_dir() and str(venv_bin) not in os.environ.get("PATH", ""):
     os.environ["PATH"] = f"{venv_bin}:{os.environ.get('PATH', '')}"
 
 from google import genai
-from google.genai import types
 
 from config.settings import settings
 from core.generator import DailyShortSpec, select_daily_short_spec

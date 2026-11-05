@@ -11,27 +11,23 @@ Implements the 'schematic_tech' visual preset:
 """
 import logging
 import math
-import os
 import re
 import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageFilter
 
 from config.settings import settings
 from engine.charts import (
-    COLOR_ELECTRIC_CYAN,
-    COLOR_TEXT_WHITE,
-    fit_text,
     resolve_system_font,
 )
 
 logger = logging.getLogger(__name__)
 # Re-export core functions from engine.renderer for unified access
-from engine.renderer import (
+from engine.renderer import (  # noqa: F401
     VideoRenderer,
     create_golden_rule_card,
     create_introductory_dilemma_card,

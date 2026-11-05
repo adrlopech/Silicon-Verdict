@@ -5,10 +5,7 @@ Simulates TikTok Login Kit and Content Posting API integrations for developer re
 Serves a high-fidelity dark/glassmorphic web UI on http://localhost:8080.
 """
 
-import os
 import sys
-import json
-import mimetypes
 from pathlib import Path
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import urllib.parse

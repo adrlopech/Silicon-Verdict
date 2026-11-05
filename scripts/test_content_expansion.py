@@ -19,7 +19,6 @@ Validates:
 5. Database logging: category and tone properly saved in shorts_history.
 6. Deterministic and AI generation fallbacks.
 """
-import os
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -30,16 +29,13 @@ if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
 from core.generator import select_daily_short_spec
-from core.pillars import WEEKLY_PILLARS, get_pillar_for_weekday
 from services.content_generator import (
-    CONTENT_CATALOG,
     get_emergency_gamer_short_plan,
     get_emergency_gamer_tiktok_plan,
     get_system_prompt_for_category,
 )
 from services.history import (
     get_all_history,
-    get_category_info,
     get_content_catalog,
     get_rotation_matrix,
     init_db,

@@ -2,7 +2,6 @@ import argparse
 import logging
 import os
 import shutil
-import subprocess
 import sys
 import time
 import uuid
@@ -22,66 +21,25 @@ if venv_bin.is_dir() and str(venv_bin) not in os.environ.get("PATH", ""):
 
 from config.settings import settings
 from core.generator import (
-    DailyShortSpec,
-    generate_tiktok_long_plan,
     generate_video_plan,
-    get_emergency_tiktok_long_project,
-    select_daily_short_spec,
 )
-from core.schemas import ChartData, MarketTopic, MotionStoryProject, TikTokLongProject
+from core.schemas import MarketTopic, MotionStoryProject
 from core.topic_engine import generate_market_topic, record_topic_in_history
-from engine.charts import render_animated_benchmark_video
 from services.renderer import (
     VideoRenderer,
-    create_golden_rule_card,
-    create_introductory_dilemma_card,
-    create_schematic_analogy_card,
-    create_schematic_concept_card,
-    create_schematic_hook_card,
-    create_schematic_punchline_card,
-    create_schematic_resolution_card,
-    create_silicon_specs_card,
-    create_vision_pro_hud_pill,
-    create_voting_poll_card,
-    generate_contextual_schematic_for_topic,
-    generate_datacenter_speed_of_light_schematic,
-    generate_euv_lithography_schematic,
-    generate_generic_tech_schematic,
-    generate_gps_relativity_schematic,
-    generate_interconnected_nodes_schematic,
-    generate_schematic_canvas,
-    generate_submarine_cable_schematic,
-    generate_cover_frame,
-    render_composite_overlay_clip,
-    render_schematic_act_clip,
-)
-from services.audio import mix_schematic_soundtrack, synthesize_master_narration
-from services.broll_selector import select_broll_clip
-from services.debug_overlay import (
-    generate_shorts_safezone_template,
-    overlay_safezone_on_video,
 )
 from services.history import (
-    get_next_queue_topic,
-    get_topic_by_key,
-    mark_queue_topic_completed,
     record_generation_metric,
     record_short_history,
 )
 from services.media import fetch_all_scene_media
 from services.notifier import notify_pipeline_success
-from services.subtitles import generate_kinetic_subtitles
 from services.tiktok import (
-    TikTokService,
     get_video_duration_ffprobe,
-    upload_video_to_tiktok,
-    validate_tiktok_creator_rewards_eligibility,
 )
-from services.tts import synthesize_all_scenes, synthesize_speech
+from services.tts import synthesize_all_scenes
 from services.voice import (
     get_ffmpeg_bin,
-    measure_audio_duration,
-    validate_and_enforce_long_video_duration,
 )
 from services.youtube import upload_video_resumable
 
@@ -312,7 +270,6 @@ def run_master_video_pipeline(
     prefer_bank: bool = True,
 ) -> Dict[str, Any]:
     """Executes the single unified master video pipeline (60-120s) for YouTube Shorts and TikTok."""
-    from datetime import datetime
     start_time = time.time()
     run_id = uuid.uuid4().hex[:8]
     work_dir = Path(settings.TMP_DIR) / f"run_master_{run_id}"
@@ -331,6 +288,14 @@ def run_master_video_pipeline(
     logger.info(" Distribution:       YouTube Public Direct + TikTok Local Staging")
     logger.info(" Visual Preset:      %s", preset)
     logger.info("==================================================================")
+
+    if series == "minecraft":
+        from services.mc_pipeline import run_minecraft_pipeline
+        try:
+            return run_minecraft_pipeline(topic=topic, export_only=export_only or benchmark, dry_run=dry_run, privacy=privacy, prefer_bank=prefer_bank)
+        except Exception as exc:
+            logger.critical("Minecraft pipeline failed: %s", exc, exc_info=True)
+            sys.exit(1)
 
     try:
         # 1. Resolve Category ID (1: Hardware Deep Dive, 2: Gaming & Optimization, 3: Tech Curiosities)
@@ -746,9 +711,9 @@ def parse_args():
     parser.add_argument(
         "--series",
         type=str,
-        choices=["hardware", "game", "simple"],
+        choices=["hardware", "game", "simple", "minecraft"],
         default=None,
-        help="Tech Curiosities sub-series: hardware (physics/engineering), game (game tech with real screenshots), simple (everyday).",
+        help="Tech Curiosities sub-series: hardware (physics/engineering), game (game tech with real screenshots), simple (everyday), minecraft (concept explained inside Minecraft, ~64 s, always a new Gemini script).",
     )
     parser.add_argument(
         "--from-bank",
@@ -819,6 +784,15 @@ if __name__ == "__main__":
             resolved_category = get_next_rotated_category()
 
     chosen_topic = args.topic
+    if args.series == "minecraft":
+        from services.mc_pipeline import run_minecraft_pipeline
+        from services.mc_story_generator import McScriptUnavailable
+        try:
+            run_minecraft_pipeline(topic=chosen_topic, export_only=args.export_only or args.benchmark, dry_run=args.dry_run, privacy=args.privacy, prefer_bank=not args.no_bank)
+        except McScriptUnavailable as exc:  # every Minecraft video needs a new Gemini script; there is no fallback
+            logger.error("%s", exc)
+            sys.exit(1)
+        sys.exit(0)
     if not chosen_topic and Path(args.topics_file).is_file() and resolved_category != "tech_curiosities":
         chosen_topic = get_next_topic_from_file(Path(args.topics_file))
 

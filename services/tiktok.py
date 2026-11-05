@@ -6,17 +6,14 @@ token refresh using refresh_token, chunked binary video upload with Content-Rang
 and status polling via TikTok Content Posting API v2.
 """
 
-import hashlib
 import json
 import logging
 import math
-import os
 import re
 import shutil
 import subprocess
 import sys
 import time
-from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 

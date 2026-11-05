@@ -6,7 +6,7 @@ Defines the 6-day balanced rotation matrix alternating evenly among the 3 pillar
 3. Tech Curiosities & Infrastructure (Curiosities / Schematic Tech) - Days 3 & 6
 """
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 
 @dataclass(frozen=True)

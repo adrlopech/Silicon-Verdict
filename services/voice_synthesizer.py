@@ -25,6 +25,9 @@ from services.voice import get_ffmpeg_bin
 logger = logging.getLogger(__name__)
 
 
+FALLBACK_COUNT = 0  # how many times the robotic local voice replaced ElevenLabs (the Minecraft pipeline refuses to publish those)
+
+
 def align_characters_to_words(
     characters: List[str],
     start_times: List[float],
@@ -158,6 +161,8 @@ def synthesize_voice_with_timestamps(
 
     # Local macOS fallback if remote failed
     if not synthesized_remote:
+        global FALLBACK_COUNT
+        FALLBACK_COUNT += 1
         if shutil.which("say"):
             aiff_tmp = output_audio_path.with_suffix(".aiff")
             try:

@@ -17,11 +17,10 @@ import json
 import logging
 import os
 import re
-import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 # Ensure project root is in sys.path
 BASE_DIR = Path(__file__).resolve().parent.parent

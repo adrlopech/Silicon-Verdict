@@ -272,3 +272,84 @@ class StoryProject(BaseModel):
 
     def get_total_words(self) -> int:
         return len(self.full_script.split())
+
+
+class McAction(BaseModel):
+    """One thing an actor does inside a beat (see remotion_studio/src/mc/director.ts)."""
+    act: str = Field(..., description="go, sprint, mine, open_chest, swim, open_door, climb, wave, jump, use, attack, look, wait")
+    actor: Optional[str] = Field(default=None, description="Actor id; omit for the hero (steve)")
+    target: Optional[str] = Field(default=None, description="Station id (go/mine/open_chest/swim/open_door/climb/attack) or station/actor id (look)")
+    seconds: Optional[float] = Field(default=None, description="Duration for wave/use/attack/wait")
+    swings: Optional[int] = Field(default=None, description="mine: blocks to break, 1-6")
+    fast: Optional[bool] = Field(default=None, description="mine: faster swings")
+
+
+class McBeat(BaseModel):
+    text: str = Field(..., description="On-screen subtitle, at most 60 characters")
+    hl: Optional[str] = Field(default=None, description="One word of the text to highlight")
+    seconds: Optional[float] = Field(default=None, description="Minimum on-screen seconds")
+    shot: Optional[str] = Field(default=None, description="Camera hint: sign, close, orbit, wide, follow, pan")
+    focus: Optional[str] = Field(default=None, description="Station or actor id the camera looks at")
+    actions: List[McAction] = Field(default_factory=list)
+    sound: Optional[str] = Field(default=None, description="Optional Minecraft sound event, e.g. entity.pig.ambient")
+
+
+class McStation(BaseModel):
+    id: str = Field(..., description="Short lowercase slug, e.g. 'mina'")
+    type: str = Field(..., description="sign, mine, chest, pond, door, ladder, pen")
+    label: List[str] = Field(default_factory=list, description="Sign text, up to 4 lines of at most 12 characters")
+    ores: List[str] = Field(default_factory=list, description="mine: coal, iron, gold, redstone, lapis, diamond")
+    kinds: List[str] = Field(default_factory=list, description="pen: pig, cow, chicken, sheep, villager, spider, zombie, skeleton, creeper")
+    gap: Optional[float] = Field(default=None, description="Free blocks before the station (default 8)")
+
+
+class McCast(BaseModel):
+    id: str
+    kind: str = Field(..., description="player, zombie, skeleton, villager, pig, cow, chicken, sheep, creeper, spider")
+    at: Optional[str] = None
+
+
+class McInventory(BaseModel):
+    items: List[str] = Field(default_factory=list)
+    grow_at_beat: Optional[int] = None
+
+
+class McStory(BaseModel):
+    """A Minecraft 'concept explained inside the game' short: metadata + the script the Remotion director compiles."""
+    topic: str
+    category_name: str = Field(default="MINECRAFT EXPLICA")
+    header_banner: str = Field(default="")
+    title: str = Field(..., max_length=150, description="Video title with 2-3 hashtags")
+    description: str
+    tags: List[str]
+    pinned_comment: str
+    script_id: str = Field(..., description="slug for the episode id")
+    screen_title: str = Field(..., description="On-screen title, uppercase, at most 28 characters")
+    cta: str = Field(..., description="Closing call to action, uppercase, at most 32 characters")
+    seconds: float = Field(default=64.0)
+    stations: List[McStation]
+    cast: List[McCast] = Field(default_factory=list)
+    beats: List[McBeat]
+    inventory: Optional[McInventory] = None
+    is_fallback: bool = Field(default=False)
+    gemini_input_tokens: int = Field(default=0)
+    gemini_output_tokens: int = Field(default=0)
+
+    @property
+    def full_script(self) -> str:
+        return " ".join(b.text for b in self.beats)
+
+    def get_total_words(self) -> int:
+        return len(self.full_script.split())
+
+    def to_script(self) -> dict:
+        """The JSON the Remotion composition McStory receives."""
+        s = {
+            "id": self.script_id, "title": self.screen_title, "cta": self.cta, "seconds": self.seconds,
+            "stations": [x.model_dump(exclude_none=True, exclude_defaults=True) | {"id": x.id, "type": x.type} for x in self.stations],
+            "cast": [c.model_dump(exclude_none=True) for c in self.cast],
+            "beats": [b.model_dump(exclude_none=True, exclude_defaults=True) | {"text": b.text} for b in self.beats],
+        }
+        if self.inventory and (self.inventory.items or self.inventory.grow_at_beat is not None):
+            s["inventory"] = self.inventory.model_dump(exclude_none=True, exclude_defaults=True)
+        return s

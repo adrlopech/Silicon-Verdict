@@ -1,25 +1,19 @@
 import logging
-import os
 import shutil
 import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageFilter
 
 from config.settings import settings
 from core.schemas import Scene, VideoProject
 from engine.charts import (
-    COLOR_ELECTRIC_CYAN,
     COLOR_TEXT_WHITE,
     fit_text,
-    generate_glass_whoosh_sfx,
     render_animated_benchmark_video,
-    render_animated_cta_video,
-    render_apple_liquid_glass_cta_frame,
-    render_benchmark_chart,
     resolve_system_font,
 )
 from services.media import SceneMedia

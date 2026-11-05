@@ -1,5 +1,4 @@
 import logging
-import os
 from pathlib import Path
 from typing import Optional
 from dotenv import load_dotenv
@@ -41,6 +40,9 @@ class Settings(BaseSettings):
     ELEVENLABS_VOICE_2: str = "pNInz6obpgDQGcFmaJgB"   # Voice 2: Adam (Dominant, Firm)
     ELEVENLABS_VOICE_3: str = "TX3LPaxmHKxFdv7VOQHJ"   # Voice 3: Liam (Energetic, Social Media Creator)
     ELEVENLABS_MODEL_ID: str = "eleven_turbo_v2_5"
+
+    # Minecraft series: on-screen language (en default / es)
+    MC_LANGUAGE: str = "en"
 
     # Media APIs (Pixabay preferred, Pexels optional fallback)
     PIXABAY_API_KEY: str = ""

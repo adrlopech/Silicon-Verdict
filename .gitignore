@@ -40,3 +40,11 @@ data/*token*.json
 # Private scripts and the history DB (it holds the banked scripts)
 data/story_seed/
 data/history.db
+
+# Minecraft assets extracted from the local game install (not redistributable)
+remotion_studio/public/mc/
+remotion_studio/public/mc_raw/
+remotion_studio/public/mc_packs/
+remotion_studio/public/mc_assets/
+remotion_studio/public/mc_sounds/
+data/test_weekly_rotation.db

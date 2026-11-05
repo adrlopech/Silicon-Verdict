@@ -5,7 +5,6 @@ Run this script on your local workstation to generate the persistent `token.json
 credentials file with long-lived offline refresh capability.
 """
 import logging
-import os
 import subprocess
 import sys
 import webbrowser

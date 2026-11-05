@@ -15,17 +15,14 @@ import json
 import logging
 import re
 import time
-from dataclasses import dataclass, field
-from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Tuple
 
 from google import genai
 from google.genai import types
 
 from config.settings import settings
 from core.schemas import (
-    ChartData,
     MotionStoryProject,
     MotionVisualTrigger,
     TikTokAct1,
@@ -34,12 +31,6 @@ from core.schemas import (
     TikTokAct4,
     TikTokAct5,
     TikTokLongProject,
-)
-from services.history import (
-    get_category_info,
-    get_last_theme_for_weekday,
-    get_recently_used_games,
-    record_short_history,
 )
 
 logger = logging.getLogger(__name__)
@@ -883,7 +874,7 @@ def get_emergency_schematic_tiktok_plan(topic: Optional[str] = None, spec=None) 
             gameplay_query="advanced laboratory semiconductor fabrication wafer",
         ),
         act5=TikTokAct5(
-            voiceover=f"This is not chance: it is extreme engineering in your daily life. Did you know this technical principle? Debate in the comments.",
+            voiceover="This is not chance: it is extreme engineering in your daily life. Did you know this technical principle? Debate in the comments.",
             poll_question=f"Did you know how {t_title[:28]} actually works?",
             poll_option_a="No idea, incredible",
             poll_option_b="Already knew it",

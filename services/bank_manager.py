@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 LOW_WATERMARK = 30
 BATCH = 20
-SERIES = ("simple", "game")
+SERIES = ("simple", "game", "minecraft")
 
 
 def generate_one(series: str) -> Any:
@@ -26,6 +26,9 @@ def generate_one(series: str) -> Any:
     if series == "simple":
         from services.story_generator import generate_story_live
         return generate_story_live(avoid_topics=avoid)
+    if series == "minecraft":
+        from services.mc_story_generator import generate_story_live as generate_mc
+        return generate_mc(avoid_topics=avoid)
     from services.content_generator import generate_motion_story
     return generate_motion_story(3, series="game", live_only=True, avoid_topics=avoid)
 

@@ -6,7 +6,6 @@ Simulates 10 consecutive working days (2 full weeks: Lunes a Viernes Semana 1 & 
 2. Verifies strict Round-Robin rotation across the 3 ElevenLabs voices (1 -> 2 -> 3 -> 1).
 3. Verifies zero game repetitions within the 14-day window.
 """
-import os
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -16,9 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
-from config.settings import settings
 from core.generator import select_daily_short_spec
-from core.pillars import WEEKLY_PILLARS
 from services.history import init_db, record_short_history
 from services.voice import get_voice_pool
 

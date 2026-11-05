@@ -1,166 +1,130 @@
 # Silicon Verdict
 
-> Pipeline automatizado end-to-end para la generación, renderizado y publicación multicanal de microcontenido técnico y divulgativo sobre arquitectura de hardware y ciencias de la computación.
+<p align="center">
+  <strong>Automated vertical-video studio for PC hardware, gaming tech and computing curiosities</strong><br>
+  Python • Remotion • ElevenLabs • Gemini • YouTube Shorts &amp; TikTok
+</p>
+
+<p align="center">
+  <a href="https://adrlopech.github.io/Silicon-Verdict/">Web Portal</a> •
+  <a href="https://adrlopech.github.io/Silicon-Verdict/terms.html">Terms of Service</a> •
+  <a href="https://adrlopech.github.io/Silicon-Verdict/privacy.html">Privacy Policy</a> •
+  <a href="https://www.tiktok.com/@siliconverdict">TikTok</a> •
+  <a href="https://www.youtube.com/@SiliconVerdictHQ">YouTube</a>
+</p>
 
 ---
 
-## 🌐 Enlaces Oficiales y Redirecciones
+## What it is
 
-| Recurso | Enlace / Identificador |
-| :--- | :--- |
-| **Portal Web Oficial** | [adrlopech.github.io/Silicon-Verdict](https://adrlopech.github.io/Silicon-Verdict/) |
-| **Términos del Servicio** | [Terms of Service](https://adrlopech.github.io/Silicon-Verdict/terms.html) |
-| **Política de Privacidad** | [Privacy Policy](https://adrlopech.github.io/Silicon-Verdict/privacy.html) |
-| **Canal Oficial de YouTube** | [@SiliconVerdictHQ](https://www.youtube.com/@SiliconVerdictHQ) |
-| **Cuenta Oficial de TikTok** | [@siliconverdict](https://www.tiktok.com/@siliconverdict) |
+Silicon Verdict is the internal production pipeline behind the official **@siliconverdict** channels. One command picks a topic, writes the
+script with Gemini, narrates it with ElevenLabs, renders a 1080×1920 video with Remotion, runs automatic quality checks and, when everything
+passes, publishes it to YouTube Shorts. TikTok-ready files and metadata are exported alongside.
 
----
+It is a single-owner automation suite: no public accounts, no multi-tenant service, no third-party data processing.
 
-## 📌 Visión General
+## Content series
 
-**Silicon Verdict** es un framework de automatización audiovisual desarrollado en Python. Su objetivo es convertir especificaciones y análisis técnicos complejos (microarquitectura de CPUs/GPUs, jerarquías de memoria caché, buses PCIe, cuellos de botella y benchmarks) en vídeos verticales de corta duración (60–70s) optimizados algorítmicamente para plataformas como **YouTube Shorts** y **TikTok**.
+| # | Series | What you get |
+|---|--------|--------------|
+| 1 | **Hardware Deep Dive** | Microarchitecture and benchmark explainers with glass-style charts and kinetic subtitles |
+| 2 | **Gaming & Optimization** | Frametime, 1% lows and settings guidance for competitive play |
+| 3 | **Tech Curiosities** | Three sub-series: `hardware` (engineering paradoxes), `game` (game tech with real Steam screenshots), `simple` (everyday tech told by a mascot) |
+| 4 | **Automatic** | The AI picks the category with the longest rest, using `data/history.db` and retention analytics |
+| 5 | **Minecraft explainers** | A computing concept acted out inside Minecraft (~64 s), narrated, always from a brand-new Gemini script |
 
-El sistema elimina la fricción del trabajo editorial manual articulando investigación estructurada, síntesis de voz neuronal, generación cinemática procedimental y publicación programada a través de APIs oficiales.
+## How a video is made
 
----
-
-## 🚀 Características Principales
-
-* **Generación Editorial Guiada:** Redacción y estructuración automática de guiones técnicos mediante LLM (Gemini API), divididos en bloques de retención (*Hook*, *Technical Context*, *Deep Dive*, *Benchmark/Proof* y *Verdict/CTA*).
-* **Motor de Síntesis Vocal (TTS):** Integración con ElevenLabs API utilizando locuciones neuronales de alta fidelidad, con normalización dinámica de volumen y control estricto de cadencia (WPM).
-* **Subtitulado Cinético Word-Level:** Detección de silencios y alineación temporal exacta de cada palabra mediante `faster-whisper`, exportando metadatos para animaciones y *karaoke-style highlights*.
-* **Composición Visual y Renderizado:**
-  * Soporte multipreset visual (*Apple Liquid Glass*, *Schematic Paper / Technical Grid*, *Minimalist Neon Vector*).
-  * Animación procedural de gráficos, diagramas de bloques y métricas de rendimiento en tiempo real vía FFmpeg / PIL.
-  * Relación de aspecto nativa vertical 9:16 (1080x1920) a 60 FPS.
-* **Distribución Multicanal Automatizada:** Integración directa con las APIs de YouTube Data v3 y TikTok Developer para subida desatendida, categorización y asignación de etiquetas/metadatos.
-* **Control de Calidad y Verificación Local:** Scripts de telemetría y pruebas (`test_editorial_pipeline.py`) para validar límites de duración (cumplimiento de requisitos de monetización >60s), audio balanceado y renderizado antes del despliegue.
-
----
-
-## 🏗 Arquitectura del Sistema
-
-```text
-[ Trigger / Topic ]
-        │
-        ▼
-┌──────────────────┐
-│  Gemini Engine   │ ──► Estructuración del guion técnico y metadatos
-└────────┬─────────┘
-         │
-         ├──► [ ElevenLabs API ] ──► Audio Master (.mp3 / .wav)
-         │                                    │
-         │                                    ▼
-         │                          [ faster-whisper ] ──► Subtítulos & Timestamps
-         ▼                                                    │
-┌──────────────────┐                                          │
-│ Compositor / PIL │ ──► Generación de assets vectoriales / UI │
-└────────┬─────────┘                                          │
-         │                                                    │
-         ▼                                                    │
-┌─────────────────────────────────────────────────────────────┴┐
-│                       FFmpeg Pipeline                        │
-│             (Mezcla audiovisual, transiciones, HUD)          │
-└──────────────────────────────┬───────────────────────────────┘
-                               │
-                               ▼
-                   [ Render Final: 1080x1920 ]
-                               │
-         ┌─────────────────────┴─────────────────────┐
-         ▼                                           ▼
-[ YouTube Shorts API ]                     [ TikTok Developer API ]
+```
+topic ─► Gemini script ─► fact-check gate ─► ElevenLabs voice ─► Remotion render ─► QA gate ─► YouTube / TikTok export
+            │                                                                                      │
+       story bank (SQLite)                                                      output/<platform>/<title>/<date-time>.mp4
 ```
 
----
+* **Scripts**: structured output from Gemini through a resilient client (model chain, retries with backoff, validators). The *simple*,
+  *game* and *minecraft* series draw from a **story bank**: below 30 ready scripts, a batch of 20 new ones is generated; an empty bank pauses production.
+* **Voice**: ElevenLabs with word-level timestamps; natural mode (no time-stretching). Minecraft videos synthesize one line per scene in parallel and
+  place each at its scene's start frame. A robotic local voice is never published.
+* **Visuals**: Remotion compositions (`MainScene`, `StoryScene`, `McStory`) at 1080×1920 / 30 fps with safe-zone-aware layouts, kinetic subtitles, a
+  mascot with synced vectors, Steam screenshots integrated into the brand look, and a Minecraft director that turns a script into animation, camera and sound.
+* **Fact-check gate (Minecraft)**: a second Gemini pass looks for false technical claims, wrong figures, a metaphor that changes midway and misuse of
+  "but there is a catch"; it rewrites faulty lines and re-checks. Scripts that cannot be fixed are discarded.
+* **QA gate (Minecraft)**: duration, 1080×1920, 48 kHz audio, peak level, dead air, word count and subtitle length are verified with ffmpeg.
+  Anything that fails stays local and is **not** uploaded.
+* **Output layout**: one folder per video named after its title, files named by creation date-time, cover and metadata `.txt` included.
 
-## 🛠 Requisitos Previos e Instalación
-
-### Requisitos del Sistema
-* **Python 3.10+**
-* **FFmpeg** instalado y configurado en el `PATH` del sistema.
-
-### Instalación
-
-1. **Clonar el repositorio:**
-   ```bash
-   git clone https://github.com/adrlopech/Silicon-Verdict.git
-   cd Silicon-Verdict
-   ```
-
-2. **Crear y activar un entorno virtual:**
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate   # En Windows: venv\Scripts\activate
-   ```
-
-3. **Instalar dependencias:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
----
-
-## ⚙️ Configuración (.env)
-
-Crea un archivo `.env` en la raíz del proyecto tomando como plantilla las siguientes variables de entorno:
-
-```env
-# Inteligencia Artificial & Síntesis de Voz
-GEMINI_API_KEY="tu_clave_de_gemini"
-ELEVENLABS_API_KEY="tu_clave_de_elevenlabs"
-ELEVENLABS_VOICE_ID="id_de_la_voz"
-
-# Credenciales de Publicación y Redes Sociales
-YOUTUBE_CLIENT_SECRETS_FILE="client_secrets.json"
-TIKTOK_ACCESS_TOKEN="tu_token_de_acceso_tiktok"
-
-# Parámetros de Renderizado
-DEFAULT_RENDER_STYLE="liquid_glass"  # liquid_glass | schematic_paper | neon_vector
-TARGET_FPS=60
-VIDEO_RESOLUTION="1080x1920"
-```
-
----
-
-## 💻 Uso
-
-### 1. Generación y Renderizado Completo
-Genera un vídeo completo a partir de un tema técnico específico:
+## Quick start
 
 ```bash
-python main.py --topic "Diferencias de arquitectura entre caché L2 y 3D V-Cache" --style liquid_glass
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+cd remotion_studio && npm install && cd ..
+cp .env.example .env        # fill in the Gemini, ElevenLabs and YouTube credentials
 ```
 
-### 2. Pruebas y Validación Editorial
-Ejecuta la suite de verificación local para validar coherencia textual, timings de voz y renderizado de prueba sin publicar en plataformas:
+Minecraft videos also need the game assets extracted once (see `docs/minecraft_assets.md`):
 
 ```bash
-python scripts/test_editorial_pipeline.py --dry-run
+python3 scripts/extract_minecraft_assets.py
 ```
+
+### Everyday commands
+
+```bash
+.venv/bin/python main.py help                              # command reference
+.venv/bin/python main.py --category 1                      # hardware | 2 gaming | 3 curiosities | 4 auto
+.venv/bin/python main.py --category 3 --series simple      # simple | game | hardware
+.venv/bin/python main.py --series minecraft                # Minecraft explainer
+.venv/bin/python main.py --series minecraft --export-only  # render without uploading
+.venv/bin/python scripts/upload_existing.py "<video.mp4>"  # upload an already rendered video
+.venv/bin/python scripts/refill_story_bank.py              # top up the story bank
+.venv/bin/python scripts/cleanup.py                        # wipe generated output (also run by the "limpieza" chat command)
+```
+
+`GEMINI.md` documents the chat triggers (`genera`, `corregir`, `limpieza`, `help`).
+
+## Repository map
+
+| Path | Purpose |
+|------|---------|
+| `main.py` | Pipeline entry point and CLI |
+| `core/` | Schemas, topic engine, content pillars |
+| `services/` | Script generation, Gemini client, story bank, voice, Remotion renderers, QA, YouTube / TikTok, cleanup, output layout |
+| `services/mc_*.py` | Minecraft series: story generator, director bridge, voice, renderer, review/QA gate, pipeline |
+| `engine/` | Chart and legacy rendering engine |
+| `remotion_studio/` | Remotion project (React): compositions, mascot, Minecraft kit |
+| `scripts/` | Maintenance, authentication, scheduler, analytics, tests |
+| `docs/` | Design notes (Minecraft kit and assets) |
+| `data/` | History database and quality rules (private data is git-ignored) |
+
+## Privacy & platform compliance
+
+Silicon Verdict follows the **TikTok Developer Terms of Service**, **TikTok Partner Policies** and the **Google API Services User Data Policy**.
+
+* **No user data collected**: no personal data, IP addresses or browsing behavior of visitors or viewers is collected, tracked, sold or profiled.
+* **No tracking**: the web portal uses no tracking pixels, advertising trackers or fingerprinting.
+* **Local credentials**: API keys and OAuth tokens (TikTok, YouTube) stay in local, git-ignored files.
+* **API use**: the TikTok Content Posting API and YouTube Data API are used only to publish authorized videos to the official channels; no profiles, comments or audience data are scraped or stored.
+
+Full documents: [Terms of Service](https://adrlopech.github.io/Silicon-Verdict/terms.html) • [Privacy Policy](https://adrlopech.github.io/Silicon-Verdict/privacy.html)
+
+## Trademark & fair use notice
+
+Product names, logos, hardware architectures and game titles mentioned in the content (including AMD, NVIDIA, Intel, Ryzen, GeForce,
+Cyberpunk 2077, Starfield, Baldur's Gate 3, Steam and Minecraft) belong to their respective owners. Their appearance implies no affiliation,
+sponsorship or endorsement. Analysis and commentary are produced independently for educational and informational purposes under nominative fair use;
+game screenshots come from official store pages and are credited in each video description.
+
+## Contact & official links
+
+* **Web Portal**: [https://adrlopech.github.io/Silicon-Verdict/](https://adrlopech.github.io/Silicon-Verdict/)
+* **Terms of Service**: [https://adrlopech.github.io/Silicon-Verdict/terms.html](https://adrlopech.github.io/Silicon-Verdict/terms.html)
+* **Privacy Policy**: [https://adrlopech.github.io/Silicon-Verdict/privacy.html](https://adrlopech.github.io/Silicon-Verdict/privacy.html)
+* **Official TikTok**: [@siliconverdict](https://www.tiktok.com/@siliconverdict)
+* **Official YouTube**: [@SiliconVerdictHQ](https://www.youtube.com/@SiliconVerdictHQ)
+* **Developer & Contact Email**: `imnotchego@gmail.com`
 
 ---
 
-## 📂 Estructura del Proyecto
-
-```text
-Silicon-Verdict/
-├── assets/             # Fuentes tipográficas, overlays gráficos, clips base
-├── config/             # Esquemas de configuración, temas visuales y reglas editoriales
-├── modules/
-│   ├── ai/             # Conectores LLM (Gemini) para análisis y guiones
-│   ├── audio/          # Clientes TTS (ElevenLabs) y procesado de onda
-│   ├── compositor/     # Motores de renderizado y layouts de motion graphics
-│   ├── subtitles/      # Detección y parsing temporal con faster-whisper
-│   └── uploader/       # Clientes OAuth para YouTube Data API y TikTok API
-├── scripts/            # Scripts de diagnóstico, telemetría y pruebas unitarias
-├── .env.example
-├── main.py             # Entrypoint CLI del pipeline
-├── requirements.txt
-└── README.md
-```
-
----
-
-## 📄 Licencia
-
-Distribuido bajo la licencia **MIT**. Para más detalles, consulta el archivo `LICENSE`.
+<p align="center">
+  <sub>&copy; 2026 Silicon Verdict. All rights reserved.</sub>
+</p>

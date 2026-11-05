@@ -53,9 +53,25 @@ def refill_game(target: int) -> int:
     return added
 
 
+def refill_minecraft(target: int) -> int:
+    from services.mc_story_generator import generate_story_live
+    added = 0
+    while count_ready("minecraft") < target:
+        avoid = topics_in_bank("minecraft") + get_recently_used_topics_safe()
+        try:
+            story = generate_story_live(avoid_topics=avoid)
+        except GeminiUnavailable as exc:
+            log.warning("Stopping: Gemini unavailable (%s)", str(exc)[:120])
+            break
+        add_story("minecraft", story)
+        added += 1
+        log.info("Banked minecraft script: %s (%d ready)", story.topic, count_ready("minecraft"))
+    return added
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--series", choices=["simple", "game", "all"], default="all")
+    ap.add_argument("--series", choices=["simple", "game", "minecraft", "all"], default="all")
     ap.add_argument("--target", type=int, default=8, help="Ready stories to keep per series")
     args = ap.parse_args()
 
@@ -64,7 +80,9 @@ def main() -> None:
         total += refill_simple(args.target)
     if args.series in ("game", "all"):
         total += refill_game(args.target)
-    log.info("Done: %d new stories banked. Ready: simple=%d, game=%d", total, count_ready("simple"), count_ready("game"))
+    if args.series in ("minecraft", "all"):
+        total += refill_minecraft(args.target)
+    log.info("Done: %d new stories banked. Ready: simple=%d, game=%d, minecraft=%d", total, count_ready("simple"), count_ready("game"), count_ready("minecraft"))
 
 
 if __name__ == "__main__":

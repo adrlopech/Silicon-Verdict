@@ -347,7 +347,7 @@ def main():
         print("-" * 76)
         print(f" 🖼️ Static Frame:    {test_frame_file.resolve()}")
         print(f" 🎬 1080p60 Video:    {test_video_file.resolve()}")
-        print(f" 📊 Video Resolution: 1920x1080 @ 60fps (Duration: 4.0s | 240 Animated Frames)")
+        print(" 📊 Video Resolution: 1920x1080 @ 60fps (Duration: 4.0s | 240 Animated Frames)")
         print("=" * 76 + "\n")
 
 

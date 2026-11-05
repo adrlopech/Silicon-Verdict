@@ -6,7 +6,6 @@ video.upload, video.publish) and Content Posting API direct publishing.
 Outputs: assets/tiktok_integration_demo.mp4 (H.264, 1920x1080, < 45 MB, 40-50s).
 """
 
-import os
 import sys
 import time
 import shutil
@@ -267,7 +266,7 @@ def record_demo():
     print(f"  Path:     {FINAL_VIDEO_PATH}")
     print(f"  Duration: {duration_sec:.2f} seconds (Target: 40 - 50 seconds)")
     print(f"  Size:     {file_size_mb:.2f} MB (Limit: < 45 MB)")
-    print(f"  Codecs:   H.264 (High) / AAC Stereo")
+    print("  Codecs:   H.264 (High) / AAC Stereo")
     print("="*60 + "\n")
 
     assert 40.0 <= duration_sec <= 50.0, f"Duration {duration_sec:.2f}s is outside 40-50s requirement!"
