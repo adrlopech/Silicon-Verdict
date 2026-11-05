@@ -13,8 +13,6 @@ import { SpectrumBands } from './vectors/SpectrumBands';
 import { SiliconStackingIllustration } from './vectors/SiliconStackingIllustration';
 import { MemoryBusBottleneckIllustration } from './vectors/MemoryBusBottleneckIllustration';
 import { ThermalDissipationIllustration } from './vectors/ThermalDissipationIllustration';
-import { GameFrame } from './GameFrame';
-import { StatCard } from './StatCard';
 
 export interface AudioSyncedAssetProps {
   children?: React.ReactNode;
@@ -26,11 +24,6 @@ export interface AudioSyncedAssetProps {
   label?: string;
   isLastScene?: boolean;
   motionPreset?: 'hero' | 'metric' | 'diagram';
-  image_src?: string;
-  video_src?: string;
-  video_seconds?: number;
-  game_title?: string;
-  annotation?: string;
   seed?: number;
 }
 
@@ -43,11 +36,6 @@ export const AudioSyncedAsset: React.FC<AudioSyncedAssetProps> = ({
   durationInFrames,
   label,
   isLastScene = false,
-  image_src,
-  video_src,
-  video_seconds,
-  game_title,
-  annotation,
   seed = 0,
 }) => {
   const frame = useCurrentFrame();
@@ -90,20 +78,6 @@ export const AudioSyncedAsset: React.FC<AudioSyncedAssetProps> = ({
   const renderContent = () => {
     if (children) return children;
     switch ((asset_id || '').toLowerCase()) {
-      case 'stat_card':
-        return <StatCard label={label} caption={annotation} />;
-      case 'game_frame':
-        return (
-          <GameFrame
-            image_src={image_src}
-            video_src={video_src}
-            video_seconds={video_seconds}
-            game_title={game_title}
-            annotation={annotation}
-            durationFrames={effectiveDuration}
-            seed={seed}
-          />
-        );
       case 'silicon_die':
       case 'cpu_die':
       case 'semiconductor': {
@@ -192,7 +166,7 @@ export const AudioSyncedAsset: React.FC<AudioSyncedAssetProps> = ({
           position: 'relative',
         }}
       >
-        {label && !['game_frame', 'stat_card'].includes((asset_id || '').toLowerCase()) && (
+        {label && (
           <div
             style={{
               position: 'absolute',

@@ -208,11 +208,6 @@ class MotionVisualTrigger(BaseModel):
     word_anchor: str = Field(..., description="Key word or phrase in script where this graphic triggers")
     duration_seconds: float = Field(default=12.0, description="On-screen duration in seconds")
     motion_preset: str = Field(default="hero", description="hero, metric, or diagram")
-    game_title: Optional[str] = Field(default=None, description="For asset_id 'game_frame': exact game name whose real screenshot is shown, e.g. 'DOOM' or 'Skyrim'")
-    annotation: Optional[str] = Field(default=None, description="For 'game_frame': 2-6 word uppercase callout about the technical detail, e.g. 'ONE FRAME = 4,000 DRAW CALLS'")
-    image_src: Optional[str] = Field(default=None, description="Set by the pipeline, never by the model")
-    video_src: Optional[str] = Field(default=None, description="Set by the pipeline: game clip shown instead of a screenshot")
-    video_seconds: Optional[float] = Field(default=None, description="Set by the pipeline: clip length")
 
 
 class MotionStoryProject(BaseModel):
@@ -228,7 +223,6 @@ class MotionStoryProject(BaseModel):
     full_script: str = Field(..., description="High-octane 140-160 word narration script in 100% US English with dramatic pacing")
     visual_triggers: List[MotionVisualTrigger] = Field(..., description="Synchronized vector graphic trigger points")
     is_fallback: bool = Field(default=False, description="Set by the pipeline when the deterministic story was used")
-    media_keys: List[str] = Field(default_factory=list, description="Set by the pipeline: game media consumed by this video")
     gemini_input_tokens: int = Field(default=0)
     gemini_output_tokens: int = Field(default=0)
 

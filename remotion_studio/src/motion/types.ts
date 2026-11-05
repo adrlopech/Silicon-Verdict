@@ -1,5 +1,5 @@
 /** Data contract of the MotionGraphic composition. Everything shown on screen comes from these props (no text lives in the code). */
-export type SceneType = 'bigText' | 'textWithAccent' | 'counter' | 'list' | 'codeBlock' | 'progressBar' | 'outro' | 'curve' | 'flash';
+export type SceneType = 'bigText' | 'textWithAccent' | 'counter' | 'list' | 'codeBlock' | 'progressBar' | 'outro' | 'curve' | 'flash' | 'footage';
 
 export interface MotionScene {
   type: SceneType;
@@ -11,6 +11,11 @@ export interface MotionScene {
   items?: string[]; // list: 2-4 short items
   code?: string[]; // codeBlock: up to 8 short lines
   light?: boolean; // light background variant for this scene
+  mediaSrc?: string; // footage: path inside the render's public dir, e.g. games/skyrim_00.jpg or games/clip.mp4
+  mediaKind?: 'image' | 'video'; // footage: how to play mediaSrc
+  mediaSeconds?: number; // footage: clip length (video loops if the scene lasts longer)
+  credit?: string; // footage: game name shown as a tag
+  narration?: string; // spoken line (used by the pipeline for the voice; not drawn)
   durationInFrames: number;
 }
 

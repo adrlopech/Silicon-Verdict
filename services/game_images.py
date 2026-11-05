@@ -1,11 +1,10 @@
-"""Real game media (Steam screenshots + trailer clips) for Remotion GameFrame scenes.
+"""Real game media (Steam screenshots + trailer clips) for the Motion Graphics game videos.
 
 Rules enforced here:
 - every media item is used in ONE video only: once the video is rendered its files are deleted and its key goes to the used-ledger
   (so a later fetch never downloads it again);
 - a game covered in the last 14 days is blacklisted (services/game_registry.py);
-- each trigger gets media whose caption matches what the narration says at that moment (one LLM call per video, see assign_media);
-  a trigger with no fitting media is downgraded to a vector card instead of showing something irrelevant.
+- the script is written against the captions of the chosen game's footage, so each footage scene shows what the narration mentions.
 """
 import hashlib
 import json
@@ -94,8 +93,41 @@ def canonical_game(name: str) -> Optional[str]:
     return None
 
 
+MIN_LUMA = 28  # mean brightness (0-255) below which a frame is a fade-to-black / empty shot
+
+
+def _luma(entry: dict) -> Optional[float]:
+    """Mean brightness of the item's middle frame (cached in the manifest); None if it cannot be measured."""
+    if entry.get("luma") is not None:
+        return float(entry["luma"])
+    import io
+    from PIL import Image, ImageStat
+    raw = _thumb_bytes({**entry, "kind": kind_of(entry)})
+    if not raw:
+        return None
+    value = float(ImageStat.Stat(Image.open(io.BytesIO(raw)).convert("L")).mean[0])
+    data = load_manifest()
+    for sec in ("images", "videos"):
+        for e in data[sec]:
+            if entry_key(e) == entry_key(entry):
+                e["luma"] = round(value, 1)
+    save_manifest(data)
+    return value
+
+
 def usable_media(game: str, captioned_only: bool = True) -> List[dict]:
-    return [i for i in load_images() if _game_matches(game, i["game"]) and (i.get("caption") or not captioned_only)]
+    """Unused items of a game; black / near-black shots (trailer fades) are never offered."""
+    out = []
+    items = load_images()
+    exact = any(i["game"] == game for i in items)  # an exact manifest name must never match a sibling ("Half-Life: Alyx" vs "Half-Life 2")
+    for i in items:
+        if not (i["game"] == game if exact else _game_matches(game, i["game"])) or not (i.get("caption") or not captioned_only):
+            continue
+        luma = _luma(i)
+        if luma is not None and luma < MIN_LUMA:
+            continue
+        out.append(i)
+    return out
 
 
 def available_games(include_blacklisted: bool = False) -> List[str]:
@@ -109,32 +141,14 @@ def available_games(include_blacklisted: bool = False) -> List[str]:
     return sorted(games)
 
 
-def story_game(story) -> Optional[str]:
-    """The game a story is about: the most common game_title among its game_frame triggers."""
-    titles = [t.game_title for t in story.visual_triggers if getattr(t, "game_title", None)]
-    if not titles:
-        return None
-    top = Counter(titles).most_common(1)[0][0]
-    return canonical_game(top) or top
-
-
-def story_is_allowed(story) -> bool:
-    """False when the story is about a blacklisted or exhausted game."""
-    game = story_game(story)
-    return game is None or any(_game_matches(game, g) for g in available_games())
-
-
 # ------------------------------- staging & credits -------------------------------
-def stage_media_for_remotion(entry: dict) -> str:
-    REMOTION_GAMES_DIR.mkdir(parents=True, exist_ok=True)
-    src = GAMES_DIR / entry["file"]
-    dest = REMOTION_GAMES_DIR / Path(entry["file"]).name
-    if not dest.is_file() or dest.stat().st_size != src.stat().st_size:
-        shutil.copyfile(src, dest)
+def stage_media(entry: dict, public_dir: Path) -> str:
+    """Copies the item into <public_dir>/games and returns the staticFile-relative path ("games/<name>")."""
+    dest_dir = Path(public_dir) / "games"
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    dest = dest_dir / Path(entry["file"]).name
+    shutil.copyfile(GAMES_DIR / entry["file"], dest)
     return f"games/{dest.name}"
-
-
-stage_image_for_remotion = stage_media_for_remotion  # backwards-compatible name
 
 
 def build_credits(entries: List[dict]) -> List[str]:
@@ -146,11 +160,10 @@ def build_credits(entries: List[dict]) -> List[str]:
 
 
 # ------------------------------- consumption -------------------------------
-def commit_story_media(story) -> int:
-    """Called once the video is rendered: deletes every media file the story used (assets + Remotion copies), forgets it in the manifest,
-    records its key so it is never fetched again, and blacklists the game for 14 days. Returns how many items were consumed."""
+def commit_media(keys: List[str], game: str, title: str = "") -> int:
+    """Called once the video is rendered: deletes every media file it used (assets + Remotion copies), forgets them in the manifest,
+    records their keys so they are never fetched again, and blacklists the game for 14 days. Returns how many items were consumed."""
     from services.game_registry import mark_media_used, record_game
-    keys = list(getattr(story, "media_keys", None) or [])
     data = load_manifest()
     consumed = 0
     for section in ("images", "videos"):
@@ -164,13 +177,25 @@ def commit_story_media(story) -> int:
                 keep.append(e)
         data[section] = keep
     save_manifest(data)
-    game = story_game(story)
     if keys:
         mark_media_used(keys, game or "")
     if game:
-        record_game(game, getattr(story, "title", ""))
+        record_game(game, title)
     logger.info("Game media consumed: %d item(s) deleted for '%s'.", consumed, game)
     return consumed
+
+
+def pick_game() -> Optional[str]:
+    """A random game that is not blacklisted and still has enough unused, captioned footage."""
+    import random
+    games = available_games()
+    return random.choice(games) if games else None
+
+
+def footage_catalog(game: str, limit: int = 40) -> Dict[str, dict]:
+    """{media_id: entry} of the unused, captioned footage of a game. Ids are short (m01, m02...) so a model cannot garble them;
+    entry["key"] is the stable key used for the used-ledger."""
+    return {f"m{i:02d}": e for i, e in enumerate(usable_media(game)[:limit], start=1)}
 
 
 # ------------------------------- captions (what each item shows) -------------------------------
@@ -228,74 +253,3 @@ def caption_pending(limit: int = 200) -> int:
         save_manifest(data)
         logger.info("Captioned %d/%d (%s via %s).", done, len(todo), game, model)
     return done
-
-
-# ------------------------------- grounded assignment -------------------------------
-def _context_for(story, anchor: str, radius: int = 14) -> str:
-    words = story.full_script.split()
-    low = [re.sub(r"\W+", "", w).lower() for w in words]
-    key = re.sub(r"\W+", "", (anchor or "").split()[0] if anchor else "").lower()
-    pos = next((i for i, w in enumerate(low) if w == key), 0)
-    return " ".join(words[max(0, pos - radius): pos + radius])
-
-
-def assign_media(story) -> object:
-    """Binds each 'game_frame' trigger to an unused screenshot/clip of the SAME game whose caption fits what the narration says there.
-    One LLM call per video. Items nobody asked for are never shown; a trigger without a fitting item becomes a vector 'stat_card'.
-    The chosen keys are kept in story.media_keys so commit_story_media() can consume them after the render."""
-    from pydantic import BaseModel
-    from services.gemini_client import GeminiUnavailable, generate_structured
-
-    triggers = [(i, t) for i, t in enumerate(story.visual_triggers) if t.asset_id.lower() == "game_frame"]
-    if not triggers:
-        return story
-    game = story_game(story)
-    pool = usable_media(game) if game else []
-    chosen: Dict[int, dict] = {}
-    if pool:
-        catalog = {e["key"]: e for e in pool}
-
-        class Pick(BaseModel):
-            trigger: int
-            media_id: Optional[str] = None
-
-        class Picks(BaseModel):
-            items: List[Pick]
-
-        def _check(r: Picks) -> List[str]:
-            ids = [p.media_id for p in r.items if p.media_id]
-            bad = [i for i in ids if i not in catalog]
-            return ([f"unknown media ids {bad[:3]}"] if bad else []) + (["a media id was used twice"] if len(ids) != len(set(ids)) else [])
-
-        lines = "\n".join(f"- id={k} [{e['kind']}] {e['caption']}" for k, e in catalog.items())
-        asks = "\n".join(f"- trigger {i}: callout \"{t.annotation or t.label}\" | narration at that moment: \"{_context_for(story, t.word_anchor)}\"" for i, t in triggers)
-        prompt = (f"Game: {game}. Available media (each can be used ONCE):\n{lines}\n\nTriggers to illustrate:\n{asks}\n\n"
-                  "For each trigger choose the media whose caption best shows what the narration is talking about at that moment. "
-                  "If nothing fits well, return media_id null (a vector graphic will be used instead; do NOT force a bad match). "
-                  "Prefer 'video' items when they fit equally well. Never use an id twice.")
-        try:
-            res, _tok, model = generate_structured(prompt, "You are a careful video editor matching footage to narration.", Picks, temperature=0.2, validate=_check)
-            for p in res.items:
-                if p.media_id and p.trigger in dict(triggers):
-                    chosen[p.trigger] = catalog[p.media_id]
-            logger.info("Media assignment via %s: %d of %d triggers matched.", model, len(chosen), len(triggers))
-        except GeminiUnavailable as exc:
-            logger.warning("Media matching unavailable (%s): game_frame triggers become vector cards rather than showing unverified footage.", str(exc)[:120])
-
-    used_entries: List[dict] = []
-    for i, trig in triggers:
-        entry = chosen.get(i)
-        if not entry:
-            trig.asset_id, trig.annotation, trig.image_src, trig.video_src = "stat_card", None, None, None
-            continue
-        staged = stage_media_for_remotion(entry)
-        if entry["kind"] == "video":
-            trig.video_src, trig.video_seconds, trig.image_src = staged, float(entry.get("seconds", 3.0)), None
-        else:
-            trig.image_src, trig.video_src = staged, None
-        trig.game_title = entry["game"]
-        used_entries.append(entry)
-    story.media_keys = [e["key"] for e in used_entries]
-    if used_entries:
-        story.description = story.description.split("\n\nImages:")[0].rstrip() + "\n\nImages & footage: " + "; ".join(build_credits(used_entries)) + " (official Steam store media)."
-    return story

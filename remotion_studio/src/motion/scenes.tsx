@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
+import { AbsoluteFill, Img, Loop, OffthreadVideo, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { Accent, Burst, EASE_IO, EASE_OUT, Kicker, SafeBox, Words, clamp, fit, useTheme } from './primitives';
 import { MONO, SANS } from './fonts';
 import { BRAND_BLUE, MotionScene, SAFE_BOTTOM, SAFE_TOP } from './types';
@@ -199,5 +199,50 @@ export const Outro: React.FC<P> = ({ scene }) => {
         <Accent text={scene.accentText} size={120} delay={16} />
       </SafeBox>
     </>
+  );
+};
+
+
+/** Real game footage (screenshot or trailer clip) in the channel look: blue/cyan grade, scan line, corner brackets, game tag and a callout. */
+export const Footage: React.FC<P> = ({ scene }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const { theme } = useTheme();
+  const W = 920, H = 518;
+  const enter = spring({ frame, fps, config: { damping: 200, mass: 0.9 } });
+  const progress = Math.min(1, frame / Math.max(1, scene.durationInFrames));
+  const zoom = interpolate(progress, [0, 1], [1.04, 1.14]);
+  const panX = interpolate(progress, [0, 1], [-12, 12]);
+  const sweep = ((frame / fps) % 2.4) / 2.4;
+  const grade = 'grayscale(0.55) contrast(1.1) brightness(0.9) saturate(1.1)';
+  const media: React.CSSProperties = { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: grade };
+  const bracket = (pos: React.CSSProperties) => <div style={{ position: 'absolute', width: 38, height: 38, borderColor: theme.accent, borderStyle: 'solid', borderWidth: 0, filter: `drop-shadow(0 0 6px ${theme.accent})`, ...pos }} />;
+  return (
+    <SafeBox gap={36}>
+      <div style={{ position: 'relative', width: W, height: H, borderRadius: 26, overflow: 'hidden', background: '#05070C', boxShadow: `inset 0 0 0 1px ${theme.accent}55, 0 30px 90px rgba(0,0,0,0.55), 0 0 60px ${BRAND_BLUE}44`, opacity: enter, transform: `translateY(${(1 - enter) * 50}px) scale(${0.96 + 0.04 * enter})` }}>
+        {scene.mediaSrc && scene.mediaKind === 'video' ? (
+          <Loop durationInFrames={Math.max(1, Math.round((scene.mediaSeconds ?? 3) * fps))}>
+            <OffthreadVideo src={staticFile(scene.mediaSrc)} muted style={media} />
+          </Loop>
+        ) : scene.mediaSrc ? (
+          <Img src={staticFile(scene.mediaSrc)} style={{ ...media, transform: `scale(${zoom}) translateX(${panX}px)` }} />
+        ) : null}
+        <AbsoluteFill style={{ background: `linear-gradient(160deg, ${BRAND_BLUE}66 0%, ${BRAND_BLUE}33 55%, ${theme.accent}33 100%)`, mixBlendMode: 'color' }} />
+        <AbsoluteFill style={{ background: 'radial-gradient(ellipse at center, rgba(0,0,0,0) 48%, rgba(3,8,18,0.8) 100%)' }} />
+        <AbsoluteFill style={{ opacity: 0.1, backgroundImage: 'linear-gradient(rgba(255,255,255,0.7) 1px, transparent 1px)', backgroundSize: '100% 6px' }} />
+        <div style={{ position: 'absolute', left: 0, right: 0, top: `${sweep * 100}%`, height: 3, background: `linear-gradient(90deg, transparent, ${theme.accent}, transparent)`, opacity: 0.55 }} />
+        {bracket({ top: 18, left: 18, borderTopWidth: 4, borderLeftWidth: 4 })}
+        {bracket({ top: 18, right: 18, borderTopWidth: 4, borderRightWidth: 4 })}
+        {bracket({ bottom: 18, left: 18, borderBottomWidth: 4, borderLeftWidth: 4 })}
+        {bracket({ bottom: 18, right: 18, borderBottomWidth: 4, borderRightWidth: 4 })}
+        {scene.credit && (
+          <div style={{ position: 'absolute', left: 34, bottom: 30, padding: '8px 18px', borderRadius: 999, background: 'rgba(5,7,12,0.72)', border: `1px solid ${theme.accent}66`, fontFamily: MONO, fontSize: fit(24, scene.credit.length, 560, 0.62, 16), letterSpacing: 2, color: theme.accent, textTransform: 'uppercase', maxWidth: 640, whiteSpace: 'nowrap', overflow: 'hidden' }}>
+            ● {scene.credit}
+          </div>
+        )}
+      </div>
+      <Words text={scene.text} size={86} delay={10} upper />
+      <Accent text={scene.accentText} size={110} delay={18} />
+    </SafeBox>
   );
 };

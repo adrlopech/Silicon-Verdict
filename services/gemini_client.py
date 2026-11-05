@@ -252,7 +252,9 @@ PROVIDERS = [
     # {CLOUDFLARE_ACCOUNT_ID} in a URL is replaced with that setting; the provider stays disabled while it is empty
     ("cloudflare", "https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/v1", "CLOUDFLARE_API_TOKEN", "CLOUDFLARE_MODELS"),
 ]
-PROVIDER_MAX_OUTPUT = 5000   # free tiers meter tokens per minute (Groq: 8000 for prompt + reserved output), so the reserve must stay small
+PROVIDER_TPM = {"groq": 7600}  # per-minute token ceilings of the free tiers (prompt + reserved output); providers not listed are unlimited here
+PROVIDER_MIN_OUTPUT = 1200    # a request that cannot reserve at least this many output tokens is skipped instead of failing with a 413
+PROVIDER_MAX_OUTPUT = 6500   # free tiers meter tokens per minute (Groq: 8000 for prompt + reserved output), so the reserve must stay small
 _provider_dead: set = set()
 
 
@@ -304,8 +306,13 @@ def _compatible_one_model(prov: tuple, model: str, prompt, system, schema, tempe
     name, url, key_attr, _m = prov
     headers = {"Authorization": f"Bearer {_provider_key(key_attr)}", "Content-Type": "application/json"}
     feedback, last_error, use_temperature, use_json_mode = "", "no attempt made", True, True
+    room = min(max_output_tokens or PROVIDER_MAX_OUTPUT, PROVIDER_MAX_OUTPUT)
+    if name in PROVIDER_TPM:  # size the output reserve so prompt + reserve always fits the per-minute limit (a 413 can then never happen)
+        room = min(room, PROVIDER_TPM[name] - int((len(system) + len(prompt)) / 3.0) - 300)
+        if room < PROVIDER_MIN_OUTPUT:
+            raise ValueError(f"prompt too large for {name}'s per-minute limit")
     for attempt in range(1, attempts + 1):
-        body = {"model": model, "max_completion_tokens": min(max_output_tokens or PROVIDER_MAX_OUTPUT, PROVIDER_MAX_OUTPUT),
+        body = {"model": model, "max_completion_tokens": room,
                 "messages": [{"role": "system", "content": system}, {"role": "user", "content": _user_content(prompt + feedback, images)}]}
         if use_json_mode:
             body["response_format"] = {"type": "json_object"}
@@ -368,7 +375,7 @@ def _compatible_one_model(prov: tuple, model: str, prompt, system, schema, tempe
     raise ValueError(last_error)
 
 
-def _compatible_structured(prov: tuple, prompt, system_instruction, schema, temperature, validate, max_output_tokens, images=None):
+def _compatible_structured(prov: tuple, prompt, system_instruction, schema, temperature, validate, max_output_tokens, images=None, only_models=None):
     """Tries every model of a provider (rotating on rate limits; one short wait if all are busy). Schema goes in the prompt in compact form."""
     name, _url, _k, models_attr = prov
     system = system_instruction or "You are a precise assistant."
@@ -377,8 +384,10 @@ def _compatible_structured(prov: tuple, prompt, system_instruction, schema, temp
     else:
         system += "\n\nRespond ONLY with one valid JSON object."
     models = [m.strip() for m in str(getattr(settings, models_attr.replace("_MODELS", "_VISION_MODELS") if images else models_attr, "")).split(",") if m.strip()]
-    if images and not models:
-        raise GeminiUnavailable(f"{name}: no vision model configured")
+    if only_models:  # the caller needs specific (stronger) models and refuses any other
+        models = [m for m in models if m in only_models]
+    if not models:
+        raise GeminiUnavailable(f"{name}: no {'vision ' if images else ''}model available" + (f" among {only_models}" if only_models else ""))
     errors: List[str] = []
     for round_idx in range(2):
         shortest_wait = None
@@ -412,16 +421,21 @@ def generate_structured(
     max_output_tokens: Optional[int] = None,
     provider_first: Optional[str] = None,
     images: Optional[List[bytes]] = None,
+    provider_models: Optional[List[str]] = None,
+    strict_provider: bool = False,
 ) -> Tuple[Any, Tuple[int, int], str]:
     """Gemini first; if no Gemini model can serve the request, each configured fallback provider is tried in order.
-    `provider_first="groq"` tries that provider before Gemini (e.g. a stronger model for fact-checking).
+    `provider_first="groq"` tries that provider before Gemini (e.g. a stronger model for fact-checking); `provider_models` restricts that provider to those
+    models only (no weaker fallback within it); `strict_provider=True` raises instead of falling back to Gemini or other providers when it fails.
     Returns (parsed_object, (input_tokens, output_tokens), model_name). Raises GeminiUnavailable if every provider fails."""
     if provider_first:
         for prov in enabled_providers():
             if prov[0] == provider_first:
                 try:
-                    return _compatible_structured(prov, prompt, system_instruction, schema, temperature, validate, max_output_tokens, images)
+                    return _compatible_structured(prov, prompt, system_instruction, schema, temperature, validate, max_output_tokens, images, provider_models)
                 except GeminiUnavailable as pexc:
+                    if strict_provider:
+                        raise
                     logger.warning("%s unavailable (%s); using Gemini.", provider_first, str(pexc)[:140])
     try:
         return _gemini_structured(prompt, system_instruction, schema, temperature, validate, timeout_ms, max_passes, max_total_seconds, prefer, max_output_tokens, images)

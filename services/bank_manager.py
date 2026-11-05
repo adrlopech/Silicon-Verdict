@@ -1,6 +1,6 @@
 """Story bank policy.
 
-- Whenever the bank has fewer than LOW_WATERMARK (30) ready scripts for a series ('simple', 'game'),
+- Whenever the bank has fewer than LOW_WATERMARK (30) ready scripts for a series ('simple', 'minecraft'),
   a batch of BATCH (20) new scripts is generated.
 - After every video, the bank is checked and, if below the watermark, the batch is generated.
 - If the bank is empty before a video, production pauses until a batch is generated.
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 LOW_WATERMARK = 30
 BATCH = 20
-SERIES = ("simple", "game", "minecraft")
+SERIES = ("simple", "minecraft")
 
 
 def generate_one(series: str) -> Any:
@@ -29,8 +29,7 @@ def generate_one(series: str) -> Any:
     if series == "minecraft":
         from services.mc_story_generator import generate_story_live as generate_mc
         return generate_mc(avoid_topics=avoid)
-    from services.content_generator import generate_motion_story
-    return generate_motion_story(3, series="game", live_only=True, avoid_topics=avoid, assign=False)  # media is matched when the video is made
+    raise ValueError(f"unknown series {series!r}")
 
 
 BATCH_CHUNK = 4  # scripts requested per Gemini call: 20 scripts cost ~5 requests of the (tiny) free-tier daily quota instead of 20+
@@ -52,7 +51,7 @@ def _generate_chunk(series: str, want: int) -> list:
                 logger.info("Batch not possible right now (%s); asking for one script at a time.", str(exc)[:100])
                 return batch(1, avoid)
             raise
-    return [generate_one(series)]  # game scripts need the image-aware pipeline: one per call
+    return [generate_one(series)]
 
 
 def refill(series: str, count: int = BATCH) -> int:
@@ -75,15 +74,9 @@ def refill(series: str, count: int = BATCH) -> int:
 def take_or_refill(series: str) -> Optional[Any]:
     """Pops a banked script. If the bank is empty, stops to generate a batch first."""
     accept = None
-    if series == "game":  # skip stories about a blacklisted / exhausted game; they stay banked for later
-        from services.game_images import story_is_allowed
-        accept = story_is_allowed
     story = pop_story(series, accept)
     if story is not None:
         return story
-    if accept is not None and count_ready(series) > 0:
-        logger.info("No banked %s story fits right now (their games are blacklisted or exhausted); generating a new one live.", series)
-        return None
     logger.warning("The %s bank is EMPTY. Pausing production to generate %d new scripts...", series, BATCH)
     refill(series, BATCH)
     return pop_story(series, accept)

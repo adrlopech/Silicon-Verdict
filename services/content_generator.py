@@ -1236,11 +1236,6 @@ DOMAIN_TAXONOMY: Dict[str, Dict[str, List[str]]] = {
         "banned_keywords": ["p_cores", "e_cores", "l3_cache", "dlss", "rtx", "compute_die", "silicon_die", "shader", "zen_4"],
         "allowed_assets": ["rf_collision", "spectrum_bands"],
     },
-    "game_tech": {
-        "allowed_keywords": ["engine", "physics", "frame", "tick", "render", "draw_call", "streaming", "lod", "shader", "netcode", "game"],
-        "banned_keywords": ["microwave", "subsea", "quantum", "router", "die_shot", "transistor"],
-        "allowed_assets": ["game_frame", "stat_card"],
-    },
     "everyday_tech": {
         "allowed_keywords": ["cable", "battery", "screen", "touch", "sensor", "signal", "usb", "bluetooth", "camera"],
         "banned_keywords": ["fps_meter", "gameplay", "rtx_4090", "dlss"],
@@ -1339,8 +1334,6 @@ def validate_and_sanitize_brand_integrity(story: MotionStoryProject) -> Tuple[bo
 
 def resolve_topic_domain(category_id: int, topic: Optional[str] = None, series: Optional[str] = None) -> str:
     """Resolves the strict visual & thematic domain for a given category and topic."""
-    if category_id == 3 and series == "game":
-        return "game_tech"
     if category_id == 3 and series == "simple":
         return "everyday_tech"
     if category_id == 1:
@@ -1391,64 +1384,10 @@ def validate_domain_integrity(
     return is_valid, violations
 
 
-def get_emergency_game_story(topic: Optional[str] = None) -> MotionStoryProject:
-    """Deterministic game-curiosity story (Skyrim physics tied to frame rate) using real screenshots."""
-    script = (
-        "Your 144 hertz monitor can literally break Skyrim. Why? "
-        "Because Bethesda tied the game's physics to the frame rate. "
-        "At sixty frames per second, everything behaves. "
-        "Push past that, and the physics engine steps forward more often than designed, so objects jitter and fly across the room. "
-        "At one hundred forty four hertz, that simulation runs two point four times faster than the developers intended. "
-        "This is called a variable time step. Instead of advancing the world by a fixed slice of time, the engine scales every movement by how long the last frame took. "
-        "Tiny floating point rounding errors then pile up, and precision decides whether a bucket sits still or launches. "
-        "The game does not know your monitor is fast. It just keeps counting frames as time. "
-        "Capping the frame rate at sixty restores the original behavior instantly. "
-        "Modern engines decouple physics from rendering with a fixed time step. "
-        "Would you trade smoothness for stable physics?"
-    )
-    G = "Skyrim"
-    T = lambda a, l, w, m="hero", g=None, an=None, d=3.5: MotionVisualTrigger(
-        asset_id=a, label=l, word_anchor=w, duration_seconds=d, motion_preset=m, game_title=g, annotation=an)
-    return MotionStoryProject(
-        topic=topic or "Why High FPS Breaks Skyrim Physics",
-        category_id=3,
-        category_name="GAME CURIOSITIES",
-        header_banner="YOUR MONITOR CAN BREAK SKYRIM",
-        title="Your 144Hz Monitor Breaks Skyrim's Physics #Skyrim #GameDev #SiliconVerdict #Shorts",
-        description="Skyrim ties its physics simulation to the frame rate. Here is why high refresh rates make objects jitter, and how a fixed time step fixes it.",
-        tags=["SiliconVerdict", "Skyrim", "GameDev", "Physics", "Gaming", "TechCuriosities", "Shorts"],
-        pinned_comment="Would you cap your frame rate for stable physics, or run uncapped and accept the chaos?",
-        full_script=script,
-        visual_triggers=[
-            T("game_frame", "SKYRIM", "hertz", g=G, an="144 HZ BREAKS THE GAME"),
-            T("stat_card", "144 HZ", "monitor", an="YOUR REFRESH RATE"),
-            T("game_frame", "PHYSICS TIED TO FPS", "physics", g=G, an="PHYSICS = FRAME RATE"),
-            T("game_frame", "60 FPS", "sixty", g=G, an="EVERYTHING BEHAVES"),
-            T("game_frame", "OBJECTS JITTER", "jitter", g=G, an="TOO MANY PHYSICS STEPS"),
-            T("stat_card", "2.4X FASTER", "two", an="SIMULATION SPEED"),
-            T("stat_card", "VARIABLE TIME STEP", "variable"),
-            T("game_frame", "SCALED BY FRAME TIME", "scales", g=G, an="MOVEMENT x FRAME TIME"),
-            T("stat_card", "ROUNDING ERRORS", "floating", an="FLOATING POINT"),
-            T("game_frame", "PRECISION DECIDES", "bucket", g=G, an="ROUNDING = CHAOS"),
-            T("game_frame", "FRAMES AS TIME", "counting", g=G, an="THE GAME CAN'T TELL"),
-            T("stat_card", "CAP AT 60 FPS", "capping", an="ORIGINAL BEHAVIOR"),
-            T("stat_card", "FIXED TIME STEP", "decouple", an="MODERN ENGINES"),
-            T("game_frame", "STABLE PHYSICS", "smoothness", g=G, an="CAP = SAME BEHAVIOR", d=6.0),
-        ],
-        gemini_input_tokens=450,
-        gemini_output_tokens=380,
-    )
-
-
 def get_emergency_motion_story(category_id: int, topic: Optional[str] = None, series: Optional[str] = None) -> MotionStoryProject:
     """Provides high-octane deterministic fallback story for Remotion Kinetic Motion Graphics.
     Enforces Universal Rhythm Rule (15-16 micro-scenes, visual beat every 2.5-3.5s) and strict domain isolation.
     """
-    if series == "game" and category_id == 3:
-        story = get_emergency_game_story(topic)
-        story = finalize_game_triggers(story)
-        story.is_fallback = True
-        return story
     if category_id == 1:
         story = MotionStoryProject(
             topic=topic or "AMD 3D V-Cache vs Monolithic Latency",
@@ -1582,13 +1521,6 @@ def get_emergency_motion_story(category_id: int, topic: Optional[str] = None, se
     return story
 
 
-def finalize_game_triggers(story: MotionStoryProject) -> MotionStoryProject:
-    """Binds each 'game_frame' trigger to unused real footage of the game that fits what is said (see game_images.assign_media);
-    triggers without a fitting screenshot/clip become vector cards."""
-    from services.game_images import assign_media
-    return assign_media(story)
-
-
 def generate_motion_story(
     category_id: int,
     topic_override: Optional[str] = None,
@@ -1596,7 +1528,6 @@ def generate_motion_story(
     prefer_bank: bool = False,
     live_only: bool = False,
     avoid_topics: Optional[List[str]] = None,
-    assign: bool = True,
 ) -> MotionStoryProject:
     """Generates an ultra-kinetic, 100% US English motion graphics script and 12-18 visual triggers specification."""
     cat_names = {
@@ -1604,17 +1535,6 @@ def generate_motion_story(
         2: ("GAMING & OPTIMIZATION", "Frame pacing telemetry, 1% lows vs average FPS, frametime spikes, competitive settings, DLSS vs native, micro-stutters"),
         3: ("TECH CURIOSITIES", "Applied physical science, radio frequencies, subsea optical cables, atomic clock relativity, VCSEL depth arrays, inductive coupling"),
     }
-    if series == "game":
-        from services.game_images import available_games
-        if not available_games():
-            raise RuntimeError("No game is available right now: every game with stocked media was covered in the last 14 days or ran out of unused "
-                               "screenshots/clips. Run scripts/fetch_game_images.py, or wait for the blacklist to expire (python -m services.game_registry).")
-    if prefer_bank and series == "game" and not topic_override:
-        from services.bank_manager import take_or_refill
-        banked = take_or_refill("game")
-        if banked is not None:
-            return rebind_game_images(banked)
-        logger.info("Game story bank has no usable story and could not be refilled; generating live.")
     cat_name, cat_desc = cat_names.get(category_id, cat_names[3])
     domain = resolve_topic_domain(category_id, topic_override, series)
     allowed_assets = DOMAIN_TAXONOMY[domain]["allowed_assets"]
@@ -1635,28 +1555,7 @@ def generate_motion_story(
         "- TEXT HIERARCHY: Badge label MUST be MAXIMUM 3 words (e.g. '2.45 GHz CLASH', '1000W MAGNETRON', 'PACKET LOSS // 98%'). Bold, punchy uppercase only.\n"
         "- Set word_anchor to an exact word in the full_script where each micro-scene triggers."
     )
-    if series == "game":
-        import random as _random
-        from services.game_images import available_games, usable_media
-        # The game is chosen here (not blacklisted, with stocked footage) and its footage catalog goes into the prompt, so the script talks
-        # about things the footage really shows.
-        chosen_game = _random.choice(available_games())
-        catalog = "\n".join(f"  * [{e['kind']}] {e['caption']}" for e in usable_media(chosen_game)[:30])
-        games = [chosen_game]
-        system_instruction += (
-            "\n\nSERIES: GAME TECH CURIOSITY. Explain one TRUE, verifiable engineering fact about the game below "
-            "(engine behavior, physics, streaming, rendering trick, netcode). Never invent numbers; if unsure, pick a different fact.\n"
-            f"- The game is EXACTLY: {chosen_game}. Use asset_id 'game_frame' for most triggers, with game_title set to exactly {games}, "
-            "and annotation = 2-6 uppercase words naming the technical detail shown.\n"
-            "- FOOTAGE AVAILABLE for this game (screenshots and trailer clips; each can be shown once). Write the script so that, whenever a game_frame "
-            "trigger fires, the narration at that moment is about something one of these items visibly shows (a place, a creature, a character, an object):\n"
-            f"{catalog}\n"
-            "- Use asset_id 'stat_card' for the remaining triggers: label = the key term or number from the script (max 3 words), annotation = optional 2-4 word caption. "
-            "Never invent figures that are not in the script.\n"
-            "- Use 6 to 9 game_frame triggers out of 12 to 14 total; they must not outnumber the footage items listed.\n"
-            "- Open with a counterintuitive hook that names the game within the first sentence."
-        )
-    elif series == "simple":
+    if series == "simple":
         system_instruction += (
             "\n\nSERIES: SIMPLE EVERYDAY CURIOSITY. Explain a small, relatable tech mystery everyone has experienced "
             "(USB, Bluetooth, touchscreens, batteries, cameras) in plain language with one surprising number. "
@@ -1694,14 +1593,12 @@ def generate_motion_story(
             validate=_validate,
         )
         story.category_id = category_id
-        story.category_name = cat_name if series != "game" else "GAME CURIOSITIES"
+        story.category_name = cat_name
         story.gemini_input_tokens, story.gemini_output_tokens = tokens
 
         _, brand_violations = validate_and_sanitize_brand_integrity(story)
         if brand_violations:
             logger.info("Motion story sanitized for brand integrity: %s", brand_violations)
-        if series == "game" and assign:
-            story = finalize_game_triggers(story)
         logger.info("MotionStoryProject generated successfully (%s): %d words | %d triggers", model_name, story.get_total_words(), len(story.visual_triggers))
         return story
     except GeminiUnavailable as exc:
@@ -1709,20 +1606,5 @@ def generate_motion_story(
         if live_only:
             raise
 
-    if series == "game":
-        from services.story_bank import pop_story
-        banked = pop_story("game")
-        if banked is not None:
-            return rebind_game_images(banked)
-
     logger.warning("Falling back to deterministic MotionStoryProject.")
     return get_emergency_motion_story(category_id, topic=topic_override, series=series)
-
-
-def rebind_game_images(story: MotionStoryProject) -> MotionStoryProject:
-    """Matches a banked game story to unused footage that fits its narration (the bank stores scripts without media)."""
-    for trig in story.visual_triggers:
-        trig.image_src, trig.video_src, trig.video_seconds = None, None, None
-    story.media_keys = []
-    story.description = story.description.split("\n\nImages:")[0].split("\n\nImages & footage:")[0]
-    return finalize_game_triggers(story)

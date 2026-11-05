@@ -51,3 +51,4 @@ data/test_weekly_rotation.db
 data/gemini_state.json
 .remotion/
 assets/games/manifest.json
+data/game_facts/

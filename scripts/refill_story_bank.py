@@ -2,9 +2,9 @@
 """Fills the story bank (data/history.db) with validated scripts so publishing never depends on a Gemini spike.
 
 Run it off-peak (e.g. nightly via cron/launchd):
-  python scripts/refill_story_bank.py                    # top up both series to 8 ready stories
+  python scripts/refill_story_bank.py                    # top up the series to 8 ready stories
   python scripts/refill_story_bank.py --series simple --target 12
-  python scripts/refill_story_bank.py --series game --target 5
+  python scripts/refill_story_bank.py --series minecraft --target 20
 """
 import argparse
 import logging
@@ -38,21 +38,6 @@ def refill_simple(target: int) -> int:
     return added
 
 
-def refill_game(target: int) -> int:
-    from services.content_generator import generate_motion_story
-    added = 0
-    while count_ready("game") < target:
-        story = generate_motion_story(3, series="game")
-        if getattr(story, "is_fallback", False):
-            # Deterministic fallback came back: Gemini is not available, do not bank it.
-            log.warning("Stopping: only the deterministic fallback is available right now.")
-            break
-        add_story("game", story)
-        added += 1
-        log.info("Banked game story: %s (%d ready)", story.topic, count_ready("game"))
-    return added
-
-
 def refill_minecraft(target: int) -> int:
     from services.mc_story_generator import generate_story_live
     added = 0
@@ -71,18 +56,16 @@ def refill_minecraft(target: int) -> int:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--series", choices=["simple", "game", "minecraft", "all"], default="all")
+    ap.add_argument("--series", choices=["simple", "minecraft", "all"], default="all")
     ap.add_argument("--target", type=int, default=8, help="Ready stories to keep per series")
     args = ap.parse_args()
 
     total = 0
     if args.series in ("simple", "all"):
         total += refill_simple(args.target)
-    if args.series in ("game", "all"):
-        total += refill_game(args.target)
     if args.series in ("minecraft", "all"):
         total += refill_minecraft(args.target)
-    log.info("Done: %d new stories banked. Ready: simple=%d, game=%d, minecraft=%d", total, count_ready("simple"), count_ready("game"), count_ready("minecraft"))
+    log.info("Done: %d new stories banked. Ready: simple=%d, minecraft=%d", total, count_ready("simple"), count_ready("minecraft"))
 
 
 if __name__ == "__main__":

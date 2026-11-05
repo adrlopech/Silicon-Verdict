@@ -387,9 +387,6 @@ def run_master_video_pipeline(
         )
         actual_dur = get_video_duration_ffprobe(final_video)
         logger.info("Remotion Master Render Completed: %s (Duration: %.2fs @ 30 FPS)", final_video.name, actual_dur)
-        if series == "game" and hasattr(story, "media_keys"):
-            from services.game_images import commit_story_media  # delete the footage this video used, never reuse it, blacklist the game 14 days
-            commit_story_media(story)
 
         # 5. Multi-Platform Distribution (Single Master Render Output)
         # One folder per video, named after its title; files are named by creation date and time
@@ -539,7 +536,7 @@ def run_master_video_pipeline(
             print("=" * 80 + "\n")
 
         # Story bank policy: this video consumed one banked script, so top the bank back up (best effort).
-        if prefer_bank and series in ("simple", "game") and not benchmark and not story_topic_forced:
+        if prefer_bank and series == "simple" and not benchmark and not story_topic_forced:
             from services.bank_manager import replenish_after_use
             replenish_after_use(series)
 
@@ -718,9 +715,16 @@ def parse_args():
     parser.add_argument(
         "--series",
         type=str,
-        choices=["hardware", "game", "simple", "minecraft", "motion"],
+        choices=["hardware", "simple", "minecraft", "motion"],
         default=None,
-        help="Tech Curiosities sub-series: hardware (physics/engineering), game (game tech with real screenshots), simple (everyday), minecraft (concept explained inside Minecraft, ~64 s, always a new Gemini script), motion (type 6: kinetic-typography Motion Graphics, 20-45 s, English only).",
+        help="Tech Curiosities sub-series: hardware (physics/engineering), simple (everyday), minecraft (concept explained inside Minecraft, ~64 s, always a new Gemini script), motion (type 6: kinetic-typography Motion Graphics, 62-84 s, English only; curiosities and games with real footage).",
+    )
+    parser.add_argument(
+        "--motion-kind",
+        type=str,
+        choices=["auto", "curiosity", "game"],
+        default="auto",
+        help="With --series motion: curiosity (tech idea), game (engineering fact about a game with real footage) or auto (alternates; a game needs unused, non-blacklisted footage).",
     )
     parser.add_argument(
         "--from-bank",
@@ -794,7 +798,7 @@ if __name__ == "__main__":
     if args.series == "motion":
         from services.motion_pipeline import run_motion_pipeline
         try:
-            run_motion_pipeline(topic=chosen_topic, export_only=args.export_only or args.benchmark, dry_run=args.dry_run, privacy=args.privacy)
+            run_motion_pipeline(topic=chosen_topic, export_only=args.export_only or args.benchmark, dry_run=args.dry_run, privacy=args.privacy, kind=args.motion_kind)
         except Exception as exc:
             logger.error("Motion Graphics pipeline failed: %s", exc)
             sys.exit(1)

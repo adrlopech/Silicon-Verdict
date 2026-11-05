@@ -1,18 +1,18 @@
 """Bank of pre-generated, validated scripts stored in data/history.db.
 
 Refilled off-peak by scripts/refill_story_bank.py; consumed when Gemini is unavailable at publish time.
-Series: 'simple' -> StoryProject, 'game' -> MotionStoryProject, 'minecraft' -> McStory.
+Series: 'simple' -> StoryProject, 'minecraft' -> McStory.
 """
 import logging
 from datetime import datetime, timezone
 from typing import Any, Optional
 
-from core.schemas import McStory, MotionStoryProject, StoryProject
+from core.schemas import McStory, StoryProject
 from services.history import get_db_connection, init_db
 
 logger = logging.getLogger(__name__)
 
-MODELS = {"simple": StoryProject, "game": MotionStoryProject, "minecraft": McStory}
+MODELS = {"simple": StoryProject, "minecraft": McStory}
 
 
 def _ensure() -> None:

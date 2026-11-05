@@ -81,7 +81,7 @@ Selecciona el enfoque temático para este vídeo (60-120s):
 3. **Tech Curiosities & Storytelling** (Estilo Infográfico 2D: Paradojas de ingeniería, cables submarinos, satélites, física de chips).
 4. **Automático (IA)** (La IA elige la categoría óptima basándose en la rotación de `data/history.db` y las analíticas de retención).
 5. **Curiosidades en Minecraft** (Concepto técnico explicado dentro de Minecraft, ~64s, guion nuevo de Gemini).
-6. **Motion Graphics** (Tipografía cinética 20-45s, vertical 1080x1920, siempre en inglés, composición `MotionGraphic` de Remotion).
+6. **Motion Graphics** (Tipografía cinética con voz, 62-80s para monetizar, vertical 1080x1920, siempre en inglés. Dos tipos: curiosidades y juegos con footage real).
 
 👉 Responde únicamente con el número deseado: **[1, 2, 3, 4, 5 o 6]**
 ---
@@ -108,7 +108,8 @@ Selecciona el enfoque temático para este vídeo (60-120s):
      * Ejecuta: `.venv/bin/python main.py --series minecraft --privacy public`
      * Pipeline `services/mc_pipeline.py`: siempre guion nuevo de Gemini (sin fallback); si Gemini no está disponible, el proceso se detiene.
    - **Si responde `6`**:
-     * Ejecuta: `.venv/bin/python main.py --series motion --privacy public`
+     * Ejecuta: `.venv/bin/python main.py --series motion --privacy public` (añadir `--motion-kind game` o `--motion-kind curiosity` para elegir; por defecto alterna).
+     * Los vídeos de juegos usan capturas y clips reales: cada elemento se usa una sola vez y se borra, y el juego queda bloqueado 14 días.
      * Pipeline `services/motion_pipeline.py`: guion JSON de Gemini (con respaldos), revisión de hechos, render con `@remotion/renderer`, sonido, control de calidad y subida.
    - **Entrada no válida**:
      * Si el usuario introduce cualquier otro carácter o texto, notifica:
