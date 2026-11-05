@@ -1,0 +1,15 @@
+{
+  "title": "Formats demo",
+  "theme": { "accent": "#00F0FF", "background": "#05070C", "text": "#FFFFFF" },
+  "scenes": [
+    { "type": "tier", "kicker": "ram tier list", "text": "Ranking RAM", "accentText": "by value", "items": ["S|DDR5-6000 CL30"], "durationInFrames": 90 },
+    { "type": "tier", "kicker": "ram tier list", "text": "Ranking RAM", "accentText": "by value", "items": ["S|DDR5-6000 CL30", "B|DDR4-3200", "F|Single stick"], "durationInFrames": 90 },
+    { "type": "versus", "kicker": "round 1", "text": "Memory bandwidth", "accentText": "per second", "left": "Xbox 360", "right": "PS3", "leftValue": 22.4, "rightValue": 25.6, "unit": "GB/s", "durationInFrames": 120 },
+    { "type": "versus", "kicker": "round 2", "text": "Latency", "accentText": "lower wins", "left": "SSD", "right": "HDD", "leftValue": 0.1, "rightValue": 12, "unit": "ms", "winner": "left", "durationInFrames": 120 },
+    { "type": "verdict", "kicker": "myth or fact", "text": "More RAM always means faster", "verdict": "myth", "accentText": "Only if you run out.", "durationInFrames": 120 },
+    { "type": "verdict", "text": "SSDs wear out with writes", "verdict": "fact", "accentText": "But very slowly.", "durationInFrames": 120 },
+    { "type": "verdict", "text": "Clearing cache speeds up your PC", "verdict": "partly", "accentText": "Sometimes, briefly.", "durationInFrames": 120 },
+    { "type": "timeline", "kicker": "gpu evolution", "text": "Thirty years of GPUs", "accentText": "in five steps", "items": ["1996|3dfx Voodoo", "1999|GeForce 256", "2006|Unified shaders", "2018|Ray tracing", "2022|AI upscaling"], "durationInFrames": 180 },
+    { "type": "outro", "text": "Stay curious.", "accentText": "Follow for more", "durationInFrames": 90 }
+  ]
+}

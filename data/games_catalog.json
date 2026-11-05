@@ -1,0 +1,560 @@
+{
+ "1808500": {
+  "slug": "arc_raiders",
+  "name": "ARC Raiders",
+  "year": 2025,
+  "release": "Oct 30, 2025"
+ },
+ "427410": {
+  "slug": "abiotic_factor",
+  "name": "Abiotic Factor",
+  "year": 2025,
+  "release": "Jul 22, 2025"
+ },
+ "3274580": {
+  "slug": "anno_117_pax_romana",
+  "name": "Anno 117: Pax Romana",
+  "year": 2025,
+  "release": "Nov 12, 2025"
+ },
+ "3159330": {
+  "slug": "assassin_s_creed_shadows",
+  "name": "Assassin's Creed Shadows",
+  "year": 2025,
+  "release": "Mar 19, 2025"
+ },
+ "801800": {
+  "slug": "atomfall",
+  "name": "Atomfall",
+  "year": 2025,
+  "release": "Mar 27, 2025"
+ },
+ "2457220": {
+  "slug": "avowed",
+  "name": "Avowed",
+  "year": 2025,
+  "release": "Feb 18, 2025"
+ },
+ "2807960": {
+  "slug": "battlefield_6",
+  "name": "Battlefield 6",
+  "year": 2025,
+  "release": "Oct 10, 2025"
+ },
+ "1569580": {
+  "slug": "blue_prince",
+  "name": "Blue Prince",
+  "year": 2025,
+  "release": "Apr 10, 2025"
+ },
+ "1285190": {
+  "slug": "borderlands_4",
+  "name": "Borderlands 4",
+  "year": 2025,
+  "release": "Sep 11, 2025"
+ },
+ "3606480": {
+  "slug": "call_of_duty_black_ops_7",
+  "name": "Call of Duty: Black Ops 7",
+  "year": 2025,
+  "release": "Nov 21, 2025"
+ },
+ "1903340": {
+  "slug": "clair_obscur_expedition_33",
+  "name": "Clair Obscur: Expedition 33",
+  "year": 2025,
+  "release": "Apr 24, 2025"
+ },
+ "3314790": {
+  "slug": "cloverpit",
+  "name": "CloverPit",
+  "year": 2025,
+  "release": "Sep 26, 2025"
+ },
+ "2101960": {
+  "slug": "cronos_the_new_dawn",
+  "name": "Cronos: The New Dawn",
+  "year": 2025,
+  "release": "Sep 5, 2025"
+ },
+ "3017860": {
+  "slug": "doom_the_dark_ages",
+  "name": "DOOM: The Dark Ages",
+  "year": 2025,
+  "release": "May 14, 2025"
+ },
+ "1984270": {
+  "slug": "digimon_story_time_stranger",
+  "name": "Digimon Story Time Stranger",
+  "year": 2025,
+  "release": "Oct 2, 2025"
+ },
+ "2592160": {
+  "slug": "dispatch",
+  "name": "Dispatch",
+  "year": 2025,
+  "release": "Oct 22, 2025"
+ },
+ "1172710": {
+  "slug": "dune_awakening",
+  "name": "Dune: Awakening",
+  "year": 2025,
+  "release": "Jun 10, 2025"
+ },
+ "3008130": {
+  "slug": "dying_light_the_beast",
+  "name": "Dying Light: The Beast",
+  "year": 2025,
+  "release": "Sep 18, 2025"
+ },
+ "3405690": {
+  "slug": "ea_sports_fc_26",
+  "name": "EA SPORTS FC 26",
+  "year": 2025,
+  "release": "Sep 25, 2025"
+ },
+ "3230400": {
+  "slug": "ea_sports_madden_nfl_26",
+  "name": "EA SPORTS Madden NFL 26",
+  "year": 2025,
+  "release": "Aug 14, 2025"
+ },
+ "2622380": {
+  "slug": "elden_ring_nightreign",
+  "name": "ELDEN RING NIGHTREIGN",
+  "year": 2025,
+  "release": "May 29, 2025"
+ },
+ "3450310": {
+  "slug": "europa_universalis_v",
+  "name": "Europa Universalis V",
+  "year": 2025,
+  "release": "Nov 4, 2025"
+ },
+ "3059520": {
+  "slug": "f1_25",
+  "name": "F1 25",
+  "year": 2025,
+  "release": "May 30, 2025"
+ },
+ "2909400": {
+  "slug": "final_fantasy_vii_rebirth",
+  "name": "FINAL FANTASY VII REBIRTH",
+  "year": 2025,
+  "release": "Jan 23, 2025"
+ },
+ "3551340": {
+  "slug": "football_manager_26",
+  "name": "Football Manager 26",
+  "year": 2025,
+  "release": "Nov 4, 2025"
+ },
+ "1145350": {
+  "slug": "hades_ii",
+  "name": "Hades II",
+  "year": 2025,
+  "release": "Sep 25, 2025"
+ },
+ "1620730": {
+  "slug": "hell_is_us",
+  "name": "Hell is Us",
+  "year": 2025,
+  "release": "Sep 4, 2025"
+ },
+ "1030300": {
+  "slug": "hollow_knight_silksong",
+  "name": "Hollow Knight: Silksong",
+  "year": 2025,
+  "release": "Sep 4, 2025"
+ },
+ "2958130": {
+  "slug": "jurassic_world_evolution_3",
+  "name": "Jurassic World Evolution 3",
+  "year": 2025,
+  "release": "Oct 21, 2025"
+ },
+ "3043580": {
+  "slug": "keeper",
+  "name": "Keeper",
+  "year": 2025,
+  "release": "Oct 17, 2025"
+ },
+ "1771300": {
+  "slug": "kingdom_come_deliverance_ii",
+  "name": "Kingdom Come: Deliverance II",
+  "year": 2025,
+  "release": "Feb 4, 2025"
+ },
+ "1392860": {
+  "slug": "little_nightmares_iii",
+  "name": "Little Nightmares III",
+  "year": 2025,
+  "release": "Oct 9, 2025"
+ },
+ "1902960": {
+  "slug": "lost_records_bloom_rage",
+  "name": "Lost Records: Bloom & Rage",
+  "year": 2025,
+  "release": "Feb 18, 2025"
+ },
+ "2753970": {
+  "slug": "marvel_cosmic_invasion",
+  "name": "MARVEL Cosmic Invasion",
+  "year": 2025,
+  "release": "Dec 1, 2025"
+ },
+ "1941540": {
+  "slug": "mafia_the_old_country",
+  "name": "Mafia: The Old Country",
+  "year": 2025,
+  "release": "Aug 7, 2025"
+ },
+ "2651280": {
+  "slug": "marvel_s_spider_man_2",
+  "name": "Marvel's Spider-Man 2",
+  "year": 2025,
+  "release": "Jan 30, 2025"
+ },
+ "3405340": {
+  "slug": "megabonk",
+  "name": "Megabonk",
+  "year": 2025,
+  "release": "Sep 18, 2025"
+ },
+ "2246340": {
+  "slug": "monster_hunter_wilds",
+  "name": "Monster Hunter Wilds",
+  "year": 2025,
+  "release": "Feb 27, 2025"
+ },
+ "2742830": {
+  "slug": "monster_train_2",
+  "name": "Monster Train 2",
+  "year": 2025,
+  "release": "May 21, 2025"
+ },
+ "3472040": {
+  "slug": "nba_2k26",
+  "name": "NBA 2K26",
+  "year": 2025,
+  "release": "Sep 4, 2025"
+ },
+ "2627260": {
+  "slug": "ninja_gaiden_4",
+  "name": "NINJA GAIDEN 4",
+  "year": 2025,
+  "release": "Oct 20, 2025"
+ },
+ "3014320": {
+  "slug": "octopath_traveler_0",
+  "name": "OCTOPATH TRAVELER 0",
+  "year": 2025,
+  "release": "Dec 4, 2025"
+ },
+ "3527290": {
+  "slug": "peak",
+  "name": "PEAK",
+  "year": 2025,
+  "release": "Jun 16, 2025"
+ },
+ "3241660": {
+  "slug": "r_e_p_o",
+  "name": "R.E.P.O.",
+  "year": 2025,
+  "release": "Feb 26, 2025"
+ },
+ "2138720": {
+  "slug": "rematch",
+  "name": "REMATCH",
+  "year": 2025,
+  "release": "Jun 19, 2025"
+ },
+ "2361770": {
+  "slug": "shinobi_art_of_vengeance",
+  "name": "SHINOBI: Art of Vengeance",
+  "year": 2025,
+  "release": "Aug 28, 2025"
+ },
+ "2947440": {
+  "slug": "silent_hill_f",
+  "name": "SILENT HILL f",
+  "year": 2025,
+  "release": "Sep 24, 2025"
+ },
+ "3164500": {
+  "slug": "schedule_i",
+  "name": "Schedule I",
+  "year": 2025,
+  "release": "Mar 24, 2025"
+ },
+ "1295660": {
+  "slug": "sid_meier_s_civilization_vii",
+  "name": "Sid Meier's Civilization VII",
+  "year": 2025,
+  "release": "Feb 10, 2025"
+ },
+ "2169200": {
+  "slug": "sniper_elite_resistance",
+  "name": "Sniper Elite: Resistance",
+  "year": 2025,
+  "release": "Jan 30, 2025"
+ },
+ "2486820": {
+  "slug": "sonic_racing_crossworlds",
+  "name": "Sonic Racing: CrossWorlds",
+  "year": 2025,
+  "release": "Sep 25, 2025"
+ },
+ "2001120": {
+  "slug": "split_fiction",
+  "name": "Split Fiction",
+  "year": 2025,
+  "release": "Mar 6, 2025"
+ },
+ "3489700": {
+  "slug": "stellar_blade",
+  "name": "Stellar Blade",
+  "year": 2025,
+  "release": "Jun 11, 2025"
+ },
+ "1466060": {
+  "slug": "tainted_grail_the_fall_of_avalon",
+  "name": "Tainted Grail: The Fall of Avalon",
+  "year": 2025,
+  "release": "May 23, 2025"
+ },
+ "1601570": {
+  "slug": "the_alters",
+  "name": "The Alters",
+  "year": 2025,
+  "release": "Jun 13, 2025"
+ },
+ "2623190": {
+  "slug": "the_elder_scrolls_iv_oblivion_remastered",
+  "name": "The Elder Scrolls IV: Oblivion Remastered",
+  "year": 2025,
+  "release": "Apr 22, 2025"
+ },
+ "2531310": {
+  "slug": "the_last_of_us_part_ii_remastered",
+  "name": "The Last of Us Part II Remastered",
+  "year": 2025,
+  "release": "Apr 3, 2025"
+ },
+ "2863640": {
+  "slug": "the_midnight_walk",
+  "name": "The Midnight Walk",
+  "year": 2025,
+  "release": "May 8, 2025"
+ },
+ "1449110": {
+  "slug": "the_outer_worlds_2",
+  "name": "The Outer Worlds 2",
+  "year": 2025,
+  "release": "Oct 29, 2025"
+ },
+ "1154030": {
+  "slug": "titan_quest_ii",
+  "name": "Titan Quest II",
+  "year": 2025,
+  "release": "Aug 1, 2025"
+ },
+ "2525380": {
+  "slug": "tomb_raider_iv_vi_remastered",
+  "name": "Tomb Raider IV-VI Remastered",
+  "year": 2025,
+  "release": "Feb 14, 2025"
+ },
+ "2277560": {
+  "slug": "wuchang_fallen_feathers",
+  "name": "WUCHANG: Fallen Feathers",
+  "year": 2025,
+  "release": "Jul 23, 2025"
+ },
+ "3564740": {
+  "slug": "where_winds_meet",
+  "name": "Where Winds Meet",
+  "year": 2025,
+  "release": "Nov 14, 2025"
+ },
+ "2456740": {
+  "slug": "inzoi",
+  "name": "inZOI",
+  "year": 2025,
+  "release": "Mar 27, 2025"
+ },
+ "3354750": {
+  "slug": "skate",
+  "name": "skate.",
+  "year": 2025,
+  "release": "Sep 16, 2025"
+ },
+ "3768760": {
+  "slug": "007_first_light",
+  "name": "007 First Light",
+  "year": 2026,
+  "release": "May 26, 2026"
+ },
+ "4732690": {
+  "slug": "arknights_endfield",
+  "name": "Arknights: Endfield",
+  "year": 2026,
+  "release": "Oct 14, 2026"
+ },
+ "3669870": {
+  "slug": "control_resonant",
+  "name": "CONTROL Resonant",
+  "year": 2026,
+  "release": "Sep 24, 2026"
+ },
+ "3321460": {
+  "slug": "crimson_desert_enhanced",
+  "name": "Crimson Desert Enhanced",
+  "year": 2026,
+  "release": "Mar 19, 2026"
+ },
+ "3280350": {
+  "slug": "death_stranding_2_on_the_beach",
+  "name": "DEATH STRANDING 2: ON THE BEACH",
+  "year": 2026,
+  "release": "Mar 19, 2026"
+ },
+ "2499860": {
+  "slug": "dragon_quest_vii_reimagined",
+  "name": "DRAGON QUEST VII Reimagined",
+  "year": 2026,
+  "release": "Feb 5, 2026"
+ },
+ "2483190": {
+  "slug": "forza_horizon_6",
+  "name": "Forza Horizon 6",
+  "year": 2026,
+  "release": "May 18, 2026"
+ },
+ "3010850": {
+  "slug": "gears_of_war_e_day",
+  "name": "Gears of War: E-Day",
+  "year": 2026,
+  "release": "Oct 6, 2026"
+ },
+ "1297900": {
+  "slug": "gothic_1_remake",
+  "name": "Gothic 1 Remake",
+  "year": 2026,
+  "release": "Jun 5, 2026"
+ },
+ "2806050": {
+  "slug": "halo_campaign_evolved",
+  "name": "Halo: Campaign Evolved",
+  "year": 2026,
+  "release": "Jul 28, 2026"
+ },
+ "2069250": {
+  "slug": "high_on_life_2",
+  "name": "High On Life 2",
+  "year": 2026,
+  "release": "Feb 13, 2026"
+ },
+ "2215200": {
+  "slug": "lego_batman_legacy_of_the_dark_knight",
+  "name": "LEGO Batman: Legacy of the Dark Knight",
+  "year": 2026,
+  "release": "May 22, 2026"
+ },
+ "2416450": {
+  "slug": "mouse_p_i_for_hire",
+  "name": "MOUSE: P.I. For Hire",
+  "year": 2026,
+  "release": "Apr 16, 2026"
+ },
+ "3065800": {
+  "slug": "marathon",
+  "name": "Marathon",
+  "year": 2026,
+  "release": "Mar 5, 2026"
+ },
+ "1875580": {
+  "slug": "mina_the_hollower",
+  "name": "Mina the Hollower",
+  "year": 2026,
+  "release": "May 28, 2026"
+ },
+ "2852190": {
+  "slug": "monster_hunter_stories_3_twisted_reflection",
+  "name": "Monster Hunter Stories 3: Twisted Reflection",
+  "year": 2026,
+  "release": "Mar 12, 2026"
+ },
+ "2584270": {
+  "slug": "mortal_shell_ii",
+  "name": "Mortal Shell II",
+  "year": 2026,
+  "release": "Aug 20, 2026"
+ },
+ "4508340": {
+  "slug": "nte_neverness_to_everness",
+  "name": "NTE: Neverness to Everness",
+  "year": 2026,
+  "release": "Jul 7, 2026"
+ },
+ "3681010": {
+  "slug": "nioh_3",
+  "name": "Nioh 3",
+  "year": 2026,
+  "release": "Feb 5, 2026"
+ },
+ "2638890": {
+  "slug": "onimusha_way_of_the_sword",
+  "name": "Onimusha: Way of the Sword",
+  "year": 2026,
+  "release": "Sep 3, 2026"
+ },
+ "3357650": {
+  "slug": "pragmata",
+  "name": "PRAGMATA",
+  "year": 2026,
+  "release": "Apr 16, 2026"
+ },
+ "4115450": {
+  "slug": "phantom_blade_zero",
+  "name": "Phantom Blade Zero",
+  "year": 2026,
+  "release": "Oct 28, 2026"
+ },
+ "3764200": {
+  "slug": "resident_evil_requiem",
+  "name": "Resident Evil Requiem",
+  "year": 2026,
+  "release": "Feb 26, 2026"
+ },
+ "2868840": {
+  "slug": "slay_the_spire_2",
+  "name": "Slay the Spire 2",
+  "year": 2026,
+  "release": "Mar 5, 2026"
+ },
+ "1962700": {
+  "slug": "subnautica_2",
+  "name": "Subnautica 2",
+  "year": 2026,
+  "release": "May 14, 2026"
+ },
+ "3751260": {
+  "slug": "the_blood_of_dawnwalker",
+  "name": "The Blood of Dawnwalker",
+  "year": 2026,
+  "release": "Sep 2, 2026"
+ },
+ "2272360": {
+  "slug": "warhammer_40_000_dawn_of_war_iv",
+  "name": "Warhammer 40,000: Dawn of War IV",
+  "year": 2026,
+  "release": "Dec 3, 2026"
+ },
+ "3949290": {
+  "slug": "ys_x_proud_nordics",
+  "name": "Ys X: Proud Nordics",
+  "year": 2026,
+  "release": "Feb 20, 2026"
+ }
+}

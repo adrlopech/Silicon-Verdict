@@ -137,8 +137,22 @@ def qa_motion(path: Path) -> list:
     return fails
 
 
-def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, dry_run: bool = False, privacy: str = "public", kind: str = "auto") -> Dict[str, Any]:
-    """kind: curiosity | game | auto (a game video when a game with unused footage is not blacklisted, otherwise a curiosity)."""
+def _last_motion_choice():
+    """(kind, format) of the previous Motion Graphics video, from the history (best effort), so the automatic mode does not repeat it."""
+    try:
+        from services.history import get_db_connection, init_db
+        init_db()
+        with get_db_connection() as conn:
+            row = conn.execute("SELECT category FROM shorts_history WHERE category LIKE 'MOTION GRAPHICS%' ORDER BY id DESC LIMIT 1").fetchone()
+        parts = (row["category"] if row else "").split()
+        return ("auto", parts[2].lower()) if len(parts) > 2 else None
+    except Exception:
+        return None
+
+
+def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, dry_run: bool = False, privacy: str = "public", kind: str = "auto", fmt: str = "auto") -> Dict[str, Any]:
+    """kind: curiosity | game | auto (a game video when a game with unused footage is not blacklisted, otherwise a curiosity).
+    fmt: auto (the classic explainer) | myth | tier | whatif | easter | evolution | versus | any (a random format). `easter` is always a game video, the rest are curiosities."""
     from services.history import get_recently_used_topics_safe, record_short_history
     from services.motion_generator import generate_motion_project
     from services.output_layout import timestamp_stem, video_dir
@@ -151,6 +165,22 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
     from services.game_facts import get_game_facts
     from services.game_images import available_games
 
+    from services.motion_generator import FORMATS
+    if fmt == "any":  # automatic: one of the nine topics of the Motion Graphics menu (classic, curiosity, game and the six formats), never the same as last time
+        options = [("auto", "auto"), ("curiosity", "auto"), ("game", "auto")] + [("auto", f) for f in FORMATS]
+        if not available_games():
+            options = [o for o in options if o[0] != "game" and o[1] != "easter"]
+        last = _last_motion_choice()
+        pool = [o for o in options if o != last] or options
+        kind, fmt = random.choice(pool)
+        logger.info("Automatic Motion Graphics topic: kind=%s format=%s", kind, fmt)
+    if fmt not in ("auto",) + tuple(FORMATS):
+        raise ValueError(f"unknown format {fmt!r}: use auto, any or one of {FORMATS}")
+    if fmt == "easter":
+        kind = "game"
+    elif fmt != "auto":
+        kind = "curiosity"  # the other formats are told with motion graphics only
+    format_name = None if fmt == "auto" else fmt
     facts = None
     game = None
     if kind in ("game", "auto"):
@@ -167,8 +197,8 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
         raise RuntimeError("No game is available: every game with stocked footage was covered in the last 14 days, ran out of unused footage or has no source text "
                            "(fetch more: scripts/fetch_game_images.py, scripts/fetch_game_clips.py, scripts/caption_game_media.py; blacklist: python -m services.game_registry).")
     catalog = footage_catalog(game) if game else None
-    project = generate_motion_project(topic, avoid_topics=get_recently_used_topics_safe(), kind="game" if game else "curiosity", game=game, catalog=catalog, facts=facts)
-    logger.info("Motion Graphics (%s%s): '%s' (%d scenes)", project.kind, f", {game}" if game else "", project.title, len(project.scenes))
+    project = generate_motion_project(topic, avoid_topics=get_recently_used_topics_safe(), kind="game" if game else "curiosity", game=game, catalog=catalog, facts=facts, fmt=format_name)
+    logger.info("Motion Graphics (%s%s%s): '%s' (%d scenes)", project.kind, f", {game}" if game else "", f", format {format_name}" if format_name else "", project.title, len(project.scenes))
 
     work = Path(settings.TMP_DIR) / f"run_motion_{run_id}"
     work.mkdir(parents=True, exist_ok=True)
@@ -228,9 +258,9 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
             yt_id = f"local_{run_id}"
     try:
         record_short_history(weekday_index=datetime.now().weekday(), theme_key="motion_graphics", game_title=project.screen_title, voice_id_used="none", topic=project.topic,
-                             title=project.title, video_id=yt_id, category="MOTION GRAPHICS", tone="kinetic_typography", preset="remotion_motion")
+                             title=project.title, video_id=yt_id, category=("MOTION GRAPHICS " + project.format.upper()) if project.format else "MOTION GRAPHICS", tone="kinetic_typography", preset="remotion_motion")
     except Exception as exc:
         logger.warning("History not recorded: %s", exc)
     logger.info("Motion Graphics video ready in %.0fs: %s", time.time() - t0, out["tiktok"])
-    return {"kind": project.kind, "game": project.game, "youtube_video": str(out["youtube"]), "youtube_url": youtube_url, "tiktok_video": str(out["tiktok"]), "tiktok_metadata": str(meta),
+    return {"kind": project.kind, "format": project.format, "game": project.game, "youtube_video": str(out["youtube"]), "youtube_url": youtube_url, "tiktok_video": str(out["tiktok"]), "tiktok_metadata": str(meta),
             "title": project.title, "topic": project.topic, "qa_failures": fails, "uploaded": not export_only and not dry_run}

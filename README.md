@@ -102,6 +102,24 @@ python3 scripts/extract_minecraft_assets.py
 .venv/bin/python main.py --series motion --motion-kind curiosity --topic "How TRIM keeps SSDs fast"
 ```
 
+### Content formats (`--motion-format`)
+
+The motion series also speaks six fixed formats, each with its own scene types, prompt rules and validators (the same fact-check pass applies to every one):
+
+```bash
+.venv/bin/python main.py --series motion --motion-format myth --export-only       # MYTH / FACT: claim on screen, then a stamp slams down
+.venv/bin/python main.py --series motion --motion-format tier --export-only       # S-F tier list that fills up item by item
+.venv/bin/python main.py --series motion --motion-format whatif --export-only     # a hypothetical about computing, escalating consequences
+.venv/bin/python main.py --series motion --motion-format evolution --export-only  # timelines + growth counters
+.venv/bin/python main.py --series motion --motion-format versus --export-only     # two contenders, 3-5 rounds of bars, a winner per round
+.venv/bin/python main.py --series motion --motion-format easter --export-only     # a game's hidden detail (needs a game with unused footage and a source dossier)
+.venv/bin/python main.py --series motion --motion-format any                      # a random one
+```
+
+New scene types (`remotion_studio/src/motion/formats.tsx`): `tier` (`items`: `"S|label"`, every scene repeats the board and adds one item), `versus` (`left`, `right`, `leftValue`,
+`rightValue`, `unit`, optional `winner` for lower-is-better metrics), `verdict` (`verdict`: myth | fact | partly, `accentText` = the one-line truth) and `timeline` (`items`: `"year|label"`).
+A demo of all four: `remotion_studio/src/motion/sample_formats.json`. `easter` is always a game video; the others are curiosities.
+
 * **Length: 62-84 s.** YouTube monetisation needs more than 60 s, so the script has 13-19 scenes and about 150-190 narrated words, every scene lasts as long as its narration
   and the pipeline holds scenes a little longer if the voice still comes to less than 62 s. The QA gate rejects anything outside 61-92 s.
 * **Two kinds, one engine.** *Curiosity*: a tech/hardware/coding idea told with words, counters, code, bars and curves. *Game*: the script is written against the
@@ -110,6 +128,7 @@ python3 scripts/extract_minecraft_assets.py
   vision model (`scripts/caption_game_media.py`). A footage scene must show what its narration mentions (checked by the fact-check pass). Every item is used in ONE video and
   then deleted (its key goes to a ledger, so it is never downloaded again), and a game stays blacklisted for 14 days after it appears (`python -m services.game_registry`).
   A game with fewer than 6 unused items is skipped until you fetch more. The footage is only spent when a finished video passes the checks, and near-black shots are never used.
+* **Game roster.** The 15 classic games plus 93 current ones (65 from 2025, 28 from 2026) listed in `data/games_catalog.json` (real Steam appids and release dates). To add a game, add its entry there, then run `scripts/fetch_game_images.py --appid <id>`, `scripts/caption_game_media.py` and `scripts/build_game_facts.py`.
 * **Game facts are grounded, quoted and verified; the video is always produced and uploaded.**
   * *Sources*: each game has a dossier (`services/game_facts.py`: the sections of its Wikipedia article on development / technology / design plus the Steam store description),
     prebuilt and cached by `scripts/build_game_facts.py` so production never depends on Wikipedia being reachable. Live lookups are paced, honour `Retry-After` and fall back to the REST API.

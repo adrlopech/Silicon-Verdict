@@ -2,6 +2,7 @@ import React from 'react';
 import { AbsoluteFill, Sequence, interpolate, useCurrentFrame } from 'remotion';
 import { Background, EASE_OUT, Hud, ThemeCtx, clamp } from './primitives';
 import { BigText, CodeBlock, Counter, Curve, Flash, Footage, ListScene, Outro, ProgressBar, TextWithAccent } from './scenes';
+import { Tier, Timeline, Verdict, Versus } from './formats';
 import { HEIGHT, MotionGraphicProps, MotionScene, OVERLAP, WIDTH, defaultTheme } from './types';
 
 const SCENES: Record<MotionScene['type'], React.FC<{ scene: MotionScene }>> = {
@@ -15,6 +16,10 @@ const SCENES: Record<MotionScene['type'], React.FC<{ scene: MotionScene }>> = {
   curve: Curve,
   flash: Flash,
   footage: Footage,
+  tier: Tier,
+  versus: Versus,
+  verdict: Verdict,
+  timeline: Timeline,
 };
 
 /** One scene wrapper: soft rise-in, soft blur-out while the next scene fades in underneath (cross-fade, never a hard cut). */

@@ -27,7 +27,9 @@ FPS = 30
 MIN_SECONDS, MAX_SECONDS = 62.0, 84.0   # final video: > 60 s for monetisation, short enough to hold attention
 MIN_FRAMES, MAX_FRAMES = int(MIN_SECONDS * FPS), int(MAX_SECONDS * FPS)
 WORDS_PER_SECOND = 2.5                  # natural narration pace used to estimate the final length
-SceneType = Literal["bigText", "textWithAccent", "counter", "list", "codeBlock", "progressBar", "outro", "curve", "flash", "footage"]
+SceneType = Literal["bigText", "textWithAccent", "counter", "list", "codeBlock", "progressBar", "outro", "curve", "flash", "footage", "tier", "versus", "verdict", "timeline"]
+FORMATS = ("myth", "tier", "whatif", "easter", "evolution", "versus")   # content formats on top of the two kinds (curiosity / game); "easter" is always a game video
+TIER_LETTERS = ("S", "A", "B", "C", "D", "F")
 
 
 class MotionSceneModel(BaseModel):
@@ -37,7 +39,13 @@ class MotionSceneModel(BaseModel):
     kicker: Optional[str] = Field(default=None, description="Optional tiny label above the text, 1-3 words")
     value: Optional[float] = Field(default=None, description="counter: final number (> 0); progressBar: percentage 0-100")
     unit: Optional[str] = Field(default=None, description="counter/progressBar suffix such as %, ms, GB")
-    items: Optional[List[str]] = Field(default=None, description="list: 2-4 items of at most 5 words")
+    items: Optional[List[str]] = Field(default=None, description="list: 2-4 items of at most 5 words. tier: the board so far as \"S|label\" entries (tier letter S A B C D F, label at most 22 characters). timeline: 3-5 chronological \"year|label\" entries (label at most 28 characters)")
+    left: Optional[str] = Field(default=None, description="versus: name of the left contender, at most 16 characters (the same in every versus scene)")
+    right: Optional[str] = Field(default=None, description="versus: name of the right contender, at most 16 characters (the same in every versus scene)")
+    leftValue: Optional[float] = Field(default=None, description="versus: the left contender's real, approximate figure for this scene's metric (> 0); `unit` is shared by both")
+    rightValue: Optional[float] = Field(default=None, description="versus: the right contender's real, approximate figure for the same metric (> 0)")
+    winner: Optional[Literal["left", "right", "none"]] = Field(default=None, description="versus: who wins this round; leave empty when the BIGGER figure wins, set it when lower is better")
+    verdict: Optional[Literal["myth", "fact", "partly"]] = Field(default=None, description="verdict scenes only: is the claim a myth, a fact or partly true")
     code: Optional[List[str]] = Field(default=None, description="codeBlock: 2-8 short real code or shell lines (max 38 characters each)")
     light: bool = Field(default=False, description="Light background variant, use for at most one scene")
     mediaId: Optional[str] = Field(default=None, description="footage scenes only: the id of ONE item of the footage list; never reuse an id")
@@ -60,6 +68,7 @@ class MotionProject(BaseModel):
     accent: str = Field(default="#00F0FF", description="Accent colour: always the channel electric cyan #00F0FF (or the channel blue #007AFF)")
     scenes: List[MotionSceneModel]
     kind: str = Field(default="curiosity", description="Set by the pipeline: curiosity | game")
+    format: Optional[str] = Field(default=None, description="Set by the pipeline: myth | tier | whatif | easter | evolution | versus (None = the classic explainer)")
     game: Optional[str] = Field(default=None, description="Set by the pipeline for game videos")
     fact_checked: bool = Field(default=True, description="Set by the pipeline; False when no model could run the fact-check")
     gemini_input_tokens: int = Field(default=0)
@@ -85,7 +94,7 @@ class MotionProject(BaseModel):
     def all_text(self) -> str:
         parts = [self.title, self.description, self.pinned_comment, self.screen_title, " ".join(self.tags)]
         for s in self.scenes:
-            parts += [s.text, s.accentText or "", s.kicker or "", s.unit or "", " ".join(s.items or []), s.narration]
+            parts += [s.text, s.accentText or "", s.kicker or "", s.unit or "", " ".join(s.items or []), s.left or "", s.right or "", s.narration]
         return " ".join(p for p in parts if p)
 
 
@@ -150,6 +159,46 @@ FOOTAGE AVAILABLE for {game} (each can be shown once):
 
 CURIOSITY_RULES = "\nCURIOSITY VIDEO: no footage scenes; use the motion-graphic scene types only."
 
+FORMAT_COMMON = """
+CONTENT FORMAT. This video follows a fixed format. The scene-type variety rule below does NOT apply to the format's own scene types (tier, versus, verdict, timeline),
+which may follow each other. Everything else stays the same: 13 to 19 scenes, a hook first, an outro last, a narration on every scene, 150-190 words in total."""
+
+FORMAT_RULES = {
+    "myth": FORMAT_COMMON + """
+FORMAT = MYTH OR FACT. Pick a theme (a component, a habit, a setting) and test 4 or 5 widespread beliefs about it.
+- Each belief is a `verdict` scene: `text` = the claim exactly as people say it (max 7 words), `verdict` = myth | fact | partly, `accentText` = the one-line truth (max 6 words), `kicker` = "myth or fact".
+- After each verdict scene put ONE supporting scene (counter, progressBar, list, codeBlock or curve) that shows the evidence for the correction; its narration explains WHY.
+- Mix the verdicts: at least 2 myths and at least 1 fact or partly. Never pick a belief you are not sure about; "partly" is the honest answer when it depends.
+- Scene 1 is the hook ("Five things you believe about your SSD. Some are wrong."), the last scene before the outro is a textWithAccent with the takeaway ("Check before you believe"). NEVER state a score or count of myths/facts anywhere (models miscount, and the reviewer rejects it).""",
+    "tier": FORMAT_COMMON + """
+FORMAT = TIER LIST. Rank 6 to 8 items of ONE category (kinds of RAM, SSD types, cooling methods, PC cases, GPU features...) from S (best) to F (worst) by ONE stated criterion
+(say it in the hook: "ranked by value for gaming").
+- The board fills up over consecutive `tier` scenes (one per item). EVERY tier scene repeats the items already placed, in the same order, and adds exactly ONE new item at the END of `items`.
+  Item format "S|label": tier letter S, A, B, C, D or F, a bar, a SHORT label of at most 22 characters. `text` = the category ("Ranking SSDs"), `accentText` = the criterion, `kicker` = "tier list".
+- The narration of each tier scene names the NEW item and justifies its tier with a TRUE, concrete reason (a figure or a mechanism). Use the full range: at least 4 different tiers in the final board.
+- Structure: hook (bigText), 6 to 8 tier scenes, one textWithAccent that gives the surprise or the lesson, outro.""",
+    "whatif": FORMAT_COMMON + """
+FORMAT = WHAT IF. One absurd but physically meaningful hypothetical about computing ("What if your PC had no cache?", "What if an SSD never erased data?", "What if RAM was as slow as a hard drive?").
+- Scene 1: bigText with kicker "what if" and the hypothetical in 2-4 words. Scene 2 restates it as a question in textWithAccent.
+- Then walk through the consequences step by step, ESCALATING each time, with real mechanisms and real approximate figures (counter, progressBar, curve, list, codeBlock). Say "roughly" when a figure is approximate.
+- The consequences must follow from how the hardware or software really works; never invent figures. Close with what the real design does to avoid this, and why that is clever.""",
+    "evolution": FORMAT_COMMON + """
+FORMAT = EVOLUTION. How ONE thing evolved over time (GPUs, storage, CPUs, game graphics, memory, the web...).
+- Use at least 2 `timeline` scenes: `items` = 3 to 5 chronological "year|label" entries (label at most 28 characters), only milestones you are SURE about, with the exact year. `kicker` = "evolution".
+- Between timeline scenes use counter, progressBar or curve scenes that show the growth (transistors, capacity, price, speed) with real, approximate figures spoken in the narration.
+- Hook with the span ("Thirty years of storage in sixty seconds"), end with what the trend means for the future.""",
+    "versus": FORMAT_COMMON + """
+FORMAT = VERSUS. Two contenders (two consoles, two technologies, two standards) fought over 3 to 5 ROUNDS, each round one `versus` scene about ONE metric.
+- `left` and `right` = the contender names (max 16 characters, IDENTICAL in every round), `leftValue` / `rightValue` = real approximate positive figures for that metric, `unit` shared by both,
+  `text` = the metric ("Memory bandwidth"), `accentText` = a short tag ("per second"), `kicker` = "round 1", "round 2"... When LOWER is better (latency, price, power) set `winner` to the contender that wins.
+  Say both figures in the narration. If you are not sure of a figure, pick another metric.
+- Scene 1 is the hook that names both contenders, the last scene before the outro is a textWithAccent that names the overall winner and the catch ("but it depends on...").""",
+    "easter": FORMAT_COMMON + """
+FORMAT = HIDDEN DETAIL (the 'easter egg' format). Tell the most surprising, little-known detail the SOURCE TEXT gives about the game's development, design or technology, as a reveal:
+setup ("You have played this a hundred times"), clue, then the reveal. Open scene 1 with the game name and the promise of a secret, put kicker "hidden detail" on the reveal scenes, and show the
+reveal over the footage scene that matches it best. Everything stays strictly inside the SOURCE TEXT: never present a rumour, a glitch or a secret that the text does not state.""",
+}
+
 _EN_STOP = {"the", "a", "an", "is", "are", "to", "of", "and", "in", "it", "your", "you", "for", "on", "with", "that", "this", "can", "no", "not", "one", "every", "more", "how", "why", "what", "from", "by", "at", "be", "its", "we", "just", "all", "up", "than", "into", "or", "so", "but", "if", "as"}
 
 
@@ -170,7 +219,7 @@ def _repair(p: MotionProject) -> None:
     for s in p.scenes:
         s.durationInFrames = max(60, min(150, int(s.durationInFrames)))
         if s.items:
-            s.items = s.items[:4]
+            s.items = s.items[:{"tier": 10, "timeline": 5}.get(s.type, 4)]
         if s.code:
             s.code = [ln[:38] for ln in s.code[:8]]
         if s.value is not None and s.type == "progressBar":
@@ -215,13 +264,99 @@ def _spoken(s: MotionSceneModel) -> bool:
     return bool([w for w in re.findall(r"[a-z]+", text) if w in _NUM_WORDS] or teens)
 
 
-def make_validator(catalog: Optional[Dict[str, dict]] = None, facts: Optional[str] = None):
-    """Validator for generate_structured. `catalog` (media id -> entry) and `facts` (source dossier) are given for game videos."""
+def _format_problems(p: MotionProject, fmt: Optional[str]) -> List[str]:
+    """Checks of the format's own scene types (tier boards, versus rounds, verdict stamps, timelines), whatever the format of the video."""
+    out: List[str] = []
+    sc = p.scenes
+    tiers = [(i, s) for i, s in enumerate(sc, 1) if s.type == "tier"]
+    prev: List[str] = []
+    for i, s in tiers:
+        items = s.items or []
+        bad = [it for it in items if "|" not in it or it.split("|", 1)[0].strip().upper() not in TIER_LETTERS or not 0 < len(it.split("|", 1)[1].strip()) <= 22]
+        if bad or not items:
+            out.append(f"scene {i}: tier items must look like \"S|label\" (letter S A B C D F, label up to 22 characters): {bad[:2]}")
+            continue
+        if prev and (len(items) != len(prev) + 1 or [x.strip() for x in items[:-1]] != [x.strip() for x in prev]):
+            out.append(f"scene {i}: a tier scene must repeat the previous board in the same order and add exactly ONE item at the end")
+        prev = items
+    for i, s in enumerate(sc, 1):
+        if s.type == "versus":
+            if not (s.left and s.right and len(s.left) <= 16 and len(s.right) <= 16):
+                out.append(f"scene {i}: versus needs `left` and `right` names of at most 16 characters")
+            if not (s.leftValue and s.rightValue and s.leftValue > 0 and s.rightValue > 0):
+                out.append(f"scene {i}: versus needs positive leftValue and rightValue")
+            elif not (_said(s.leftValue, s.narration) or _said(s.rightValue, s.narration)):
+                out.append(f"scene {i}: the versus figures must be said in that scene's narration (no decorative figures)")
+        elif s.type == "verdict":
+            if not s.verdict:
+                out.append(f"scene {i}: verdict scenes need `verdict` (myth, fact or partly)")
+            if not (s.accentText or "").strip():
+                out.append(f"scene {i}: a verdict scene needs accentText: the one-line truth shown under the stamp")
+            if s.accentText and len(s.accentText.split()) > 6:
+                out.append(f"scene {i}: a verdict's accentText is at most 6 words")
+        elif s.type == "timeline":
+            rows = [it.split("|", 1) for it in (s.items or []) if "|" in it]
+            years = [r[0].strip() for r in rows]
+            if not (3 <= len(s.items or []) <= 5) or len(rows) != len(s.items or []) or not all(re.fullmatch(r"\d{4}", y) for y in years):
+                out.append(f"scene {i}: timeline needs 3-5 \"year|label\" items with a four-digit year")
+            elif years != sorted(years):
+                out.append(f"scene {i}: timeline years must be in chronological order")
+            elif any(len(r[1].strip()) > 28 for r in rows):
+                out.append(f"scene {i}: timeline labels are at most 28 characters")
+    lefts = {(s.left or "").strip().lower() for s in sc if s.type == "versus"}
+    rights = {(s.right or "").strip().lower() for s in sc if s.type == "versus"}
+    if len(lefts) > 1 or len(rights) > 1:
+        out.append("the versus contenders must have the SAME names in every round")
+    count = lambda t: sum(1 for s in sc if s.type == t)
+    if fmt == "myth":
+        v = [s.verdict for s in sc if s.type == "verdict"]
+        if len(v) < 4:
+            out.append(f"myth format needs 4-5 verdict scenes, got {len(v)}")
+        if v.count("myth") < 2 or not (v.count("fact") + v.count("partly")):
+            out.append("mix the verdicts: at least 2 myths and at least 1 fact or partly")
+    elif fmt == "tier":
+        if not 6 <= len(tiers) <= 9:
+            out.append(f"tier format needs 6-9 tier scenes (one per item), got {len(tiers)}")
+        elif len({it.split("|", 1)[0].strip().upper() for it in (tiers[-1][1].items or []) if "|" in it}) < 4:
+            out.append("the final tier board must use at least 4 different tiers")
+    elif fmt == "evolution":
+        if count("timeline") < 2:
+            out.append("evolution format needs at least 2 timeline scenes")
+    elif fmt == "versus":
+        if not 3 <= count("versus") <= 5:
+            out.append(f"versus format needs 3-5 versus scenes (rounds), got {count('versus')}")
+    elif fmt == "whatif":
+        if sum(count(t) for t in ("counter", "progressBar", "curve", "list", "codeBlock")) < 3:
+            out.append("what-if format needs at least 3 consequence scenes (counter, progressBar, curve, list or codeBlock)")
+    if fmt not in ("myth", "tier", "versus", "evolution") and (tiers or count("versus") or count("verdict") or count("timeline")):
+        out.append("tier / versus / verdict / timeline scenes belong only to their own format")
+    if fmt == "myth" and (tiers or count("versus") or count("timeline")):
+        out.append("a myth video uses only verdict scenes among the format scenes")
+    if fmt == "tier" and (count("versus") or count("verdict") or count("timeline")):
+        out.append("a tier video uses only tier scenes among the format scenes")
+    if fmt == "versus" and (tiers or count("verdict") or count("timeline")):
+        out.append("a versus video uses only versus scenes among the format scenes")
+    if fmt == "evolution" and (tiers or count("versus") or count("verdict")):
+        out.append("an evolution video uses only timeline scenes among the format scenes")
+    return out
+
+
+def _said(value: float, narration: str) -> bool:
+    """True when `value` appears in the narration as digits or as a spoken number (loose: any digit within 6 % or any number word)."""
+    text = narration.lower().replace(",", "")
+    digits = [float(x) for x in re.findall(r"\d+(?:\.\d+)?", text)]
+    if any(abs(d - value) < 1e-6 or (value and abs(d - value) / value < 0.06) for d in digits):
+        return True
+    return any(w in _NUM_WORDS for w in re.findall(r"[a-z]+", text)) or bool(re.search(r"\b(?:eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen)\b", text))
+
+
+def make_validator(catalog: Optional[Dict[str, dict]] = None, facts: Optional[str] = None, fmt: Optional[str] = None):
+    """Validator for generate_structured. `catalog` (media id -> entry) and `facts` (source dossier) are given for game videos; `fmt` is the content format."""
     known = figures_in(facts) if facts else None
     norm_facts = _norm(facts) if facts else None
     def validate_project(p: MotionProject) -> List[str]:
         _repair(p)
-        out: List[str] = []
+        out: List[str] = _format_problems(p, fmt)
         n = len(p.scenes)
         if not 12 <= n <= 21:
             out.append(f"{n} scenes (need 13-19)")
@@ -266,7 +401,7 @@ def make_validator(catalog: Optional[Dict[str, dict]] = None, facts: Optional[st
                 out.append(f"scene {i}: text longer than {limit} words")
             if s.type == "footage" and (len(s.text.split()) > 7 or not s.mediaId):
                 out.append(f"scene {i}: footage needs a mediaId and a callout of at most 6 words")
-            if s.accentText and len(s.accentText.split()) > 3:
+            if s.accentText and len(s.accentText.split()) > (6 if s.type == "verdict" else 3):
                 out.append(f"scene {i}: accentText longer than 3 words")
             if s.type == "counter" and (s.value is None or s.value <= 0):
                 out.append(f"scene {i}: counter needs a positive value")
@@ -280,7 +415,7 @@ def make_validator(catalog: Optional[Dict[str, dict]] = None, facts: Optional[st
                 out.append(f"scene {i}: list needs 2-4 items")
             if s.type == "codeBlock" and not (s.code and len(s.code) >= 2):
                 out.append(f"scene {i}: codeBlock needs 2+ code lines")
-            if i > 1 and s.type == p.scenes[i - 2].type and s.type not in ("outro", "footage"):
+            if i > 1 and s.type == p.scenes[i - 2].type and s.type not in ("outro", "footage", "tier", "versus", "verdict", "timeline"):
                 out.append(f"scenes {i - 1} and {i} have the same type")
         if not looks_english(p.all_text):
             out.append("the text is not English: everything must be American English")
@@ -292,6 +427,7 @@ class _Issue(BaseModel):
     scene: int
     problem: str
     definitely_wrong: bool
+    fixed_verdict: Optional[Literal["myth", "fact", "partly"]] = Field(default=None, description="For a verdict scene whose stamp is wrong: the correct stamp (the narration is then rewritten to agree with it)")
     fixed_narration: Optional[str] = Field(default=None, description="For a definitely_wrong issue: a replacement narration for that scene (8-16 words) that is TRUE and, for footage scenes, mentions only what the footage visibly shows")
 
 
@@ -303,8 +439,13 @@ def _review_prompt(p: MotionProject, catalog, facts):
     rows = []
     for i, s in enumerate(p.scenes, 1):
         shows = f" | FOOTAGE SHOWS: {catalog[s.mediaId]['caption']}" if catalog and s.type == "footage" and s.mediaId in catalog else ""
+        extra = ""
+        if s.type == "versus":
+            extra = f" | VERSUS: {s.left} = {s.leftValue:g}{s.unit or ''} vs {s.right} = {s.rightValue:g}{s.unit or ''}, winner: {s.winner or 'the bigger figure'}" if s.leftValue and s.rightValue else " | VERSUS (figures missing)"
+        elif s.type == "verdict":
+            extra = f" | CLAIM VERDICT: the claim is shown as {(s.verdict or '?').upper()}; the correction on screen is \"{s.accentText}\""
         ev = f" | EVIDENCE QUOTE: \"{s.evidence}\"" if s.evidence else ""
-        rows.append(f"{i}. [{s.type}] {s.text} | narration: \"{s.narration}\" | accent: {s.accentText or '-'} | value: {s.value if s.value is not None else '-'}{s.unit or ''} | items: {s.items or '-'} | code: {s.code or '-'}{shows}{ev}")
+        rows.append(f"{i}. [{s.type}] {s.text} | narration: \"{s.narration}\" | accent: {s.accentText or '-'} | value: {s.value if s.value is not None else '-'}{s.unit or ''} | items: {s.items or '-'} | code: {s.code or '-'}{extra}{shows}{ev}")
     footage_rule = (" For footage scenes, flag (definitely_wrong=true) ONLY when the narration or callout names a specific thing (creature, place, character, object) that the "
                     "FOOTAGE SHOWS description clearly does not contain." if catalog else "")
     if facts:
@@ -316,9 +457,11 @@ def _review_prompt(p: MotionProject, catalog, facts):
                      "hedged statements and general technique explanations are acceptable.")
     else:
         game_rule = ""
+    fmt_rule = (" The scenes of type verdict state a claim and stamp it MYTH, FACT or PARTLY: flag a verdict that is wrong. versus scenes compare two contenders on one metric: flag any figure that is "
+                "clearly wrong, and a winner that contradicts the figures. tier scenes rank items: flag a placement whose stated reason is false. timeline scenes list milestones as year|label: flag a wrong year.")
     system = ("You are a strict but fair technical fact-checker. List in `errors` only statements that are clearly FALSE or misleading, or numbers that are clearly wrong "
               "(check arithmetic). Simplifications for beginners are fine: mark definitely_wrong=false for those or leave them out. Code lines must be valid and do what the scene "
-              "says. For every definitely_wrong issue also give fixed_narration." + game_rule + footage_rule)
+              "says. For every definitely_wrong issue also give fixed_narration (and fixed_verdict when a verdict stamp is the error)." + game_rule + footage_rule + fmt_rule)
     prompt = f"Topic: {p.topic}" + (f" (game: {p.game})" if p.game else "") + (f"\nSOURCE TEXT:\n{facts}\n" if facts else "") + "\nScenes:\n" + "\n".join(rows) + "\n\nFact-check this motion-graphics script."
     return prompt, system
 
@@ -365,17 +508,28 @@ def _apply_fixes(p: MotionProject, issues: List[_Issue]) -> int:
     """Replaces the narration of the flagged scenes with the reviewer's corrected text. Returns how many were applied."""
     done = 0
     for e in issues:
-        if e.fixed_narration and 1 <= e.scene <= len(p.scenes) and 3 <= len(e.fixed_narration.split()) <= 20:
-            p.scenes[e.scene - 1].narration = e.fixed_narration.strip()
+        if not 1 <= e.scene <= len(p.scenes):
+            continue
+        sc = p.scenes[e.scene - 1]
+        if e.fixed_verdict and sc.type == "verdict" and e.fixed_verdict != sc.verdict:
+            sc.verdict = e.fixed_verdict
+            done += 1
+        if e.fixed_narration and 3 <= len(e.fixed_narration.split()) <= 20:
+            sc.narration = e.fixed_narration.strip()
             done += 1
     return done
 
 
 def generate_motion_project(topic: Optional[str] = None, avoid_topics: Optional[List[str]] = None, kind: str = "curiosity",
-                            game: Optional[str] = None, catalog: Optional[Dict[str, dict]] = None, facts: Optional[str] = None, attempts: int = 3) -> MotionProject:
+                            game: Optional[str] = None, catalog: Optional[Dict[str, dict]] = None, facts: Optional[str] = None, attempts: int = 3,
+                            fmt: Optional[str] = None) -> MotionProject:
     """A validated, fact-checked project. For kind='game' pass the chosen `game` and its footage `catalog` (id -> entry).
     Raises GeminiUnavailable when no provider answers, RuntimeError if every attempt fails the checks."""
     avoid = [t for t in (avoid_topics or []) if t][-25:]
+    if fmt is not None and fmt not in FORMATS:
+        raise ValueError(f"unknown format {fmt!r}: use one of {FORMATS}")
+    if fmt == "easter" and kind != "game":
+        raise ValueError("the easter (hidden detail) format needs a game video")
     system = SYSTEM_PROMPT
     if kind == "game":
         lines = "\n".join(f"  * id={k} [{e['kind']}] {e['caption']}" for k, e in (catalog or {}).items())
@@ -385,15 +539,20 @@ def generate_motion_project(topic: Optional[str] = None, avoid_topics: Optional[
         system += CURIOSITY_RULES
         base = (f"Make a motion-graphics explainer about: {topic}\n" if topic
                 else "Pick ONE fascinating idea about computers, hardware, coding, AI or tech that works well as animated typography (a surprising fact, a counter-intuitive mechanism, a tip).\n")
+    if fmt:
+        system += FORMAT_RULES[fmt]
+        base = base.replace("motion-graphics explainer", f"{fmt} video").replace("motion-graphics video", f"{fmt} video")
+        if not topic and kind != "game":
+            base = f"Make a {fmt} video (the format is described in the rules). Pick a topic about computers, hardware, coding, games, AI or tech that fits it perfectly and that you know well.\n"
     if avoid:
         base += "Do NOT repeat or resemble these topics: " + "; ".join(avoid) + "\n"
     feedback = ""
     for attempt in range(1, attempts + 1):
         project, tokens, model = generate_structured(prompt=base + feedback + "Return a JSON object matching the schema.", system_instruction=system, schema=MotionProject,
-                                                     temperature=0.8, validate=make_validator(catalog if kind == "game" else None, facts), max_output_tokens=12000, max_passes=3)
-        project.kind, project.game = kind, (game if kind == "game" else None)
+                                                     temperature=0.8, validate=make_validator(catalog if kind == "game" else None, facts, fmt), max_output_tokens=12000, max_passes=3)
+        project.kind, project.game, project.format = kind, (game if kind == "game" else None), fmt
         project.gemini_input_tokens, project.gemini_output_tokens = tokens
-        validator = make_validator(catalog if kind == "game" else None, facts)
+        validator = make_validator(catalog if kind == "game" else None, facts, fmt)
         problems: List[_Issue] = []
         try:
             for rnd in range(1, 4):  # the reviewer both flags and fixes narration: apply its fixes and look again before giving up on the script

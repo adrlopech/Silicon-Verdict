@@ -81,7 +81,7 @@ Selecciona el enfoque temático para este vídeo (60-120s):
 3. **Tech Curiosities & Storytelling** (Estilo Infográfico 2D: Paradojas de ingeniería, cables submarinos, satélites, física de chips).
 4. **Automático (IA)** (La IA elige la categoría óptima basándose en la rotación de `data/history.db` y las analíticas de retención).
 5. **Curiosidades en Minecraft** (Concepto técnico explicado dentro de Minecraft, ~64s, guion nuevo de Gemini).
-6. **Motion Graphics** (Tipografía cinética con voz, 62-80s para monetizar, vertical 1080x1920, siempre en inglés. Dos tipos: curiosidades y juegos con footage real).
+6. **Motion Graphics** (Tipografía cinética con voz, 62-84s para monetizar, vertical 1080x1920, siempre en inglés. Al elegirla se pregunta el subgrupo: explainer clásico, curiosidades, juegos, Mito o Realidad, Tier List, ¿Y si…?, Evolución, Versus, Detalle oculto o Automático).
 
 👉 Responde únicamente con el número deseado: **[1, 2, 3, 4, 5 o 6]**
 ---
@@ -107,10 +107,33 @@ Selecciona el enfoque temático para este vídeo (60-120s):
    - **Si responde `5`**:
      * Ejecuta: `.venv/bin/python main.py --series minecraft --privacy public`
      * Pipeline `services/mc_pipeline.py`: siempre guion nuevo de Gemini (sin fallback); si Gemini no está disponible, el proceso se detiene.
-   - **Si responde `6`**:
-     * Ejecuta: `.venv/bin/python main.py --series motion --privacy public` (añadir `--motion-kind game` o `--motion-kind curiosity` para elegir; por defecto alterna).
+   - **Si responde `6`** (Motion Graphics): **no ejecuta todavía**. Responde con este segundo menú y espera:
+
+---
+🎞️ **Motion Graphics — Subgrupo**
+
+1. **Explainer clásico** (alterna curiosidad / juego; `auto`).
+2. **Curiosidades tech** (una idea de hardware, código o IA con palabras, contadores y código).
+3. **Juegos** (un hecho de ingeniería de un juego, con capturas y clips reales).
+4. **Mito o Realidad** (afirmación popular + sello MYTH / FACT / PARTLY TRUE).
+5. **Tier List** (ranking S-F que se llena ítem a ítem).
+6. **¿Y si…?** (hipótesis sobre computación con consecuencias que escalan).
+7. **Evolución** (líneas de tiempo con hitos y contadores de crecimiento).
+8. **Versus** (dos contendientes, 3-5 rondas de barras).
+9. **Detalle oculto de un juego** (footage real; solo hechos de la fuente).
+10. **Automático** (la IA elige uno de los 9 temas anteriores, distinto del último vídeo de Motion Graphics).
+
+👉 Responde únicamente con el número deseado: **[1 al 10]**
+---
+
+     Tras la respuesta ejecuta (siempre con `--series motion --privacy public`):
+     * `1` → sin flags extra (alterna). `2` → `--motion-kind curiosity`. `3` → `--motion-kind game`.
+     * `4` → `--motion-format myth`, `5` → `--motion-format tier`, `6` → `--motion-format whatif`, `7` → `--motion-format evolution`, `8` → `--motion-format versus`, `9` → `--motion-format easter`.
+     * `10` → `--motion-format any` (elige al azar uno de los 9 temas, excluye el del último vídeo y descarta los de juegos si no queda ningún juego con footage sin usar).
+     * `9` es siempre un juego: necesita un juego con footage sin usar y dossier de fuentes; si no hay ninguno, el proceso se detiene y lo dice.
+     * Entrada no válida en este segundo menú: *"Opción no válida. Introduce un número del 1 al 10."* y sigue esperando.
      * Los vídeos de juegos usan capturas y clips reales: cada elemento se usa una sola vez y se borra, y el juego queda bloqueado 14 días.
-     * Pipeline `services/motion_pipeline.py`: guion JSON de Gemini (con respaldos), revisión de hechos, render con `@remotion/renderer`, sonido, control de calidad y subida.
+     * Pipeline `services/motion_pipeline.py`: guion JSON de Gemini (con respaldos), revisión de hechos, render con `@remotion/renderer`, sonido, control de calidad y subida. Cada formato tiene sus propias escenas (`tier`, `versus`, `verdict`, `timeline`), reglas y validadores en `services/motion_generator.py`.
    - **Entrada no válida**:
      * Si el usuario introduce cualquier otro carácter o texto, notifica:
        *"Opción no válida. Por favor, introduce 1, 2, 3, 4, 5 o 6 para continuar con 'genera'."*

@@ -47,6 +47,14 @@ GAMES = {
 }
 
 
+# Current games (released or announced for 2025-2026): data/games_catalog.json, built from Steam's own search + appdetails (real appids, release dates).
+# Add a game there ({"<appid>": {"slug": ..., "name": ..., "year": ...}}) and run this script, then build_game_facts.py and caption_game_media.py.
+_CATALOG = BASE_DIR / "data" / "games_catalog.json"
+if _CATALOG.is_file():
+    for _appid, _g in json.loads(_CATALOG.read_text(encoding="utf-8")).items():
+        GAMES.setdefault(int(_appid), (_g["slug"], [str(_g.get("year", "")), "current"]))
+
+
 def load_manifest() -> dict:
     if MANIFEST.is_file():
         try:

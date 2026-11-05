@@ -727,6 +727,13 @@ def parse_args():
         help="With --series motion: curiosity (tech idea), game (engineering fact about a game with real footage) or auto (alternates; a game needs unused, non-blacklisted footage).",
     )
     parser.add_argument(
+        "--motion-format",
+        type=str,
+        choices=["auto", "any", "myth", "tier", "whatif", "easter", "evolution", "versus"],
+        default="auto",
+        help="With --series motion: content format. myth (myth or fact verdicts), tier (S-F tier list), whatif (a hypothetical about computing), easter (a hidden detail of a game, with footage), evolution (timelines), versus (two contenders over several rounds), any (a random one) or auto (the classic explainer).",
+    )
+    parser.add_argument(
         "--from-bank",
         action="store_true",
         help="(Default now) Use the story bank first. Kept for compatibility.",
@@ -798,7 +805,7 @@ if __name__ == "__main__":
     if args.series == "motion":
         from services.motion_pipeline import run_motion_pipeline
         try:
-            run_motion_pipeline(topic=chosen_topic, export_only=args.export_only or args.benchmark, dry_run=args.dry_run, privacy=args.privacy, kind=args.motion_kind)
+            run_motion_pipeline(topic=chosen_topic, export_only=args.export_only or args.benchmark, dry_run=args.dry_run, privacy=args.privacy, kind=args.motion_kind, fmt=args.motion_format)
         except Exception as exc:
             logger.error("Motion Graphics pipeline failed: %s", exc)
             sys.exit(1)

@@ -1,5 +1,5 @@
 /** Data contract of the MotionGraphic composition. Everything shown on screen comes from these props (no text lives in the code). */
-export type SceneType = 'bigText' | 'textWithAccent' | 'counter' | 'list' | 'codeBlock' | 'progressBar' | 'outro' | 'curve' | 'flash' | 'footage';
+export type SceneType = 'bigText' | 'textWithAccent' | 'counter' | 'list' | 'codeBlock' | 'progressBar' | 'outro' | 'curve' | 'flash' | 'footage' | 'tier' | 'versus' | 'verdict' | 'timeline';
 
 export interface MotionScene {
   type: SceneType;
@@ -8,7 +8,13 @@ export interface MotionScene {
   kicker?: string; // small tracked-out label above the text
   value?: number; // counter: final number; progressBar: target percentage 0-100
   unit?: string; // counter / progressBar suffix, e.g. "%", "ms"
-  items?: string[]; // list: 2-4 short items
+  items?: string[]; // list: 2-4 short items; tier: up to 10 "S|label" entries (S A B C D F); timeline: up to 5 "year|label" entries
+  left?: string; // versus: name of the left contender
+  right?: string; // versus: name of the right contender
+  leftValue?: number; // versus: the left contender's figure for this scene's metric
+  rightValue?: number; // versus: the right contender's figure
+  winner?: 'left' | 'right' | 'none'; // versus: who wins (default: the bigger value; set it for lower-is-better metrics)
+  verdict?: 'myth' | 'fact' | 'partly'; // verdict: the stamp
   code?: string[]; // codeBlock: up to 8 short lines
   light?: boolean; // light background variant for this scene
   mediaSrc?: string; // footage: path inside the render's public dir, e.g. games/skyrim_00.jpg or games/clip.mp4
