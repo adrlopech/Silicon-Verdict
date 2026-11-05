@@ -81,8 +81,9 @@ Selecciona el enfoque temático para este vídeo (60-120s):
 3. **Tech Curiosities & Storytelling** (Estilo Infográfico 2D: Paradojas de ingeniería, cables submarinos, satélites, física de chips).
 4. **Automático (IA)** (La IA elige la categoría óptima basándose en la rotación de `data/history.db` y las analíticas de retención).
 5. **Curiosidades en Minecraft** (Concepto técnico explicado dentro de Minecraft, ~64s, guion nuevo de Gemini).
+6. **Motion Graphics** (Tipografía cinética 20-45s, vertical 1080x1920, siempre en inglés, composición `MotionGraphic` de Remotion).
 
-👉 Responde únicamente con el número deseado: **[1, 2, 3, 4 o 5]**
+👉 Responde únicamente con el número deseado: **[1, 2, 3, 4, 5 o 6]**
 ---
 
 2. **Paso 2: Procesamiento de la Selección y Ejecución**
@@ -106,9 +107,12 @@ Selecciona el enfoque temático para este vídeo (60-120s):
    - **Si responde `5`**:
      * Ejecuta: `.venv/bin/python main.py --series minecraft --privacy public`
      * Pipeline `services/mc_pipeline.py`: siempre guion nuevo de Gemini (sin fallback); si Gemini no está disponible, el proceso se detiene.
+   - **Si responde `6`**:
+     * Ejecuta: `.venv/bin/python main.py --series motion --privacy public`
+     * Pipeline `services/motion_pipeline.py`: guion JSON de Gemini (con respaldos), revisión de hechos, render con `@remotion/renderer`, sonido, control de calidad y subida.
    - **Entrada no válida**:
      * Si el usuario introduce cualquier otro carácter o texto, notifica:
-       *"Opción no válida. Por favor, introduce 1, 2, 3, 4 o 5 para continuar con 'genera'."*
+       *"Opción no válida. Por favor, introduce 1, 2, 3, 4, 5 o 6 para continuar con 'genera'."*
        y mantiene la espera de una entrada válida.
 
 3. **Acciones del Pipeline tras la Selección:**

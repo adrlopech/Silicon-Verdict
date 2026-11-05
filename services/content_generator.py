@@ -11,15 +11,11 @@ Manages:
       ("Buy it", "Avoid it", "Disable this setting").
 - Robust script generation for YouTube Shorts and TikTok Long (>60.5s) with deterministic fallbacks.
 """
-import json
 import logging
 import re
-import time
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 
-from google import genai
-from google.genai import types
 
 from config.settings import settings
 from core.schemas import (
@@ -960,33 +956,23 @@ Return a strictly valid JSON object conforming exactly to this structure:
   }}
 }}"""
 
-    client = genai.Client(api_key=settings.GEMINI_API_KEY, http_options=types.HttpOptions(timeout=10000))
-    fast_candidate_models = [settings.GEMINI_MODEL] if settings.GEMINI_MODEL in CANDIDATE_MODELS else ["gemini-3.5-flash"]
-    for model_name in fast_candidate_models:
-        for attempt in range(2):
-            try:
-                logger.info("Requesting Short plan via '%s' (attempt %d/2)...", model_name, attempt + 1)
-                res = client.models.generate_content(
-                    model=model_name,
-                    contents=prompt,
-                    config=types.GenerateContentConfig(
-                        response_mime_type="application/json",
-                        temperature=0.65,
-                    ),
-                )
-                data = json.loads(res.text)
-                if "scene_cta" not in data or not isinstance(data["scene_cta"], dict) or not data["scene_cta"].get("voiceover"):
-                    data["scene_cta"] = {
-                        "voiceover": "If you are enjoying this breakdown and want daily hardware insights, subscribe to Silicon Verdict.",
-                        "headline_highlight": "SUBSCRIBE",
-                        "headline_rest": "FOR DAILY VERDICTS",
-                        "sub_text": "Unfiltered PC Hardware Telemetry & Benchmarks",
-                    }
-                logger.info("Dynamic Short script generated successfully via '%s'", model_name)
-                return data
-            except Exception as exc:
-                logger.warning("Attempt on '%s' failed: %s", model_name, exc)
-                time.sleep(1)
+    from services.gemini_client import GeminiUnavailable, generate_structured
+    try:
+        data, _tok, model_name = generate_structured(
+            prompt=prompt, system_instruction=None, schema=None, temperature=0.65,
+            validate=lambda d: [] if isinstance(d, dict) and d.get("scene1") else ["missing scene1"],
+        )
+        if "scene_cta" not in data or not isinstance(data["scene_cta"], dict) or not data["scene_cta"].get("voiceover"):
+            data["scene_cta"] = {
+                "voiceover": "If you are enjoying this breakdown and want daily hardware insights, subscribe to Silicon Verdict.",
+                "headline_highlight": "SUBSCRIBE",
+                "headline_rest": "FOR DAILY VERDICTS",
+                "sub_text": "Unfiltered PC Hardware Telemetry & Benchmarks",
+            }
+        logger.info("Dynamic Short script generated successfully via '%s'", model_name)
+        return data
+    except GeminiUnavailable as exc:
+        logger.warning("Gemini unavailable for the Short plan (%s).", str(exc)[:200])
 
     logger.warning("All Gemini candidate models saturated. Deploying deterministic emergency script.")
     if category_key == "tech_curiosities" or tone in ("curiosities", "schematic_tech"):
@@ -1202,35 +1188,19 @@ def generate_dynamic_tiktok_plan(
         f"Ensure aggregate narration words are strictly between {min_w} and {max_w} words (target: {target_w} words) so spoken duration complies strictly with {'55 to 70' if category_key == 'tech_curiosities' else '60 to 120'} seconds."
     )
 
-    client = genai.Client(api_key=settings.GEMINI_API_KEY, http_options=types.HttpOptions(timeout=10000))
-    fast_candidate_models = [settings.GEMINI_MODEL] if settings.GEMINI_MODEL in CANDIDATE_MODELS else ["gemini-3.5-flash"]
-    for model_name in fast_candidate_models:
-        for attempt in range(2):
-            try:
-                logger.info("Requesting TikTok long plan via '%s' (attempt %d/2)...", model_name, attempt + 1)
-                res = client.models.generate_content(
-                    model=model_name,
-                    contents=prompt,
-                    config=types.GenerateContentConfig(
-                        system_instruction=system_instruction,
-                        response_mime_type="application/json",
-                        response_schema=TikTokLongProject,
-                        temperature=0.6,
-                    ),
-                )
-                project = TikTokLongProject.model_validate_json(res.text)
-                usage = getattr(res, "usage_metadata", None)
-                if usage:
-                    project.gemini_input_tokens = getattr(usage, "prompt_token_count", 0) or 0
-                    project.gemini_output_tokens = getattr(usage, "candidates_token_count", 0) or 0
-                project = enforce_script_word_guardrail(project, target_words=target_w, min_words=min_w, max_words=max_w, category=category_key)
-                project = validate_script_language_guardrail(project, category=category_key, topic_override=topic_override, spec=spec)
-                logger.info("TikTok plan received (%s): %d total words (Tokens: in=%d, out=%d)",
-                            model_name, project.get_total_words(), project.gemini_input_tokens, project.gemini_output_tokens)
-                return project
-            except Exception as exc:
-                logger.warning("Attempt on '%s' failed: %s", model_name, exc)
-                time.sleep(1)
+    from services.gemini_client import GeminiUnavailable, generate_structured
+    try:
+        project, tokens, model_name = generate_structured(
+            prompt=prompt, system_instruction=system_instruction, schema=TikTokLongProject, temperature=0.6,
+        )
+        project.gemini_input_tokens, project.gemini_output_tokens = tokens
+        project = enforce_script_word_guardrail(project, target_words=target_w, min_words=min_w, max_words=max_w, category=category_key)
+        project = validate_script_language_guardrail(project, category=category_key, topic_override=topic_override, spec=spec)
+        logger.info("TikTok plan received (%s): %d total words (Tokens: in=%d, out=%d)",
+                    model_name, project.get_total_words(), project.gemini_input_tokens, project.gemini_output_tokens)
+        return project
+    except GeminiUnavailable as exc:
+        logger.warning("Gemini unavailable for the TikTok plan (%s).", str(exc)[:200])
 
     logger.warning("All Gemini candidate models saturated. Deploying deterministic TikTok plan.")
     if category_key == "tech_curiosities" or tone in ("curiosities", "schematic_tech"):
@@ -1254,17 +1224,17 @@ DOMAIN_TAXONOMY: Dict[str, Dict[str, List[str]]] = {
     "hardware_compute": {
         "allowed_keywords": ["cpu", "core", "die", "cache", "socket", "silicon", "transistor", "lithography", "interconnect", "bus", "vcache", "zen"],
         "banned_keywords": ["ping", "router", "wifi", "fps_meter", "gameplay", "packet_loss", "rf", "microwave"],
-        "allowed_assets": ["silicon_die", "silicon_stacking", "memory_bottleneck", "thermal_dissipation", "latency_bars", "frametime_gauge"],
+        "allowed_assets": ["silicon_die", "silicon_stacking", "memory_bottleneck", "thermal_dissipation", "latency_bars", "frametime_gauge"],  # latency_bars is hard-wired to CPU bus / 3D V-Cache art: only valid here
     },
     "gaming_performance": {
         "allowed_keywords": ["gpu", "fps", "frametime", "vram", "dlss", "raster", "1%_low", "render_pipeline", "shader", "ms", "hitching", "stutter"],
         "banned_keywords": ["microwave", "subsea", "orbit", "quantum", "die_shot", "transistor", "router"],
-        "allowed_assets": ["preset_card", "frametime_gauge", "latency_bars", "memory_bottleneck"],
+        "allowed_assets": ["preset_card", "frametime_gauge"],
     },
     "networking_rf": {
         "allowed_keywords": ["wifi", "rf", "ghz", "band", "spectrum", "router", "attenuation", "interference", "magnetron", "channel", "packet", "microwave", "dbm", "loss", "signal"],
         "banned_keywords": ["p_cores", "e_cores", "l3_cache", "dlss", "rtx", "compute_die", "silicon_die", "shader", "zen_4"],
-        "allowed_assets": ["rf_collision", "spectrum_bands", "latency_bars"],
+        "allowed_assets": ["rf_collision", "spectrum_bands"],
     },
     "game_tech": {
         "allowed_keywords": ["engine", "physics", "frame", "tick", "render", "draw_call", "streaming", "lod", "shader", "netcode", "game"],
@@ -1274,12 +1244,12 @@ DOMAIN_TAXONOMY: Dict[str, Dict[str, List[str]]] = {
     "everyday_tech": {
         "allowed_keywords": ["cable", "battery", "screen", "touch", "sensor", "signal", "usb", "bluetooth", "camera"],
         "banned_keywords": ["fps_meter", "gameplay", "rtx_4090", "dlss"],
-        "allowed_assets": ["nfc_token", "latency_bars", "spectrum_bands", "vcsel_projector", "rf_collision", "subsea_cable", "gps_relativity"],
+        "allowed_assets": ["nfc_token", "spectrum_bands", "vcsel_projector", "rf_collision", "subsea_cable", "gps_relativity"],
     },
     "applied_physics": {
         "allowed_keywords": ["fiber", "optical", "laser", "photon", "gps", "relativity", "nfc", "vcsel", "depth", "orbit", "satellite", "cable"],
         "banned_keywords": ["fps_meter", "gameplay", "rtx_4090", "dlss"],
-        "allowed_assets": ["subsea_cable", "gps_relativity", "vcsel_projector", "nfc_token", "latency_bars"],
+        "allowed_assets": ["subsea_cable", "gps_relativity", "vcsel_projector", "nfc_token", "spectrum_bands"],
     },
 }
 
@@ -1613,29 +1583,10 @@ def get_emergency_motion_story(category_id: int, topic: Optional[str] = None, se
 
 
 def finalize_game_triggers(story: MotionStoryProject) -> MotionStoryProject:
-    """Binds each 'game_frame' trigger to a real screenshot; downgrades to a vector asset if none exists."""
-    import random
-    from services.game_images import available_games, pick_image, stage_image_for_remotion
-
-    used: set = set()
-    rng = random.Random(story.topic)
-    credits: List[dict] = []
-    for trig in story.visual_triggers:
-        if trig.asset_id.lower() != "game_frame":
-            continue
-        entry = pick_image(trig.game_title or story.topic, used, rng)
-        if not entry:
-            logger.warning("No screenshot for game '%s' (available: %s). Using vector fallback.", trig.game_title, available_games())
-            trig.asset_id = "stat_card"
-            trig.annotation = None
-            continue
-        trig.image_src = stage_image_for_remotion(entry)
-        trig.game_title = entry["game"]
-        credits.append(entry)
-    if credits:
-        from services.game_images import build_credits
-        story.description = story.description.rstrip() + "\n\nImages: " + "; ".join(build_credits(credits)) + " (official Steam store screenshots)."
-    return story
+    """Binds each 'game_frame' trigger to unused real footage of the game that fits what is said (see game_images.assign_media);
+    triggers without a fitting screenshot/clip become vector cards."""
+    from services.game_images import assign_media
+    return assign_media(story)
 
 
 def generate_motion_story(
@@ -1645,6 +1596,7 @@ def generate_motion_story(
     prefer_bank: bool = False,
     live_only: bool = False,
     avoid_topics: Optional[List[str]] = None,
+    assign: bool = True,
 ) -> MotionStoryProject:
     """Generates an ultra-kinetic, 100% US English motion graphics script and 12-18 visual triggers specification."""
     cat_names = {
@@ -1652,12 +1604,17 @@ def generate_motion_story(
         2: ("GAMING & OPTIMIZATION", "Frame pacing telemetry, 1% lows vs average FPS, frametime spikes, competitive settings, DLSS vs native, micro-stutters"),
         3: ("TECH CURIOSITIES", "Applied physical science, radio frequencies, subsea optical cables, atomic clock relativity, VCSEL depth arrays, inductive coupling"),
     }
+    if series == "game":
+        from services.game_images import available_games
+        if not available_games():
+            raise RuntimeError("No game is available right now: every game with stocked media was covered in the last 14 days or ran out of unused "
+                               "screenshots/clips. Run scripts/fetch_game_images.py, or wait for the blacklist to expire (python -m services.game_registry).")
     if prefer_bank and series == "game" and not topic_override:
         from services.bank_manager import take_or_refill
         banked = take_or_refill("game")
         if banked is not None:
             return rebind_game_images(banked)
-        logger.info("Game story bank is empty and could not be refilled; generating live.")
+        logger.info("Game story bank has no usable story and could not be refilled; generating live.")
     cat_name, cat_desc = cat_names.get(category_id, cat_names[3])
     domain = resolve_topic_domain(category_id, topic_override, series)
     allowed_assets = DOMAIN_TAXONOMY[domain]["allowed_assets"]
@@ -1679,16 +1636,24 @@ def generate_motion_story(
         "- Set word_anchor to an exact word in the full_script where each micro-scene triggers."
     )
     if series == "game":
-        from services.game_images import available_games
-        games = available_games()
+        import random as _random
+        from services.game_images import available_games, usable_media
+        # The game is chosen here (not blacklisted, with stocked footage) and its footage catalog goes into the prompt, so the script talks
+        # about things the footage really shows.
+        chosen_game = _random.choice(available_games())
+        catalog = "\n".join(f"  * [{e['kind']}] {e['caption']}" for e in usable_media(chosen_game)[:30])
+        games = [chosen_game]
         system_instruction += (
-            "\n\nSERIES: GAME TECH CURIOSITY. Explain one TRUE, verifiable engineering fact about a specific game "
+            "\n\nSERIES: GAME TECH CURIOSITY. Explain one TRUE, verifiable engineering fact about the game below "
             "(engine behavior, physics, streaming, rendering trick, netcode). Never invent numbers; if unsure, pick a different fact.\n"
-            f"- Use asset_id 'game_frame' for most triggers. For each, set game_title to EXACTLY one of: {games}, "
-            "and annotation to 2-6 uppercase words naming the technical detail shown. The game must be the one discussed in the script.\n"
+            f"- The game is EXACTLY: {chosen_game}. Use asset_id 'game_frame' for most triggers, with game_title set to exactly {games}, "
+            "and annotation = 2-6 uppercase words naming the technical detail shown.\n"
+            "- FOOTAGE AVAILABLE for this game (screenshots and trailer clips; each can be shown once). Write the script so that, whenever a game_frame "
+            "trigger fires, the narration at that moment is about something one of these items visibly shows (a place, a creature, a character, an object):\n"
+            f"{catalog}\n"
             "- Use asset_id 'stat_card' for the remaining triggers: label = the key term or number from the script (max 3 words), annotation = optional 2-4 word caption. "
             "Never invent figures that are not in the script.\n"
-            "- Use 8 to 10 game_frame triggers out of 12 to 14 total; consecutive game_frame triggers are fine.\n"
+            "- Use 6 to 9 game_frame triggers out of 12 to 14 total; they must not outnumber the footage items listed.\n"
             "- Open with a counterintuitive hook that names the game within the first sentence."
         )
     elif series == "simple":
@@ -1735,7 +1700,7 @@ def generate_motion_story(
         _, brand_violations = validate_and_sanitize_brand_integrity(story)
         if brand_violations:
             logger.info("Motion story sanitized for brand integrity: %s", brand_violations)
-        if series == "game":
+        if series == "game" and assign:
             story = finalize_game_triggers(story)
         logger.info("MotionStoryProject generated successfully (%s): %d words | %d triggers", model_name, story.get_total_words(), len(story.visual_triggers))
         return story
@@ -1755,8 +1720,9 @@ def generate_motion_story(
 
 
 def rebind_game_images(story: MotionStoryProject) -> MotionStoryProject:
-    """Re-selects screenshots for a banked game story (staged files may be gone) and refreshes credits."""
+    """Matches a banked game story to unused footage that fits its narration (the bank stores scripts without media)."""
     for trig in story.visual_triggers:
-        trig.image_src = None
-    story.description = story.description.split("\n\nImages:")[0]
+        trig.image_src, trig.video_src, trig.video_seconds = None, None, None
+    story.media_keys = []
+    story.description = story.description.split("\n\nImages:")[0].split("\n\nImages & footage:")[0]
     return finalize_game_triggers(story)

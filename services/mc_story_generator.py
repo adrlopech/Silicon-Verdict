@@ -140,6 +140,21 @@ def generate_story_live(topic: Optional[str] = None, avoid_topics: Optional[List
     return story
 
 
+def generate_stories_batch(count: int, avoid_topics: Optional[List[str]] = None, lang: Optional[str] = None) -> List[McStory]:
+    """`count` validated Minecraft scripts from ONE Gemini request (refills the bank without burning the daily quota)."""
+    from services.gemini_client import generate_structured_list
+    lang = lang or getattr(settings, "MC_LANGUAGE", "es")
+    avoid = [t for t in (avoid_topics or []) if t][-40:]
+    prompt = ("Pick basic computing or gaming concepts that people use daily but rarely understand (RAM, cache, CPU cores, GPU, FPS, latency, ping, SSD, "
+              "bits and bytes, resolution, refresh rate, VRAM, drivers, operating system, compression, encryption, cloud...).\nEach script needs 14-18 beats and 130-160 spoken words.\n")
+    if avoid:
+        prompt += "Do NOT repeat or closely resemble these topics: " + "; ".join(avoid) + "\n"
+    stories, tokens, _model = generate_structured_list(prompt, system_prompt(lang), McStory, count, _problems)
+    for st in stories:
+        st.gemini_input_tokens, st.gemini_output_tokens = tokens[0] // len(stories), tokens[1] // len(stories)
+    return stories
+
+
 class McScriptUnavailable(RuntimeError):
     """No new Gemini script could be produced (Gemini down and the bank is empty)."""
 

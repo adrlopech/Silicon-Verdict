@@ -1,11 +1,8 @@
 import logging
-import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
-from google import genai
-from google.genai import types
 
 from config.settings import settings
 from core.pillars import (
@@ -146,8 +143,6 @@ def generate_video_plan(
     """Generates an authoritative, empirical PC hardware documentary script for 'Silicon Verdict'."""
     logger.info("Silicon Verdict: Generating technical video manifest for topic: '%s'", topic)
 
-    client = genai.Client(api_key=settings.GEMINI_API_KEY)
-
     benchmark_hints = ""
     if suggested_benchmarks:
         benchmark_hints = "\nKey Technical Angles & Benchmarks to Validate:\n" + "\n".join(
@@ -192,53 +187,38 @@ def generate_video_plan(
         "and corresponding Shorts metadata."
     )
 
-    # Attempt generation across candidate models with exponential backoff
-    for model_name in CANDIDATE_MODELS:
-        for attempt in range(2):
-            try:
-                logger.info("Attempting plan generation with model '%s' (attempt %d/2)...", model_name, attempt + 1)
-                response = client.models.generate_content(
-                    model=model_name,
-                    contents=prompt,
-                    config=types.GenerateContentConfig(
-                        system_instruction=system_instruction,
-                        response_mime_type="application/json",
-                        response_schema=VideoProject,
-                        temperature=0.6,
-                    ),
+    from services.gemini_client import GeminiUnavailable, generate_structured
+    try:
+        project, _tok, model_name = generate_structured(prompt=prompt, system_instruction=system_instruction, schema=VideoProject, temperature=0.6)
+
+        if scenes_limit and len(project.scenes) > scenes_limit:
+            project.scenes = project.scenes[:scenes_limit]
+
+        if len(project.scenes) >= 2 and project.scenes[1].chart_data is None:
+            project.scenes[1].chart_data = ChartData(
+                title="1080p Ultra 1% Lows (Cyberpunk 2077)",
+                metric_unit="FPS",
+                labels=["RTX 4060 8GB", "RTX 4060 Ti 8GB", "RX 7600 XT 16GB", "RTX 4060 Ti 16GB"],
+                values=[38.4, 42.1, 64.8, 68.2],
+            )
+
+        if not any(s.is_short_highlight for s in project.scenes):
+            project.scenes[-1].is_short_highlight = True
+
+        if not project.shorts:
+            project.shorts.append(
+                ShortMetadata(
+                    title="Why 8GB VRAM is Dead in 2026 #Shorts",
+                    description="PCIe bus saturation destroys frame pacing. The data proves it. #Shorts #SiliconVerdict",
+                    hook_text="8GB VRAM IS FINISHED",
                 )
-                project = VideoProject.model_validate_json(response.text)
+            )
 
-                if scenes_limit and len(project.scenes) > scenes_limit:
-                    project.scenes = project.scenes[:scenes_limit]
-
-                if len(project.scenes) >= 2 and project.scenes[1].chart_data is None:
-                    project.scenes[1].chart_data = ChartData(
-                        title="1080p Ultra 1% Lows (Cyberpunk 2077)",
-                        metric_unit="FPS",
-                        labels=["RTX 4060 8GB", "RTX 4060 Ti 8GB", "RX 7600 XT 16GB", "RTX 4060 Ti 16GB"],
-                        values=[38.4, 42.1, 64.8, 68.2],
-                    )
-
-                if not any(s.is_short_highlight for s in project.scenes):
-                    project.scenes[-1].is_short_highlight = True
-
-                if not project.shorts:
-                    project.shorts.append(
-                        ShortMetadata(
-                            title="Why 8GB VRAM is Dead in 2026 #Shorts",
-                            description="PCIe bus saturation destroys frame pacing. The data proves it. #Shorts #SiliconVerdict",
-                            hook_text="8GB VRAM IS FINISHED",
-                        )
-                    )
-
-                project.description = format_final_description(project)
-                logger.info("Plan generation succeeded via '%s'", model_name)
-                return project
-
-            except Exception as exc:
-                logger.warning("Generation attempt failed on '%s': %s", model_name, exc)
-                time.sleep(2)
+        project.description = format_final_description(project)
+        logger.info("Plan generation succeeded via '%s'", model_name)
+        return project
+    except GeminiUnavailable as exc:
+        logger.warning("Gemini unavailable for the video plan (%s).", str(exc)[:200])
 
     logger.warning("External AI models temporarily saturated with 503. Engaging deterministic Silicon Verdict plan.")
     fallback = get_emergency_fallback_project(topic, scenes_limit=scenes_limit or 3)

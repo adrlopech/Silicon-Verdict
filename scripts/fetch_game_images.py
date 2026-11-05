@@ -68,7 +68,12 @@ def fetch_game(session: requests.Session, appid: int, slug: str, tags: list, per
         log.warning("appid %s: no data", appid)
         return 0
     data = entry["data"]
-    shots = data.get("screenshots", [])
+    import sys
+    sys.path.insert(0, str(BASE_DIR))
+    from services.game_registry import used_media_keys
+    from services.game_images import entry_key
+    used = used_media_keys()
+    shots = [sh for sh in data.get("screenshots", []) if entry_key({"image_url": re.sub(r"\?t=\d+$", "", sh["path_full"])}) not in used]  # never re-download used media
     # Spread picks across the gallery for variety
     step = max(1, len(shots) // per_game)
     picked = shots[::step][:per_game]
@@ -109,7 +114,7 @@ def fetch_game(session: requests.Session, appid: int, slug: str, tags: list, per
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--per-game", type=int, default=5)
+    ap.add_argument("--per-game", type=int, default=12)
     ap.add_argument("--appid", type=int)
     args = ap.parse_args()
 

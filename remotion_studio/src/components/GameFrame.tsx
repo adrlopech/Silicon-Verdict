@@ -1,8 +1,10 @@
 import React from 'react';
-import { Img, interpolate, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
+import { Img, Loop, OffthreadVideo, interpolate, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 
 export interface GameFrameProps {
   image_src?: string; // path relative to public/, e.g. "games/doom_2016_00.jpg"
+  video_src?: string; // game clip relative to public/ (muted, loops if shorter than the scene)
+  video_seconds?: number;
   game_title?: string;
   annotation?: string;
   durationFrames?: number;
@@ -19,6 +21,8 @@ const H = 466; // 16:9 inside the 900px glass card (36px padding)
  */
 export const GameFrame: React.FC<GameFrameProps> = ({
   image_src,
+  video_src,
+  video_seconds,
   game_title,
   annotation,
   durationFrames = 90,
@@ -65,7 +69,22 @@ export const GameFrame: React.FC<GameFrameProps> = ({
           boxShadow: 'inset 0 0 0 1px rgba(0,240,255,0.35)',
         }}
       >
-        {image_src ? (
+        {video_src ? (
+          <Loop durationInFrames={Math.max(1, Math.round((video_seconds ?? 3) * fps))}>
+            <OffthreadVideo
+              src={staticFile(video_src)}
+              muted
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                filter: 'grayscale(0.65) contrast(1.12) brightness(0.88) saturate(1.1)',
+              }}
+            />
+          </Loop>
+        ) : image_src ? (
           <Img
             src={staticFile(image_src)}
             style={{

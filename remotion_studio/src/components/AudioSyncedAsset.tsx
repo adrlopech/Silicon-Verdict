@@ -27,6 +27,8 @@ export interface AudioSyncedAssetProps {
   isLastScene?: boolean;
   motionPreset?: 'hero' | 'metric' | 'diagram';
   image_src?: string;
+  video_src?: string;
+  video_seconds?: number;
   game_title?: string;
   annotation?: string;
   seed?: number;
@@ -42,6 +44,8 @@ export const AudioSyncedAsset: React.FC<AudioSyncedAssetProps> = ({
   label,
   isLastScene = false,
   image_src,
+  video_src,
+  video_seconds,
   game_title,
   annotation,
   seed = 0,
@@ -92,6 +96,8 @@ export const AudioSyncedAsset: React.FC<AudioSyncedAssetProps> = ({
         return (
           <GameFrame
             image_src={image_src}
+            video_src={video_src}
+            video_seconds={video_seconds}
             game_title={game_title}
             annotation={annotation}
             durationFrames={effectiveDuration}

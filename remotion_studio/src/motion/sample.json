@@ -1,0 +1,67 @@
+{
+  "title": "How an SSD stays fast",
+  "theme": {
+    "accent": "#00F0FF",
+    "background": "#05070C",
+    "text": "#FFFFFF"
+  },
+  "scenes": [
+    {
+      "type": "bigText",
+      "kicker": "storage",
+      "text": "Your SSD",
+      "accentText": "forgets.",
+      "durationInFrames": 90
+    },
+    {
+      "type": "textWithAccent",
+      "text": "Deleted files are",
+      "accentText": "still there.",
+      "durationInFrames": 90
+    },
+    {
+      "type": "counter",
+      "text": "Writes before a cell",
+      "accentText": "wears out",
+      "value": 3000,
+      "durationInFrames": 120
+    },
+    {
+      "type": "list",
+      "text": "TRIM fixes it",
+      "accentText": "quietly",
+      "items": [
+        "Marks blocks free",
+        "Erases in idle time",
+        "Keeps writes fast"
+      ],
+      "durationInFrames": 120
+    },
+    {
+      "type": "codeBlock",
+      "kicker": "trim.sh",
+      "code": [
+        "# enable TRIM",
+        "fstrim -av",
+        "echo \"done\""
+      ],
+      "text": "One command",
+      "accentText": "keeps it fast",
+      "durationInFrames": 120
+    },
+    {
+      "type": "progressBar",
+      "text": "Speed",
+      "accentText": "restored",
+      "value": 92,
+      "unit": "%",
+      "durationInFrames": 90
+    },
+    {
+      "type": "outro",
+      "text": "Stay fast.",
+      "accentText": "Follow for more",
+      "durationInFrames": 90
+    }
+  ]
+}

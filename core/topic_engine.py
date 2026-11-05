@@ -4,10 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import List
 
-from google import genai
-from google.genai import types
 
-from config.settings import settings
 from core.schemas import MarketTopic
 
 logger = logging.getLogger(__name__)
@@ -63,8 +60,6 @@ def generate_market_topic(history_path: Path) -> MarketTopic:
     history = load_history(history_path)
     past_topics = [item.get("topic", "") for item in history if isinstance(item, dict)]
 
-    client = genai.Client(api_key=settings.GEMINI_API_KEY)
-
     system_instruction = (
         "You are the Editorial Director for 'Silicon Verdict', an elite tech channel specializing in "
         "PC Hardware, Semiconductor Architectures, and empirical price-to-performance analysis.\n\n"
@@ -92,18 +87,8 @@ def generate_market_topic(history_path: Path) -> MarketTopic:
     )
 
     try:
-        response = client.models.generate_content(
-            model=settings.GEMINI_MODEL,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                system_instruction=system_instruction,
-                response_mime_type="application/json",
-                response_schema=MarketTopic,
-                temperature=0.85,
-            ),
-        )
-
-        market_topic = MarketTopic.model_validate_json(response.text)
+        from services.gemini_client import generate_structured
+        market_topic, _tok, _model = generate_structured(prompt=prompt, system_instruction=system_instruction, schema=MarketTopic, temperature=0.85)
         logger.info("Selected autonomous Silicon Verdict topic: '%s'", market_topic.topic)
         logger.info("Hook: %s | Target: %s", market_topic.hook_angle, market_topic.target_audience)
         return market_topic

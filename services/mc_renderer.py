@@ -46,7 +46,7 @@ def render_mc_video(story: McStory, output_video_path: Path, output_cover_path: 
     if voice_clips:  # narration over ducked game sounds, each line at its beat's start frame
         from services.mc_director import compile_script
         beats = compile_script(story.to_script())["beats"]
-        ins, parts, labels = ["-stream_loop", "-1", "-i", str(settings.BASE_DIR / "assets" / "audio" / "schematic_ambient.wav")], ["[0:a]volume=0.4[g]", "[1:a]volume=0.10,afade=t=in:d=1.5[bed]"], ["[g]", "[bed]"]
+        ins, parts, labels = ["-stream_loop", "-1", "-i", str(settings.BASE_DIR / "assets" / "audio" / "schematic_ambient.wav")], ["[0:a]volume=0.4[g]", "[1:a]volume=0.28,afade=t=in:d=1.5[bed]"], ["[g]", "[bed]"]
         for n, (bi, clip, _d) in enumerate(voice_clips, start=2):
             ins += ["-i", str(clip)]
             ms = int(beats[bi]["from"] / FPS * 1000) + 120

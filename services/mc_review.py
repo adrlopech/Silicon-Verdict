@@ -20,16 +20,23 @@ from services.voice import get_ffmpeg_bin
 
 logger = logging.getLogger(__name__)
 MAX_LINE = 70
+REVIEW_MODELS = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-3.7-flash", "gemini-3.8-flash"]  # fact-checking deserves a stronger model than the lite generators
+
+
+class ReviewIssue(BaseModel):
+    line: int = Field(..., description="1-based line number")
+    problem: str = Field(..., description="What exactly is wrong, in one sentence")
+    definitely_wrong: bool = Field(..., description="true ONLY if the line is clearly false/misleading/contradictory. false if it is acceptable, a simplification, a matter of taste or you are unsure")
 
 
 class McReview(BaseModel):
-    errors: List[str] = Field(default_factory=list, description="BLOCKING problems only: false or misleading technical claims, clearly wrong figures, metaphor that switches midway, 'catch' introducing an advantage")
+    errors: List[ReviewIssue] = Field(default_factory=list, description="Candidate blocking problems: false or misleading technical claims, clearly wrong figures, metaphor that switches midway, 'catch' introducing an advantage. Do NOT list things that are fine.")
     nits: List[str] = Field(default_factory=list, description="Non-blocking polish: style, wording, hook strength, on-screen action not ideal")
     corrected_texts: List[str] = Field(..., description="One line per beat, same order and count: the original line if fine, otherwise the fixed line (7-11 words, max 70 chars)")
 
 
 REVIEW_SYSTEM = """You are a strict technical fact-checker and editor for 60-second explainer Shorts about computing, where the concept is explained by a
-metaphor acted out in Minecraft. Review the script. Put in `errors` ONLY the blocking problems (first four bullets, when real and clear-cut); everything else goes in `nits`. Be fair, not picky: slightly clunky wording or a hook that could be stronger is a nit, never an error. Bullets:
+metaphor acted out in Minecraft. Review the script. Put in `errors` ONLY the blocking problems (first four bullets, when real and clear-cut); everything else goes in `nits`. Simplifications that an explainer for beginners naturally makes (rounding, analogies) are NOT errors. Check arithmetic carefully before claiming a figure is wrong. Be fair, not picky: slightly clunky wording or a hook that could be stronger is a nit, never an error. Bullets:
 - a technically false, misleading or expert-flaggable statement (wrong component names, wrong mechanism, exaggeration like "always", "zero latency");
 - a figure that is wrong or not roughly correct (figures must be approximate and hedged with about/roughly);
 - the metaphor changing midway, or the metaphor not actually mapping onto the concept;
@@ -38,7 +45,7 @@ metaphor acted out in Minecraft. Review the script. Put in `errors` ONLY the blo
 - a hook that is a vague question with no surprise or figure; an ending that does not close the loop;
 - repeated words/phrases, grammar errors, or a line that is not natural spoken English.
 Then output corrected_texts: the SAME number of lines in the SAME order. Keep lines that are fine unchanged; fix faulty ones with the minimum change
-(7-11 words, max 70 characters, natural spoken English, true). Never add or remove lines. If nothing is wrong, errors and nits are empty and corrected_texts equals the original lines."""
+(7-11 words, max 70 characters, natural spoken English, true). Never add or remove lines. Fix a wrong or exaggerated figure by CORRECTING it to an accurate, hedged one (about/roughly); never delete figures: the finished script must keep 2-3 approximate numbers. If nothing is wrong, errors and nits are empty and corrected_texts equals the original lines."""
 
 
 def _render_script(story: McStory) -> str:
@@ -66,12 +73,13 @@ def review_and_fix(story: McStory, rounds: int = 2) -> bool:
     for rnd in range(1, rounds + 1):
         rev, _tok, model = generate_structured(
             prompt=_render_script(story) + "\n\nReview this script.", system_instruction=REVIEW_SYSTEM, schema=McReview,
-            temperature=0.1, validate=_check(len(story.beats)),
+            temperature=0.1, validate=_check(len(story.beats)), prefer=REVIEW_MODELS, provider_first="groq",
         )
-        if not rev.errors:
+        blocking = [e for e in rev.errors if e.definitely_wrong]
+        if not blocking:
             logger.info("Script review passed (%s, round %d)%s.", model, rnd, f"; {len(rev.nits)} non-blocking note(s)" if rev.nits else "")
             return True
-        logger.warning("Script review found %d blocking error(s) (round %d): %s", len(rev.errors), rnd, " | ".join(rev.errors)[:400])
+        logger.warning("Script review found %d blocking error(s) (round %d): %s", len(blocking), rnd, " | ".join(f"L{e.line}: {e.problem}" for e in blocking)[:400])
         for b, new in zip(story.beats, rev.corrected_texts):
             new = new.strip()
             if new != b.text:

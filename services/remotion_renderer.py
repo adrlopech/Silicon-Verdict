@@ -163,6 +163,8 @@ def map_visual_triggers_to_frames(
             "duration_frames": dur_f,
             "motion_preset": triggers[i].motion_preset,
             "image_src": getattr(triggers[i], "image_src", None),
+            "video_src": getattr(triggers[i], "video_src", None),
+            "video_seconds": getattr(triggers[i], "video_seconds", None),
             "game_title": getattr(triggers[i], "game_title", None),
             "annotation": getattr(triggers[i], "annotation", None),
         })

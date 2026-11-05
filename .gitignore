@@ -48,3 +48,6 @@ remotion_studio/public/mc_packs/
 remotion_studio/public/mc_assets/
 remotion_studio/public/mc_sounds/
 data/test_weekly_rotation.db
+data/gemini_state.json
+.remotion/
+assets/games/manifest.json

@@ -289,6 +289,10 @@ def run_master_video_pipeline(
     logger.info(" Visual Preset:      %s", preset)
     logger.info("==================================================================")
 
+    if series == "motion":
+        from services.motion_pipeline import run_motion_pipeline
+        return run_motion_pipeline(topic=topic, export_only=export_only or benchmark, dry_run=dry_run, privacy=privacy)
+
     if series == "minecraft":
         from services.mc_pipeline import run_minecraft_pipeline
         try:
@@ -383,6 +387,9 @@ def run_master_video_pipeline(
         )
         actual_dur = get_video_duration_ffprobe(final_video)
         logger.info("Remotion Master Render Completed: %s (Duration: %.2fs @ 30 FPS)", final_video.name, actual_dur)
+        if series == "game" and hasattr(story, "media_keys"):
+            from services.game_images import commit_story_media  # delete the footage this video used, never reuse it, blacklist the game 14 days
+            commit_story_media(story)
 
         # 5. Multi-Platform Distribution (Single Master Render Output)
         # One folder per video, named after its title; files are named by creation date and time
@@ -711,9 +718,9 @@ def parse_args():
     parser.add_argument(
         "--series",
         type=str,
-        choices=["hardware", "game", "simple", "minecraft"],
+        choices=["hardware", "game", "simple", "minecraft", "motion"],
         default=None,
-        help="Tech Curiosities sub-series: hardware (physics/engineering), game (game tech with real screenshots), simple (everyday), minecraft (concept explained inside Minecraft, ~64 s, always a new Gemini script).",
+        help="Tech Curiosities sub-series: hardware (physics/engineering), game (game tech with real screenshots), simple (everyday), minecraft (concept explained inside Minecraft, ~64 s, always a new Gemini script), motion (type 6: kinetic-typography Motion Graphics, 20-45 s, English only).",
     )
     parser.add_argument(
         "--from-bank",
@@ -784,6 +791,14 @@ if __name__ == "__main__":
             resolved_category = get_next_rotated_category()
 
     chosen_topic = args.topic
+    if args.series == "motion":
+        from services.motion_pipeline import run_motion_pipeline
+        try:
+            run_motion_pipeline(topic=chosen_topic, export_only=args.export_only or args.benchmark, dry_run=args.dry_run, privacy=args.privacy)
+        except Exception as exc:
+            logger.error("Motion Graphics pipeline failed: %s", exc)
+            sys.exit(1)
+        sys.exit(0)
     if args.series == "minecraft":
         from services.mc_pipeline import run_minecraft_pipeline
         from services.mc_story_generator import McScriptUnavailable

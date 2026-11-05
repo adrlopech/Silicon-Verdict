@@ -32,6 +32,7 @@ It is a single-owner automation suite: no public accounts, no multi-tenant servi
 | 3 | **Tech Curiosities** | Three sub-series: `hardware` (engineering paradoxes), `game` (game tech with real Steam screenshots), `simple` (everyday tech told by a mascot) |
 | 4 | **Automatic** | The AI picks the category with the longest rest, using `data/history.db` and retention analytics |
 | 5 | **Minecraft explainers** | A computing concept acted out inside Minecraft (~64 s), narrated, always from a brand-new Gemini script |
+| 6 | **Motion Graphics** | Kinetic-typography explainers (20-45 s): big words, one accent word in electric cyan, counters, code, bars and an outro. Always vertical, always English, always in the channel's blue/cyan palette |
 
 ## How a video is made
 
@@ -41,7 +42,8 @@ topic ─► Gemini script ─► fact-check gate ─► ElevenLabs voice ─►
        story bank (SQLite)                                                      output/<platform>/<title>/<date-time>.mp4
 ```
 
-* **Scripts**: structured output from Gemini through a resilient client (model chain, retries with backoff, validators). The *simple*,
+* **Scripts**: structured output from Gemini through a resilient client (model chain, quota-aware cooldowns, validators). If no Gemini model is available,
+  the same request is answered automatically by the configured fallback providers (Groq today; adding another OpenAI-compatible API is one line). The *simple*,
   *game* and *minecraft* series draw from a **story bank**: below 30 ready scripts, a batch of 20 new ones is generated; an empty bank pauses production.
 * **Voice**: ElevenLabs with word-level timestamps; natural mode (no time-stretching). Minecraft videos synthesize one line per scene in parallel and
   place each at its scene's start frame. A robotic local voice is never published.
@@ -51,6 +53,10 @@ topic ─► Gemini script ─► fact-check gate ─► ElevenLabs voice ─►
   "but there is a catch"; it rewrites faulty lines and re-checks. Scripts that cannot be fixed are discarded.
 * **QA gate (Minecraft)**: duration, 1080×1920, 48 kHz audio, peak level, dead air, word count and subtitle length are verified with ffmpeg.
   Anything that fails stays local and is **not** uploaded.
+* **Resilient LLM layer**: one client (`services/gemini_client.py`) for every call: Gemini first (quota-aware cooldowns persisted in `data/gemini_state.json`), then Groq and Cloudflare Workers AI as automatic fallbacks, with batch generation for the script banks.
+* **Game series media**: official Steam screenshots *and trailer clips*, each described once by a vision model. A video only shows footage whose caption fits what the
+  narration says at that moment; every item is used in a single video and then deleted, and a game stays blacklisted for 14 days after it appears
+  (`python -m services.game_registry` lists the blacklist).
 * **Output layout**: one folder per video named after its title, files named by creation date-time, cover and metadata `.txt` included.
 
 ## Quick start
@@ -81,6 +87,25 @@ python3 scripts/extract_minecraft_assets.py
 ```
 
 `GEMINI.md` documents the chat triggers (`genera`, `corregir`, `limpieza`, `help`).
+
+## Motion Graphics (series 6)
+
+```bash
+.venv/bin/python main.py --series motion --export-only                      # random idea, render only
+.venv/bin/python main.py --series motion --topic "How TRIM keeps SSDs fast"  # chosen topic, uploads to YouTube when it passes the checks
+```
+
+* The video is a Remotion composition, `MotionGraphic` (`remotion_studio/src/motion/`), driven only by JSON props: `title`, `theme` (accent, background, text) and `scenes`
+  (`bigText`, `textWithAccent`, `counter`, `list`, `codeBlock`, `progressBar`, `outro`, plus `curve` and `flash`; set `light: true` on at most one scene for a light variant), each with `text`, optional `accentText`, `value`, `items`, `code`
+  and `durationInFrames`. Look at `remotion_studio/src/motion/sample.json`.
+* Always 1080×1920 (9:16) at 30 fps, H.264: the render script refuses any other size. Top 12% and bottom 20% are kept free for the Shorts / TikTok interface.
+* Brand look: obsidian background (`#05070C`) with a blue (`#007AFF`) glow, electric-cyan (`#00F0FF`) accent words, counters and bars. The generator can never pick another accent colour.
+  Every text auto-fits: a long word, headline, list item, code line or number shrinks instead of leaving the frame.
+* Gemini writes the scene JSON (structured output, validated and retried); a language gate rejects anything that is not English, and a second pass fact-checks it.
+* Rendering goes through `@remotion/renderer` (`scripts/render_motion.mjs`: bundle → selectComposition → renderMedia, progress in the logs).
+  Sound is a quiet ambient bed plus a soft whoosh per scene, both from `assets/audio/` (no external assets; fonts are Google Fonts only).
+* Preview and tweak the design live: `cd remotion_studio && npx remotion studio`, then open the **MotionGraphic** composition and edit its props.
+* Render a JSON by hand: `node scripts/render_motion.mjs props.json out.mp4`.
 
 ## Repository map
 

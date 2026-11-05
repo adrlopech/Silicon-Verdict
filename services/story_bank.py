@@ -56,17 +56,18 @@ def count_ready(series: str) -> int:
         return int(conn.execute("SELECT COUNT(*) FROM story_bank WHERE series = ? AND used_at IS NULL", (series,)).fetchone()[0])
 
 
-def pop_story(series: str) -> Optional[Any]:
-    """Returns the oldest unused banked story (and marks it used), or None."""
+def pop_story(series: str, accept=None) -> Optional[Any]:
+    """Returns the oldest unused banked story (and marks it used), or None.
+    With `accept(story) -> bool`, stories it rejects are skipped and stay in the bank (e.g. a game blacklisted for now)."""
     _ensure()
     cls = MODELS[series]
     with get_db_connection() as conn:
-        row = conn.execute(
-            "SELECT id, payload FROM story_bank WHERE series = ? AND used_at IS NULL ORDER BY id LIMIT 1", (series,)
-        ).fetchone()
-        if not row:
-            return None
-        conn.execute("UPDATE story_bank SET used_at = ? WHERE id = ?", (datetime.now(timezone.utc).isoformat(), row["id"]))
-    story = cls.model_validate_json(row["payload"])
-    logger.info("Using banked %s story #%d: '%s' (%d left)", series, row["id"], story.topic, count_ready(series))
-    return story
+        rows = conn.execute("SELECT id, payload FROM story_bank WHERE series = ? AND used_at IS NULL ORDER BY id", (series,)).fetchall()
+        for row in rows:
+            story = cls.model_validate_json(row["payload"])
+            if accept is not None and not accept(story):
+                continue
+            conn.execute("UPDATE story_bank SET used_at = ? WHERE id = ?", (datetime.now(timezone.utc).isoformat(), row["id"]))
+            logger.info("Using banked %s story #%d: '%s'", series, row["id"], story.topic)
+            return story
+    return None

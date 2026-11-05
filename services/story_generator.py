@@ -152,6 +152,20 @@ def generate_story_live(topic: Optional[str] = None, avoid_topics: Optional[List
     return story
 
 
+def generate_stories_batch(count: int, avoid_topics: Optional[List[str]] = None) -> List[StoryProject]:
+    """`count` validated stories from ONE Gemini request (used to refill the bank without burning the daily quota)."""
+    from services.gemini_client import generate_structured_list
+    avoid = [t for t in (avoid_topics or []) if t][-40:]
+    prompt = ("Pick small, relatable everyday-tech mysteries that almost nobody can explain (USB, Bluetooth, batteries, touchscreens, cameras, "
+              "Wi-Fi, headphones, QR codes, GPS, speakers).\nEach story needs 125-190 words and 10-18 scenes.\n")
+    if avoid:
+        prompt += "Do NOT repeat or closely resemble these topics: " + "; ".join(avoid) + "\n"
+    stories, tokens, _model = generate_structured_list(prompt, SYSTEM_PROMPT, StoryProject, count, validate_story)
+    for st in stories:
+        st.gemini_input_tokens, st.gemini_output_tokens = tokens[0] // len(stories), tokens[1] // len(stories)
+    return stories
+
+
 def generate_story(topic: Optional[str] = None, prefer_bank: bool = False) -> StoryProject:
     """Live Gemini -> banked story -> deterministic fallback (flagged with is_fallback).
     With prefer_bank=True the banked (hand-written) stories are used first.

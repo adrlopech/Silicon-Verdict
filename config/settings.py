@@ -33,6 +33,14 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = ""
     GEMINI_MODEL: str = "gemini-3.1-flash-lite"
 
+    # Fallback LLM providers, tried in order when every Gemini model is unavailable (leave a key empty to disable it)
+    GROQ_API_KEY: str = ""
+    CLOUDFLARE_ACCOUNT_ID: str = ""
+    CLOUDFLARE_API_TOKEN: str = ""  # token with the "Workers AI" permission
+    CLOUDFLARE_VISION_MODELS: str = "@cf/meta/llama-3.2-11b-vision-instruct"  # used when a request carries images
+    CLOUDFLARE_MODELS: str = "@cf/openai/gpt-oss-120b,@cf/meta/llama-3.3-70b-instruct-fp8-fast"  # comma-separated
+    GROQ_MODELS: str = "openai/gpt-oss-120b,openai/gpt-oss-20b,qwen/qwen3.8-27b"  # comma-separated, preference order
+
     # ElevenLabs TTS & Voice Rotation Pool (Verified Active Voices)
     ELEVENLABS_API_KEY: str = ""
     ELEVENLABS_VOICE_ID: str = "onwK4e9ZLuTAKqWW03F9"  # Daniel - Steady Broadcaster

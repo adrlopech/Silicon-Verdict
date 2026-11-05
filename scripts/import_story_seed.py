@@ -40,10 +40,10 @@ def validate_game(st: MotionStoryProject) -> list:
     games = [t for t in st.visual_triggers if t.asset_id == "game_frame"]
     if len(games) < 5:
         problems.append(f"only {len(games)} game_frame triggers (need 5+)")
-    from services.game_images import available_games, pick_image
+    from services.game_images import available_games, canonical_game
     for t in games:
-        if not pick_image(t.game_title or ""):
-            problems.append(f"no screenshots for '{t.game_title}' (have: {available_games()})")
+        if not canonical_game(t.game_title or ""):
+            problems.append(f"no media for '{t.game_title}' (have: {available_games(include_blacklisted=True)})")
             break
     return problems
 

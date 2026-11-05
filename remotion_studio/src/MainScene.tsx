@@ -13,6 +13,8 @@ export interface VisualTrigger {
   duration_frames: number;
   motion_preset?: 'hero' | 'metric' | 'diagram';
   image_src?: string;
+  video_src?: string;
+  video_seconds?: number;
   game_title?: string;
   annotation?: string;
 }
@@ -56,6 +58,8 @@ export const MainScene: React.FC<MainSceneProps> = ({
           isLastScene={idx === visual_triggers.length - 1}
           motionPreset={trigger.motion_preset || 'hero'}
           image_src={trigger.image_src}
+          video_src={trigger.video_src}
+          video_seconds={trigger.video_seconds}
           game_title={trigger.game_title}
           annotation={trigger.annotation}
           seed={idx}
