@@ -20,11 +20,22 @@ logger = logging.getLogger(__name__)
 DEFAULT_DB_PATH = settings.BASE_DIR / "data" / "history.db"
 
 
+class _ClosingConnection(sqlite3.Connection):
+    """sqlite3 only commits/rolls back at the end of a `with` block and leaves the connection open; this one also closes it."""
+
+    def __exit__(self, exc_type, exc, tb):
+        try:
+            return super().__exit__(exc_type, exc, tb)
+        finally:
+            self.close()
+
+
 def get_db_connection(db_path: Optional[Path] = None) -> sqlite3.Connection:
-    """Returns a connection to the SQLite history database, creating directories if needed."""
+    """Returns a connection to the SQLite history database, creating directories if needed.
+    Use it as `with get_db_connection() as conn:` - the transaction is committed and the connection closed on exit."""
     path = db_path or DEFAULT_DB_PATH
     path.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(str(path))
+    conn = sqlite3.connect(str(path), timeout=30, factory=_ClosingConnection)
     conn.row_factory = sqlite3.Row
     return conn
 
