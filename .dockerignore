@@ -1,0 +1,16 @@
+.git
+.venv
+__pycache__
+*.pyc
+output
+temp
+logs
+data
+tokens
+token.json
+client_secrets.json
+.env
+remotion_studio/node_modules
+docs
+tests
+notes

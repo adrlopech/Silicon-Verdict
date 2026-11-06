@@ -37,6 +37,9 @@ RUN mkdir -p /app/data \
              /app/logs \
              /tmp/yt_automation
 
+# Run as an unprivileged user (bind-mounted dirs must be writable by UID 1000)
+RUN useradd --create-home --uid 1000 svuser && chown -R svuser:svuser /app /tmp/yt_automation
+
 # Copy application source code
 COPY config/ ./config/
 COPY core/ ./core/
@@ -45,6 +48,7 @@ COPY engine/ ./engine/
 COPY scripts/ ./scripts/
 COPY assets/ ./assets/
 COPY main.py .
+USER svuser
 
 # Default command: continuous weekly rotation scheduler daemon
 CMD ["python", "scripts/scheduler.py"]

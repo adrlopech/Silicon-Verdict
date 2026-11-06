@@ -211,8 +211,8 @@ def search_and_download_pexels_video(query: str, target_file: Path) -> Optional[
                     logger.info("Downloading Pexels video for '%s'", query)
                     download_file(download_url, target_file)
                     return get_video_duration(str(target_file))
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.warning("Pexels fetch failed for '%s': %s", query, exc)
 
     return None
 

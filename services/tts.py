@@ -222,8 +222,8 @@ def synthesize_speech(
             if aiff_tmp.exists():
                 aiff_tmp.unlink()
             return get_audio_duration(str(output_file))
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.warning("macOS 'say' fallback voice failed (%s); using silence.", exc)
 
     # Pure fallback: generate calibrated silence
     est_dur = max(3.0, len(text.split()) / 2.3)

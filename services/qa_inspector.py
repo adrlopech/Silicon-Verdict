@@ -388,8 +388,8 @@ def audit_visuals(video_path: Path, assets: Dict[str, Any], qa_rules: Dict[str, 
                     if collision:
                         issues_desc.append(f"Colisión semántica en B-roll '{c['file']}': conflicto antagónico con {list(collision)}")
                         solutions_desc.append(f"Excluir '{c['file']}' del B-roll y aplicar clip neutral")
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.warning("B-roll conflict check skipped: %s", exc)
 
     if "intel" in theme_name and ("am4" in meta_content or "am5" in meta_content):
         issues_desc.append("Incoherencia temática detectada: metraje/etiquetas de AMD en tema de procesadores Intel")
