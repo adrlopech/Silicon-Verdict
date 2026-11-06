@@ -29,6 +29,9 @@ class Settings(BaseSettings):
     BASE_DIR: Path = BASE_DIR
     TMP_DIR: str = "/tmp/yt_automation"
 
+    # Hard ceiling for the length of ANY video (every series): 3 minutes
+    MAX_VIDEO_SECONDS: float = 180.0
+
     # Gemini AI
     GEMINI_API_KEY: str = ""
     GEMINI_MODEL: str = "gemini-3.1-flash-lite"

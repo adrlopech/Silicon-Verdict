@@ -106,8 +106,9 @@ def qa_video(path: Path, story: McStory) -> List[str]:
     dur = int(m[1]) * 3600 + int(m[2]) * 60 + float(m[3]) if m else 0.0
     if dur < 61:
         fails.append(f"duration {dur:.1f}s is under 61 s (TikTok monetisation)")
-    if dur > 90:
-        fails.append(f"duration {dur:.1f}s is too long for a Short")
+    from config.settings import settings
+    if dur > settings.MAX_VIDEO_SECONDS + 1:
+        fails.append(f"duration {dur:.1f}s is over the {settings.MAX_VIDEO_SECONDS:.0f} s ceiling")
     if "1080x1920" not in log:
         fails.append("video is not 1080x1920")
     if "48000 Hz" not in log:

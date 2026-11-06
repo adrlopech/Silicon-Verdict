@@ -452,7 +452,7 @@ def generate_structured(
             except GeminiUnavailable as pexc:
                 errors.append(str(pexc)[:140])
                 logger.warning("%s", pexc)
-        raise GeminiUnavailable(" | ".join(errors))
+        raise GeminiUnavailable(" | ".join(errors)) from exc
 
 
 def generate_structured_list(

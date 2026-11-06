@@ -90,6 +90,7 @@ class YouTubeService:
         privacy_status: str = "private",
         is_short: bool = False,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
+        publish_at: Optional[str] = None,
     ) -> str:
         """Uploads a video to YouTube using chunked resumable upload with exponential backoff.
 
@@ -139,6 +140,10 @@ class YouTubeService:
                 "selfDeclaredMadeForKids": False,
             },
         }
+
+        if publish_at:  # RFC 3339 UTC; YouTube requires private + publishAt
+            body["status"]["privacyStatus"] = "private"
+            body["status"]["publishAt"] = publish_at
 
         media = MediaFileUpload(
             str(video_path),
@@ -215,6 +220,7 @@ def upload_video_resumable(
     tags: List[str],
     privacy_status: Optional[str] = None,
     is_short: bool = False,
+    publish_at: Optional[str] = None,
 ) -> str:
     """Convenience functional wrapper around YouTubeService.upload_video."""
     privacy = privacy_status or settings.YOUTUBE_PRIVACY_STATUS
@@ -225,4 +231,5 @@ def upload_video_resumable(
         tags=tags,
         privacy_status=privacy,
         is_short=is_short,
+        publish_at=publish_at,
     )

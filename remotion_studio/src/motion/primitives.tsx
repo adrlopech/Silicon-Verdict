@@ -81,11 +81,13 @@ export const Words: React.FC<{ text: string; size: number; delay?: number; stagg
   const lines = Math.ceil(words.join(' ').length / Math.max(6, Math.floor(900 / (size * 0.5))));
   if (lines > 3) size = Math.max(36, Math.floor(size * 0.82)); // very long lines shrink instead of growing taller than the safe area
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', columnGap: size * 0.28, rowGap: size * 0.06, fontFamily: SANS, fontWeight: weight, fontSize: size, lineHeight: 1.04, letterSpacing: -size * 0.025, color: color ?? (light ? '#0A1220' : theme.text) }}>
+    <div data-cursor="text" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', columnGap: size * 0.28, rowGap: size * 0.06, fontFamily: SANS, fontWeight: weight, fontSize: size, lineHeight: 1.04, letterSpacing: -size * 0.025, color: color ?? (light ? '#0A1220' : theme.text) }}>
       {words.map((w, i) => {
-        const s = spring({ frame: frame - delay - i * stagger, fps, config: { damping: 200, mass: 0.9 } });
+        // bouncy pop: overshoots its size, tilts alternately and settles; the opacity/blur use the clamped value so nothing flickers
+        const raw = spring({ frame: frame - delay - i * stagger, fps, config: { damping: 11, stiffness: 150, mass: 0.8 } });
+        const s = Math.min(1, raw);
         return (
-          <span key={i} style={{ display: 'inline-block', opacity: s, transform: `translateY(${(1 - s) * size * 0.55}px)`, filter: `blur(${(1 - s) * 14}px)` }}>
+          <span key={i} style={{ display: 'inline-block', opacity: Math.min(1, s * 1.6), transform: `translateY(${(1 - raw) * size * 0.6}px) scale(${0.55 + 0.45 * raw}) rotate(${(1 - raw) * (i % 2 ? 7 : -7)}deg)`, filter: `blur(${(1 - s) * 12}px)` }}>
             {w}
           </span>
         );
@@ -101,9 +103,10 @@ export const Accent: React.FC<{ text?: string; size: number; delay?: number }> =
   const { theme, light } = useTheme();
   if (!text) return null;
   size = fit(size, text.length, 900, 0.5, 44);
-  const s = spring({ frame: frame - delay, fps, config: { damping: 200, mass: 1 } });
+  const raw = spring({ frame: frame - delay, fps, config: { damping: 10, stiffness: 130, mass: 0.9 } });
+  const s = Math.min(1, raw);
   return (
-    <div style={{ maxWidth: 940, fontFamily: SERIF, fontStyle: 'italic', fontWeight: 400, fontSize: size, lineHeight: 1.0, color: theme.accent, opacity: s, transform: `translateY(${(1 - s) * size * 0.4}px) scale(${0.96 + 0.04 * s})`, filter: `blur(${(1 - s) * 10}px)`, textShadow: light ? 'none' : `0 0 ${size * 0.35}px ${theme.accent}66` }}>
+    <div data-cursor="accent" style={{ maxWidth: 940, fontFamily: SERIF, fontStyle: 'italic', fontWeight: 400, fontSize: size, lineHeight: 1.0, color: theme.accent, opacity: s, transform: `translateY(${(1 - raw) * size * 0.5}px) scale(${0.6 + 0.4 * raw}) rotate(${(1 - raw) * -5}deg)`, filter: `blur(${(1 - s) * 10}px)`, textShadow: light ? 'none' : `0 0 ${size * 0.35}px ${theme.accent}66` }}>
       {text}
     </div>
   );

@@ -54,7 +54,7 @@ def _wiki_json(params: dict) -> dict:
     try:
         return r.json()
     except ValueError:
-        raise RuntimeError(f"Wikipedia kept refusing (last status {r.status_code})")
+        raise RuntimeError(f"Wikipedia kept refusing (last status {r.status_code})") from None
 
 
 def _wikipedia(game: str) -> str:

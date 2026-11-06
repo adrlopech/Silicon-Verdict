@@ -37,7 +37,7 @@ export const Counter: React.FC<P> = ({ scene }) => {
       <Kicker text={scene.kicker} />
       <Words text={scene.text} size={104} />
       <Accent text={scene.accentText} size={132} delay={10} />
-      <div style={{ fontFamily: MONO, fontWeight: 500, fontSize: numSize, letterSpacing: 6, color: light ? '#0A1220' : theme.text, textShadow: light ? 'none' : `0 0 40px ${theme.accent}55`, marginTop: 10 }}>
+      <div data-cursor="number" style={{ fontFamily: MONO, fontWeight: 500, fontSize: numSize, letterSpacing: 6, color: light ? '#0A1220' : theme.text, textShadow: light ? 'none' : `0 0 40px ${theme.accent}55`, marginTop: 10 }}>
         {String(shown).padStart(digits, '0')}
         {scene.unit && <span style={{ fontSize: numSize * 0.38, color: theme.accent, marginLeft: 14 }}>{scene.unit}</span>}
       </div>
@@ -66,7 +66,7 @@ export const ListScene: React.FC<P> = ({ scene }) => {
         {items.map((it, i) => {
           const s = spring({ frame: frame - 20 - i * 9, fps, config: { damping: 200 } });
           return (
-            <div key={i} style={{ display: 'flex', alignItems: 'baseline', gap: 28, opacity: s, transform: `translateX(${(1 - s) * -70}px)`, filter: `blur(${(1 - s) * 10}px)` }}>
+            <div key={i} data-cursor="item" style={{ display: 'flex', alignItems: 'baseline', gap: 28, opacity: s, transform: `translateX(${(1 - s) * -70}px)`, filter: `blur(${(1 - s) * 10}px)` }}>
               <span style={{ fontFamily: MONO, fontSize: 40, color: theme.accent }}>{String(i + 1).padStart(2, '0')}</span>
               <span style={{ fontFamily: SANS, fontWeight: 800, fontSize: itemSize, letterSpacing: -2, lineHeight: 1.1, color: light ? '#0A1220' : theme.text }}>{it}</span>
             </div>
@@ -101,7 +101,7 @@ export const CodeBlock: React.FC<P> = ({ scene }) => {
   const panel = interpolate(frame, [0, 16], [0, 1], { ...clamp, easing: EASE_OUT });
   return (
     <SafeBox gap={52}>
-      <div style={{ width: 920, borderRadius: 30, padding: '30px 38px 38px', background: 'rgba(10,22,44,0.72)', border: `1px solid ${theme.accent}33`, boxShadow: `0 30px 90px rgba(0,0,0,0.5), 0 0 0 1px ${theme.accent}22`, opacity: panel, transform: `translateY(${(1 - panel) * 40}px) scale(${0.97 + 0.03 * panel})`, textAlign: 'left' }}>
+      <div data-cursor="code" style={{ width: 920, borderRadius: 30, padding: '30px 38px 38px', background: 'rgba(10,22,44,0.72)', border: `1px solid ${theme.accent}33`, boxShadow: `0 30px 90px rgba(0,0,0,0.5), 0 0 0 1px ${theme.accent}22`, opacity: panel, transform: `translateY(${(1 - panel) * 40}px) scale(${0.97 + 0.03 * panel})`, textAlign: 'left' }}>
         <div style={{ display: 'flex', gap: 12, marginBottom: 26 }}>
           {['#007AFF', '#00F0FF', 'rgba(255,255,255,0.45)'].map((c) => <div key={c} style={{ width: 16, height: 16, borderRadius: 8, background: c }} />)}
           <span style={{ marginLeft: 18, fontFamily: MONO, fontSize: 22, color: 'rgba(255,255,255,0.4)' }}>{scene.kicker ?? 'script.ts'}</span>
@@ -136,7 +136,7 @@ export const ProgressBar: React.FC<P> = ({ scene }) => {
       <Kicker text={scene.kicker} />
       <Words text={scene.text} size={112} />
       <Accent text={scene.accentText} size={150} delay={10} />
-      <div style={{ width: 860, height: 22, borderRadius: 11, background: light ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)', overflow: 'hidden', marginTop: 24 }}>
+      <div data-cursor="bar" style={{ width: 860, height: 22, borderRadius: 11, background: light ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)', overflow: 'hidden', marginTop: 24 }}>
         <div style={{ width: `${target * p}%`, height: '100%', borderRadius: 11, background: `linear-gradient(90deg, ${BRAND_BLUE}, ${theme.accent})`, boxShadow: `0 0 28px ${theme.accent}` }} />
       </div>
       <div style={{ fontFamily: MONO, fontSize: 120, fontWeight: 500, color: light ? '#0A1220' : theme.text }}>
@@ -177,9 +177,11 @@ export const Flash: React.FC<P> = ({ scene }) => {
   const frame = useCurrentFrame();
   const { theme } = useTheme();
   const wipe = interpolate(frame, [0, 8], [0, 1], { ...clamp, easing: EASE_OUT });
+  const words = scene.text.split(/\s+/).filter(Boolean);
+  const flashSize = fit(words.length > 1 ? 300 : 340, Math.max(...words.map((w) => w.length), Math.ceil(scene.text.length / 2)), 920, 0.7, 90); // long phrases wrap on two lines instead of shrinking to one tiny row
   return (
     <AbsoluteFill style={{ background: theme.accent, opacity: wipe, alignItems: 'center', justifyContent: 'center', paddingTop: SAFE_TOP - SAFE_BOTTOM }}>
-      <div style={{ fontFamily: SANS, fontWeight: 900, fontSize: fit(340, scene.text.length, 920, 0.7, 90), letterSpacing: -8, maxWidth: 940, color: '#05070C', transform: `scale(${0.8 + 0.2 * wipe})` }}>{scene.text}</div>
+      <div style={{ fontFamily: SANS, fontWeight: 900, fontSize: flashSize, letterSpacing: -flashSize * 0.03, wordSpacing: flashSize * 0.12, lineHeight: 0.98, textAlign: 'center', maxWidth: 940, color: '#05070C', transform: `scale(${0.8 + 0.2 * wipe})` }}>{scene.text}</div>
     </AbsoluteFill>
   );
 };

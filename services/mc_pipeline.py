@@ -51,8 +51,14 @@ def run_minecraft_pipeline(
     work = Path(settings.TMP_DIR) / f"run_mc_{run_id}"
     work.mkdir(parents=True, exist_ok=True)
     from services.mc_voice import narrate_beats
-    clips = narrate_beats(story, work / "voice")  # ElevenLabs narration; also stretches each beat to fit its line
-    video, cover, timing = render_mc_video(story, work / "mc_master.mp4", work / "cover.jpg", voice_clips=clips)
+    try:
+        clips = narrate_beats(story, work / "voice")  # ElevenLabs narration; also stretches each beat to fit its line
+        video, cover, timing = render_mc_video(story, work / "mc_master.mp4", work / "cover.jpg", voice_clips=clips)
+    except BaseException:
+        from services.story_bank import release_story  # a banked script is only spent by a video that was actually produced
+        release_story(story)
+        shutil.rmtree(work, ignore_errors=True)
+        raise
 
     qa_fails = qa_video(video, story)
     if qa_fails:
@@ -102,6 +108,7 @@ def run_minecraft_pipeline(
         from services.bank_manager import replenish_after_use
         replenish_after_use("minecraft")
 
+    shutil.rmtree(work, ignore_errors=True)  # the master was copied to the output folders
     elapsed = time.time() - t0
     logger.info("Minecraft video ready in %.0fs: %s", elapsed, out["tiktok"])
     return {"youtube_video": str(out["youtube"]), "youtube_url": youtube_url, "tiktok_video": str(out["tiktok"]), "tiktok_metadata": str(meta),

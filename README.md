@@ -27,12 +27,14 @@ It is a single-owner automation suite: no public accounts, no multi-tenant servi
 
 | # | Series | What you get |
 |---|--------|--------------|
-| 1 | **Hardware Deep Dive** | Microarchitecture and benchmark explainers with glass-style charts and kinetic subtitles |
-| 2 | **Gaming & Optimization** | Frametime, 1% lows and settings guidance for competitive play |
-| 3 | **Tech Curiosities** | Two sub-series: `hardware` (engineering paradoxes) and `simple` (everyday tech told by a mascot) |
-| 4 | **Automatic** | The AI picks the category with the longest rest, using `data/history.db` and retention analytics |
-| 5 | **Minecraft explainers** | A computing concept acted out inside Minecraft (~64 s), narrated, always from a brand-new Gemini script |
-| 6 | **Motion Graphics** | Narrated kinetic-typography explainers of 62-84 s (YouTube monetisation needs more than 60 s): big words, one accent word in electric cyan, counters, code, bars and an outro. Two kinds: tech *curiosities* and *games* (an engineering fact told with real game footage). Always vertical, always English, always in the channel's blue/cyan palette |
+| 1 | **Motion Graphics** (the main series) | Narrated kinetic-typography explainers of 62-90 s (YouTube monetisation needs more than 60 s): big words, one accent word in electric cyan, counters, code, bars and an outro, always vertical, in English and in the channel's blue/cyan palette. Kinds: tech *curiosities* and *games* (an engineering fact told with real game footage). Formats: classic, myth, tier, whatif, evolution, versus, easter, **hardware** and **simple** |
+| 2 | **Hardware Deep Dive** | A Motion format (`--motion-format hardware`, or `--series hardware` / `--category 1`): silicon, memory, storage, networking and engineering explained with mechanism and real figures; the mouse cursor appears only as an accent |
+| 3 | **Everyday Tech** | A Motion format (`--motion-format simple`, or `--series simple` / `--category 3`): small everyday tech mysteries hosted by the **mouse cursor**, a character that uses the screen like a person: it clicks, selects text, drags list items, opens browser tabs and shows a loading ring |
+| 4 | **Gaming** | `--category 2`: a Motion *game* video. Banked game scripts go first, told over screenshots of their game (`assets/games/<game>/`, credited in the description); then the source-grounded videos with real footage; a hardware video when neither is possible |
+| 5 | **Automatic** | The AI picks the category with the longest rest, using `data/history.db` and retention analytics |
+| 6 | **Minecraft explainers** | A computing concept acted out inside Minecraft (~64 s), narrated, always from a brand-new Gemini script |
+
+The cursor is a resource of the whole Motion engine, used only when it does something: any scene can carry `cursor` (`click`, `hover`, `select`, `drag`, `busy`; the first scene may open a browser `tab` or a macOS-style Control Center panel with `toggle`, e.g. flipping Airplane Mode and watching Wi-Fi and Bluetooth switch off) and the cursor acts on what is really on screen (`remotion_studio/src/motion/cursor.tsx` measures the tagged elements of the scene). Scenes also get **effects** picked from what the narration names (`ambient.tsx`: a plane crossing the screen, signal waves and bars, lightning, embers, snow, packets, coins, an equalizer, notification banners, a filling battery, a clock, a padlock, a magnifier, binary rain); the big fly-bys appear once per video and no effect repeats within three scenes. The narration is ONE continuous ElevenLabs take sliced per scene at the pause between two words (no cuts mid-sentence), mixed with a two-pass loudness normalisation.
 
 ## How a video is made
 
@@ -43,12 +45,12 @@ topic ─► Gemini script ─► fact-check gate ─► ElevenLabs voice ─►
 ```
 
 * **Scripts**: structured output from Gemini through a resilient client (model chain, quota-aware cooldowns, validators). If no Gemini model is available,
-  the same request is answered automatically by the configured fallback providers (Groq today; adding another OpenAI-compatible API is one line). The *simple*
-  and *minecraft* series draw from a **story bank**: below 30 ready scripts, a batch of 20 new ones is generated; an empty bank pauses production.
+  the same request is answered automatically by the configured fallback providers (Groq today; adding another OpenAI-compatible API is one line). The *minecraft*
+  series draws from a **story bank**: below 30 ready scripts, a batch of 20 new ones is generated; an empty bank pauses production. The *motion* series draws its curiosity videos (every format, including hardware and simple) from a `motion` bank in the same table before asking the LLM, matching the requested format; it is filled with `scripts/refill_story_bank.py --series hardware|simple|motion --format ...` (never automatically). Scripts written for the old categories are moved into this model by `scripts/migrate_legacy_bank.py`.
 * **Voice**: ElevenLabs with word-level timestamps; natural mode (no time-stretching). Minecraft videos synthesize one line per scene in parallel and
   place each at its scene's start frame. A robotic local voice is never published.
-* **Visuals**: Remotion compositions (`MainScene`, `StoryScene`, `McStory`) at 1080×1920 / 30 fps with safe-zone-aware layouts, kinetic subtitles, a
-  mascot with synced vectors, Steam screenshots integrated into the brand look, and a Minecraft director that turns a script into animation, camera and sound.
+* **Visuals**: Remotion compositions (`MotionGraphic` with the cursor-character layer, `McStory`) at 1080×1920 / 30 fps with safe-zone-aware layouts, kinetic typography, a
+  mouse-cursor character that clicks, selects, drags and opens tabs on the scenes themselves, game footage integrated into the brand look, and a Minecraft director that turns a script into animation, camera and sound.
 * **Fact-check gate (Minecraft)**: a second Gemini pass looks for false technical claims, wrong figures, a metaphor that changes midway and misuse of
   "but there is a catch"; it rewrites faulty lines and re-checks. Scripts that cannot be fixed are discarded.
 * **QA gate (Minecraft)**: duration, 1080×1920, 48 kHz audio, peak level, dead air, word count and subtitle length are verified with ffmpeg.
@@ -84,8 +86,8 @@ python3 scripts/make_mc_music.py              # writes assets/audio/mc_bed.wav (
 
 ```bash
 .venv/bin/python main.py help                              # command reference
-.venv/bin/python main.py --category 1                      # hardware | 2 gaming | 3 curiosities | 4 auto
-.venv/bin/python main.py --category 3 --series simple      # simple | hardware
+.venv/bin/python main.py --category 1                      # hardware | 2 gaming | 3 curiosities | 4 auto (all told as Motion videos)
+.venv/bin/python main.py --series simple                   # everyday tech hosted by the cursor; --series hardware for the deep dive
 .venv/bin/python main.py --series minecraft                # Minecraft explainer
 .venv/bin/python main.py --series minecraft --export-only  # render without uploading
 .venv/bin/python scripts/upload_existing.py "<video.mp4>"  # upload an already rendered video
@@ -119,7 +121,7 @@ node scripts/mc_compile.mjs script.json                 # compile a script and p
 * **Audio**: game sounds + narration + an original music loop (`scripts/make_mc_music.py`) that ducks under the voice. The call to action is voiced once.
 * **Assets are not in git**: textures, sounds and skins are generated or downloaded locally (`remotion_studio/public/` and `*.png` are ignored). The NameMC skins are creations of their authors: check their terms before using them in monetised videos.
 
-## Motion Graphics (series 6)
+## Motion Graphics (the main series)
 
 ```bash
 .venv/bin/python main.py --series motion --export-only                              # alternates curiosity / game, render only
@@ -129,7 +131,7 @@ node scripts/mc_compile.mjs script.json                 # compile a script and p
 
 ### Content formats (`--motion-format`)
 
-The motion series also speaks six fixed formats, each with its own scene types, prompt rules and validators (the same fact-check pass applies to every one):
+The motion series also speaks fixed formats (hardware and simple are the old categories, with the cursor), each with its own scene types, prompt rules and validators (the same fact-check pass applies to every one):
 
 ```bash
 .venv/bin/python main.py --series motion --motion-format myth --export-only       # MYTH / FACT: claim on screen, then a stamp slams down
@@ -138,6 +140,8 @@ The motion series also speaks six fixed formats, each with its own scene types, 
 .venv/bin/python main.py --series motion --motion-format evolution --export-only  # timelines + growth counters
 .venv/bin/python main.py --series motion --motion-format versus --export-only     # two contenders, 3-5 rounds of bars, a winner per round
 .venv/bin/python main.py --series motion --motion-format easter --export-only     # a game's hidden detail (needs a game with unused footage and a source dossier)
+.venv/bin/python main.py --series motion --motion-format hardware --export-only   # silicon / engineering deep dive, cursor as an accent
+.venv/bin/python main.py --series motion --motion-format simple --export-only     # everyday tech mystery hosted by the cursor
 .venv/bin/python main.py --series motion --motion-format any                      # a random one
 ```
 
@@ -188,7 +192,7 @@ A demo of all four: `remotion_studio/src/motion/sample_formats.json`. `easter` i
 | `services/game_*.py` | Game media and facts: footage manifest, captions, one-use consumption, 14-day blacklist (`game_registry`), source dossiers (`game_facts`) |
 | `services/gemini_client.py` | The single LLM entry point: Gemini + Groq + Cloudflare fallbacks, cooldowns, batching, image input |
 | `engine/` | Chart and legacy rendering engine |
-| `remotion_studio/` | Remotion project (React): compositions (`MotionGraphic`, mascot story, Minecraft kit, hardware main scene) |
+| `remotion_studio/` | Remotion project (React): compositions (`MotionGraphic`, Minecraft kit) |
 | `scripts/` | Maintenance (cleanup, bank refill, footage fetch/caption, facts), `render_motion.mjs`, Minecraft assets / music / director tests, authentication, scheduler, analytics |
 | `docs/` | Design notes (Minecraft kit and assets) |
 | `assets/` | Fonts, audio beds and effects, B-roll manifest, `skins/` (extra Minecraft skins with their sources) |

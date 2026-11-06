@@ -1,31 +1,28 @@
 """Story bank policy.
 
-- Whenever the bank has fewer than LOW_WATERMARK (30) ready scripts for a series ('simple', 'minecraft'),
+- Whenever the bank has fewer than LOW_WATERMARK (30) ready scripts for the Minecraft series,
   a batch of BATCH (20) new scripts is generated.
 - After every video, the bank is checked and, if below the watermark, the batch is generated.
 - If the bank is empty before a video, production pauses until a batch is generated.
 - Scripts already in the bank are never deleted, and the bank may grow above the watermark.
 """
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from services.gemini_client import GeminiUnavailable
 from services.history import get_recently_used_topics_safe
-from services.story_bank import add_story, count_ready, pop_story, topics_in_bank
+from services.story_bank import add_story, count_ready, topics_in_bank
 
 logger = logging.getLogger(__name__)
 
 LOW_WATERMARK = 30
 BATCH = 20
-SERIES = ("simple", "minecraft")
+SERIES = ("minecraft",)  # the Motion bank (every Motion format, incl. hardware and simple) is filled with scripts/refill_story_bank.py, never automatically
 
 
 def generate_one(series: str) -> Any:
     """One new validated script straight from Gemini. Raises GeminiUnavailable if it cannot be produced."""
     avoid = topics_in_bank(series) + get_recently_used_topics_safe()
-    if series == "simple":
-        from services.story_generator import generate_story_live
-        return generate_story_live(avoid_topics=avoid)
     if series == "minecraft":
         from services.mc_story_generator import generate_story_live as generate_mc
         return generate_mc(avoid_topics=avoid)
@@ -37,11 +34,8 @@ BATCH_CHUNK = 4  # scripts requested per Gemini call: 20 scripts cost ~5 request
 
 def _generate_chunk(series: str, want: int) -> list:
     avoid = topics_in_bank(series) + get_recently_used_topics_safe()
-    if series in ("simple", "minecraft") and want > 0:
-        if series == "simple":
-            from services.story_generator import generate_stories_batch as batch
-        else:
-            from services.mc_story_generator import generate_stories_batch as batch
+    if series == "minecraft" and want > 0:
+        from services.mc_story_generator import generate_stories_batch as batch
         try:
             return batch(want, avoid)
         except GeminiUnavailable as exc:
@@ -70,16 +64,6 @@ def refill(series: str, count: int = BATCH) -> int:
             logger.info("Banked new %s script %d/%d: %s (%d ready)", series, added, count, story.topic, count_ready(series))
     return added
 
-
-def take_or_refill(series: str) -> Optional[Any]:
-    """Pops a banked script. If the bank is empty, stops to generate a batch first."""
-    accept = None
-    story = pop_story(series, accept)
-    if story is not None:
-        return story
-    logger.warning("The %s bank is EMPTY. Pausing production to generate %d new scripts...", series, BATCH)
-    refill(series, BATCH)
-    return pop_story(series, accept)
 
 
 def replenish_after_use(series: str) -> int:

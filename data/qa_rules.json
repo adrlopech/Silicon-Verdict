@@ -31,7 +31,7 @@
   },
   "retention_rules": {
     "min_duration_sec": 60.0,
-    "max_duration_sec": 120.0,
+    "max_duration_sec": 180.0,
     "prohibit_midroll_subscribe_banner": true
   },
   "history_fixes_applied": [

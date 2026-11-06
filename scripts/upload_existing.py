@@ -25,6 +25,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("video")
     ap.add_argument("--privacy", default="public", choices=["public", "unlisted", "private"])
+    ap.add_argument("--publish-at", default=None, help="RFC3339 UTC, e.g. 2026-11-06T12:30:00Z (scheduled publish)")
     args = ap.parse_args()
 
     video = Path(args.video).resolve()
@@ -49,6 +50,7 @@ def main() -> None:
         tags=tags,
         privacy_status=args.privacy,
         is_short=True,
+        publish_at=args.publish_at,
     )
     print(f"Published: {url}")
 

@@ -82,11 +82,13 @@ def synthesize_voice_with_timestamps(
     category: str = "hardware_deep_dive",
     speed: Optional[float] = 1.02,
     min_duration: Optional[float] = 55.0,
-    max_duration: Optional[float] = 70.0,
+    max_duration: Optional[float] = settings.MAX_VIDEO_SECONDS,
     natural: bool = False,
     stability: float = 0.38,
     style: float = 0.32,
     similarity_boost: float = 0.85,
+    previous_text: Optional[str] = None,
+    next_text: Optional[str] = None,
 ) -> Tuple[Path, float, List[Dict[str, Any]]]:
     """Synthesizes high-impact narration with ElevenLabs native timestamps (Zero-Whisper architecture).
 
@@ -130,6 +132,8 @@ def synthesize_voice_with_timestamps(
                 text=normalized_text,
                 model_id=model_id or "eleven_turbo_v2_5",
                 voice_settings=voice_settings,
+                **({"previous_text": previous_text} if previous_text else {}),  # context of the neighbouring lines: keeps intonation continuous across separate clips
+                **({"next_text": next_text} if next_text else {}),
             )
 
             audio_bytes = base64.b64decode(response.audio_base_64)
@@ -228,8 +232,9 @@ def synthesize_voice_with_timestamps(
     filter_parts = []
     if abs(atempo - 1.0) > 0.01:
         filter_parts.append(f"atempo={atempo:.3f}")
-    filter_parts.append("apad=pad_dur=0.40")
-    total_pad_dur = mod_dur + 0.40
+    tail_pad = 0.15 if natural else 0.40  # natural (scene-by-scene) narration: a short tail so consecutive lines flow instead of leaving a long silence
+    filter_parts.append(f"apad=pad_dur={tail_pad:.2f}")
+    total_pad_dur = mod_dur + tail_pad
     fade_st = max(0.0, total_pad_dur - 0.15)
     filter_parts.append(f"afade=t=out:st={fade_st:.2f}:d=0.15")
 

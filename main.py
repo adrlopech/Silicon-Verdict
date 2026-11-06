@@ -5,9 +5,8 @@ import shutil
 import sys
 import time
 import uuid
-from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple
 
 # Ensure project root is in sys.path
 BASE_DIR = Path(__file__).resolve().parent
@@ -23,24 +22,14 @@ from config.settings import settings
 from core.generator import (
     generate_video_plan,
 )
-from core.schemas import MarketTopic, MotionStoryProject
+from core.schemas import MarketTopic
 from core.topic_engine import generate_market_topic, record_topic_in_history
 from services.renderer import (
     VideoRenderer,
 )
-from services.history import (
-    record_generation_metric,
-    record_short_history,
-)
 from services.media import fetch_all_scene_media
 from services.notifier import notify_pipeline_success
-from services.tiktok import (
-    get_video_duration_ffprobe,
-)
 from services.tts import synthesize_all_scenes
-from services.voice import (
-    get_ffmpeg_bin,
-)
 from services.youtube import upload_video_resumable
 
 # Configure root logger with console and structured file logging
@@ -251,8 +240,19 @@ def run_pipeline(
             shutil.rmtree(work_dir, ignore_errors=True)
 
 
-def topic_override_or_none(topic: Optional[str]) -> Optional[str]:
-    return topic or None
+def motion_route(series: Optional[str], category: Optional[str]) -> Tuple[str, str]:
+    """(kind, format) of the Motion video that replaces an old category: hardware -> hardware deep dive, simple / curiosities -> everyday hosted by the cursor,
+    gaming -> a game video (hardware if no footage is available), motion (or nothing) -> the classic explainer."""
+    if series in ("hardware", "simple"):
+        return "curiosity", series
+    if series == "motion" or not category:
+        return "curiosity", "auto"
+    cat = str(category).lower().strip()
+    if cat in ("1", "hardware", "hardware_benchmarks", "deep_dive"):
+        return "curiosity", "hardware"
+    if cat in ("2", "gaming", "gaming_benchmarks", "optimization"):
+        return "game", "auto"
+    return "curiosity", "simple"
 
 
 def run_master_video_pipeline(
@@ -270,307 +270,38 @@ def run_master_video_pipeline(
     prefer_bank: bool = True,
 ) -> Dict[str, Any]:
     """Executes the single unified master video pipeline (60-120s) for YouTube Shorts and TikTok."""
-    start_time = time.time()
-    run_id = uuid.uuid4().hex[:8]
-    work_dir = Path(settings.TMP_DIR) / f"run_master_{run_id}"
-    work_dir.mkdir(parents=True, exist_ok=True)
-    ffmpeg_bin = get_ffmpeg_bin()
-
     if benchmark:
         export_only = True
-
-    logger.info("==================================================================")
-    logger.info("=== STARTING UNIFIED MASTER (60-120s) PIPELINE [Run ID: %s] ===", run_id)
-    logger.info(" Format:             Single Master Vertical (1080x1920 @ 30 FPS M2 Optimized)")
-    logger.info(" Target Duration:    Strictly between 60.0s and 120.0s (1-2 min)")
-    logger.info(" Export Only Mode:   %s", export_only)
-    logger.info(" Benchmark Mode:     %s", benchmark)
-    logger.info(" Distribution:       YouTube Public Direct + TikTok Local Staging")
-    logger.info(" Visual Preset:      %s", preset)
-    logger.info("==================================================================")
-
-    if series == "motion":
-        from services.motion_pipeline import run_motion_pipeline
-        return run_motion_pipeline(topic=topic, export_only=export_only or benchmark, dry_run=dry_run, privacy=privacy)
+    logger.info("=== Master video pipeline: series=%s category=%s export_only=%s ===", series or "auto", category, export_only)
 
     if series == "minecraft":
         from services.mc_pipeline import run_minecraft_pipeline
         try:
-            return run_minecraft_pipeline(topic=topic, export_only=export_only or benchmark, dry_run=dry_run, privacy=privacy, prefer_bank=prefer_bank)
+            return run_minecraft_pipeline(topic=topic, export_only=export_only, dry_run=dry_run, privacy=privacy, prefer_bank=prefer_bank)
         except Exception as exc:
             logger.critical("Minecraft pipeline failed: %s", exc, exc_info=True)
             sys.exit(1)
 
+    # Motion is the main style: the old Hardware / Everyday / Gaming categories are told as Motion videos (Everyday is hosted by the mouse-cursor character)
+    from services.motion_pipeline import run_motion_pipeline
+    kind, fmt = motion_route(series, category)
     try:
-        # 1. Resolve Category ID (1: Hardware Deep Dive, 2: Gaming & Optimization, 3: Tech Curiosities)
-        current_weekday = datetime.now().weekday() if weekday_index is None else weekday_index
-        cat_id = 3
-        if category:
-            cat_norm = str(category).lower().strip()
-            if cat_norm in ("1", "hardware", "hardware_benchmarks", "deep_dive"):
-                cat_id = 1
-            elif cat_norm in ("2", "gaming", "gaming_benchmarks", "optimization"):
-                cat_id = 2
-            elif cat_norm in ("3", "curiosities", "tech_curiosities", "storytelling", "schematic"):
-                cat_id = 3
-            elif cat_norm in ("4", "auto"):
-                cat_id = (current_weekday % 3) + 1
-        elif weekday_index is not None:
-            cat_id = (weekday_index % 3) + 1
-
-        story_topic_forced = bool(topic)
-        # 2. Kinetic Motion Story Generation (100% US English, 140-160 words, Word Anchors)
-        t_script_start = time.time()
-        from services.content_generator import generate_motion_story, get_emergency_motion_story
-        if benchmark:
-            story: MotionStoryProject = get_emergency_motion_story(category_id=cat_id, topic=topic, series=series)
-            story.full_script = (
-                "Why does Wi-Fi drop near a microwave? "
-                "Routers emit a fraction of a watt, but microwaves blast one thousand watts of RF noise!"
-            )
-            story.visual_triggers = story.visual_triggers[:3]
-        elif series == "simple" and cat_id == 3:
-            from services.story_generator import generate_story
-            story = generate_story(topic_override_or_none(topic), prefer_bank=prefer_bank)
-        else:
-            story: MotionStoryProject = generate_motion_story(category_id=cat_id, topic_override=topic, series=series, prefer_bank=prefer_bank)
-        if getattr(story, "is_fallback", False) and not (benchmark or export_only or dry_run):
-            logger.error("Gemini unavailable and the story bank is empty: refusing to publish the deterministic fallback. "
-                         "Re-run later, run scripts/refill_story_bank.py, or use --export-only.")
-            sys.exit(2)
-        topic = story.topic
-        t_script = time.time() - t_script_start
-        logger.info(
-            "Kinetic Motion Story ready in %.2fs: '%s' | Category: %s (ID: %d) | Words: %d",
-            t_script, story.title, story.category_name, cat_id, story.get_total_words()
-        )
-
-        # 3. Master Narration Synthesis & Dynamic Voice Modulation (Native ElevenLabs Timestamps)
-        t_voice_start = time.time()
-        from services.voice_synthesizer import synthesize_voice_with_timestamps
-        master_audio_raw = work_dir / "master_audio_raw.mp3"
-        final_audio_path, final_audio_dur, word_timestamps = synthesize_voice_with_timestamps(
-            text=story.full_script,
-            output_audio_path=master_audio_raw,
-            voice_id=(settings.ELEVENLABS_VOICE_3 if series == "simple" else settings.ELEVENLABS_VOICE_ID),
-            category=story.category_name.lower().replace(" ", "_"),
-            speed=1.02,
-            min_duration=5.0 if benchmark else 55.0,
-            max_duration=8.5 if benchmark else 70.0,
-            **(
-                dict(
-                    natural=True,
-                    model_id="eleven_multilingual_v2",
-                    stability=0.32,
-                    style=0.5,
-                    similarity_boost=0.8,
-                )
-                if series == "simple" and not benchmark
-                else {}
-            ),
-        )
-        t_voice = time.time() - t_voice_start
-        logger.info("Master narration + alignment synthesized in %.2fs: %.2fs audio", t_voice, final_audio_dur)
-
-        # 4. Programmatic Remotion Render (1080x1920 @ 30 FPS, VideoToolbox Hardware Acceleration)
-        from services.remotion_renderer import render_remotion_video
-        final_video = work_dir / "master_remotion_30fps.mp4"
-        cover_frame_path = work_dir / "cover_frame.jpg"
-
-        final_video, cover_frame_path, timing_telemetry = render_remotion_video(
-            story=story,
-            master_audio_path=final_audio_path,
-            output_video_path=final_video,
-            output_cover_path=cover_frame_path,
-            word_timestamps=word_timestamps,
-            fps=30,
-        )
-        actual_dur = get_video_duration_ffprobe(final_video)
-        logger.info("Remotion Master Render Completed: %s (Duration: %.2fs @ 30 FPS)", final_video.name, actual_dur)
-
-        # 5. Multi-Platform Distribution (Single Master Render Output)
-        # One folder per video, named after its title; files are named by creation date and time
-        from services.output_layout import timestamp_stem, video_dir
-        file_stem = timestamp_stem()
-        yt_out_dir = video_dir("youtube", story.title)
-        tiktok_out_dir = video_dir("tiktok", story.title)
-
-        # Destination 1: output/youtube/<title>/<timestamp>.mp4 & cover
-        yt_master_video = yt_out_dir / f"{file_stem}.mp4"
-        shutil.copyfile(final_video, yt_master_video)
-        yt_cover_file = yt_out_dir / f"{file_stem}_cover.jpg"
-        shutil.copyfile(cover_frame_path, yt_cover_file)
-
-        # Destination 2: output/tiktok/<title>/<timestamp>.mp4 & cover
-        tiktok_master_video = tiktok_out_dir / f"{file_stem}.mp4"
-        shutil.copyfile(final_video, tiktok_master_video)
-        tiktok_cover_file = tiktok_out_dir / f"{file_stem}_cover.jpg"
-        shutil.copyfile(cover_frame_path, tiktok_cover_file)
-
-        # Destination 3: output/tiktok/{YYYYMMDD}_{theme}.txt (Manual Publishing Metadata)
-        tiktok_metadata_file = tiktok_out_dir / f"{file_stem}.txt"
-
-        tag_list = story.tags if all(t.startswith('#') for t in story.tags) else [f'#{t}' if not t.startswith('#') else t for t in story.tags]
-        meta_content = (
-            f"================================================================================\n"
-            f"SILICON VERDICT • TIKTOK & SHORTS METADATA (100% US ENGLISH)\n"
-            f"Creation Date:     {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}\n"
-            f"Video File:        {tiktok_master_video.name}\n"
-            f"Measured Duration: {actual_dur:.2f}s (Eligible Creator Rewards / Monetization: 55-70s)\n"
-            f"Resolution / FPS:  1080x1920 (9:16 Vertical) @ 60 FPS\n"
-            f"Category:          {story.category_name}\n"
-            f"Theme / Topic:     {story.topic}\n"
-            f"================================================================================\n\n"
-            f"[SUGGESTED TITLE]\n"
-            f"{story.title}\n\n"
-            f"[DESCRIPTION]\n"
-            f"{story.description}\n\n"
-            f"[TECHNICAL HASHTAGS]\n"
-            f"{' '.join(tag_list)}\n\n"
-            f"[PINNED COMMENT / COMMUNITY DEBATE]\n"
-            f"{story.pinned_comment}\n\n"
-            f"[COMPLETE SCRIPT - 100% US ENGLISH]\n"
-            f"{story.full_script}\n"
-            f"================================================================================\n"
-            f"PUBLISHING INSTRUCTIONS:\n"
-            f"1. Upload the video file to TikTok Studio:\n"
-            f"   https://www.tiktok.com/creator-center/upload\n"
-            f"2. Copy and paste the suggested title and technical hashtags into the description.\n"
-            f"3. When the TikTok Developers application completes review and the token is generated\n"
-            f"   in data/tiktok_token.json, direct API publishing will operate transparently.\n"
-            f"================================================================================\n"
-        )
-        tiktok_metadata_file.write_text(meta_content, encoding="utf-8")
-
-        # Distribution & Upload
-        youtube_url = ""
-        yt_video_id = ""
-        if not export_only and not dry_run:
-            logger.info("Uploading single master video to YouTube API (Privacy: %s)...", privacy)
-            try:
-                youtube_url = upload_video_resumable(
-                    file_path=str(yt_master_video),
-                    title=story.title,
-                    description=story.description,
-                    tags=story.tags,
-                    privacy_status=privacy,
-                    is_short=True,
-                )
-                yt_video_id = youtube_url.split("/")[-1]
-                logger.info("YouTube direct publish completed: %s", youtube_url)
-            except Exception as exc:
-                logger.error("YouTube upload encountered an issue (%s). Video preserved locally.", exc)
-                youtube_url = f"file://{yt_master_video.resolve()}"
-                yt_video_id = f"local_{run_id}"
-        else:
-            youtube_url = f"file://{yt_master_video.resolve()}"
-            yt_video_id = f"local_export_{run_id}"
-            logger.info("[EXPORT ONLY] Video preserved in output/youtube/ and output/tiktok/.")
-
-        record_short_history(
-            weekday_index=current_weekday,
-            theme_key=f"category_{cat_id}",
-            game_title=story.header_banner,
-            voice_id_used=settings.ELEVENLABS_VOICE_ID,
-            topic=story.topic,
-            title=story.title,
-            video_id=yt_video_id,
-            category=story.category_name,
-            tone="kinetic_motion",
-            preset="remotion_kinetic",
-        )
-
-        total_elapsed = time.time() - start_time
-        file_size_mb = yt_master_video.stat().st_size / (1024 * 1024)
-
-        full_text = story.full_script
-        tokens_in = getattr(story, "gemini_input_tokens", 450)
-        tokens_out = getattr(story, "gemini_output_tokens", 380)
-        elevenlabs_chars = len(full_text)
-        word_cnt = len(full_text.split())
-
-        cost_record = record_generation_metric(
-            run_id=run_id,
-            topic_id=topic or "silicon_verdict",
-            category=story.category_name,
-            gemini_input_tokens=tokens_in,
-            gemini_output_tokens=tokens_out,
-            elevenlabs_characters=elevenlabs_chars,
-            duration_seconds=actual_dur,
-            word_count=word_cnt,
-        )
-
-        t_bundle_check = timing_telemetry.get("remotion_bundle_check", 0.0)
-        t_render = timing_telemetry.get("headless_render", 0.0)
-        t_mux = timing_telemetry.get("videotoolbox_mux", 0.0)
-
-        if benchmark:
-            print("\n" + "=" * 80)
-            print(" ⚡ SILICON VERDICT: APPLE SILICON M2 PERFORMANCE TELEMETRY REPORT")
-            print("=" * 80)
-            print(f" [1] Gemini Scripting:            {t_script:6.2f}s  (Target: < 2.0s)  [{'PASS' if t_script < 2.5 else 'WARN'}]")
-            print(f" [2] ElevenLabs TTS + Alignment:  {t_voice:6.2f}s  (Target: < 4.0s)  [{'PASS' if t_voice < 4.5 else 'WARN'}]")
-            print(f" [3] Remotion Bundle Check:       {t_bundle_check:6.4f}s  (Target: = 0.0s)  [PASS]")
-            print(f" [4] Headless 30fps Render (M2):  {t_render:6.2f}s  (Target: < 12.0s) [{'PASS' if t_render < 12.0 else 'WARN'}]")
-            print(f" [5] VideoToolbox Muxing:         {t_mux:6.2f}s  (Target: < 1.5s)  [{'PASS' if t_mux < 1.5 else 'WARN'}]")
-            print("-" * 80)
-            print(f" 🚀 TOTAL PIPELINE RUNTIME:       {total_elapsed:6.2f}s  (TARGET: < 20.0s) [{'PASS' if total_elapsed < 20.0 else 'FAIL'}]")
-            print("=" * 80 + "\n")
-        else:
-            print("\n" + "=" * 80)
-            print(" 🚀 SILICON VERDICT: KINETIC MOTION GRAPHICS MASTER PIPELINE (30 FPS M2)")
-            print("=" * 80)
-            print(f" YouTube Master Video: {yt_master_video.resolve()}")
-            print(f" YouTube URL / ID:     {youtube_url}")
-            print(f" TikTok Staging Video: {tiktok_master_video.resolve()}")
-            print(f" Cover Frame (High-CTR): {tiktok_cover_file.resolve()}")
-            print(f" TikTok Metadata:      {tiktok_metadata_file.resolve()}")
-            print(f" Category & Engine:    {story.category_name} // REMOTION KINETIC 30 FPS + VIDEOTOOLBOX")
-            print(f" Exact Duration:       {actual_dur:.2f} seconds (1080x1920 @ 30 FPS)")
-            print(f" Word Count:           {word_cnt} words (Target: 140-160 words, 100% US English)")
-            print(f" ElevenLabs Chars:     {elevenlabs_chars} characters")
-            print(f" Gemini Tokens:        {tokens_in + tokens_out} tokens (in: {tokens_in}, out: {tokens_out})")
-            print(f" Estimated API Cost:   ${cost_record['estimated_cost_usd']:.5f} USD")
-            print(f" File Size:            {file_size_mb:.2f} MB")
-            print(f" Production Time:      {total_elapsed:.2f} seconds")
-            print("=" * 80 + "\n")
-
-        # Story bank policy: this video consumed one banked script, so top the bank back up (best effort).
-        if prefer_bank and series == "simple" and not benchmark and not story_topic_forced:
-            from services.bank_manager import replenish_after_use
-            replenish_after_use(series)
-
-        return {
-            "youtube_video": str(yt_master_video.resolve()),
-            "youtube_url": youtube_url,
-            "tiktok_video": str(tiktok_master_video.resolve()),
-            "tiktok_cover": str(tiktok_cover_file.resolve()),
-            "tiktok_metadata": str(tiktok_metadata_file.resolve()),
-            "duration": actual_dur,
-            "file_size_mb": file_size_mb,
-            "title": story.title,
-            "tags": tag_list,
-            "topic": story.topic,
-            "estimated_cost_usd": cost_record["estimated_cost_usd"],
-        }
-
-    except Exception as exc:
-        logger.critical("Fatal error during master video pipeline: %s", exc, exc_info=True)
-        sys.exit(1)
-
-
-# Maintain alias for compatibility
-run_vertical_long_pipeline = run_master_video_pipeline
+        return run_motion_pipeline(topic=topic, export_only=export_only, dry_run=dry_run, privacy=privacy, kind=kind, fmt=fmt)
+    except RuntimeError as exc:
+        if kind != "game":
+            raise
+        logger.warning("No game video possible right now (%s): telling a hardware video instead.", str(exc)[:120])
+        return run_motion_pipeline(topic=topic, export_only=export_only, dry_run=dry_run, privacy=privacy, kind="curiosity", fmt="hardware")
 
 
 GENERA_MENU_TEXT = """🎬 **Production Setup — Silicon Verdict**
 
-Select the thematic focus for this video (60-120s):
+Everything is produced in the Motion style (narrated kinetic typography, 62-90 s). Choose the category:
 
-1. **Hardware Deep Dive & Benchmarks** (Liquid Glass Style: Silicon, microarchitectures, memory buses, technical telemetry).
-2. **Gaming & Optimization** (Liquid Glass Style: Game performance, competitive presets, frametimes, and 1% lows).
-3. **Tech Curiosities & Storytelling** (2D Schematic Style: Engineering paradoxes, subsea cables, satellites, chip physics).
-4. **Automatic (AI)** (AI selects optimal category based on data/history.db rotation and retention analytics).
+1. **Hardware Deep Dive** (Motion format `hardware`: silicon, memory buses, storage, networking and engineering, with a mechanism and real figures; the mouse cursor as an accent).
+2. **Gaming** (Motion *game* video: an engineering fact about a game with real footage; a hardware video when no unused footage is left).
+3. **Everyday Tech** (Motion format `simple`: everyday tech mysteries hosted by the mouse cursor, a character that clicks, selects, drags and opens tabs).
+4. **Automatic (AI)** (AI selects the category based on data/history.db rotation and retention analytics).
 
 👉 Enter your choice: [1, 2, 3, or 4]"""
 
@@ -717,7 +448,7 @@ def parse_args():
         type=str,
         choices=["hardware", "simple", "minecraft", "motion"],
         default=None,
-        help="Tech Curiosities sub-series: hardware (physics/engineering), simple (everyday), minecraft (concept explained inside Minecraft, ~64 s, always a new Gemini script), motion (type 6: kinetic-typography Motion Graphics, 62-84 s, English only; curiosities and games with real footage).",
+        help="Series: motion (the main one: kinetic-typography Motion Graphics, 62-90 s, English only; curiosities, six content formats and games with real footage), hardware and simple (the old categories, now Motion formats: --series hardware == --series motion --motion-format hardware; simple is hosted by the cursor), minecraft (concept explained inside Minecraft, ~64 s, always a new Gemini script).",
     )
     parser.add_argument(
         "--motion-kind",
@@ -729,9 +460,9 @@ def parse_args():
     parser.add_argument(
         "--motion-format",
         type=str,
-        choices=["auto", "any", "myth", "tier", "whatif", "easter", "evolution", "versus"],
+        choices=["auto", "any", "myth", "tier", "whatif", "easter", "evolution", "versus", "hardware", "simple"],
         default="auto",
-        help="With --series motion: content format. myth (myth or fact verdicts), tier (S-F tier list), whatif (a hypothetical about computing), easter (a hidden detail of a game, with footage), evolution (timelines), versus (two contenders over several rounds), any (a random one) or auto (the classic explainer).",
+        help="With --series motion: content format. myth (myth or fact verdicts), tier (S-F tier list), whatif (a hypothetical about computing), easter (a hidden detail of a game, with footage), evolution (timelines), versus (two contenders over several rounds), hardware (silicon / engineering deep dive, the cursor as an accent), simple (everyday tech mystery hosted by the cursor), any (a random one) or auto (the classic explainer).",
     )
     parser.add_argument(
         "--from-bank",
@@ -802,6 +533,8 @@ if __name__ == "__main__":
             resolved_category = get_next_rotated_category()
 
     chosen_topic = args.topic
+    if args.series in ("hardware", "simple") and not args.benchmark:  # the old categories are Motion formats now (Everyday is hosted by the mouse-cursor character)
+        args.motion_kind, args.motion_format, args.series = "curiosity", args.series, "motion"
     if args.series == "motion":
         from services.motion_pipeline import run_motion_pipeline
         try:

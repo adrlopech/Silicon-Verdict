@@ -29,7 +29,7 @@
      * Todos los frames e imágenes en `temp/`.
      * Todas las pistas de audio intermedias en `temp/`.
      * Todas las carpetas temporales de render (`temp/run_*`, `/tmp/yt_automation/*`).
-   - Preserva intactos: base de datos (`data/history.db`), tokens de autenticación (`data/*.json`), credenciales (`.env`), manifiesto y clips permanentes de B-roll (`assets/broll/manifest.json` y `assets/broll/*.mp4`).
+   - Preserva intactos: base de datos (`data/history.db`), tokens de autenticación (`data/*.json`), credenciales (`.env`).
 
 ---
 
@@ -40,7 +40,7 @@ Cada vez que el usuario escriba la palabra **"help"** o **"ayuda"** en el chat:
    - Lista de disparadores del chat (`genera`, `corregir`, `limpieza`, `help`).
    - Detalle de las 4 opciones temáticas del menú interactivo.
    - Comandos de terminal/CLI para ejecuciones directas y mantenimiento.
-   - Rutas principales del repositorio (`output/`, `data/`, `assets/broll/`).
+   - Rutas principales del repositorio (`output/`, `data/`).
 2. **Equivalente en Terminal CLI:**
    ```bash
    .venv/bin/python main.py help
@@ -141,7 +141,6 @@ Selecciona el enfoque temático para este vídeo (60-120s):
 
 3. **Acciones del Pipeline tras la Selección:**
    - Aplica el **guardarraíl de palabras de guion** (estrictamente entre 145 y 260 palabras) para asegurar que el máster dure exactamente entre 60 y 120 segundos.
-   - En categorías no esquemáticas (`hardware_benchmarks`, `gaming_benchmarks`), activa el **motor de B-Roll semántico** (`services/broll_selector.py`), seleccionando clips coherentes con la temática y marca, bloqueando antagonismos (ej. Intel vs AMD) y respetando el cooldown de 3 ejecuciones.
    - Sintetiza la locución continua con ElevenLabs (0.92x, tono reflexivo y analítico).
    - Aplica de forma automática las reglas fonéticas aprendidas de `data/qa_rules.json` al generar subtítulos con Whisper.
    - Genera la **portada de alto CTR mobile-first** (`_cover.jpg`) a 1080x1920 con título masivo (88px), píldora de categoría y tinte 60%, insertándola como fotograma estático inicial en el Frame 00:00.00 (0.05s / 3 frames a 60 FPS) con compensación de audio de 50ms.
@@ -191,7 +190,7 @@ Este sistema **NO se ejecuta de forma automática ni silenciosa** durante el pro
    - Comprueba 4 dimensiones de QA:
      * **Subtítulos y Whisper:** Escaneo de errores fonéticos (`Siliconvertingt`, `TB.` por `te ve`, `14 to 40 p`, `Present -mont`, `PE Cores`), guiones huérfanos (`-STARVES`, `-RANGE`) y margen seguro inferior (`MarginV >= 384` para `Y <= 1536`).
      * **Niveles de Audio:** Análisis con `volumedetect` para `max_volume` y `mean_volume`, detectando clipping (`max_volume >= -0.5 dB`) y balance voz/música.
-     * **Composición Visual y Metraje:** Coherencia temática (evitar metraje AMD AM4 en temas Intel o GPU verificando colisiones semánticas contra `assets/broll/manifest.json`), legibilidad de telemetría (mínimo 96px para métricas), verificación de fotogramas iniciales congelados a 0 FPS y auditoría de la portada (`_cover.jpg` existente, 1080x1920 y contraste tipográfico).
+     * **Composición Visual y Metraje:** Legibilidad de telemetría (mínimo 96px para métricas), verificación de fotogramas iniciales congelados a 0 FPS y auditoría de la portada (`_cover.jpg` existente, 1080x1920 y contraste tipográfico).
      * **Estructura y Retención:** Duración total en la ventana óptima de 60 a 120 segundos y ausencia de banners intrusivos de suscripción en mitad del vídeo.
 
 2. **Paso 2: Emisión del Reporte y Solicitud de Confirmación**
@@ -269,18 +268,7 @@ Este sistema **NO se ejecuta de forma automática ni silenciosa** durante el pro
 
 ## Subsistemas Avanzados de Producción, MLOps y Crecimiento
 
-### 1. Motor de B-Roll Semántico y Auto-Indexación (`services/broll_selector.py` & `assets/broll/`)
-- **Manifiesto Estructurado (`assets/broll/manifest.json`):**
-  Catálogo de metadatos de metraje con soporte de componentes (`gpu`, `cpu`, `motherboard`, `system`), marcas (`nvidia`, `amd`, `intel`, `general`), etiquetas semánticas (`tags`), lista negra de incompatibilidades obligatorias (`conflicts_with`), marcas temporales de uso (`last_used_timestamp`) y contador de usos (`use_count`).
-- **Auto-Indexador (`scripts/index_broll.py`):**
-  Herramienta CLI que detecta automáticamente nuevos archivos en `assets/broll/`, infiere sus metadatos mediante heurísticas de nombres de archivo y recurre a Gemini 2.5 Flash Multimodal para clasificar clips no reconocidos.
-- **Selector Semántico en Tiempo de Render:**
-  - **Exclusión Antagónica Estricta:** Si el guion habla de Nvidia o RTX, se vetan tajantemente clips con marcas en conflicto (AMD, Radeon, Intel). Si habla de Intel, se excluyen clips de AMD/Ryzen.
-  - **Cooldown Visual Dinámico:** Penaliza clips utilizados en los últimos 3 vídeos para garantizar variedad visual.
-  - **Puntuación por Coincidencia:** Prioriza el clip con mayor solapamiento de etiquetas temáticas con el guion.
-  - **Fallback:** En caso de duda o empate, utiliza metraje abstracto/neutro (`abstract_neutral.mp4`).
-
-### 2. Generador Automático de Portada (*Cover Frame*) Mobile-First (`services/renderer.py`)
+### 1. Generador Automático de Portada (*Cover Frame*) Mobile-First (`services/renderer.py`)
 - **Generación Visual:**
   - Crea una imagen vertical de 1080x1920 (`output/tiktok/<Título>/<AAAA-MM-DD_HH-MM-SS>_cover.jpg` y copia en YouTube).
   - Fondo: Fotograma central del B-roll seleccionado o lienzo técnico oscuro con tinte negro al 60% (`rgba(0,0,0,0.60)`).
@@ -292,7 +280,7 @@ Este sistema **NO se ejecuta de forma automática ni silenciosa** durante el pro
   - La pista de audio se retrasa 50ms (`adelay=50|50`) para mantener la sincronía labial y el ritmo del vídeo intactos.
   - Permite a TikTok y YouTube Shorts seleccionar automáticamente el fotograma 0 como miniatura de alto CTR.
 
-### 3. Bucle de Retroalimentación Algorítmica (`scripts/analytics_sync.py`)
+### 2. Bucle de Retroalimentación Algorítmica (`scripts/analytics_sync.py`)
 - **Sincronización de Retención de YouTube:**
   - Conecta con la YouTube Analytics API v3 y YouTube Data API v3 para recopilar `viewerPercentage`, `averageViewPercentage`, me gusta y comentarios de vídeos con más de 48 horas de vida.
   - Modo simulación disponible (`--simulate`) para entornos locales sin credenciales de canal en producción.
@@ -303,7 +291,7 @@ Este sistema **NO se ejecuta de forma automática ni silenciosa** durante el pro
 - **Detección y Veto de Hooks Ineficaces:**
   - Si un vídeo tiene un abandono prematuro superior al 40% (*Swiped Away* > 40%), su estructura de gancho se registra en `data/qa_rules.json` bajo `ineffective_hooks` con penalización de probabilidad para evitar su repetición.
 
-### 4. Guardarraíles de Consumo, Tokens y Costes
+### 3. Guardarraíles de Consumo, Tokens y Costes
 - **Guardarraíl Estricto de Palabras de Guion:**
   - Monitorea y recorta o expande el guion generado para situarlo estrictamente entre **145 y 260 palabras** (`enforce_script_word_guardrail` en `services/content_generator.py`), garantizando una duración de locución a 0.92x exactamente entre 60 y 120 segundos.
 - **Telemetría y Control de Costes (`data/history.db` -> `generation_metrics`):**

@@ -86,11 +86,6 @@ def _game_matches(requested: str, game: str) -> bool:
     return bool(r_words) and all(w in g.split() for w in r_words[:1])
 
 
-def canonical_game(name: str) -> Optional[str]:
-    for g in sorted({i["game"] for i in load_images()}) or sorted({i["game"] for i in load_manifest()["images"]}):
-        if _game_matches(name, g):
-            return g
-    return None
 
 
 MIN_LUMA = 28  # mean brightness (0-255) below which a frame is a fade-to-black / empty shot
@@ -185,11 +180,6 @@ def commit_media(keys: List[str], game: str, title: str = "") -> int:
     return consumed
 
 
-def pick_game() -> Optional[str]:
-    """A random game that is not blacklisted and still has enough unused, captioned footage."""
-    import random
-    games = available_games()
-    return random.choice(games) if games else None
 
 
 def footage_catalog(game: str, limit: int = 40) -> Dict[str, dict]:
@@ -253,3 +243,40 @@ def caption_pending(limit: int = 200) -> int:
         save_manifest(data)
         logger.info("Captioned %d/%d (%s via %s).", done, len(todo), game, model)
     return done
+
+
+# ------------------------------- screenshots of the games of the old Gaming category -------------------------------
+# Scripts written for the old category name their game ("Skyrim", "Half-Life 2"...) and were shown over that game's screenshots in assets/games/<dir>/.
+LEGACY_DIRS = {"skyrim": "skyrim_se", "cyberpunk 2077": "cyberpunk_2077", "counter-strike 2": "counter_strike_2", "half-life 2": "half_life_2", "elden ring": "elden_ring", "doom": "doom_2016",
+               "portal 2": "portal_2", "the witcher 3": "the_witcher_3", "red dead redemption 2": "red_dead_redemption_2", "half-life: alyx": "half_life_alyx", "starfield": "starfield",
+               "baldur's gate 3": "baldurs_gate_3", "death stranding": "death_stranding", "control": "control", "grand theft auto v": "gta_v"}
+
+
+def legacy_images(game: Optional[str]) -> List[Path]:
+    """The screenshots (jpg) a legacy game script is told over; [] when the game has none."""
+    d = LEGACY_DIRS.get((game or "").strip().lower())
+    return sorted((GAMES_DIR / d).glob("*.jpg")) if d and (GAMES_DIR / d).is_dir() else []
+
+
+def stage_legacy_footage(project, public_dir: Path) -> int:
+    """Gives every footage scene of a banked game script a different screenshot of its game (copied into the render's public dir) and credits the source.
+    Footage scenes beyond the available screenshots become plain headlines. Nothing is consumed: these screenshots are reusable."""
+    import random
+    images = legacy_images(project.game)
+    random.shuffle(images)
+    dest_dir = Path(public_dir) / "games"
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    used = 0
+    for sc in project.scenes:
+        if sc.type != "footage":
+            continue
+        if used >= len(images):
+            sc.type, sc.accentText = "textWithAccent", sc.accentText or (project.game or None)
+            continue
+        src = images[used]
+        shutil.copyfile(src, dest_dir / src.name)
+        sc.mediaSrc, sc.mediaKind, sc.mediaSeconds, sc.credit = f"games/{src.name}", "image", 3.0, project.game
+        used += 1
+    if used:
+        project.description = project.description.rstrip() + f"\n\nGame screenshots: {project.game} (official Steam store media)."
+    return used

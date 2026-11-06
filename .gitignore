@@ -40,6 +40,7 @@ data/*token*.json
 # Private scripts and the history DB (it holds the banked scripts)
 data/story_seed/
 data/history.db
+docs/generated_scripts/
 
 # Minecraft assets extracted from the local game install (not redistributable)
 remotion_studio/public/mc/
@@ -52,3 +53,4 @@ data/gemini_state.json
 .remotion/
 assets/games/manifest.json
 data/game_facts/
+assets/audio/mc_bed.wav

@@ -110,7 +110,7 @@ def load_qa_rules() -> Dict[str, Any]:
         },
         "retention_rules": {
             "min_duration_sec": 60.0,
-            "max_duration_sec": 120.0,
+            "max_duration_sec": settings.MAX_VIDEO_SECONDS,
             "prohibit_midroll_subscribe_banner": True,
         },
         "history_fixes_applied": [],
@@ -387,7 +387,7 @@ def audit_visuals(video_path: Path, assets: Dict[str, Any], qa_rules: Dict[str, 
                     collision = topic_tokens.intersection(conflicts)
                     if collision:
                         issues_desc.append(f"Colisión semántica en B-roll '{c['file']}': conflicto antagónico con {list(collision)}")
-                        solutions_desc.append(f"Excluir '{c['file']}' mediante services/broll_selector.py y aplicar clip neutral")
+                        solutions_desc.append(f"Excluir '{c['file']}' del B-roll y aplicar clip neutral")
         except Exception:
             pass
 
@@ -442,7 +442,7 @@ def audit_structure_retention(video_path: Path, qa_rules: Dict[str, Any]) -> Dic
     dur = get_video_duration_ffprobe(video_path)
     ret_rules = qa_rules.get("retention_rules", {})
     min_dur = ret_rules.get("min_duration_sec", 60.0)
-    max_dur = ret_rules.get("max_duration_sec", 120.0)
+    max_dur = ret_rules.get("max_duration_sec", settings.MAX_VIDEO_SECONDS)
 
     issues_desc: List[str] = []
     solutions_desc: List[str] = []

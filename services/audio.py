@@ -89,7 +89,7 @@ def synthesize_master_narration(
     - voice_id: Optional voice ID override.
     - speed: Optional speed factor (defaults to 0.96 for tech_curiosities, 1.0 otherwise).
     - min_duration: Strict lower bound in seconds (defaults to 55.0s for tech_curiosities, 60.5s for others).
-    - max_duration: Strict upper bound in seconds (defaults to 70.0s for tech_curiosities, 120.0s for others).
+    - max_duration: Strict upper bound in seconds (defaults to the 180 s / 3-minute ceiling, settings.MAX_VIDEO_SECONDS).
 
     Returns:
     - (final_audio_path, duration_seconds)

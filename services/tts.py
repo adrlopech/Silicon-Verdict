@@ -41,8 +41,18 @@ def get_audio_duration(file_path: str) -> float:
         result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
         return float(result.stdout.strip())
     except Exception as exc:
-        logger.warning("Could not read duration with ffprobe for %s (%s). Falling back to approximation.", file_path, exc)
-        # Fallback estimation: ~150 words per minute -> 2.5 words/sec if probe fails
+        # No ffprobe on this machine (only the bundled ffmpeg): read the real length from ffmpeg's header instead of guessing,
+        # because a wrong length makes scenes shorter than their narration and the voice runs over the next scene.
+        try:
+            import re
+            from services.voice import get_ffmpeg_bin
+            log = subprocess.run([get_ffmpeg_bin(), "-hide_banner", "-i", file_path], capture_output=True, text=True).stderr
+            m = re.search(r"Duration: (\d+):(\d+):([\d.]+)", log)
+            if m:
+                return int(m[1]) * 3600 + int(m[2]) * 60 + float(m[3])
+        except Exception:
+            pass
+        logger.warning("Could not read duration for %s (%s). Falling back to approximation.", file_path, exc)
         return 5.0
 
 

@@ -30,7 +30,7 @@ HELP_TEXT = """=================================================================
    - Purges every per-video folder in output/tiktok/ (video, cover and metadata).
    - Purges every per-video folder in output/youtube/.
    - Purges intermediate render frames and cache folders in temp/.
-   - PRESERVES intact: data/history.db, credentials (.env), tokens, and assets/broll/.
+   - PRESERVES intact: data/history.db, credentials (.env) and tokens.
 
  • help / commands
    Displays this detailed command reference, CLI syntax, and architecture guide.
@@ -38,17 +38,17 @@ HELP_TEXT = """=================================================================
 --------------------------------------------------------------------------------
 2. INTERACTIVE "genera" MENU OPTIONS
 --------------------------------------------------------------------------------
- [1] Hardware Deep Dive & Benchmarks
-     Remotion Kinetic 60 FPS: Silicon compute dies, L3 cache bonding, memory buses,
-     latency telemetry bars, and 1% low frame pacing tachometer.
+ Every option is told in the Motion style (kinetic typography, narrated, 62-90 s):
 
- [2] Gaming & Optimization
-     Remotion Kinetic 60 FPS: PresentMon frametimes, competitive preset cards,
-     DLSS vs Native pacing stability, and 99th percentile micro-stutter analysis.
+ [1] Hardware Deep Dive   -> Motion format "hardware": silicon, memory, storage, networking
+     and engineering explained with a mechanism and real figures; the mouse cursor only
+     appears as an accent.
 
- [3] Tech Curiosities & Storytelling
-     Remotion Kinetic 60 FPS: Applied physics, 2.45 GHz RF collision waveforms,
-     abyssal subsea fiber cables, GPS relativistic time dilation, and VCSEL arrays.
+ [2] Gaming               -> Motion "game" video: banked scripts over screenshots of their game,
+     then source-grounded videos with real footage (a hardware video if neither is possible).
+
+ [3] Everyday Tech        -> Motion format "simple": everyday tech mysteries hosted by the mouse cursor,
+     a character that clicks, selects, drags and opens tabs on screen.
 
  [4] Automatic (AI)
      Queries data/history.db to select the optimal category based on rotation rest
@@ -58,6 +58,9 @@ HELP_TEXT = """=================================================================
 3. TERMINAL COMMANDS & CLI (Headless Execution & Maintenance)
 --------------------------------------------------------------------------------
  • Direct production via CLI:
+   .venv/bin/python main.py --series motion --motion-format myth   # Motion formats: classic, myth, tier, whatif, evolution, versus, easter, hardware, simple
+   .venv/bin/python main.py --series simple                   # Everyday tech with the cursor (= --motion-format simple)
+   .venv/bin/python main.py --series hardware                 # Hardware deep dive (= --motion-format hardware)
    .venv/bin/python main.py --category 1 --privacy public     # Hardware Benchmarks
    .venv/bin/python main.py --category 2 --privacy public     # Gaming & Optimization
    .venv/bin/python main.py --category 3 --privacy public     # Tech Curiosities
@@ -75,7 +78,6 @@ HELP_TEXT = """=================================================================
    .venv/bin/python scripts/cleanup.py                       # Disk cleanup
 
  • MLOps, B-Roll, and Analytics:
-   .venv/bin/python scripts/index_broll.py                   # Auto-index new B-roll
    .venv/bin/python scripts/analytics_sync.py                # Sync YouTube Analytics
    .venv/bin/python scripts/analytics_sync.py --simulate     # Offline analytics simulation
    .venv/bin/python scripts/authenticate_yt.py               # Authorize OAuth credentials
@@ -88,7 +90,6 @@ HELP_TEXT = """=================================================================
  • data/history.db        SQLite database: 30-topic queue, telemetry, and API costs.
  • data/category_weights.json  Dynamic algorithmic weights driven by real audience retention.
  • data/qa_rules.json     Learned phonetic pronunciation rules and hook filters.
- • assets/broll/          Permanent background video library and manifest.json.
 ================================================================================
 """
 

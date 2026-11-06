@@ -1,4 +1,4 @@
-"""Series 6 - Motion Graphics: kinetic-typography explainers, 62-84 s (YouTube monetisation needs MORE than 60 s), vertical 1080x1920, always English.
+"""Series 6 - Motion Graphics: kinetic-typography explainers, over 60 s and at most 3 minutes (YouTube monetisation needs MORE than 60 s), vertical 1080x1920, always English.
 
 Two kinds share one engine:
 - "curiosity": a tech / hardware / coding idea told with animated words, counters, code and bars;
@@ -24,11 +24,62 @@ STRONG_REVIEWERS = ["openai/gpt-oss-120b"]  # game claims are checked only by th
 logger = logging.getLogger(__name__)
 
 FPS = 30
-MIN_SECONDS, MAX_SECONDS = 62.0, 84.0   # final video: > 60 s for monetisation, short enough to hold attention
+from config.settings import settings as _settings
+MIN_SECONDS, MAX_SECONDS = 62.0, _settings.MAX_VIDEO_SECONDS   # final video: > 60 s for monetisation, never more than the 3-minute ceiling (the script itself aims for 65-80 s)
 MIN_FRAMES, MAX_FRAMES = int(MIN_SECONDS * FPS), int(MAX_SECONDS * FPS)
 WORDS_PER_SECOND = 2.5                  # natural narration pace used to estimate the final length
+CURSOR_ACTIONS = ("hover", "click", "select", "drag", "tab", "toggle", "busy")
+TOGGLE_KEYS = ("airplane", "wifi", "bluetooth", "airdrop")
+FX_NAMES = ("plane", "rocket", "satellite", "waves", "bolts", "embers", "snow", "drops", "packets", "coins", "equalizer", "signalbars", "notifications", "batteryfill", "clock", "padlock", "magnify", "bits")
+
+
+def limit_cursor(scenes, fmt: Optional[str]) -> None:
+    """The cursor only appears when it DOES something: the tab that opens the video, a drag on a list or code, a click on the reveal, a selection of the key phrase, a hover on a number.
+    Keeps the most useful moments up to a small budget (4 in the everyday format, 3 elsewhere) and drops the decorative ones (waiting, loading, repeated clicks)."""
+    budget = 4 if fmt == "simple" else 3
+    n = len(scenes)
+    want = {"tab": [], "toggle": [], "drag": [], "click": [], "select": [], "hover": []}
+    for i, sc in enumerate(scenes):
+        if sc.cursor in want:
+            want[sc.cursor].append(i)
+    keep: list = []
+    keep += (want["toggle"] or want["tab"])[:1]
+    keep += want["drag"][:2]
+    target = (2 * n) // 3  # the reveal sits in the last third
+    keep += sorted(want["click"], key=lambda i: abs(i - target))[:1]
+    keep += sorted(want["select"], key=lambda i: abs(i - n // 3))[:1]
+    keep += [i for i in want["hover"] if scenes[i].type in ("counter", "progressBar")][:1]
+    keep = sorted(set(keep[:budget]))
+    if fmt == "simple" and len(keep) < 3:  # the everyday format is hosted by the cursor: give it a few more purposeful things to do
+        for i, sc in enumerate(scenes):
+            if len(keep) >= 3:
+                break
+            if i in keep or sc.type in ("flash", "footage", "outro") or any(abs(i - j) <= 2 for j in keep):
+                continue
+            act = {"counter": "hover", "progressBar": "drag", "list": "drag", "codeBlock": "drag", "textWithAccent": "select", "bigText": "click"}.get(sc.type)
+            if act:
+                sc.cursor = act
+                keep.append(i)
+    for i, sc in enumerate(scenes):
+        if i not in keep:
+            sc.cursor = None
+
+
+def cursor_from_pose(pose: Optional[str], scene_type: str, index: int, total: int) -> Optional[str]:
+    """Which cursor action fits a scene that used to carry a mascot pose (used when old scripts are moved to the cursor character)."""
+    if not pose or scene_type in ("flash", "footage", "outro"):
+        return None
+    if index == 0:
+        return "tab"  # the video opens a new browser tab
+    if scene_type in ("list", "codeBlock", "progressBar", "tier"):
+        return "drag"
+    if scene_type in ("counter", "versus", "curve", "timeline"):
+        return "hover"
+    return {"surprised": "click", "cheer": "click", "point": "select"}.get(pose)
+
+
 SceneType = Literal["bigText", "textWithAccent", "counter", "list", "codeBlock", "progressBar", "outro", "curve", "flash", "footage", "tier", "versus", "verdict", "timeline"]
-FORMATS = ("myth", "tier", "whatif", "easter", "evolution", "versus")   # content formats on top of the two kinds (curiosity / game); "easter" is always a game video
+FORMATS = ("myth", "tier", "whatif", "easter", "evolution", "versus", "hardware", "simple")   # content formats on top of the two kinds (curiosity / game); "easter" is always a game video; "hardware" and "simple" are the old Hardware / Everyday-with-mascot categories, now told in the Motion style
 TIER_LETTERS = ("S", "A", "B", "C", "D", "F")
 
 
@@ -54,6 +105,10 @@ class MotionSceneModel(BaseModel):
     mediaSeconds: Optional[float] = Field(default=None, description="Set by the pipeline, never by the model")
     credit: Optional[str] = Field(default=None, description="Set by the pipeline, never by the model")
     evidence: Optional[str] = Field(default=None, description="GAME videos only: a VERBATIM quote (6-30 words) copied from the SOURCE TEXT that supports this scene's claim about the game; empty if the scene makes no claim about the game")
+    fx: Optional[str] = Field(default=None, description="An animated element that illustrates the line (plane, rocket, satellite, waves, bolts, embers, snow, drops, packets, coins, equalizer). Optional: it is picked automatically from the scene's words when empty")
+    toggle: Optional[str] = Field(default=None, description="With cursor=toggle: the switch of the Control Center panel the cursor flips: airplane, wifi, bluetooth or airdrop")
+    cursor: Optional[str] = Field(default=None, description="The mouse-cursor character acts in this scene: click (presses the key text), hover (rests on it), select (drags across the headline like selecting text), drag (grabs a list item, code panel or bar), tab (opens a browser tab: only on the first scene), toggle (opens a macOS Control Center panel and flips a switch: only on the first scene, only for videos about a phone/computer setting), busy (loading ring), Empty = no cursor in this scene")
+    icons: Optional[List[str]] = Field(default=None, description="1-3 thematic objects floating around the text, chosen from: chip gpu ram battery bolt wifi globe cloud server disk lock key shield thermometer flame fan gauge clock code brain bulb dollar skull warning controller monitor phone camera wave planet rocket atom magnet droplet snow heart search check cross gear star net arrow. Pick what the scene is ABOUT; leave empty to let the renderer choose from the words")
     narration: str = Field(default="", description="What the narrator SAYS during this scene: one or two natural spoken sentences, 8-16 words, that explain the idea on screen")
     durationInFrames: int = Field(..., description="Minimum scene length in frames at 30 fps (60-150); the pipeline stretches it to fit the narration")
 
@@ -110,12 +165,12 @@ one big idea per scene, a single ACCENT word in electric cyan (italic serif), sm
 A NARRATOR speaks over the video. Each scene has a `narration` (what is said while that scene is on screen): natural spoken American English, 8-16 words,
 conversational and clear, explaining the idea the screen shows (the on-screen words are the headline, the narration is the explanation). Together the narration reads
 like one coherent story with a hook at the start, a build-up, a twist, and a closing line, 150-190 words in total (aim for about 11 words per scene). Spell numbers the way they are spoken
-(for example "sixteen point seven milliseconds"). The last scene's narration ends with a short call to action such as "Follow for more tech."
+(for example "sixteen point seven milliseconds"). The narrations are ONE continuous monologue, not separate captions: each line picks up from the previous one and flows into the next, opening with a connective such as "So", "And", "But", "Here's the thing", "That's why", "Now" or "Which means" (never a stand-alone fact, and never the same opener twice in a row), with questions answered in the following line. The last scene's narration ends with a short call to action such as "Follow for more tech."
 
 LANGUAGE: everything (scene text, narration, title, description, tags, comment) MUST be natural American English. Never any other language.
 FACTS: only TRUE, verifiable statements; figures must be real and approximate (about / roughly) - never invent numbers.
 
-STORY (13 to 19 scenes, each 60-150 frames at 30 fps):
+STORY (11 to 19 scenes, aim for 13+, each 60-150 frames at 30 fps):
 1. First scene: a hook (bigText or textWithAccent) that creates curiosity.
 2. Then build the idea step by step, ONE idea per scene, using a variety of scene types:
    - bigText: 1-4 words, huge. textWithAccent: a short white line (max 7 words) + accentText (1-3 words, the emotional/key word).
@@ -123,8 +178,14 @@ STORY (13 to 19 scenes, each 60-150 frames at 30 fps):
    - list: heading text + 2-4 short items. codeBlock: 2-8 real, short code/shell lines + headline text. progressBar: caption + value 0-100 + unit.
    - curve: caption about acceleration / easing / growth. flash: ONE word on a full accent-coloured screen (use at most once, as a rhythm break).
 3. Last scene: type outro, text = a punchy 1-3 word closer, accentText = a short call to action (e.g. Follow for more).
+Every scene except footage/flash/tier/timeline/versus/verdict floats 1-3 eye-catching `icons` (neon objects) that visually match what that scene is about
+(e.g. a scene on heat: thermometer, flame, fan; on speed: gauge, bolt). Always fill `icons` for scenes about a concrete thing.
 Rules: never repeat the same scene type back to back (footage scenes may follow each other); at most one scene with light=true; on-screen text is short and
 readable in 2 seconds; no emojis.
+CURSOR (optional, use it SPARINGLY): the channel's character is a MOUSE CURSOR that uses the screen like a person uses a web page. It appears only when it does something that helps the line; never as decoration, never waiting.
+Set `cursor` on a scene only for: tab (opens a new browser tab: ONLY the first scene, as the video opens), toggle (ONLY the first scene and ONLY when the whole video is about a phone or computer setting such as airplane mode: opens a macOS-style Control Center panel and flips the switch named in `toggle`: airplane, wifi, bluetooth or airdrop; it replaces `tab`), drag (grabs a list item, code panel or bar: list, codeBlock, progressBar scenes), click (presses the key text: THE reveal or payoff, once),
+select (drags across the headline like selecting text: one key phrase), hover (rests on a key number), busy (a loading ring: at most once, for a real "working it out" beat). Never on flash scenes. At most 4 scenes per video, usually 2 or 3.
+On-screen effects appear automatically when the narration names them, each only once or rarely: plane/rocket/satellite fly-bys, signal waves and bars, lightning, embers, snow, drops, data packets, coins, equalizer, notification banners, a filling battery, a clock, a padlock, a magnifier, binary rain. Set `fx` only to force one.
 Metadata: title <= 80 characters + 2-3 hashtags (#siliconverdict first), description 2 sentences, 6-8 tags, pinned_comment = a debate question.
 screen_title <= 24 characters. accent = always #00F0FF (channel electric cyan)."""
 
@@ -161,12 +222,13 @@ CURIOSITY_RULES = "\nCURIOSITY VIDEO: no footage scenes; use the motion-graphic 
 
 FORMAT_COMMON = """
 CONTENT FORMAT. This video follows a fixed format. The scene-type variety rule below does NOT apply to the format's own scene types (tier, versus, verdict, timeline),
-which may follow each other. Everything else stays the same: 13 to 19 scenes, a hook first, an outro last, a narration on every scene, 150-190 words in total."""
+which may follow each other. Everything else stays the same: a hook first, an outro last, a narration on every scene, 150-190 words in total, and NEVER two consecutive scenes of the same type unless it is one of the format's own types.
+Number of scenes: 13 to 19 (tier and versus videos: 9 to 19, with narrations of 14-24 words per scene so the video still reaches 150-190 words)."""
 
 FORMAT_RULES = {
     "myth": FORMAT_COMMON + """
 FORMAT = MYTH OR FACT. Pick a theme (a component, a habit, a setting) and test 4 or 5 widespread beliefs about it.
-- Each belief is a `verdict` scene: `text` = the claim exactly as people say it (max 7 words), `verdict` = myth | fact | partly, `accentText` = the one-line truth (max 6 words), `kicker` = "myth or fact".
+- Each belief is a `verdict` scene: `text` = the claim exactly as people say it (max 7 words), `verdict` = myth | fact | partly, `accentText` = the one-line truth (max 6 words, REQUIRED on every verdict scene, never empty), `kicker` = "myth or fact".
 - After each verdict scene put ONE supporting scene (counter, progressBar, list, codeBlock or curve) that shows the evidence for the correction; its narration explains WHY.
 - Mix the verdicts: at least 2 myths and at least 1 fact or partly. Never pick a belief you are not sure about; "partly" is the honest answer when it depends.
 - Scene 1 is the hook ("Five things you believe about your SSD. Some are wrong."), the last scene before the outro is a textWithAccent with the takeaway ("Check before you believe"). NEVER state a score or count of myths/facts anywhere (models miscount, and the reviewer rejects it).""",
@@ -180,19 +242,29 @@ FORMAT = TIER LIST. Rank 6 to 8 items of ONE category (kinds of RAM, SSD types, 
     "whatif": FORMAT_COMMON + """
 FORMAT = WHAT IF. One absurd but physically meaningful hypothetical about computing ("What if your PC had no cache?", "What if an SSD never erased data?", "What if RAM was as slow as a hard drive?").
 - Scene 1: bigText with kicker "what if" and the hypothetical in 2-4 words. Scene 2 restates it as a question in textWithAccent.
-- Then walk through the consequences step by step, ESCALATING each time, with real mechanisms and real approximate figures (counter, progressBar, curve, list, codeBlock). Say "roughly" when a figure is approximate.
+- Then walk through the consequences step by step, ESCALATING each time, alternating the scene types (never two of the same type in a row), with real mechanisms and real approximate figures (counter, progressBar, curve, list, codeBlock). Say "roughly" when a figure is approximate.
 - The consequences must follow from how the hardware or software really works; never invent figures. Close with what the real design does to avoid this, and why that is clever.""",
     "evolution": FORMAT_COMMON + """
 FORMAT = EVOLUTION. How ONE thing evolved over time (GPUs, storage, CPUs, game graphics, memory, the web...).
-- Use at least 2 `timeline` scenes: `items` = 3 to 5 chronological "year|label" entries (label at most 28 characters), only milestones you are SURE about, with the exact year. `kicker` = "evolution".
+- Use at least 2 `timeline` scenes: `items` = 3 to 5 chronological "year|label" entries, each year EXACTLY four digits ("1999", never "1990s" or "late 90s"; label at most 28 characters), only milestones you are SURE about, with the exact year. `kicker` = "evolution".
 - Between timeline scenes use counter, progressBar or curve scenes that show the growth (transistors, capacity, price, speed) with real, approximate figures spoken in the narration.
 - Hook with the span ("Thirty years of storage in sixty seconds"), end with what the trend means for the future.""",
     "versus": FORMAT_COMMON + """
 FORMAT = VERSUS. Two contenders (two consoles, two technologies, two standards) fought over 3 to 5 ROUNDS, each round one `versus` scene about ONE metric.
 - `left` and `right` = the contender names (max 16 characters, IDENTICAL in every round), `leftValue` / `rightValue` = real approximate positive figures for that metric, `unit` shared by both,
   `text` = the metric ("Memory bandwidth"), `accentText` = a short tag ("per second"), `kicker` = "round 1", "round 2"... When LOWER is better (latency, price, power) set `winner` to the contender that wins.
-  Say both figures in the narration. If you are not sure of a figure, pick another metric.
+  Both figures MUST be spoken in that scene's narration (digits are fine: "twenty-five point six versus forty-eight"). If you are not sure of a figure, pick another metric.
 - Scene 1 is the hook that names both contenders, the last scene before the outro is a textWithAccent that names the overall winner and the catch ("but it depends on...").""",
+    "hardware": FORMAT_COMMON + """
+FORMAT = HARDWARE DEEP DIVE (the old Hardware category, now in the Motion style). ONE surprising, well documented fact about silicon, memory, storage, networking, displays, power or engineering infrastructure
+(cache and RAM latency, EUV lithography, why clocks stalled near 5 GHz, SSD wear, GPS and atomic clocks, fiber optics, thermal paste, power supplies, GPUs versus CPUs, ECC memory, data centers...).
+- Explain HOW it really works: the mechanism first, then the real approximate figures (counter, progressBar, codeBlock, curve scenes are the evidence); physics and engineering, never opinions or benchmarks you cannot be sure of.
+- Cursor: only as an accent, in 2 or 3 scenes: `tab` on the hook, plus `drag` on a list or code scene or `click` on the reveal (only where it helps).""",
+    "simple": FORMAT_COMMON + """
+FORMAT = EVERYDAY TECH MYSTERY (the old Everyday category, now in the Motion style, hosted by the mouse cursor). A small, relatable mystery almost everyone has lived but few can explain:
+USB plugs, Bluetooth and Wi-Fi quirks, batteries and charging, touchscreens, cameras, QR codes, GPS, headphones, microwaves, passwords, e-readers, smart homes, airplane mode...
+- Friendly, conversational, with an analogy and a twist ("But there is more."); the closing line loops back to the hook.
+- Cursor: the mouse cursor is the host, but it acts only when it helps the line: `tab` on the hook, `select` on one key phrase, `drag` on a list or code scene, `click` on the reveal, `hover` on a key number. 3 or 4 scenes in all, never idle, never decorative.""",
     "easter": FORMAT_COMMON + """
 FORMAT = HIDDEN DETAIL (the 'easter egg' format). Tell the most surprising, little-known detail the SOURCE TEXT gives about the game's development, design or technology, as a reveal:
 setup ("You have played this a hundred times"), clue, then the reveal. Open scene 1 with the game name and the promise of a secret, put kicker "hidden detail" on the reveal scenes, and show the
@@ -228,6 +300,12 @@ def _repair(p: MotionProject) -> None:
             s.mediaId = None
         if len(s.narration.split()) < 3 and s.type in ("flash", "bigText", "outro"):  # a one-word punch scene may simply speak its own text
             s.narration = " ".join(x for x in (s.text, s.accentText) if x)
+    swap = {"bigText": "textWithAccent", "textWithAccent": "bigText"}  # visually interchangeable headline types
+    for prev, cur in zip(p.scenes, p.scenes[1:]):
+        if prev.type == cur.type and cur.type in swap:
+            if cur.type == "textWithAccent" and len(cur.text.split()) > 4:
+                continue  # bigText allows at most 4 words: leave it for the validator instead of breaking that rule
+            cur.type = swap[cur.type]
     if (p.accent or "").upper() not in ("#00F0FF", "#007AFF"):  # the channel palette is blue/cyan: never any other colour
         p.accent = "#00F0FF"
 
@@ -358,15 +436,16 @@ def make_validator(catalog: Optional[Dict[str, dict]] = None, facts: Optional[st
         _repair(p)
         out: List[str] = _format_problems(p, fmt)
         n = len(p.scenes)
-        if not 12 <= n <= 21:
-            out.append(f"{n} scenes (need 13-19)")
+        compact = fmt in ("tier", "versus")  # these formats are built from a fixed run of format scenes, so they have fewer, wordier scenes
+        if not (8 if compact else 10) <= n <= 21:
+            out.append(f"{n} scenes (need {'9-19' if compact else '11-19'})")
         words, est = p.narration_words, estimated_seconds(p)
         if any(len(s.narration.split()) < 3 for s in p.scenes):
             out.append("every scene needs a narration (3-16 words; short is fine for a one-word flash scene)")
-        if any(len(s.narration.split()) > 20 for s in p.scenes):
-            out.append("a scene narration is longer than 20 words")
-        if not MIN_SECONDS + 1 <= est <= MAX_SECONDS:
-            out.append(f"narration has {words} words across {n} scenes (about {est:.0f} s): it must come to {MIN_SECONDS + 1:.0f}-{MAX_SECONDS:.0f} s (roughly 150-190 words, about 11 per scene)")
+        if any(len(s.narration.split()) > (26 if compact else 20) for s in p.scenes):
+            out.append(f"a scene narration is longer than {26 if compact else 20} words")
+        if not 61.0 <= est <= MAX_SECONDS:  # just over 60 s is enough for monetisation
+            out.append(f"narration has {words} words across {n} scenes (about {est:.0f} s): it must come to 61-{MAX_SECONDS:.0f} s (aim for roughly 135-190 words, about 11 per scene)")
         if p.scenes and p.scenes[-1].type != "outro":
             out.append("the last scene must be type outro")
         if p.scenes and p.scenes[0].type not in ("bigText", "textWithAccent"):
@@ -375,6 +454,29 @@ def make_validator(catalog: Optional[Dict[str, dict]] = None, facts: Optional[st
             out.append("at most one flash scene")
         if sum(1 for s in p.scenes if s.light) > 1:
             out.append("at most one light scene")
+        for sc_ in p.scenes:  # an unknown action or effect is simply dropped, the scene stays
+            act = (sc_.cursor or "").strip().lower()
+            sc_.cursor = act if act in CURSOR_ACTIONS and sc_.type not in ("flash", "footage") else None
+            if sc_.cursor == "drag" and sc_.type not in ("list", "codeBlock", "progressBar", "tier"):
+                sc_.cursor = "hover"
+            fx_ = (sc_.fx or "").strip().lower()
+            sc_.fx = fx_ if fx_ in FX_NAMES else None
+        for sc_ in p.scenes:
+            tg = (sc_.toggle or "").strip().lower()
+            sc_.toggle = tg if tg in TOGGLE_KEYS else None
+            if sc_.cursor == "toggle" and not sc_.toggle:
+                sc_.toggle = "airplane"
+            if sc_.cursor != "toggle":
+                sc_.toggle = None
+        openers = [i for i, sc_ in enumerate(p.scenes) if sc_.cursor in ("tab", "toggle")]  # a tab or a settings panel opens only as the video starts
+        for i in openers:
+            if i != 0 or i != openers[0]:
+                p.scenes[i].cursor, p.scenes[i].toggle = "click", None
+        busy = [i for i, sc_ in enumerate(p.scenes) if sc_.cursor == "busy"]
+        for i in busy[1:]:
+            p.scenes[i].cursor = None
+        if sum(1 for sc_ in p.scenes if sc_.cursor) > 4:
+            limit_cursor(p.scenes, fmt)  # a generation that over-uses the cursor is trimmed to its most useful moments instead of being rejected
         used_media = [s.mediaId for s in p.scenes if s.type == "footage"]
         if catalog is None and used_media:
             out.append("footage scenes are only allowed in game videos")
@@ -543,7 +645,9 @@ def generate_motion_project(topic: Optional[str] = None, avoid_topics: Optional[
         system += FORMAT_RULES[fmt]
         base = base.replace("motion-graphics explainer", f"{fmt} video").replace("motion-graphics video", f"{fmt} video")
         if not topic and kind != "game":
-            base = f"Make a {fmt} video (the format is described in the rules). Pick a topic about computers, hardware, coding, games, AI or tech that fits it perfectly and that you know well.\n"
+            hint = {"hardware": "Pick ONE well documented fact about silicon, memory, storage, networking, displays, power or engineering that you know very well.",
+                    "simple": "Pick ONE small everyday tech mystery that almost everyone has experienced and that you can explain truthfully."}.get(fmt, "Pick a topic about computers, hardware, coding, games, AI or tech that fits it perfectly and that you know well.")
+            base = f"Make a {fmt} video (the format is described in the rules). {hint}\n"
     if avoid:
         base += "Do NOT repeat or resemble these topics: " + "; ".join(avoid) + "\n"
     feedback = ""

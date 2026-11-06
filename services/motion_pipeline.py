@@ -14,7 +14,7 @@ from config.settings import settings
 logger = logging.getLogger(__name__)
 FPS = 30
 MIN_VIDEO_SECONDS = 62.0  # final length floor (YouTube monetisation: more than 60 s)
-VOICE_LEAD = 0.2  # seconds after a scene starts before the narrator speaks (the text lands first)
+VOICE_LEAD = 0.12  # seconds after a scene starts before the narrator speaks (the text lands first)
 
 
 def render_motion(props: dict, out_mp4: Path, public_dir: Optional[Path] = None) -> Path:
@@ -40,8 +40,85 @@ def render_motion(props: dict, out_mp4: Path, public_dir: Optional[Path] = None)
     return out_mp4
 
 
-def narrate_scenes(project: Any, work_dir: Path) -> list:
-    """ElevenLabs narration, one clip per scene (parallel). Each scene is stretched to fit its line. Returns [(scene_index, mp3, seconds)]."""
+_TOKEN = re.compile(r"[^\w\+\%\$\#\-\'\.]")
+
+
+def _tokens(text: str) -> list:
+    """The words ElevenLabs alignment reports for a text (same cleaning as services.voice_synthesizer.align_characters_to_words)."""
+    return [t for t in text.split() if _TOKEN.sub("", t).strip()]
+
+
+def narrate_scenes(project: Any, work_dir: Path):
+    """Narrates the whole script in ONE continuous ElevenLabs take (fluid intonation, no cuts mid-sentence) and slices it per scene at the natural pause between two words.
+    Returns ([(scene_index, mp3, seconds)], continuous). With continuous=True each scene lasts exactly as long as its slice and the slices play back to back;
+    if the alignment does not match the text, it falls back to one clip per scene (continuous=False)."""
+    import math
+    from services import voice_synthesizer
+    from services.audio import normalize_phonetics_us_english
+    from services.voice import get_ffmpeg_bin
+    from services.voice_synthesizer import synthesize_voice_with_timestamps
+    work_dir.mkdir(parents=True, exist_ok=True)
+    scenes = project.scenes
+    texts = [normalize_phonetics_us_english(sc.narration).strip() for sc in scenes]
+    counts = [len(_tokens(t)) for t in texts]
+    full_path = words = None
+    total = 0.0
+    for _attempt in (1, 2):  # a failed take is retried once after a pause before giving up
+        before = voice_synthesizer.FALLBACK_COUNT
+        full_path, total, words = synthesize_voice_with_timestamps(" ".join(texts), work_dir / "voice_full.mp3", voice_id=settings.ELEVENLABS_VOICE_3, model_id="eleven_multilingual_v2",
+                                                                    natural=True, min_duration=None, max_duration=None, stability=0.32, style=0.5)
+        if voice_synthesizer.FALLBACK_COUNT == before:
+            break
+        logger.warning("ElevenLabs failed for the full narration; retrying...")
+        time.sleep(6)
+    else:
+        raise RuntimeError("ElevenLabs failed (a robotic local voice would have been used): not producing this video")
+    if not words or len(words) != sum(counts) or min(counts) < 1:
+        logger.warning("Alignment (%d words) does not match the script (%d): narrating scene by scene instead.", len(words or []), sum(counts))
+        return _narrate_per_scene(project, work_dir), False
+
+    if total < MIN_VIDEO_SECONDS + 0.3:  # a short script: slow the voice down a little (pitch preserved, never below 0.88x) instead of holding the screen in silence
+        tempo = max(0.88, total / (MIN_VIDEO_SECONDS + 0.3))
+        if tempo < 0.995:
+            slow = work_dir / "voice_full_slow.mp3"
+            subprocess.run([get_ffmpeg_bin(), "-y", "-i", str(full_path), "-filter:a", f"atempo={tempo:.3f}", "-c:a", "libmp3lame", "-b:a", "192k", str(slow)],
+                           check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            full_path, total = slow, total / tempo
+            words = [{**w, "start": round(w["start"] / tempo, 3), "end": round(w["end"] / tempo, 3)} for w in words]
+            logger.info("Voice slowed to %.2fx to reach the minimum length without dead air.", tempo)
+    firsts, lasts, pos = [], [], 0
+    for c in counts:
+        firsts.append(words[pos]["start"])
+        lasts.append(words[pos + c - 1]["end"])
+        pos += c
+    cuts = [0.0] + [(lasts[k] + firsts[k + 1]) / 2 for k in range(len(scenes) - 1)] + [total]  # every cut sits in the middle of the pause between two words
+    clips = []
+    for k in range(len(scenes)):
+        start, dur = cuts[k], max(0.2, cuts[k + 1] - cuts[k])
+        out = work_dir / f"scene_{k:02d}.mp3"
+        af = f"afade=t=in:d=0.006,afade=t=out:st={max(0.0, dur - 0.008):.3f}:d=0.008"
+        subprocess.run([get_ffmpeg_bin(), "-y", "-ss", f"{start:.3f}", "-t", f"{dur:.3f}", "-i", str(full_path), "-af", af, "-c:a", "libmp3lame", "-b:a", "192k", str(out)],
+                       check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        clips.append((k, out, dur))
+    for k, _p, dur in clips:
+        scenes[k].durationInFrames = max(scenes[k].durationInFrames, math.ceil(dur * FPS))
+    if project.total_frames > settings.MAX_VIDEO_SECONDS * FPS:
+        raise RuntimeError(f"narrated video would last {project.total_frames / FPS:.1f}s (> {settings.MAX_VIDEO_SECONDS:.0f} s ceiling); script too long")
+    deficit = int(MIN_VIDEO_SECONDS * FPS) - project.total_frames  # monetisation needs more than 60 s: the extra time is held where a sentence ends, never in the middle of one
+    if deficit > 0:
+        ends = [k for k, sc in enumerate(scenes) if sc.narration.strip()[-1:] in ".!?"] or [len(scenes) - 1]
+        if (len(scenes) - 1) not in ends:
+            ends.append(len(scenes) - 1)
+        per = math.ceil(deficit / len(ends))
+        for k in ends:
+            scenes[k].durationInFrames += per
+        logger.info("Narrated video was %.1f s: %d sentence ends held %.2f s longer to pass %.0f s.", (project.total_frames - per * len(ends)) / FPS, len(ends), per / FPS, MIN_VIDEO_SECONDS)
+    logger.info("Narration ready (continuous take): %d slices, %.1f s of speech, video %.1f s", len(clips), total, project.total_frames / FPS)
+    return clips, True
+
+
+def _narrate_per_scene(project: Any, work_dir: Path) -> list:
+    """Fallback narration: one ElevenLabs clip per scene (parallel). Each scene is stretched to fit its line (+ a short lead). Returns [(scene_index, mp3, seconds)]."""
     import math
     from concurrent.futures import ThreadPoolExecutor
     from services import voice_synthesizer
@@ -51,7 +128,8 @@ def narrate_scenes(project: Any, work_dir: Path) -> list:
     def one(i: int):
         path, dur, _ = synthesize_voice_with_timestamps(
             project.scenes[i].narration, work_dir / f"scene_{i:02d}.mp3", voice_id=settings.ELEVENLABS_VOICE_3, model_id="eleven_multilingual_v2",
-            natural=True, min_duration=None, max_duration=None, stability=0.32, style=0.5)
+            natural=True, min_duration=None, max_duration=None, stability=0.32, style=0.5,
+            previous_text=project.scenes[i - 1].narration if i > 0 else None, next_text=project.scenes[i + 1].narration if i + 1 < len(project.scenes) else None)
         return i, path, dur
 
     clips = []
@@ -66,9 +144,9 @@ def narrate_scenes(project: Any, work_dir: Path) -> list:
     else:
         raise RuntimeError("ElevenLabs failed for some lines (a robotic local voice would have been used): not producing this video")
     for i, _p, dur in clips:  # the scene lasts at least as long as its narration (+ a short breath), never less than its own minimum
-        project.scenes[i].durationInFrames = max(project.scenes[i].durationInFrames, math.ceil((dur + VOICE_LEAD + 0.45) * FPS))
-    if project.total_frames > 88 * FPS:
-        raise RuntimeError(f"narrated video would last {project.total_frames / FPS:.1f}s (> 88 s); script too long")
+        project.scenes[i].durationInFrames = max(project.scenes[i].durationInFrames, math.ceil((dur + VOICE_LEAD + 0.12) * FPS))
+    if project.total_frames > settings.MAX_VIDEO_SECONDS * FPS:
+        raise RuntimeError(f"narrated video would last {project.total_frames / FPS:.1f}s (> {settings.MAX_VIDEO_SECONDS:.0f} s ceiling); script too long")
     deficit = int(MIN_VIDEO_SECONDS * FPS) - project.total_frames  # YouTube monetisation needs MORE than 60 s: hold scenes a little longer if short
     if deficit > 0:
         per = math.ceil(deficit / len(project.scenes))
@@ -79,9 +157,12 @@ def narrate_scenes(project: Any, work_dir: Path) -> list:
     return clips
 
 
-def add_sound(raw: Path, out: Path, scene_starts: list, voice_clips: Optional[list] = None) -> Path:
-    """Muxes a quiet ambient bed plus a soft whoosh on every scene start (both are the project's own assets), normalised to -14 LUFS."""
+def add_sound(raw: Path, out: Path, scene_starts: list, voice_clips: Optional[list] = None, lead: float = VOICE_LEAD) -> Path:
+    """Muxes a quiet ambient bed, a soft whoosh on every scene start and the narration (both effects are the project's own assets). The loudness is normalised in TWO passes
+    (measure, then apply one fixed gain): a single dynamic pass pumps the volume and the voice seems to dip or cut at scene changes."""
+    import json as _json
     from services.voice import get_ffmpeg_bin
+    ff = get_ffmpeg_bin()
     audio = settings.BASE_DIR / "assets" / "audio"
     ins = ["-i", str(raw), "-stream_loop", "-1", "-i", str(audio / "schematic_ambient.wav")]
     voiced = bool(voice_clips)
@@ -96,14 +177,26 @@ def add_sound(raw: Path, out: Path, scene_starts: list, voice_clips: Optional[li
         n += 1
     for idx, clip, _d in voice_clips or []:
         ins += ["-i", str(clip)]
-        ms = int((scene_starts[idx] / FPS + VOICE_LEAD) * 1000)
+        ms = int((scene_starts[idx] / FPS + lead) * 1000)
         parts.append(f"[{n}:a]adelay={ms}|{ms},volume=1.6[v{n}]")
         labels.append(f"[v{n}]")
         n += 1
-    parts.append("".join(labels) + f"amix=inputs={len(labels)}:duration=longest:normalize=0,loudnorm=I=-14:TP=-2:LRA=11[a]")
-    cmd = [get_ffmpeg_bin(), "-y", *ins, "-filter_complex", ";".join(parts), "-map", "0:v", "-map", "[a]", "-t", f"{_duration(raw):.2f}",
-           "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2", "-movflags", "+faststart", str(out)]
-    subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    dur = _duration(raw)
+    mix = out.with_name(out.stem + "_mix.wav")
+    graph = ";".join(parts + ["".join(labels) + f"amix=inputs={len(labels)}:duration=longest:normalize=0[mix]"])
+    subprocess.run([ff, "-y", *ins, "-filter_complex", graph, "-map", "[mix]", "-t", f"{dur:.2f}", "-ar", "48000", "-ac", "2", str(mix)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    target = "loudnorm=I=-14:TP=-2:LRA=11"
+    norm = target
+    try:  # pass 1: measure
+        log = subprocess.run([ff, "-hide_banner", "-i", str(mix), "-af", target + ":print_format=json", "-f", "null", "-"], capture_output=True, text=True).stderr
+        m = _json.loads(log[log.rindex("{"):log.rindex("}") + 1])
+        if all(k in m and m[k] not in ("-inf", "inf") for k in ("input_i", "input_tp", "input_lra", "input_thresh", "target_offset")):
+            norm = f"{target}:measured_I={m['input_i']}:measured_TP={m['input_tp']}:measured_LRA={m['input_lra']}:measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true"
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Loudness measurement failed (%s): single pass normalisation.", exc)
+    subprocess.run([ff, "-y", "-i", str(raw), "-i", str(mix), "-map", "0:v", "-map", "1:a", "-filter:a", norm + ",alimiter=limit=0.78:level=disabled", "-t", f"{dur:.2f}",
+                    "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2", "-movflags", "+faststart", str(out)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    mix.unlink(missing_ok=True)
     return out
 
 
@@ -128,12 +221,15 @@ def qa_motion(path: Path) -> list:
     if "Audio:" not in log:
         fails.append("no audio track")
     vol = subprocess.run([get_ffmpeg_bin(), "-hide_banner", "-i", str(path), "-af", "volumedetect", "-f", "null", "-"], capture_output=True, text=True).stderr
+    peak = re.search(r"max_volume: (-?[\d.]+) dB", vol)
+    if peak and float(peak[1]) > -0.5:
+        fails.append(f"audio peak {peak[1]} dB is clipping")
     mean = re.search(r"mean_volume: (-?[\d.]+) dB", vol)
     if mean and float(mean[1]) < -28:
         fails.append(f"audio mean {mean[1]} dB is too quiet: the narration seems to be missing")
     d = _duration(path)
-    if not 61 <= d <= 92:
-        fails.append(f"duration {d:.1f}s outside 61-92 s (YouTube monetisation needs more than 60 s)")
+    if not 61 <= d <= settings.MAX_VIDEO_SECONDS + 1:
+        fails.append(f"duration {d:.1f}s outside 61-{settings.MAX_VIDEO_SECONDS:.0f} s (monetisation needs more than 60 s; 3-minute ceiling)")
     return fails
 
 
@@ -183,7 +279,16 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
     format_name = None if fmt == "auto" else fmt
     facts = None
     game = None
-    if kind in ("game", "auto"):
+    project = None
+    banked_game = False
+    if fmt == "auto" and kind in ("game", "auto") and not topic and (kind == "game" or random.random() < 0.5):
+        # game scripts written earlier (the old Gaming category, in the bank) go first: they are shown over the game's own screenshots, no footage ledger involved
+        from services.game_images import legacy_images
+        from services.story_bank import pop_story
+        project = pop_story("motion", lambda p: p.kind == "game" and bool(p.game) and len(legacy_images(p.game)) >= 5)
+        if project is not None:
+            banked_game, game, kind = True, project.game, "game"
+    if not banked_game and kind in ("game", "auto"):
         candidates = available_games()
         random.shuffle(candidates)
         if candidates:
@@ -191,76 +296,92 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
             facts = get_game_facts(game)  # paced + cached; None only when no source text exists at all -> the script is then written conservatively (no figures)
             if not facts:
                 logger.warning("No source text for %s: writing the game video in conservative mode (no figures, only well-known facts).", game)
-    if kind == "auto" and game and random.random() < 0.5:
+    if not banked_game and kind == "auto" and game and random.random() < 0.5:
         game, facts = None, None  # alternate between game videos and curiosities
     if kind == "game" and not game:
         raise RuntimeError("No game is available: every game with stocked footage was covered in the last 14 days, ran out of unused footage or has no source text "
                            "(fetch more: scripts/fetch_game_images.py, scripts/fetch_game_clips.py, scripts/caption_game_media.py; blacklist: python -m services.game_registry).")
-    catalog = footage_catalog(game) if game else None
-    project = generate_motion_project(topic, avoid_topics=get_recently_used_topics_safe(), kind="game" if game else "curiosity", game=game, catalog=catalog, facts=facts, fmt=format_name)
+    catalog = footage_catalog(game) if game and not banked_game else None
+    if not topic and not game:  # curiosity videos draw on the pre-written bank first (same format), then fall back to the LLM
+        from services.story_bank import pop_story
+        recent = {t.strip().lower() for t in get_recently_used_topics_safe()}
+        project = pop_story("motion", lambda p: p.format == format_name and p.kind == "curiosity" and p.topic.strip().lower() not in recent)
+    if project is None:
+        project = generate_motion_project(topic, avoid_topics=get_recently_used_topics_safe(), kind="game" if game else "curiosity", game=game, catalog=catalog, facts=facts, fmt=format_name)
     logger.info("Motion Graphics (%s%s%s): '%s' (%d scenes)", project.kind, f", {game}" if game else "", f", format {format_name}" if format_name else "", project.title, len(project.scenes))
 
     work = Path(settings.TMP_DIR) / f"run_motion_{run_id}"
     work.mkdir(parents=True, exist_ok=True)
     public = work / "public"
     public.mkdir(exist_ok=True)
-    used_entries = []
-    for sc in project.scenes:  # footage scenes get their (already chosen) item copied into the render's own public dir
-        if sc.type == "footage" and catalog and sc.mediaId in catalog:
-            entry = catalog[sc.mediaId]
-            sc.mediaSrc, sc.mediaKind, sc.mediaSeconds = stage_media(entry, public), entry["kind"], float(entry.get("seconds", 3.0))
-            sc.credit = entry["game"]
-            used_entries.append(entry)
-    if used_entries:
-        project.description = project.description.rstrip() + "\n\nGame footage: " + "; ".join(build_credits(used_entries)) + " (official Steam store media)."
-    clips = narrate_scenes(project, work / "voice")  # first: the narration decides how long each scene lasts
-    raw = render_motion(project.to_props(), work / "raw.mp4", public)
-    starts, acc = [], 0
-    for sc in project.scenes:
-        starts.append(acc)
-        acc += sc.durationInFrames
-    video = add_sound(raw, work / "motion_master.mp4", starts, clips)
-
-    fails = qa_motion(video)
-    if fails:
-        logger.error("Video QA FAILED, it will not be uploaded: %s", "; ".join(fails))
-    if not project.fact_checked:
-        logger.warning("No reviewer could fact-check the script: publishing anyway (the script was still grounded and validated).")
-    if fails:
-        export_only = True  # only an objective technical failure of the video itself holds it back
-    if used_entries and not fails:  # the footage is spent only when a finished, checked video exists: delete it, never reuse it, blacklist the game 14 days
-        commit_media([e["key"] for e in used_entries], game, project.title)
-
-    stem = timestamp_stem()
-    out = {}
-    for platform in ("youtube", "tiktok"):
-        d = video_dir(platform, project.title)
-        shutil.copyfile(video, d / f"{stem}.mp4")
-        out[platform] = d / f"{stem}.mp4"
-    tags = [t if t.startswith("#") else f"#{t}" for t in project.tags]
-    meta = out["tiktok"].with_suffix(".txt")
-    meta.write_text(
-        "=" * 80 + "\nSILICON VERDICT • MOTION GRAPHICS • TIKTOK & SHORTS METADATA\n"
-        f"Creation Date: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}\nVideo File: {out['tiktok'].name}\nTopic: {project.topic}\n" + "=" * 80
-        + f"\n\n[TITLE]\n{project.title}\n\n[DESCRIPTION]\n{project.description}\n\n[HASHTAGS]\n{' '.join(tags)}\n\n[PINNED COMMENT]\n{project.pinned_comment}\n\n[SCENES]\n"
-        + "\n".join(f"- {s.type}: {s.text} {s.accentText or ''}".rstrip() for s in project.scenes) + "\n",
-        encoding="utf-8",
-    )
-
-    youtube_url, yt_id = f"file://{out['youtube'].resolve()}", f"local_export_{run_id}"
-    if not export_only and not dry_run:
-        try:
-            from services.youtube import upload_video_resumable
-            youtube_url = upload_video_resumable(file_path=str(out["youtube"]), title=project.title, description=project.description, tags=project.tags, privacy_status=privacy, is_short=True)
-            yt_id = youtube_url.split("/")[-1]
-        except Exception as exc:
-            logger.error("YouTube upload failed (%s). Video kept locally.", exc)
-            yt_id = f"local_{run_id}"
     try:
-        record_short_history(weekday_index=datetime.now().weekday(), theme_key="motion_graphics", game_title=project.screen_title, voice_id_used="none", topic=project.topic,
-                             title=project.title, video_id=yt_id, category=("MOTION GRAPHICS " + project.format.upper()) if project.format else "MOTION GRAPHICS", tone="kinetic_typography", preset="remotion_motion")
-    except Exception as exc:
-        logger.warning("History not recorded: %s", exc)
-    logger.info("Motion Graphics video ready in %.0fs: %s", time.time() - t0, out["tiktok"])
-    return {"kind": project.kind, "format": project.format, "game": project.game, "youtube_video": str(out["youtube"]), "youtube_url": youtube_url, "tiktok_video": str(out["tiktok"]), "tiktok_metadata": str(meta),
-            "title": project.title, "topic": project.topic, "qa_failures": fails, "uploaded": not export_only and not dry_run}
+        used_entries = []
+        for sc in project.scenes:  # footage scenes get their (already chosen) item copied into the render's own public dir
+            if sc.type == "footage" and catalog and sc.mediaId in catalog:
+                entry = catalog[sc.mediaId]
+                sc.mediaSrc, sc.mediaKind, sc.mediaSeconds = stage_media(entry, public), entry["kind"], float(entry.get("seconds", 3.0))
+                sc.credit = entry["game"]
+                used_entries.append(entry)
+        if banked_game:
+            from services.game_images import stage_legacy_footage
+            stage_legacy_footage(project, public)
+        if used_entries:
+            project.description = project.description.rstrip() + "\n\nGame footage: " + "; ".join(build_credits(used_entries)) + " (official Steam store media)."
+        clips, continuous = narrate_scenes(project, work / "voice")  # first: the narration decides how long each scene lasts
+        raw = render_motion(project.to_props(), work / "raw.mp4", public)
+        starts, acc = [], 0
+        for sc in project.scenes:
+            starts.append(acc)
+            acc += sc.durationInFrames
+        video = add_sound(raw, work / "motion_master.mp4", starts, clips, lead=0.0 if continuous else VOICE_LEAD)
+
+        fails = qa_motion(video)
+        if fails:
+            logger.error("Video QA FAILED, it will not be uploaded: %s", "; ".join(fails))
+        if not project.fact_checked:
+            logger.warning("No reviewer could fact-check the script: publishing anyway (the script was still grounded and validated).")
+        if fails:
+            export_only = True  # only an objective technical failure of the video itself holds it back
+        if used_entries and not fails:  # the footage is spent only when a finished, checked video exists: delete it, never reuse it, blacklist the game 14 days
+            commit_media([e["key"] for e in used_entries], game, project.title)
+
+        stem = timestamp_stem()
+        out = {}
+        for platform in ("youtube", "tiktok"):
+            d = video_dir(platform, project.title)
+            shutil.copyfile(video, d / f"{stem}.mp4")
+            out[platform] = d / f"{stem}.mp4"
+        tags = [t if t.startswith("#") else f"#{t}" for t in project.tags]
+        meta = out["tiktok"].with_suffix(".txt")
+        meta.write_text(
+            "=" * 80 + "\nSILICON VERDICT • MOTION GRAPHICS • TIKTOK & SHORTS METADATA\n"
+            f"Creation Date: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}\nVideo File: {out['tiktok'].name}\nTopic: {project.topic}\n" + "=" * 80
+            + f"\n\n[TITLE]\n{project.title}\n\n[DESCRIPTION]\n{project.description}\n\n[HASHTAGS]\n{' '.join(tags)}\n\n[PINNED COMMENT]\n{project.pinned_comment}\n\n[SCENES]\n"
+            + "\n".join(f"- {s.type}: {s.text} {s.accentText or ''}".rstrip() for s in project.scenes) + "\n",
+            encoding="utf-8",
+        )
+
+        youtube_url, yt_id = f"file://{out['youtube'].resolve()}", f"local_export_{run_id}"
+        if not export_only and not dry_run:
+            try:
+                from services.youtube import upload_video_resumable
+                youtube_url = upload_video_resumable(file_path=str(out["youtube"]), title=project.title, description=project.description, tags=project.tags, privacy_status=privacy, is_short=True)
+                yt_id = youtube_url.split("/")[-1]
+            except Exception as exc:
+                logger.error("YouTube upload failed (%s). Video kept locally.", exc)
+                yt_id = f"local_{run_id}"
+        try:
+            record_short_history(weekday_index=datetime.now().weekday(), theme_key="motion_graphics", game_title=project.screen_title, voice_id_used="none", topic=project.topic,
+                                 title=project.title, video_id=yt_id, category=("MOTION GRAPHICS " + project.format.upper()) if project.format else "MOTION GRAPHICS", tone="kinetic_typography", preset="remotion_motion")
+        except Exception as exc:
+            logger.warning("History not recorded: %s", exc)
+        logger.info("Motion Graphics video ready in %.0fs: %s", time.time() - t0, out["tiktok"])
+        return {"kind": project.kind, "format": project.format, "game": project.game, "youtube_video": str(out["youtube"]), "youtube_url": youtube_url, "tiktok_video": str(out["tiktok"]), "tiktok_metadata": str(meta),
+                "title": project.title, "topic": project.topic, "qa_failures": fails, "uploaded": not export_only and not dry_run,
+                "duration": project.total_frames / FPS, "tiktok_cover": ""}
+    except BaseException:
+        from services.story_bank import release_story  # a script taken from the bank is only spent by a video that was actually produced
+        release_story(project)
+        raise
+    finally:
+        shutil.rmtree(work, ignore_errors=True)  # the render work dir (raw video, voice clips, staged footage) is never needed again

@@ -1,6 +1,10 @@
 /** Data contract of the MotionGraphic composition. Everything shown on screen comes from these props (no text lives in the code). */
 export type SceneType = 'bigText' | 'textWithAccent' | 'counter' | 'list' | 'codeBlock' | 'progressBar' | 'outro' | 'curve' | 'flash' | 'footage' | 'tier' | 'versus' | 'verdict' | 'timeline';
 
+export type SceneFx = 'plane' | 'rocket' | 'satellite' | 'waves' | 'bolts' | 'embers' | 'snow' | 'drops' | 'packets' | 'coins' | 'equalizer' | 'signalbars' | 'notifications' | 'batteryfill' | 'clock' | 'padlock' | 'magnify' | 'bits';
+export type ToggleKey = 'airplane' | 'wifi' | 'bluetooth' | 'airdrop';
+export type CursorAction = 'idle' | 'hover' | 'click' | 'select' | 'drag' | 'tab' | 'toggle' | 'busy';
+
 export interface MotionScene {
   type: SceneType;
   text: string; // main line (bigText: the word(s); counter/progressBar/curve: the caption; list: the heading; codeBlock: the headline under the code)
@@ -21,6 +25,11 @@ export interface MotionScene {
   mediaKind?: 'image' | 'video'; // footage: how to play mediaSrc
   mediaSeconds?: number; // footage: clip length (video loops if the scene lasts longer)
   credit?: string; // footage: game name shown as a tag
+  icons?: string[]; // 1-4 thematic objects floating around the text (names from props.tsx ICONS); picked from the scene's words when empty
+  fx?: SceneFx; // an animated element related to what the scene says (a plane flying across, signal waves, lightning...); picked from the scene's words when empty
+  toggle?: ToggleKey; // with cursor 'toggle': which switch of the Control Center panel the cursor flips (airplane mode switches the radios off)
+  cursor?: CursorAction; // the mouse-cursor character acts in this scene: click / hover / select (text) / drag / tab (opens a browser tab) / busy (loading ring) / idle (waits in a corner)
+  transition?: string; // how this scene enters (see transitions.ts); varied automatically when empty
   narration?: string; // spoken line (used by the pipeline for the voice; not drawn)
   durationInFrames: number;
 }

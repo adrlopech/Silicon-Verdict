@@ -164,8 +164,8 @@ def _problems(story: McStory) -> List[str]:
             continue
         elif not w.startswith("length is") and "never" not in w:
             out.append(w)
-    if rep["ok"] and not 61 <= rep["seconds"] <= 80:
-        out.append(f"length {rep['seconds']:.1f}s outside 61-80s (TikTok monetisation needs > 60 s)")
+    if rep["ok"] and not 61 <= rep["seconds"] <= settings.MAX_VIDEO_SECONDS:
+        out.append(f"length {rep['seconds']:.1f}s outside 61-{settings.MAX_VIDEO_SECONDS:.0f}s (monetisation needs > 60 s; 3-minute ceiling)")
     return out
 
 
