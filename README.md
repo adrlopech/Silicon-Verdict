@@ -180,6 +180,19 @@ A demo of all four: `remotion_studio/src/motion/sample_formats.json`. `easter` i
 * Preview and tweak the design live: `cd remotion_studio && npx remotion studio`, then open the **MotionGraphic** composition and edit its props.
 * Render a JSON by hand: `node scripts/render_motion.mjs props.json out.mp4 [publicDir]` (`publicDir` holds the footage a game video references).
 
+## Development & checks
+
+```bash
+.venv/bin/pip install -r requirements-dev.txt
+.venv/bin/python -m pytest                      # unit tests (tests/): validators, story bank, game registry, subtitles, output layout, DB connections
+.venv/bin/ruff check .                          # lint (config in pyproject.toml)
+.venv/bin/python scripts/test_mc_director.py    # Minecraft director tests
+cd remotion_studio && npx tsc --noEmit -p .     # type-check the Remotion project
+python3 docs/check_portal.py                    # web portal: every local link and anchor exists
+```
+
+GitHub Actions (`.github/workflows/ci.yml`) runs lint + tests, the TypeScript check and the portal link check on every push and pull request.
+
 ## Repository map
 
 | Path | Purpose |
@@ -194,7 +207,8 @@ A demo of all four: `remotion_studio/src/motion/sample_formats.json`. `easter` i
 | `engine/` | Chart and legacy rendering engine |
 | `remotion_studio/` | Remotion project (React): compositions (`MotionGraphic`, Minecraft kit) |
 | `scripts/` | Maintenance (cleanup, bank refill, footage fetch/caption, facts), `render_motion.mjs`, Minecraft assets / music / director tests, authentication, scheduler, analytics |
-| `docs/` | Design notes (Minecraft kit and assets) |
+| `docs/` | Web portal (GitHub Pages), Terms, Privacy, design notes (Minecraft kit and assets) |
+| `tests/` | pytest suite |
 | `assets/` | Fonts, audio beds and effects, B-roll manifest, `skins/` (extra Minecraft skins with their sources) |
 | `data/` | History database, quality rules, `game_facts/` and `gemini_state.json` caches (private data is git-ignored) |
 
