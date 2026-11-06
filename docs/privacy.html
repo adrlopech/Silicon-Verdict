@@ -3,386 +3,111 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="tiktok-developers-site-verification" content="n8OqT5tqWbauLtFIfnNpcM0yxXqejDYc">
   <title>Privacy Policy — Silicon Verdict</title>
-  <meta name="description" content="Privacy Policy for Silicon Verdict hardware telemetry automation and content publication platform.">
+  <meta name="description" content="Silicon Verdict Privacy Policy: zero personal data collection, limited TikTok and YouTube API scope.">
+  <meta name="theme-color" content="#05080F">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23080D18%22/><path d=%22M30 30h40v40H30z%22 fill=%22none%22 stroke=%22%2300F2FF%22 stroke-width=%228%22/><circle cx=%2250%22 cy=%2250%22 r=%2210%22 fill=%22%2300F2FF%22/></svg>">
-  <style>
-    :root {
-      --bg-dark: #070B14;
-      --bg-card: rgba(13, 22, 40, 0.75);
-      --border-cyan: rgba(0, 242, 255, 0.22);
-      --border-subtle: rgba(255, 255, 255, 0.08);
-      --accent-cyan: #00F2FF;
-      --accent-blue: #0071E3;
-      --text-main: #F8FAFC;
-      --text-muted: #94A3B8;
-      --text-dim: #64748B;
-      --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Segoe UI", Roboto, sans-serif;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: var(--font-stack);
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      line-height: 1.7;
-      background-image: 
-        radial-gradient(circle at 10% 10%, rgba(0, 113, 227, 0.12) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(0, 242, 255, 0.09) 0%, transparent 45%);
-      background-attachment: fixed;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    /* Navigation */
-    header {
-      border-bottom: 1px solid var(--border-subtle);
-      backdrop-filter: blur(20px);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(7, 11, 20, 0.85);
-    }
-
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 72px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: var(--text-main);
-      font-weight: 700;
-      font-size: 1.25rem;
-      letter-spacing: -0.02em;
-    }
-
-    .brand svg {
-      width: 32px;
-      height: 32px;
-    }
-
-    .brand-accent {
-      color: var(--accent-cyan);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 24px;
-      align-items: center;
-      list-style: none;
-    }
-
-    .nav-links a {
-      text-decoration: none;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      font-weight: 500;
-      transition: color 0.2s ease;
-    }
-
-    .nav-links a:hover,
-    .nav-links a.active {
-      color: var(--accent-cyan);
-    }
-
-    /* Legal Content */
-    .legal-content {
-      padding: 64px 0 96px;
-    }
-
-    .legal-header {
-      margin-bottom: 40px;
-      border-bottom: 1px solid var(--border-subtle);
-      padding-bottom: 24px;
-    }
-
-    .legal-header h1 {
-      font-size: 2.75rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      margin-bottom: 8px;
-    }
-
-    .effective-date {
-      color: var(--accent-cyan);
-      font-size: 0.95rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .legal-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-cyan);
-      border-radius: 18px;
-      padding: 40px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    }
-
-    .legal-section {
-      margin-bottom: 36px;
-    }
-
-    .legal-section:last-child {
-      margin-bottom: 0;
-    }
-
-    .legal-section h2 {
-      font-size: 1.45rem;
-      font-weight: 700;
-      margin-bottom: 14px;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .legal-section h2::before {
-      content: "";
-      display: inline-block;
-      width: 4px;
-      height: 18px;
-      background: var(--accent-cyan);
-      border-radius: 2px;
-    }
-
-    .legal-section p {
-      color: var(--text-muted);
-      margin-bottom: 14px;
-      font-size: 1rem;
-    }
-
-    .legal-section ul {
-      margin-left: 24px;
-      margin-bottom: 14px;
-      color: var(--text-muted);
-    }
-
-    .legal-section li {
-      margin-bottom: 8px;
-    }
-
-    .highlight-box {
-      background: rgba(0, 242, 255, 0.06);
-      border: 1px solid var(--border-cyan);
-      border-radius: 12px;
-      padding: 20px;
-      margin: 18px 0;
-    }
-
-    .highlight-box p {
-      margin-bottom: 0;
-      color: var(--text-main);
-      font-size: 0.95rem;
-    }
-
-    /* Footer */
-    footer {
-      margin-top: auto;
-      border-top: 1px solid var(--border-subtle);
-      background: rgba(7, 11, 20, 0.95);
-      padding: 40px 0;
-      font-size: 0.9rem;
-      color: var(--text-dim);
-    }
-
-    .footer-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 20px;
-      list-style: none;
-    }
-
-    .footer-links a {
-      color: var(--text-muted);
-      text-decoration: none;
-      transition: color 0.15s ease;
-    }
-
-    .footer-links a:hover {
-      color: var(--accent-cyan);
-    }
-
-    @media (max-width: 768px) {
-      .legal-header h1 {
-        font-size: 2.1rem;
-      }
-      .legal-card {
-        padding: 24px;
-      }
-      .nav-links {
-        display: none;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-  <!-- Header -->
+  <div id="progress"></div>
+  <div class="bg"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
   <header>
     <div class="container">
       <nav>
-        <a href="index.html" class="brand">
-          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100" height="100" rx="20" fill="#0D1628" stroke="#00F2FF" stroke-width="4"/>
-            <rect x="25" y="25" width="50" height="50" rx="10" fill="#070B14" stroke="#00F2FF" stroke-width="3"/>
-            <circle cx="50" cy="50" r="12" fill="#00F2FF"/>
-            <path d="M10 50h15M75 50h15M50 10v15M50 75v15" stroke="#00F2FF" stroke-width="3" stroke-linecap="round"/>
-          </svg>
-          <span>SILICON <span class="brand-accent">VERDICT</span></span>
-        </a>
+        <a href="index.html" class="brand"><svg viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00F2FF"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="#0B1220"/><path d="M28 28h44v44H28z" fill="none" stroke="url(#g)" stroke-width="7"/><path d="M40 16v12M60 16v12M40 72v12M60 72v12M16 40h12M16 60h12M72 40h12M72 60h12" stroke="#00F2FF" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="50" r="9" fill="#00F2FF"/></svg><span>Silicon<b>Verdict</b></span></a>
         <ul class="nav-links">
-          <li><a href="index.html">Overview</a></li>
-          <li><a href="terms.html">Terms of Service</a></li>
-          <li><a href="privacy.html" class="active">Privacy Policy</a></li>
-          <li><a href="https://youtube.com/@SiliconVerdict" target="_blank" rel="noopener">YouTube</a></li>
+          <li><a href="index.html">Portal</a></li>
+          <li><a href="terms.html">Terms</a></li>
+          <li><a href="privacy.html" class=active>Privacy</a></li>
         </ul>
       </nav>
     </div>
   </header>
-
-  <!-- Legal Body -->
-  <main class="container legal-content">
-    <div class="legal-header">
-      <div class="effective-date">Last Updated: March 2026</div>
-      <h1>Privacy Policy</h1>
-      <p style="color: var(--text-muted);">Silicon Verdict is committed to strict privacy standards. We respect your digital boundaries and collect zero personal user data.</p>
-    </div>
-
-    <div class="legal-card">
-      <div class="legal-section">
-        <h2>1. Overview & Scope</h2>
-        <p>
-          This Privacy Policy explains how <strong>Silicon Verdict</strong> ("we", "us", or "our") handles data in connection with our website, telemetry rendering engines, and third-party developer integrations (such as the TikTok Content Posting API and YouTube Data API).
-        </p>
-        <div class="highlight-box">
-          <p>
-            <strong>Core Privacy Guarantee:</strong> Silicon Verdict is an automated hardware benchmark analytics tool. <strong>We do not collect, track, store, profile, sell, or rent any personal information, cookies, or telemetry from visitors or third-party users.</strong>
-          </p>
-        </div>
+  <main class="container">
+    <section class="hero">
+      <div class="hero-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      <h1><span class="grad">Privacy Policy</span></h1>
+      <p class="lead">Silicon Verdict is committed to strict privacy standards. We respect your digital boundaries and collect zero personal user data.</p>
+      <div class="meta-row">
+        <span class="chip"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Last updated: March 2026</span>
+        <span class="chip"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>~3 min read</span>
+        <span class="chip"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg>imnotchego@gmail.com</span>
       </div>
-
-      <div class="legal-section">
-        <h2>2. Information We Do NOT Collect</h2>
-        <p>Unlike commercial data platforms, our application is designed with zero data collection principles:</p>
-        <ul>
-          <li><strong>No Personal Identifiable Information (PII):</strong> We do not ask for, capture, or store names, email addresses, phone numbers, or physical addresses.</li>
-          <li><strong>No Browsing Telemetry or Tracking Cookies:</strong> We do not deploy third-party analytics trackers (e.g., Google Analytics, Meta Pixel) or tracking cookies on this static documentation portal.</li>
-          <li><strong>No Financial or Payment Information:</strong> Silicon Verdict is completely free of billing systems and does not collect payment details.</li>
-        </ul>
-      </div>
-
-      <div class="legal-section">
-        <h2>3. Third-Party API Data & TikTok Developer Policies</h2>
-        <p>
-          Silicon Verdict accesses the <strong>TikTok Content Posting API v2</strong> and <strong>YouTube Data API v3</strong> strictly for creator publishing automation. In accordance with the TikTok Developer Terms and Privacy Policies:
-        </p>
-        <ul>
-          <li><strong>Limited API Scope:</strong> The application requests access solely to publish original video content (video files, descriptions, and hashtags) directly to the authorized Silicon Verdict channel (<code>@siliconverdict</code>).</li>
-          <li><strong>No Follower or Public User Data Harvested:</strong> Silicon Verdict does not read, aggregate, or process profile information, viewing habits, direct messages, or comments from TikTok end users.</li>
-          <li><strong>No Commercial Transfer or Sale:</strong> Any data or identifiers received from TikTok APIs are never sold, transferred to third-party ad networks, or used for surveillance.</li>
-        </ul>
-      </div>
-
-      <div class="legal-section">
-        <h2>4. Local Storage of Application Credentials</h2>
-        <p>
-          API tokens (such as OAuth access tokens and client secrets) are stored exclusively in isolated local configuration files (e.g., <code>.env</code> or local credential caches) maintained by the channel administrator.
-        </p>
-        <p>
-          These tokens are secured behind environment-level access controls and are excluded from all public repositories via <code>.gitignore</code> rules to prevent unauthorized exposure.
-        </p>
-      </div>
-
-      <div class="legal-section">
-        <h2>5. Data Retention & Revocation of Permissions</h2>
-        <p>
-          Because we do not store personal data on remote servers, there is no personal database to maintain or monetize.
-        </p>
-        <ul>
-          <li><strong>Revoking TikTok Permissions:</strong> You can revoke Silicon Verdict’s authorization at any time by navigating to your TikTok account settings: <em>Settings and privacy &rarr; Security &rarr; Manage app permissions</em> and removing Silicon Verdict.</li>
-          <li><strong>Revoking Google / YouTube Permissions:</strong> You can manage or revoke access via the <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener" style="color: var(--accent-cyan);">Google Security Permissions page</a>.</li>
-          <li><strong>Data Deletion Requests:</strong> If you wish to confirm the deletion of any local authentication tokens or session cache, you may contact us at <code>imnotchego@gmail.com</code>, and all local tokens will be immediately purged within 24 hours.</li>
-        </ul>
-      </div>
-
-      <div class="legal-section">
-        <h2>6. Children's Privacy</h2>
-        <p>
-          Our application and content are intended for general PC hardware enthusiasts and developers. We do not knowingly solicit or collect information from children under the age of 13 (or under 16 in the European Economic Area).
-        </p>
-      </div>
-
-      <div class="legal-section">
-        <h2>7. Security Safeguards</h2>
-        <p>
-          All API interactions with TikTok and YouTube are transmitted exclusively through modern, secure, encrypted channels utilizing <strong>Transport Layer Security (HTTPS / TLS 1.3)</strong>.
-        </p>
-      </div>
-
-      <div class="legal-section">
-        <h2>8. Changes to this Privacy Policy</h2>
-        <p>
-          We may update this Privacy Policy from time to time to maintain alignment with TikTok for Developers guidelines or legal requirements. Any modifications will be posted directly to this URL with an updated "Last Updated" timestamp.
-        </p>
-      </div>
-
-      <div class="legal-section">
-        <h2>9. Contact Us</h2>
-        <p>
-          If you have any questions or data protection inquiries regarding this Privacy Policy, please contact our team:
-        </p>
-        <p style="color: var(--accent-cyan); font-weight: 600;">
-          Email: imnotchego@gmail.com<br>
-          Official Channel: @SiliconVerdict
-        </p>
+    </section>
+    <div class="legal">
+      <aside class="toc"><h4>On this page</h4><ol><li><a href="#s1"><i>01</i>Overview &amp; Scope</a></li><li><a href="#s2"><i>02</i>Information We Do NOT Collect</a></li><li><a href="#s3"><i>03</i>Third-Party API Data &amp; TikTok Developer Policies</a></li><li><a href="#s4"><i>04</i>Local Storage of Application Credentials</a></li><li><a href="#s5"><i>05</i>Data Retention &amp; Revocation of Permissions</a></li><li><a href="#s6"><i>06</i>Children's Privacy</a></li><li><a href="#s7"><i>07</i>Security Safeguards</a></li><li><a href="#s8"><i>08</i>Changes to this Privacy Policy</a></li><li><a href="#s9"><i>09</i>Contact Us</a></li></ol></aside>
+      <div class="sections">
+        <section class="sec rv" id="s1">
+          <div class="sec-head"><div class="num">01</div><h2>Overview &amp; Scope</h2></div>
+<p>This Privacy Policy explains how <strong>Silicon Verdict</strong> ("we", "us", or "our") handles data in connection with our website, telemetry rendering engines, and third-party developer integrations (such as the TikTok Content Posting API and YouTube Data API).</p>
+<div class="callout"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg><p><strong>Core Privacy Guarantee:</strong> Silicon Verdict is an automated hardware benchmark analytics tool. <strong>We do not collect, track, store, profile, sell, or rent any personal information, cookies, or telemetry from visitors or third-party users.</strong></p></div>
+        </section>
+        <section class="sec rv" id="s2">
+          <div class="sec-head"><div class="num">02</div><h2>Information We Do NOT Collect</h2></div>
+<p>Unlike commercial data platforms, our application is designed with zero data collection principles:</p>
+<ul class="no">
+<li><strong>No Personal Identifiable Information (PII):</strong> We do not ask for, capture, or store names, email addresses, phone numbers, or physical addresses.</li>
+<li><strong>No Browsing Telemetry or Tracking Cookies:</strong> We do not deploy third-party analytics trackers (e.g., Google Analytics, Meta Pixel) or tracking cookies on this static documentation portal.</li>
+<li><strong>No Financial or Payment Information:</strong> Silicon Verdict is completely free of billing systems and does not collect payment details.</li>
+</ul>
+        </section>
+        <section class="sec rv" id="s3">
+          <div class="sec-head"><div class="num">03</div><h2>Third-Party API Data &amp; TikTok Developer Policies</h2></div>
+<p>Silicon Verdict accesses the <strong>TikTok Content Posting API v2</strong> and <strong>YouTube Data API v3</strong> strictly for creator publishing automation. In accordance with the TikTok Developer Terms and Privacy Policies:</p>
+<ul>
+<li><strong>Limited API Scope:</strong> The application requests access solely to publish original video content (video files, descriptions, and hashtags) directly to the authorized Silicon Verdict channel (<code>@siliconverdict</code>).</li>
+<li><strong>No Follower or Public User Data Harvested:</strong> Silicon Verdict does not read, aggregate, or process profile information, viewing habits, direct messages, or comments from TikTok end users.</li>
+<li><strong>No Commercial Transfer or Sale:</strong> Any data or identifiers received from TikTok APIs are never sold, transferred to third-party ad networks, or used for surveillance.</li>
+</ul>
+        </section>
+        <section class="sec rv" id="s4">
+          <div class="sec-head"><div class="num">04</div><h2>Local Storage of Application Credentials</h2></div>
+<p>API tokens (such as OAuth access tokens and client secrets) are stored exclusively in isolated local configuration files (e.g., <code>.env</code> or local credential caches) maintained by the channel administrator.</p>
+<p>These tokens are secured behind environment-level access controls and are excluded from all public repositories via <code>.gitignore</code> rules to prevent unauthorized exposure.</p>
+        </section>
+        <section class="sec rv" id="s5">
+          <div class="sec-head"><div class="num">05</div><h2>Data Retention &amp; Revocation of Permissions</h2></div>
+<p>Because we do not store personal data on remote servers, there is no personal database to maintain or monetize.</p>
+<ul>
+<li><strong>Revoking TikTok Permissions:</strong> You can revoke Silicon Verdict’s authorization at any time by navigating to your TikTok account settings: <em>Settings and privacy &rarr; Security &rarr; Manage app permissions</em> and removing Silicon Verdict.</li>
+<li><strong>Revoking Google / YouTube Permissions:</strong> You can manage or revoke access via the <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">Google Security Permissions page</a>.</li>
+<li><strong>Data Deletion Requests:</strong> If you wish to confirm the deletion of any local authentication tokens or session cache, you may contact us at <code>imnotchego@gmail.com</code>, and all local tokens will be immediately purged within 24 hours.</li>
+</ul>
+        </section>
+        <section class="sec rv" id="s6">
+          <div class="sec-head"><div class="num">06</div><h2>Children's Privacy</h2></div>
+<p>Our application and content are intended for general PC hardware enthusiasts and developers. We do not knowingly solicit or collect information from children under the age of 13 (or under 16 in the European Economic Area).</p>
+        </section>
+        <section class="sec rv" id="s7">
+          <div class="sec-head"><div class="num">07</div><h2>Security Safeguards</h2></div>
+<p>All API interactions with TikTok and YouTube are transmitted exclusively through modern, secure, encrypted channels utilizing <strong>Transport Layer Security (HTTPS / TLS 1.3)</strong>.</p>
+        </section>
+        <section class="sec rv" id="s8">
+          <div class="sec-head"><div class="num">08</div><h2>Changes to this Privacy Policy</h2></div>
+<p>We may update this Privacy Policy from time to time to maintain alignment with TikTok for Developers guidelines or legal requirements. Any modifications will be posted directly to this URL with an updated "Last Updated" timestamp.</p>
+        </section>
+        <section class="sec rv" id="s9">
+          <div class="sec-head"><div class="num">09</div><h2>Contact Us</h2></div>
+<p>If you have any questions or data protection inquiries regarding this Privacy Policy, please contact our team:</p><div class="contact"><a href="mailto:imnotchego@gmail.com"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg>imnotchego@gmail.com</a><a href="https://youtube.com/@SiliconVerdict" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M22 8s-.2-1.6-.9-2.3c-.8-.9-1.8-.9-2.2-1C16.700 4.500 12 4.500 12 4.500s-4.700 0-6.900.2c-.4.1-1.400.1-2.200 1C2.200 6.400 2 8 2 8s-.2 1.900-.2 3.800v1.800C1.800 15.500 2 17.400 2 17.400s.2 1.600.9 2.300c.8.900 1.900.9 2.400 1C7 20.900 12 21 12 21s4.700 0 6.900-.3c.4-.1 1.400-.1 2.200-1 .7-.7.9-2.300.9-2.300s.2-1.900.2-3.800v-1.800C22.200 9.900 22 8 22 8z"/><path d="M10 9l5 3-5 3z"/></svg>@SiliconVerdict</a></div>
+        </section>
+        <div class="other rv"><a class="btn btn-s" href="index.html">&larr; Back to portal</a><a class="btn btn-s" href="terms.html">Terms of Service &rarr;</a></div>
       </div>
     </div>
   </main>
-
-  <!-- Footer -->
   <footer>
-    <div class="container footer-content">
-      <div>
-        <p>&copy; 2026 Silicon Verdict. All rights reserved.</p>
-        <p style="font-size: 0.8rem; margin-top: 4px;">Independent hardware benchmark & microarchitecture analysis pipeline.</p>
-      </div>
-      <ul class="footer-links">
-        <li><a href="index.html">Overview</a></li>
+    <div class="container foot">
+      <div>&copy; 2026 Silicon Verdict. All rights reserved.<br><small>Independent hardware benchmark &amp; microarchitecture analysis pipeline.</small></div>
+      <ul>
+        <li><a href="index.html">Portal</a></li>
         <li><a href="terms.html">Terms of Service</a></li>
         <li><a href="privacy.html">Privacy Policy</a></li>
+        <li><a href="mailto:imnotchego@gmail.com">Contact</a></li>
         <li><a href="https://www.tiktok.com/@siliconverdict" target="_blank" rel="noopener">TikTok</a></li>
+        <li><a href="https://youtube.com/@SiliconVerdict" target="_blank" rel="noopener">YouTube</a></li>
       </ul>
     </div>
   </footer>
-
+  <script src="site.js"></script>
 </body>
 </html>

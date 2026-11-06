@@ -3,379 +3,103 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="tiktok-developers-site-verification" content="n8OqT5tqWbauLtFIfnNpcM0yxXqejDYc">
   <title>Terms of Service — Silicon Verdict</title>
-  <meta name="description" content="Terms of Service for Silicon Verdict hardware telemetry automation and content publication platform.">
+  <meta name="description" content="Silicon Verdict Terms of Service for the website, content channels and automation services.">
+  <meta name="theme-color" content="#05080F">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23080D18%22/><path d=%22M30 30h40v40H30z%22 fill=%22none%22 stroke=%22%2300F2FF%22 stroke-width=%228%22/><circle cx=%2250%22 cy=%2250%22 r=%2210%22 fill=%22%2300F2FF%22/></svg>">
-  <style>
-    :root {
-      --bg-dark: #070B14;
-      --bg-card: rgba(13, 22, 40, 0.75);
-      --border-cyan: rgba(0, 242, 255, 0.22);
-      --border-subtle: rgba(255, 255, 255, 0.08);
-      --accent-cyan: #00F2FF;
-      --accent-blue: #0071E3;
-      --text-main: #F8FAFC;
-      --text-muted: #94A3B8;
-      --text-dim: #64748B;
-      --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Segoe UI", Roboto, sans-serif;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: var(--font-stack);
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      line-height: 1.7;
-      background-image: 
-        radial-gradient(circle at 10% 10%, rgba(0, 113, 227, 0.12) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(0, 242, 255, 0.09) 0%, transparent 45%);
-      background-attachment: fixed;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    /* Navigation */
-    header {
-      border-bottom: 1px solid var(--border-subtle);
-      backdrop-filter: blur(20px);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(7, 11, 20, 0.85);
-    }
-
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 72px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: var(--text-main);
-      font-weight: 700;
-      font-size: 1.25rem;
-      letter-spacing: -0.02em;
-    }
-
-    .brand svg {
-      width: 32px;
-      height: 32px;
-    }
-
-    .brand-accent {
-      color: var(--accent-cyan);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 24px;
-      align-items: center;
-      list-style: none;
-    }
-
-    .nav-links a {
-      text-decoration: none;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      font-weight: 500;
-      transition: color 0.2s ease;
-    }
-
-    .nav-links a:hover,
-    .nav-links a.active {
-      color: var(--accent-cyan);
-    }
-
-    /* Legal Content */
-    .legal-content {
-      padding: 64px 0 96px;
-    }
-
-    .legal-header {
-      margin-bottom: 40px;
-      border-bottom: 1px solid var(--border-subtle);
-      padding-bottom: 24px;
-    }
-
-    .legal-header h1 {
-      font-size: 2.75rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      margin-bottom: 8px;
-    }
-
-    .effective-date {
-      color: var(--accent-cyan);
-      font-size: 0.95rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .legal-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-cyan);
-      border-radius: 18px;
-      padding: 40px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    }
-
-    .legal-section {
-      margin-bottom: 36px;
-    }
-
-    .legal-section:last-child {
-      margin-bottom: 0;
-    }
-
-    .legal-section h2 {
-      font-size: 1.45rem;
-      font-weight: 700;
-      margin-bottom: 14px;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .legal-section h2::before {
-      content: "";
-      display: inline-block;
-      width: 4px;
-      height: 18px;
-      background: var(--accent-cyan);
-      border-radius: 2px;
-    }
-
-    .legal-section p {
-      color: var(--text-muted);
-      margin-bottom: 14px;
-      font-size: 1rem;
-    }
-
-    .legal-section ul {
-      margin-left: 24px;
-      margin-bottom: 14px;
-      color: var(--text-muted);
-    }
-
-    .legal-section li {
-      margin-bottom: 8px;
-    }
-
-    .legal-box {
-      background: rgba(0, 242, 255, 0.05);
-      border: 1px solid var(--border-cyan);
-      border-radius: 12px;
-      padding: 20px;
-      margin: 16px 0;
-    }
-
-    .legal-box p {
-      margin-bottom: 0;
-      color: var(--text-main);
-      font-size: 0.95rem;
-    }
-
-    /* Footer */
-    footer {
-      margin-top: auto;
-      border-top: 1px solid var(--border-subtle);
-      background: rgba(7, 11, 20, 0.95);
-      padding: 40px 0;
-      font-size: 0.9rem;
-      color: var(--text-dim);
-    }
-
-    .footer-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 20px;
-      list-style: none;
-    }
-
-    .footer-links a {
-      color: var(--text-muted);
-      text-decoration: none;
-      transition: color 0.15s ease;
-    }
-
-    .footer-links a:hover {
-      color: var(--accent-cyan);
-    }
-
-    @media (max-width: 768px) {
-      .legal-header h1 {
-        font-size: 2.1rem;
-      }
-      .legal-card {
-        padding: 24px;
-      }
-      .nav-links {
-        display: none;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-  <!-- Header -->
+  <div id="progress"></div>
+  <div class="bg"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
   <header>
     <div class="container">
       <nav>
-        <a href="index.html" class="brand">
-          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100" height="100" rx="20" fill="#0D1628" stroke="#00F2FF" stroke-width="4"/>
-            <rect x="25" y="25" width="50" height="50" rx="10" fill="#070B14" stroke="#00F2FF" stroke-width="3"/>
-            <circle cx="50" cy="50" r="12" fill="#00F2FF"/>
-            <path d="M10 50h15M75 50h15M50 10v15M50 75v15" stroke="#00F2FF" stroke-width="3" stroke-linecap="round"/>
-          </svg>
-          <span>SILICON <span class="brand-accent">VERDICT</span></span>
-        </a>
+        <a href="index.html" class="brand"><svg viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00F2FF"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="#0B1220"/><path d="M28 28h44v44H28z" fill="none" stroke="url(#g)" stroke-width="7"/><path d="M40 16v12M60 16v12M40 72v12M60 72v12M16 40h12M16 60h12M72 40h12M72 60h12" stroke="#00F2FF" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="50" r="9" fill="#00F2FF"/></svg><span>Silicon<b>Verdict</b></span></a>
         <ul class="nav-links">
-          <li><a href="index.html">Overview</a></li>
-          <li><a href="terms.html" class="active">Terms of Service</a></li>
-          <li><a href="privacy.html">Privacy Policy</a></li>
-          <li><a href="https://youtube.com/@SiliconVerdict" target="_blank" rel="noopener">YouTube</a></li>
+          <li><a href="index.html">Portal</a></li>
+          <li><a href="terms.html" class=active>Terms</a></li>
+          <li><a href="privacy.html">Privacy</a></li>
         </ul>
       </nav>
     </div>
   </header>
-
-  <!-- Legal Body -->
-  <main class="container legal-content">
-    <div class="legal-header">
-      <div class="effective-date">Last Updated: March 2026</div>
-      <h1>Terms of Service</h1>
-      <p style="color: var(--text-muted);">Please read these Terms of Service carefully before utilizing the Silicon Verdict application or reviewing its published content.</p>
-    </div>
-
-    <div class="legal-card">
-      <div class="legal-section">
-        <h2>1. Acceptance of Terms</h2>
-        <p>
-          By accessing or interacting with the <strong>Silicon Verdict</strong> website, content channels, or internal automation services (collectively, the "Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you may not access or use our Service.
-        </p>
+  <main class="container">
+    <section class="hero">
+      <div class="hero-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg></div>
+      <h1><span class="grad">Terms of Service</span></h1>
+      <p class="lead">Please read these Terms of Service carefully before utilizing the Silicon Verdict application or reviewing its published content.</p>
+      <div class="meta-row">
+        <span class="chip"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Last updated: March 2026</span>
+        <span class="chip"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>~3 min read</span>
+        <span class="chip"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg>imnotchego@gmail.com</span>
       </div>
-
-      <div class="legal-section">
-        <h2>2. Description of Application and Platform</h2>
-        <p>
-          Silicon Verdict is an internal software platform and technical publication pipeline developed to conduct empirical PC hardware benchmarks, analyze frametime variance (1% and 0.1% Lows), and produce automated, high-fidelity short-form video content.
-        </p>
-        <div class="legal-box">
-          <p>
-            <strong>Developer Application Notice:</strong> Silicon Verdict functions as a developer application and internal automation workflow. The application does not offer multi-tenant consumer SaaS accounts, public user registration, or commercial data processing services to third-party end users.
-          </p>
-        </div>
-      </div>
-
-      <div class="legal-section">
-        <h2>3. Third-Party Platform Integrations (TikTok & YouTube)</h2>
-        <p>
-          The Silicon Verdict automation engine interfaces with third-party developer APIs to manage video uploads, including:
-        </p>
-        <ul>
-          <li><strong>TikTok Content Posting API v2:</strong> Used exclusively to publish original hardware benchmark videos to the official Silicon Verdict TikTok account (<code>@siliconverdict</code>).</li>
-          <li><strong>YouTube Data API v3:</strong> Used to manage and publish vertical video Shorts to the official Silicon Verdict YouTube channel.</li>
-        </ul>
-        <p>
-          Your interaction with any published content on TikTok or YouTube is additionally subject to the respective terms of service of each platform (<a href="https://www.tiktok.com/legal/terms-of-service" target="_blank" rel="noopener" style="color: var(--accent-cyan);">TikTok Terms of Service</a> and <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener" style="color: var(--accent-cyan);">YouTube Terms of Service</a>).
-        </p>
-      </div>
-
-      <div class="legal-section">
-        <h2>4. Intellectual Property Rights</h2>
-        <p>
-          All benchmark methodologies, custom rendering engines (including Apple Liquid Glass compositing shaders and telemetry layouts), scripts, logos, visual graphics, and produced media are the exclusive property of Silicon Verdict.
-        </p>
-        <p>
-          All referenced hardware trademarks, brand names, and game titles (e.g., AMD, NVIDIA, Intel, Cyberpunk 2077, Starfield) remain the exclusive intellectual property of their respective copyright and trademark owners. They are cited purely for empirical comparative benchmarking, identification, and nominative fair use.
-        </p>
-      </div>
-
-      <div class="legal-section">
-        <h2>5. Prohibited Uses</h2>
-        <p>You agree not to:</p>
-        <ul>
-          <li>Interfere with, intercept, or disrupt the operation of the Silicon Verdict infrastructure or third-party API integrations.</li>
-          <li>Reverse engineer, decompile, or attempt to extract source code or proprietary API keys associated with this platform.</li>
-          <li>Misrepresent data, scrape benchmarks for unauthorized commercial syndication, or falsely claim affiliation with Silicon Verdict.</li>
-        </ul>
-      </div>
-
-      <div class="legal-section">
-        <h2>6. Disclaimer of Warranties & Limitation of Liability</h2>
-        <p>
-          All benchmark data, telemetry curves, and hardware recommendations are provided on an <strong>"AS IS"</strong> and <strong>"AS AVAILABLE"</strong> basis for informational, educational, and journalistic purposes.
-        </p>
-        <p>
-          Silicon Verdict does not guarantee identical hardware performance in any third-party computing environment, as framerates vary based on silicon lottery, cooling configurations, driver versions, and background software. In no event shall Silicon Verdict or its developers be liable for any hardware damage, data loss, or financial loss resulting from overclocking, undervolting, or component purchases.
-        </p>
-      </div>
-
-      <div class="legal-section">
-        <h2>7. Modifications to Terms</h2>
-        <p>
-          We reserve the right to revise or replace these Terms at any time. Changes will take effect immediately upon posting to this URL with an updated effective date. Continued use of our platform constitutes acceptance of revised terms.
-        </p>
-      </div>
-
-      <div class="legal-section">
-        <h2>8. Contact Information</h2>
-        <p>
-          If you have any questions or inquiries regarding these Terms of Service, please contact the developer team at:
-        </p>
-        <p style="color: var(--accent-cyan); font-weight: 600;">
-          Email: imnotchego@gmail.com<br>
-          Official Channel: @SiliconVerdict
-        </p>
+    </section>
+    <div class="legal">
+      <aside class="toc"><h4>On this page</h4><ol><li><a href="#s1"><i>01</i>Acceptance of Terms</a></li><li><a href="#s2"><i>02</i>Description of Application and Platform</a></li><li><a href="#s3"><i>03</i>Third-Party Platform Integrations (TikTok &amp; YouTube)</a></li><li><a href="#s4"><i>04</i>Intellectual Property Rights</a></li><li><a href="#s5"><i>05</i>Prohibited Uses</a></li><li><a href="#s6"><i>06</i>Disclaimer of Warranties &amp; Limitation of Liability</a></li><li><a href="#s7"><i>07</i>Modifications to Terms</a></li><li><a href="#s8"><i>08</i>Contact Information</a></li></ol></aside>
+      <div class="sections">
+        <section class="sec rv" id="s1">
+          <div class="sec-head"><div class="num">01</div><h2>Acceptance of Terms</h2></div>
+<p>By accessing or interacting with the <strong>Silicon Verdict</strong> website, content channels, or internal automation services (collectively, the "Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you may not access or use our Service.</p>
+        </section>
+        <section class="sec rv" id="s2">
+          <div class="sec-head"><div class="num">02</div><h2>Description of Application and Platform</h2></div>
+<p>Silicon Verdict is an internal software platform and technical publication pipeline developed to conduct empirical PC hardware benchmarks, analyze frametime variance (1% and 0.1% Lows), and produce automated, high-fidelity short-form video content.</p>
+<div class="callout"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><p><strong>Developer Application Notice:</strong> Silicon Verdict functions as a developer application and internal automation workflow. The application does not offer multi-tenant consumer SaaS accounts, public user registration, or commercial data processing services to third-party end users.</p></div>
+        </section>
+        <section class="sec rv" id="s3">
+          <div class="sec-head"><div class="num">03</div><h2>Third-Party Platform Integrations (TikTok &amp; YouTube)</h2></div>
+<p>The Silicon Verdict automation engine interfaces with third-party developer APIs to manage video uploads, including:</p>
+<ul>
+<li><strong>TikTok Content Posting API v2:</strong> Used exclusively to publish original hardware benchmark videos to the official Silicon Verdict TikTok account (<code>@siliconverdict</code>).</li>
+<li><strong>YouTube Data API v3:</strong> Used to manage and publish vertical video Shorts to the official Silicon Verdict YouTube channel.</li>
+</ul>
+<p>Your interaction with any published content on TikTok or YouTube is additionally subject to the respective terms of service of each platform (<a href="https://www.tiktok.com/legal/terms-of-service" target="_blank" rel="noopener">TikTok Terms of Service</a> and <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms of Service</a>).</p>
+        </section>
+        <section class="sec rv" id="s4">
+          <div class="sec-head"><div class="num">04</div><h2>Intellectual Property Rights</h2></div>
+<p>All benchmark methodologies, custom rendering engines (including Apple Liquid Glass compositing shaders and telemetry layouts), scripts, logos, visual graphics, and produced media are the exclusive property of Silicon Verdict.</p>
+<p>All referenced hardware trademarks, brand names, and game titles (e.g., AMD, NVIDIA, Intel, Cyberpunk 2077, Starfield) remain the exclusive intellectual property of their respective copyright and trademark owners. They are cited purely for empirical comparative benchmarking, identification, and nominative fair use.</p>
+        </section>
+        <section class="sec rv" id="s5">
+          <div class="sec-head"><div class="num">05</div><h2>Prohibited Uses</h2></div>
+<p>You agree not to:</p>
+<ul class="no">
+<li>Interfere with, intercept, or disrupt the operation of the Silicon Verdict infrastructure or third-party API integrations.</li>
+<li>Reverse engineer, decompile, or attempt to extract source code or proprietary API keys associated with this platform.</li>
+<li>Misrepresent data, scrape benchmarks for unauthorized commercial syndication, or falsely claim affiliation with Silicon Verdict.</li>
+</ul>
+        </section>
+        <section class="sec rv" id="s6">
+          <div class="sec-head"><div class="num">06</div><h2>Disclaimer of Warranties &amp; Limitation of Liability</h2></div>
+<p>All benchmark data, telemetry curves, and hardware recommendations are provided on an <strong>"AS IS"</strong> and <strong>"AS AVAILABLE"</strong> basis for informational, educational, and journalistic purposes.</p>
+<p>Silicon Verdict does not guarantee identical hardware performance in any third-party computing environment, as framerates vary based on silicon lottery, cooling configurations, driver versions, and background software. In no event shall Silicon Verdict or its developers be liable for any hardware damage, data loss, or financial loss resulting from overclocking, undervolting, or component purchases.</p>
+        </section>
+        <section class="sec rv" id="s7">
+          <div class="sec-head"><div class="num">07</div><h2>Modifications to Terms</h2></div>
+<p>We reserve the right to revise or replace these Terms at any time. Changes will take effect immediately upon posting to this URL with an updated effective date. Continued use of our platform constitutes acceptance of revised terms.</p>
+        </section>
+        <section class="sec rv" id="s8">
+          <div class="sec-head"><div class="num">08</div><h2>Contact Information</h2></div>
+<p>If you have any questions or inquiries regarding these Terms of Service, please contact the developer team at:</p><div class="contact"><a href="mailto:imnotchego@gmail.com"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg>imnotchego@gmail.com</a><a href="https://youtube.com/@SiliconVerdict" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M22 8s-.2-1.6-.9-2.3c-.8-.9-1.8-.9-2.2-1C16.700 4.500 12 4.500 12 4.500s-4.700 0-6.900.2c-.4.1-1.400.1-2.200 1C2.200 6.400 2 8 2 8s-.2 1.900-.2 3.800v1.800C1.800 15.500 2 17.400 2 17.400s.2 1.600.9 2.300c.8.900 1.900.9 2.400 1C7 20.900 12 21 12 21s4.700 0 6.900-.3c.4-.1 1.400-.1 2.200-1 .7-.7.9-2.300.9-2.300s.2-1.900.2-3.800v-1.800C22.200 9.900 22 8 22 8z"/><path d="M10 9l5 3-5 3z"/></svg>@SiliconVerdict</a></div>
+        </section>
+        <div class="other rv"><a class="btn btn-s" href="index.html">&larr; Back to portal</a><a class="btn btn-s" href="privacy.html">Privacy Policy &rarr;</a></div>
       </div>
     </div>
   </main>
-
-  <!-- Footer -->
   <footer>
-    <div class="container footer-content">
-      <div>
-        <p>&copy; 2026 Silicon Verdict. All rights reserved.</p>
-        <p style="font-size: 0.8rem; margin-top: 4px;">Independent hardware benchmark & microarchitecture analysis pipeline.</p>
-      </div>
-      <ul class="footer-links">
-        <li><a href="index.html">Overview</a></li>
+    <div class="container foot">
+      <div>&copy; 2026 Silicon Verdict. All rights reserved.<br><small>Independent hardware benchmark &amp; microarchitecture analysis pipeline.</small></div>
+      <ul>
+        <li><a href="index.html">Portal</a></li>
         <li><a href="terms.html">Terms of Service</a></li>
         <li><a href="privacy.html">Privacy Policy</a></li>
+        <li><a href="mailto:imnotchego@gmail.com">Contact</a></li>
         <li><a href="https://www.tiktok.com/@siliconverdict" target="_blank" rel="noopener">TikTok</a></li>
+        <li><a href="https://youtube.com/@SiliconVerdict" target="_blank" rel="noopener">YouTube</a></li>
       </ul>
     </div>
   </footer>
-
+  <script src="site.js"></script>
 </body>
 </html>
