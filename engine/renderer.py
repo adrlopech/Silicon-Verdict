@@ -590,7 +590,6 @@ class VideoRenderer:
     ) -> Path:
         """Produces a 9:16 vertical Short (1080x1920) with synchronized subtitles & Apple Glass UI."""
         output_short = self.shorts_dir / f"short_{scene.scene_id:03d}.mp4"
-        duration_str = f"{audio.duration_seconds:.3f}"
         fps = settings.VIDEO_FPS
 
         # 1. Generate kinetic word-by-word synchronized subtitles
