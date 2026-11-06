@@ -8,72 +8,347 @@
   <meta property="tiktok-developers-site-verification" content="n8OqT5tqWbauLtFIfnNpcM0yxXqejDYc">
   <meta property="tiktok-developers-site-verification" content="tiktok-developers-site-verification=n8OqT5tqWbauLtFIfnNpcM0yxXqejDYc">
   <title>Silicon Verdict — Autonomous Hardware Benchmarks & Telemetry</title>
-  <meta name="description" content="Silicon Verdict is an automated hardware benchmark analytics and video production platform delivering empirical PC gaming telemetry, frametime variance, and microarchitecture analysis.">
+  <meta name="description" content="Silicon Verdict is an automated vertical-video studio for PC hardware, gaming tech and computing curiosities: Gemini scripts, ElevenLabs narration, Remotion rendering, automatic QA and YouTube Shorts / TikTok publishing.">
   <meta name="theme-color" content="#05080F">
+  <meta property="og:title" content="Silicon Verdict — Automated vertical-video studio">
+  <meta property="og:description" content="From topic to published Short: script, fact-check, voice, render, QA and upload, fully automated.">
+  <meta property="og:type" content="website">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23080D18%22/><path d=%22M30 30h40v40H30z%22 fill=%22none%22 stroke=%22%2300F2FF%22 stroke-width=%228%22/><circle cx=%2250%22 cy=%2250%22 r=%2210%22 fill=%22%2300F2FF%22/></svg>">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="portal.css">
 </head>
-<body>
+<body class="pt">
   <div id="progress"></div>
   <div class="bg"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+  <nav class="dots" aria-label="Sections"><a href="#top" data-l="Top" aria-label="Top"></a><a href="#about" data-l="Overview" aria-label="Overview"></a><a href="#pipeline" data-l="Pipeline" aria-label="Pipeline"></a><a href="#series" data-l="Series" aria-label="Series"></a><a href="#formats" data-l="Formats" aria-label="Formats"></a><a href="#cursor" data-l="Cursor" aria-label="Cursor"></a><a href="#games" data-l="Games" aria-label="Games"></a><a href="#gates" data-l="Quality" aria-label="Quality"></a><a href="#minecraft" data-l="Minecraft" aria-label="Minecraft"></a><a href="#llm" data-l="LLM layer" aria-label="LLM layer"></a><a href="#stack" data-l="Stack" aria-label="Stack"></a><a href="#brand" data-l="Brand" aria-label="Brand"></a><a href="#map" data-l="Repo map" aria-label="Repo map"></a><a href="#start" data-l="Quick start" aria-label="Quick start"></a><a href="#compliance" data-l="Compliance" aria-label="Compliance"></a></nav>
+  <div class="totop" aria-label="Back to top"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
+
   <header>
     <div class="container">
       <nav>
-        <a href="index.html" class="brand"><svg viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00F2FF"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="#0B1220"/><path d="M28 28h44v44H28z" fill="none" stroke="url(#g)" stroke-width="7"/><path d="M40 16v12M60 16v12M40 72v12M60 72v12M16 40h12M16 60h12M72 40h12M72 60h12" stroke="#00F2FF" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="50" r="9" fill="#00F2FF"/></svg><span>Silicon<b>Verdict</b></span></a>
-        <ul class="nav-links">
-          <li><a href="index.html" class=active>Portal</a></li>
+        <a href="#top" class="brand"><svg viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00F2FF"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="#0B1220"/><path d="M28 28h44v44H28z" fill="none" stroke="url(#g)" stroke-width="7"/><path d="M40 16v12M60 16v12M40 72v12M60 72v12M16 40h12M16 60h12M72 40h12M72 60h12" stroke="#00F2FF" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="50" r="9" fill="#00F2FF"/></svg><span>Silicon<b>Verdict</b></span></a>
+        <ul class="nav-links long">
+          <li><a href="#pipeline">Pipeline</a></li><li><a href="#series">Series</a></li><li><a href="#formats">Formats</a></li><li><a href="#games">Games</a></li><li><a href="#brand">Brand</a></li><li><a href="#compliance">Compliance</a></li>
           <li><a href="terms.html">Terms</a></li>
           <li><a href="privacy.html">Privacy</a></li>
         </ul>
+        <button class="burger" aria-label="Menu">☰</button>
       </nav>
     </div>
   </header>
-  <main class="container">
-    <section class="hero">
-      <div class="pill"><span class="dot"></span>Automated Hardware Telemetry Platform</div>
-      <h1>Empirical Silicon Benchmarks.<br><span class="grad">Zero Bias. Absolute Precision.</span></h1>
-      <p class="lead">Silicon Verdict is an autonomous computing benchmark analysis platform. We generate empirical PC hardware benchmarks, 1% Low frametime telemetry, and microarchitectural comparisons formatted for YouTube Shorts and TikTok.</p>
-      <div class="btns">
-        <a href="terms.html" class="btn btn-p"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>Terms of Service</a>
-        <a href="privacy.html" class="btn btn-s"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Privacy Policy</a>
+
+  <main>
+  <!-- HERO -->
+  <section id="top" class="container">
+    <div class="hero2">
+      <div>
+        <div class="pill"><span class="dot"></span>Automated vertical-video studio</div>
+        <h1>From a topic to a <span class="grad">published Short</span>. Fully automated.</h1>
+        <p class="lead">Silicon Verdict is the production pipeline behind the <strong>@siliconverdict</strong> channels. One command picks a topic, writes and fact-checks the script, narrates it, renders a 1080×1920 video, runs quality gates and publishes to YouTube Shorts, with TikTok-ready files alongside.</p>
+        <div class="btns">
+          <a href="#pipeline" class="btn btn-p"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Explore the pipeline</a>
+          <a href="https://www.youtube.com/@SiliconVerdictHQ" target="_blank" rel="noopener" class="btn btn-s"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M7 3v18M17 3v18M2 8h5M2 16h5M17 8h5M17 16h5"/></svg>Watch the channel</a>
+        </div>
+        <div class="scrollhint"><div class="mouse"></div>scroll to explore</div>
       </div>
-    </section>
-
-    <section class="stats">
-      <div class="stat rv"><strong>1%</strong><span>Low frametime telemetry</span></div>
-      <div class="stat rv"><strong>60 FPS</strong><span>Custom compositor</span></div>
-      <div class="stat rv"><strong>1080×1920</strong><span>Safe-zone compliant</span></div>
-      <div class="stat rv"><strong>0</strong><span>User data collected</span></div>
-    </section>
-
-    <section class="features">
-      <div class="sec-title rv"><h2>Engineering Architecture</h2><p>Built for automated telemetry processing and high-fidelity video rendering</p></div>
-      <div class="grid3">
-        <div class="card rv"><div class="ico"><svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></div><h3>PresentMon 1% Lows</h3><p>Analyzing true micro-stutter anomalies, frametime percentiles, and memory bus saturation in modern PC gaming engines under 1440p and 4K Ultra workloads.</p></div>
-        <div class="card rv"><div class="ico"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div><h3>Liquid Glass Graphics</h3><p>Custom 60 FPS compositor generating Apple Liquid Glass visual cards with dynamic specular lighting, zero-collision label wrapping, and defensive safe-zone compliance.</p></div>
-        <div class="card rv"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><h3>Content API Integration</h3><p>Automated deployment via TikTok Content Posting API v2 and YouTube Data API v3, managing upload workflows with strict duration calibration and private staging.</p></div>
+      <div class="phone-wrap">
+        <div style="position:relative">
+          <div class="phone">
+            <div class="screen">
+              <div class="notch"></div>
+              <div class="sz-top">TOP 12% · PLATFORM UI</div>
+              <div class="slide-area">
+                <div class="slide"><small>Did you know</small>Your SSD <span class="hl">forgets</span><br>on purpose</div>
+                <div class="slide"><small>Counter</small><span class="big">3,200</span><br>MB/s</div>
+                <div class="slide"><small>Bars</small>Cache vs RAM<div class="bars"><i></i><i></i><i></i></div></div>
+                <div class="slide"><small>Verdict</small><span style="color:var(--green)">FACT</span></div>
+              </div>
+              <div class="sz-bot">BOTTOM 20% · PLATFORM UI</div>
+            </div>
+          </div>
+          <div class="floatchip fc1">Gemini script</div>
+          <div class="floatchip fc2">ElevenLabs voice</div>
+          <div class="floatchip fc3">Remotion render</div>
+        </div>
+        <button id="sztoggle" class="tab" style="margin-top:22px">Hide safe zones</button>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="notice rv">
-      <h3>Developer &amp; API Application Notice</h3>
-      <p>Silicon Verdict operates as an internal developer automation system designed to research and publish technical PC hardware comparisons. The application accesses the TikTok Content Posting API strictly on behalf of the channel administrator to post original video files generated by our telemetry rendering pipeline.</p>
-      <div class="tags"><span class="tag">TikTok Content Posting API v2</span><span class="tag">YouTube Data API v3</span><span class="tag">Zero User Data Collection</span><span class="tag">Safe Zone Compliant (1080x1920)</span></div>
-    </section>
+  <!-- STATS -->
+  <section class="blk tight container">
+    <div class="statrow">
+      <div class="stat2 rv"><b data-count="6">0</b><span>content series</span></div>
+      <div class="stat2 rv d1"><b data-count="9">0</b><span>Motion Graphics formats</span></div>
+      <div class="stat2 rv d2"><b data-count="108">0</b><span>games in the roster</span></div>
+      <div class="stat2 rv d3"><b data-count="14">0</b><span>scene types</span></div>
+      <div class="stat2 rv"><b data-count="18">0</b><span>scene effects</span></div>
+      <div class="stat2 rv d1"><b data-count="30">0</b><span>frames per second</span></div>
+      <div class="stat2 rv d2"><b>62–90<small style="font-size:1.1rem"> s</small></b><span>video length (monetisable)</span></div>
+      <div class="stat2 rv d3"><b>0</b><span>user data collected</span></div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="blk container">
+    <div class="split">
+      <div class="rv l">
+        <div class="eyebrow">What it is</div>
+        <h2 class="h2">A one-person studio that never sleeps</h2>
+        <p class="sub">Silicon Verdict is a single-owner automation suite: no public accounts, no multi-tenant service, no third-party data processing. It exists to publish original, accurate, narrated explainers about PC hardware, gaming tech and everyday computing curiosities, at a pace a human editor cannot match.</p>
+        <div class="checks">
+          <div><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><p><strong>Accuracy first.</strong> Every script goes through a fact-check gate; game claims must be backed by verbatim quotes from a source dossier.</p></div>
+          <div><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><p><strong>Always on-brand.</strong> Obsidian background, blue glow, electric-cyan accents. The generator can never pick another accent colour.</p></div>
+          <div><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><p><strong>Safe by construction.</strong> A video that fails QA stays local and is never uploaded.</p></div>
+        </div>
+      </div>
+      <div class="rv r">
+        <div class="orbit">
+          <div class="ring r2"></div><div class="ring r1"></div>
+          <div class="core">SILICON<br>VERDICT</div>
+          <div class="node" style="left:50%;top:0"><span><svg viewBox="0 0 24 24"><path d="M9 3a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 3 5h1V3z"/><path d="M15 3a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-3 5h-1V3z"/></svg></span><em>Gemini</em></div>
+          <div class="node" style="left:93%;top:28%"><svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg><em>ElevenLabs</em></div>
+          <div class="node" style="left:80%;top:82%"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M7 3v18M17 3v18M2 8h5M2 16h5M17 8h5M17 16h5"/></svg><em>Remotion</em></div>
+          <div class="node" style="left:20%;top:82%"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10H3z"/><path d="M9 21v-6h6v6"/></svg><em>QA gate</em></div>
+          <div class="node" style="left:7%;top:28%"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg><em>Upload</em></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PIPELINE -->
+  <section id="pipeline" class="blk container">
+    <div class="head c rv"><div class="eyebrow">How a video is made</div><h2 class="h2">Seven stages. Zero manual steps.</h2><p class="sub">Scroll through the life of a video, from the first idea to the published Short.</p></div>
+    <div class="flow rv"><span class="k">topic</span><i>→</i><span>Gemini script</span><i>→</i><span>fact-check</span><i>→</i><span>ElevenLabs voice</span><i>→</i><span>Remotion render</span><i>→</i><span>QA gate</span><i>→</i><span class="k">YouTube / TikTok</span></div>
+    <div class="tl">
+      <div class="tl-line"><div class="tl-fill"></div></div>
+      <div class="step"><div class="pin">01</div><div class="box"><h3>Pick the topic</h3><span class="tagline">core/topic_engine.py · data/history.db</span><p>The topic engine chooses what to make next. In <strong>Automatic</strong> mode the AI picks the category with the longest rest using the history database and retention analytics. Game videos pick a game from the roster that has not appeared in the last 14 days and still has unused footage.</p><div class="pills"><span class="pl c">history.db</span><span class="pl c">game_registry</span><span class="pl">retention analytics</span><span class="pl">14-day blacklist</span></div></div></div>
+      <div class="step"><div class="pin">02</div><div class="box"><h3>Write the script</h3><span class="tagline">services/motion_generator.py · services/gemini_client.py</span><p>Gemini returns <strong>structured JSON</strong> through a resilient client: a model chain, quota-aware cooldowns and validators with retries. A language gate rejects anything that is not English. Curiosity scripts are drawn from a pre-built <em>story bank</em> (SQLite) before asking the LLM; game scripts are written against the captions of the footage that is actually available.</p><div class="pills"><span class="pl c">13-19 scenes</span><span class="pl c">150-190 words</span><span class="pl">story bank</span><span class="pl">language gate</span><span class="pl">validators</span></div></div></div>
+      <div class="step"><div class="pin">03</div><div class="box"><h3>Fact-check gate</h3><span class="tagline">second pass · reviewer panel</span><p>A second model hunts for false technical claims, wrong figures, metaphors that change midway and misused phrases. It rewrites faulty lines and checks again. For game videos every claim-bearing scene carries a <strong>verbatim evidence quote</strong>, and code rejects any quote that is not really in the source dossier.</p><div class="pills"><span class="pl c">gpt-oss-120b reviewer</span><span class="pl">panel fallback</span><span class="pl">evidence quotes</span><span class="pl">auto-rewrite</span></div></div></div>
+      <div class="step"><div class="pin">04</div><div class="box"><h3>Narrate it</h3><span class="tagline">services/voice_synthesizer.py · ElevenLabs</span><p>One <strong>continuous ElevenLabs take</strong> with word-level timestamps, sliced per scene at the pause between two words, so there are no cuts mid-sentence. The voice decides how long each scene lasts. The mix gets a two-pass loudness normalisation over a quiet ambient bed and a soft whoosh per scene. A robotic local voice is never published.</p><div class="pills"><span class="pl c">word timestamps</span><span class="pl c">natural mode</span><span class="pl">2-pass loudness</span><span class="pl">ambient bed</span></div></div></div>
+      <div class="step"><div class="pin">05</div><div class="box"><h3>Render the video</h3><span class="tagline">remotion_studio · scripts/render_motion.mjs</span><p>A React composition, <code>MotionGraphic</code>, driven only by JSON props: kinetic typography, counters, code blocks, bars, curves, tier lists, timelines, game footage in the brand grade, a mouse-cursor character and scene effects. Rendered through <code>@remotion/renderer</code> at <strong>1080×1920, 30 fps, H.264</strong>; the render script refuses any other size.</p><div class="pills"><span class="pl c">React + Remotion</span><span class="pl c">1080×1920</span><span class="pl">safe-zone layouts</span><span class="pl">auto-fit text</span></div></div></div>
+      <div class="step"><div class="pin">06</div><div class="box"><h3>Quality gate</h3><span class="tagline">services/qa_inspector.py · ffmpeg</span><p>Duration (61-92 s), resolution, 48 kHz audio, peak level, dead air, word count and subtitle length are all verified with ffmpeg. <strong>Anything that fails stays local and is not uploaded.</strong> Game footage is only consumed once a finished video passes the checks.</p><div class="pills"><span class="pl c">61-92 s</span><span class="pl c">48 kHz</span><span class="pl">peak level</span><span class="pl">dead air</span><span class="pl">1080×1920</span></div></div></div>
+      <div class="step"><div class="pin">07</div><div class="box"><h3>Publish &amp; export</h3><span class="tagline">services/youtube.py · services/tiktok.py</span><p>Published to <strong>YouTube Shorts</strong> through the YouTube Data API v3. A TikTok-ready copy with optimised title, hashtags and structured metadata is exported to <code>output/tiktok/</code> for TikTok Studio. Each video gets its own folder named after its title, with files named by creation date-time, plus a cover image.</p><div class="pills"><span class="pl c">YouTube Data API v3</span><span class="pl c">TikTok Content Posting API v2</span><span class="pl">cover + metadata</span></div></div></div>
+    </div>
+  </section>
+
+  <!-- SERIES -->
+  <section id="series" class="blk container">
+    <div class="head c rv"><div class="eyebrow">Content</div><h2 class="h2">Six series, one engine</h2><p class="sub">Motion Graphics is the main series; hardware, everyday tech and gaming are formats of the same engine. Minecraft explainers run on their own.</p></div>
+    <div class="series">
+      <div class="card main rv"><div class="n">01</div><span class="badge">Main series</span><h3>Motion Graphics</h3><p>Narrated kinetic-typography explainers of 62-90 s: big words, one accent word in electric cyan, counters, code, bars and an outro. Always vertical, in English, in the channel palette. Two kinds: tech <em>curiosities</em> and <em>games</em> (an engineering fact told over real footage).</p><div class="cmd"><code>main.py --series motion --export-only</code></div></div>
+      <div class="card rv d1"><div class="n">02</div><div class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg></div><h3>Hardware Deep Dive</h3><p>Silicon, memory, storage, networking and engineering explained with mechanism and real figures. The mouse cursor only appears as an accent.</p><div class="cmd"><code>--motion-format hardware</code></div></div>
+      <div class="card rv d2"><div class="n">03</div><div class="ico"><svg viewBox="0 0 24 24"><path d="M5 3l14 7-6 2-2 6z"/></svg></div><h3>Everyday Tech</h3><p>Small everyday tech mysteries hosted by the <strong>mouse cursor</strong>, a character that uses the screen like a person: it clicks, selects text, drags list items, opens browser tabs and shows a loading ring.</p><div class="cmd"><code>--motion-format simple</code></div></div>
+      <div class="card rv"><div class="n">04</div><div class="ico"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="12" rx="5"/><path d="M7 11v4M5 13h4M16 12h.01M18 14h.01"/></svg></div><h3>Gaming</h3><p>A Motion game video. Banked game scripts go first, told over screenshots of the game and credited in the description; then source-grounded videos with real footage; a hardware video when neither is possible.</p><div class="cmd"><code>main.py --category 2</code></div></div>
+      <div class="card rv d1"><div class="n">05</div><div class="ico"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-15 6.700L3 16M3 12a9 9 0 0 1 15-6.700L21 8M21 3v5h-5M3 21v-5h5"/></svg></div><h3>Automatic</h3><p>The AI picks the category with the longest rest, using the history database and retention analytics, so the channel never repeats itself.</p><div class="cmd"><code>main.py --category 4</code></div></div>
+      <div class="card rv d2"><div class="n">06</div><div class="ico"><svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></div><h3>Minecraft explainers</h3><p>A computing concept acted out inside Minecraft (~64 s), narrated, always from a brand-new Gemini script and compiled by a director into animation, camera and sound.</p><div class="cmd"><code>main.py --series minecraft</code></div></div>
+    </div>
+  </section>
+
+  <!-- FORMATS -->
+  <section id="formats" class="blk container">
+    <div class="head c rv"><div class="eyebrow">Motion Graphics</div><h2 class="h2">Nine content formats</h2><p class="sub">Each format has its own scene types, prompt rules and validators. The same fact-check pass applies to every one.</p></div>
+    <div class="rv z">
+      <div class="tabs">
+        <button class="tab on" data-t="f1">Classic</button><button class="tab" data-t="f2">Myth</button><button class="tab" data-t="f3">Tier list</button><button class="tab" data-t="f4">What if</button><button class="tab" data-t="f5">Evolution</button><button class="tab" data-t="f6">Versus</button><button class="tab" data-t="f7">Easter egg</button><button class="tab" data-t="f8">Hardware</button><button class="tab" data-t="f9">Simple</button>
+      </div>
+      <div class="panel on" id="f1"><div><h3>Classic</h3><p>The default format. A tech or hardware idea told with big words, one cyan accent word, counters, code blocks, progress bars and curves, closing with an outro.</p><div class="pills"><span class="pl c">bigText</span><span class="pl c">textWithAccent</span><span class="pl c">counter</span><span class="pl c">codeBlock</span><span class="pl c">curve</span></div><div class="cmd"><code>--series motion --export-only</code></div></div><div class="mini"><div class="q">Your SSD <em>forgets</em><br>on purpose.</div></div></div>
+      <div class="panel" id="f2"><div><h3>Myth / Fact</h3><p>A claim appears on screen, then a stamp slams down: <strong>MYTH</strong>, <strong>FACT</strong> or <strong>PARTLY</strong>, followed by the one-line truth.</p><div class="pills"><span class="pl c">verdict</span><span class="pl">accentText = the truth</span></div><div class="cmd"><code>--motion-format myth</code></div></div><div class="mini"><div><div class="q" style="margin-bottom:22px">“More megapixels<br>= better photos”</div><div class="stamp">MYTH</div></div></div></div>
+      <div class="panel" id="f3"><div><h3>Tier list</h3><p>An S-to-F tier board that fills up item by item. Every scene repeats the board and adds one more entry, so the viewer watches the ranking build.</p><div class="pills"><span class="pl c">tier</span><span class="pl">items: "S|label"</span></div><div class="cmd"><code>--motion-format tier</code></div></div><div class="mini"><div class="tier"><div><b style="background:#FF6B6B">S</b><span></span></div><div><b style="background:#FFA94D">A</b><span></span></div><div><b style="background:#FFE066">B</b><span></span></div><div><b style="background:#69DB7C">C</b><span></span></div></div></div></div>
+      <div class="panel" id="f4"><div><h3>What if…</h3><p>A hypothetical about computing with escalating consequences, each scene raising the stakes of the last.</p><div class="pills"><span class="pl c">bigText</span><span class="pl c">counter</span><span class="pl c">flash</span></div><div class="cmd"><code>--motion-format whatif</code></div></div><div class="mini"><div class="q">What if every<br>CPU lost its<br><em>cache?</em></div></div></div>
+      <div class="panel" id="f5"><div><h3>Evolution</h3><p>Timelines and growth counters: how a technology changed over the years, with real figures.</p><div class="pills"><span class="pl c">timeline</span><span class="pl">items: "year|label"</span><span class="pl c">counter</span></div><div class="cmd"><code>--motion-format evolution</code></div></div><div class="mini"><div class="tline"><p><b>1971</b>Intel 4004</p><p><b>1993</b>Pentium</p><p><b>2006</b>Core 2 Duo</p><p><b>2024</b>Billions of transistors</p></div></div></div>
+      <div class="panel" id="f6"><div><h3>Versus</h3><p>Two contenders, three to five rounds of bars, a winner per round. A <code>winner</code> override handles lower-is-better metrics such as latency.</p><div class="pills"><span class="pl c">versus</span><span class="pl">left / right</span><span class="pl">leftValue / rightValue</span></div><div class="cmd"><code>--motion-format versus</code></div></div><div class="mini"><div class="vs"><div>NVMe · 7,000 MB/s<i class="a"></i></div><div>SATA · 550 MB/s<i class="b"></i></div></div></div></div>
+      <div class="panel" id="f7"><div><h3>Easter egg</h3><p>A game's hidden detail told over unused real footage. Always a game video, and it needs a game with unused footage and a source dossier.</p><div class="pills"><span class="pl c">footage</span><span class="pl">evidence quotes</span></div><div class="cmd"><code>--motion-format easter</code></div></div><div class="mini"><div class="photo"><i class="cr a"></i><i class="cr b"></i><i class="cr c"></i><i class="cr d"></i><b>GAME · FOOTAGE</b></div></div></div>
+      <div class="panel" id="f8"><div><h3>Hardware deep dive</h3><p>Silicon and engineering explained with mechanism and real figures. The cursor shows up only as an accent when it actually does something.</p><div class="pills"><span class="pl c">codeBlock</span><span class="pl c">progressBar</span><span class="pl c">curve</span></div><div class="cmd"><code>--motion-format hardware</code></div></div><div class="mini"><div><div class="chipfig"><i>CPU</i></div><div class="q" style="font-size:1.3rem">Inside the <em>die</em></div></div></div></div>
+      <div class="panel" id="f9"><div><h3>Simple</h3><p>An everyday tech mystery hosted by the cursor character: clicks, drags, tabs and a loading ring, all happening on the scene itself.</p><div class="pills"><span class="pl c">cursor</span><span class="pl c">tab</span><span class="pl c">toggle</span></div><div class="cmd"><code>--motion-format simple</code></div></div><div class="mini"><div><div class="q" style="font-size:1.4rem">Why does<br><em>Airplane Mode</em><br>kill Wi-Fi?</div></div></div></div>
+    </div>
+  </section>
+
+  <!-- CURSOR -->
+  <section id="cursor" class="blk container">
+    <div class="split">
+      <div class="rv l">
+        <div class="eyebrow">Signature element</div>
+        <h2 class="h2">A cursor that acts like a person</h2>
+        <p class="sub">The mouse cursor is a character of the whole Motion engine, used only when it does something. Any scene can carry a <code>cursor</code> action, and the cursor acts on what is really on screen: it measures the tagged elements of the scene.</p>
+        <div class="actions"><span class="act">click</span><span class="act">hover</span><span class="act">select</span><span class="act">drag</span><span class="act">busy</span><span class="act">tab</span><span class="act">toggle</span></div>
+        <div class="checks" style="margin-top:22px">
+          <div><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><p>The first scene may open a <strong>browser tab</strong> or a macOS-style <strong>Control Center</strong> panel with toggles.</p></div>
+          <div><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><p>Flip Airplane Mode and watch Wi-Fi and Bluetooth switch off, exactly like the real thing. <em>(Watch the demo.)</em></p></div>
+        </div>
+      </div>
+      <div class="rv r">
+        <div class="cur-stage">
+          <div class="cc-title">Control Center</div>
+          <div class="tgl air off"><div class="ti"><svg viewBox="0 0 24 24"><path d="M2 16l20-7-9 11-2-5-9 1z"/></svg></div><span>Airplane Mode</span><div class="sw"></div></div>
+          <div class="tgl wifi"><div class="ti"><svg viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 20h.01M2 9a15 15 0 0 1 20 0"/></svg></div><span>Wi-Fi</span><div class="sw"></div></div>
+          <div class="tgl bt"><div class="ti"><svg viewBox="0 0 24 24"><path d="M7 7l10 10-5 5V2l5 5L7 17"/></svg></div><span>Bluetooth</span><div class="sw"></div></div>
+          <div class="ripple"></div>
+          <div class="cur"><svg viewBox="0 0 24 24"><path d="M4 2l16 9-7 2-3 7z" fill="#fff" stroke="#05070C" stroke-width="1.500" stroke-linejoin="round"/></svg></div>
+        </div>
+      </div>
+    </div>
+    <div class="head c rv" style="margin:90px 0 0"><div class="eyebrow">Ambient effects</div><h2 class="h2" style="font-size:clamp(1.6rem,3.4vw,2.4rem)">Effects picked from what the narration names</h2><p class="sub">The big fly-bys appear once per video and no effect repeats within three scenes.</p></div>
+    <div class="fx rv">
+      <div><b>✈️</b>plane</div><div><b>🚀</b>rocket</div><div><b>🛰️</b>satellite</div><div><b>📡</b>waves</div><div><b>⚡</b>bolts</div><div><b>🔥</b>embers</div>
+      <div><b>❄️</b>snow</div><div><b>💧</b>drops</div><div><b>📦</b>packets</div><div><b>🪙</b>coins</div><div><b>🎚️</b>equalizer</div><div><b>📶</b>signal bars</div>
+      <div><b>🔔</b>notifications</div><div><b>🔋</b>battery fill</div><div><b>🕒</b>clock</div><div><b>🔒</b>padlock</div><div><b>🔍</b>magnifier</div><div><b>01</b>binary rain</div>
+    </div>
+  </section>
+
+  <!-- GAMES -->
+  <section id="games" class="blk container">
+    <div class="head c rv"><div class="eyebrow">Game videos</div><h2 class="h2">Real footage. Grounded facts.</h2><p class="sub">Game videos show an engineering fact over official footage, inside the channel look: blue/cyan grade, scan line, corner brackets and a game tag.</p></div>
+    <div class="gates">
+      <div class="gate rv l"><h3><span class="ico"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M7 3v18M17 3v18M2 8h5M2 16h5M17 8h5M17 16h5"/></svg></span>Footage rules</h3><ul><li>Official <strong>Steam screenshots</strong> and clips cut from <strong>official trailers</strong>.</li><li>A vision model describes every item once, so a footage scene shows what its narration mentions.</li><li>Each item is used in <strong>one video only</strong>, then deleted. Its key goes to a ledger, so it is never downloaded again.</li><li>A game stays blacklisted for <strong>14 days</strong> after it appears.</li><li>A game with fewer than 6 unused items is skipped until more are fetched. Near-black shots are never used.</li></ul></div>
+      <div class="gate rv r"><h3><span class="ico"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>Facts grounded in sources</h3><ul><li>Each game has a <strong>source dossier</strong>: Wikipedia sections on development, technology and design plus the Steam store description.</li><li>The script may only state facts its dossier supports.</li><li>At least 6 claim-bearing scenes carry a <strong>verbatim evidence quote</strong>; code rejects any quote not really in the dossier.</li><li>A counter or bar may only show a figure written in the dossier.</li><li>With no source text, the script turns conservative: no figures, no dates, no counters.</li></ul></div>
+    </div>
+    <div class="ledger rv"><div><b data-count="108">0</b><span>games in the roster</span></div><div><b data-count="65">0</b><span>from 2025</span></div><div><b data-count="28">0</b><span>from 2026</span></div><div><b data-count="15">0</b><span>classic games</span></div></div>
+  </section>
+
+  <!-- QUALITY -->
+  <section id="gates" class="blk container">
+    <div class="head c rv"><div class="eyebrow">Quality</div><h2 class="h2">Two gates before anything goes public</h2></div>
+    <div class="gates">
+      <div class="gate rv l"><h3><span class="ico"><svg viewBox="0 0 24 24"><path d="M9 3a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 3 5h1V3z"/><path d="M15 3a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-3 5h-1V3z"/></svg></span>Fact-check gate</h3><ul><li>A second pass looks for false technical claims and wrong figures.</li><li>Catches a metaphor that changes midway and misuse of "but there is a catch".</li><li>Rewrites flagged scenes and re-checks them; unfixable scripts are discarded.</li><li>Runs on the strongest reviewer, retried once if its window is full.</li><li>If it is unavailable, a panel of the other reviewers answers and their issues are merged (stricter than any single one).</li></ul></div>
+      <div class="gate rv r"><h3><span class="ico"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10H3z"/><path d="M9 21v-6h6v6"/></svg></span>QA gate (ffmpeg)</h3><ul><li>Duration between 61 and 92 seconds.</li><li>Resolution exactly 1080×1920.</li><li>48 kHz audio and a safe peak level.</li><li>No dead air; word count and subtitle length within limits.</li><li>Anything that fails stays local and is <strong>not uploaded</strong>.</li></ul></div>
+    </div>
+  </section>
+
+  <!-- MINECRAFT -->
+  <section id="minecraft" class="blk container">
+    <div class="head c rv"><div class="eyebrow">Series 06</div><h2 class="h2">Minecraft explainers</h2><p class="sub">A computing concept acted out in a Minecraft village. A Gemini script is compiled by a director into layout, choreography, camera, props and sounds.</p></div>
+    <div class="blocks rv"><i style="background:#5B8731;animation-delay:0.0s"></i><i style="background:#866043;animation-delay:0.12s"></i><i style="background:#7F7F7F;animation-delay:0.24s"></i><i style="background:#5B8731;animation-delay:0.36s"></i><i style="background:#C2A265;animation-delay:0.48s"></i><i style="background:#4C7FD6;animation-delay:0.6s"></i><i style="background:#866043;animation-delay:0.72s"></i><i style="background:#7F7F7F;animation-delay:0.84s"></i><i style="background:#5B8731;animation-delay:0.96s"></i><i style="background:#C2A265;animation-delay:1.08s"></i><i style="background:#4C7FD6;animation-delay:1.2s"></i><i style="background:#866043;animation-delay:1.3199999999999998s"></i></div>
+    <div class="mc rv">
+      <div><b>sign</b><span>stations</span></div><div><b>mine</b><span>stations</span></div><div><b>chest</b><span>stations</span></div><div><b>pond</b><span>stations</span></div>
+      <div><b>door</b><span>stations</span></div><div><b>ladder</b><span>stations</span></div><div><b>pen</b><span>stations</span></div><div><b>stall · library</b><span>village market &amp; bookshelves</span></div>
+    </div>
+    <div class="series">
+      <div class="card rv "><div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div><h3>Actions with a purpose</h3><p>Walking, mining, opening, swimming, <code>give</code>/<code>fetch</code> (items fly in an arc), <code>show</code>, <code>search</code>, <code>read</code>, <code>point</code>, <code>cheer</code>. Every station must be used by an action, so nothing is decorative.</p></div>
+      <div class="card rv "><div class="ico"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><h3>Hero-following camera</h3><p>Planned from the real animation tracks: whenever the hero moves, the shot follows him so he never leaves the frame. A low-angle close-up is available too.</p></div>
+      <div class="card rv d2"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="13.500" cy="6.500" r="1.500"/><circle cx="17.500" cy="10.500" r="1.500"/><circle cx="8.500" cy="7.500" r="1.500"/><circle cx="6.500" cy="12.500" r="1.500"/><path d="M12 2a10 10 0 1 0 0 20c1.700 0 2-1.200 1.300-2.200-.7-1-.2-2.300 1.100-2.300H17a5 5 0 0 0 5-5c0-5-4.500-10.500-10-10.500z"/></svg></div><h3>Look &amp; cast</h3><p>Day, dusk or night (torches with warm light reaching the actors), 2-3 word subtitles that follow the narration word by word, nine vanilla skins, six NameMC character skins and eight villager professions.</p></div>
+    </div>
+  </section>
+
+  <!-- LLM -->
+  <section id="llm" class="blk container">
+    <div class="head c rv"><div class="eyebrow">Resilience</div><h2 class="h2">One LLM client, automatic fallbacks</h2><p class="sub">Every call goes through <code>services/gemini_client.py</code>. If a provider runs out of quota, the same request is answered by the next one.</p></div>
+    <div class="chain rv z">
+      <div class="lk first"><b>Gemini</b><span>model chain · quota-aware cooldowns persisted in data/gemini_state.json</span></div>
+      <div class="ar">fallback</div>
+      <div class="lk"><b>Groq</b><span>OpenAI-compatible · reviewer panel</span></div>
+      <div class="ar">fallback</div>
+      <div class="lk"><b>Cloudflare Workers AI</b><span>last-resort provider</span></div>
+    </div>
+    <p class="sub rv" style="text-align:center;margin:30px auto 0">Adding another OpenAI-compatible API is one line. Provider requests size their output reserve to fit per-minute token limits, so a token overflow cannot happen.</p>
+  </section>
+
+  <!-- STACK -->
+  <section id="stack" class="blk container">
+    <div class="head c rv"><div class="eyebrow">Technology</div><h2 class="h2">Built with</h2></div>
+    <div class="marq"><div><span>Python<em>pipeline</em></span><span>Remotion<em>render</em></span><span>React<em>compositions</em></span><span>TypeScript<em>engine</em></span><span>Gemini<em>script</em></span><span>ElevenLabs<em>voice</em></span><span>ffmpeg<em>QA</em></span><span>SQLite<em>history</em></span><span>Node.js<em>render CLI</em></span><span>Groq<em>fallback</em></span><span>Python<em>pipeline</em></span><span>Remotion<em>render</em></span><span>React<em>compositions</em></span><span>TypeScript<em>engine</em></span><span>Gemini<em>script</em></span><span>ElevenLabs<em>voice</em></span><span>ffmpeg<em>QA</em></span><span>SQLite<em>history</em></span><span>Node.js<em>render CLI</em></span><span>Groq<em>fallback</em></span></div></div>
+    <div class="marq rev"><div><span>YouTube Data API v3<em>publish</em></span><span>TikTok Content Posting API v2<em>export</em></span><span>Steam<em>footage</em></span><span>Wikipedia<em>dossiers</em></span><span>Cloudflare Workers AI<em>fallback</em></span><span>H.264<em>1080×1920</em></span><span>Docker<em>deploy</em></span><span>Google Fonts<em>type</em></span><span>YouTube Data API v3<em>publish</em></span><span>TikTok Content Posting API v2<em>export</em></span><span>Steam<em>footage</em></span><span>Wikipedia<em>dossiers</em></span><span>Cloudflare Workers AI<em>fallback</em></span><span>H.264<em>1080×1920</em></span><span>Docker<em>deploy</em></span><span>Google Fonts<em>type</em></span></div></div>
+  </section>
+
+  <!-- BRAND -->
+  <section id="brand" class="blk container">
+    <div class="head c rv"><div class="eyebrow">Brand look</div><h2 class="h2">Obsidian, blue glow, electric cyan</h2><p class="sub">The generator can never pick another accent colour. Every text auto-fits: a long word, headline, list item, code line or number shrinks instead of leaving the frame.</p></div>
+    <div class="swatches">
+      <div class="sw2 rv"><i style="background:#05070C"></i><div><b>Obsidian</b><code>#05070C</code><span>Background</span></div></div>
+      <div class="sw2 rv d1"><i style="background:#007AFF"></i><div><b>Signal blue</b><code>#007AFF</code><span>Glow</span></div></div>
+      <div class="sw2 rv d2"><i style="background:#00F0FF;box-shadow:inset 0 0 40px rgba(255,255,255,.3)"></i><div><b>Electric cyan</b><code>#00F0FF</code><span>Accent</span></div></div>
+      <div class="sw2 rv d3"><i style="background:#F8FAFC"></i><div><b>Paper</b><code>#F8FAFC</code><span>Text &amp; one light scene</span></div></div>
+    </div>
+    <div class="statrow rv" style="margin-top:30px;grid-template-columns:repeat(4,1fr)">
+      <div class="stat2"><b>9:16</b><span>always vertical</span></div><div class="stat2"><b>12%</b><span>top kept free</span></div><div class="stat2"><b>20%</b><span>bottom kept free</span></div><div class="stat2"><b>30</b><span>fps · H.264</span></div>
+    </div>
+  </section>
+
+  <!-- MAP -->
+  <section id="map" class="blk container">
+    <div class="head c rv"><div class="eyebrow">Codebase</div><h2 class="h2">Repository map</h2></div>
+    <div class="tree rv">
+      <div class="r"><span class="p">main.py</span><span class="d">Pipeline entry point and CLI</span></div>
+      <div class="r"><span class="p">core/</span><span class="d">Schemas, topic engine, content pillars</span></div>
+      <div class="r"><span class="p">services/</span><span class="d">Script generation, LLM client, story bank, voice, renderers, QA, YouTube / TikTok, cleanup, output layout</span></div>
+      <div class="r"><span class="p">services/mc_*.py</span><span class="d">Minecraft series: story generator, director bridge, voice, renderer, review/QA gate, pipeline</span></div>
+      <div class="r"><span class="p">services/motion_*.py</span><span class="d">Motion Graphics: script generator (validation, evidence quotes, fact-check panel) and pipeline</span></div>
+      <div class="r"><span class="p">services/game_*.py</span><span class="d">Game media and facts: footage manifest, one-use consumption, 14-day blacklist, source dossiers</span></div>
+      <div class="r"><span class="p">engine/</span><span class="d">Chart and legacy rendering engine</span></div>
+      <div class="r"><span class="p">remotion_studio/</span><span class="d">Remotion project (React): MotionGraphic and the Minecraft kit</span></div>
+      <div class="r"><span class="p">scripts/</span><span class="d">Maintenance, footage fetch/caption, facts, render CLI, Minecraft assets and music, authentication, scheduler, analytics</span></div>
+      <div class="r"><span class="p">assets/</span><span class="d">Fonts, audio beds and effects, B-roll manifest, skins</span></div>
+      <div class="r"><span class="p">data/</span><span class="d">History database, quality rules, game_facts caches (private data is git-ignored)</span></div>
+      <div class="r"><span class="p">docs/</span><span class="d">This web portal, Terms, Privacy and design notes</span></div>
+    </div>
+  </section>
+
+  <!-- QUICK START -->
+  <section id="start" class="blk container">
+    <div class="head c rv"><div class="eyebrow">Run it</div><h2 class="h2">Everyday commands</h2></div>
+    <div class="term rv">
+      <div class="bar"><i style="background:#FF5F57"></i><i style="background:#FEBC2E"></i><i style="background:#28C840"></i><span>zsh — silicon-verdict</span><button class="cp">Copy</button></div>
+<pre><span class="c"># setup</span>
+python3 -m venv .venv &amp;&amp; .venv/bin/pip install -r requirements.txt
+cd remotion_studio &amp;&amp; npm install &amp;&amp; cd ..
+
+<span class="c"># the main series: alternates curiosity / game, render only</span>
+<span class="k">.venv/bin/python main.py</span> --series motion --export-only
+
+<span class="c"># pick a format</span>
+<span class="k">.venv/bin/python main.py</span> --series motion --motion-format versus --export-only
+
+<span class="c"># an engineering fact about a game, with real footage</span>
+<span class="k">.venv/bin/python main.py</span> --series motion --motion-kind game
+
+<span class="c"># Minecraft explainer</span>
+<span class="k">.venv/bin/python main.py</span> --series minecraft --export-only
+
+<span class="c"># preview and tweak the design live</span>
+cd remotion_studio &amp;&amp; npx remotion studio</pre>
+    </div>
+  </section>
+
+  <!-- COMPLIANCE -->
+  <section id="compliance" class="blk container">
+    <div class="head c rv"><div class="eyebrow">Privacy &amp; platform compliance</div><h2 class="h2">Built to respect your data</h2><p class="sub">Silicon Verdict follows the TikTok Developer Terms of Service, the TikTok Partner Policies and the Google API Services User Data Policy.</p></div>
+    <div class="comp">
+      <div class="card rv "><div class="ico"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div><h3>No user data collected</h3><p>No personal data, IP addresses or browsing behaviour of visitors or viewers is collected, tracked, sold or profiled.</p></div>
+      <div class="card rv d1"><div class="ico"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><h3>No tracking</h3><p>The web portal uses no tracking pixels, advertising trackers or fingerprinting.</p></div>
+      <div class="card rv d2"><div class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><h3>Local credentials</h3><p>API keys and OAuth tokens stay in local, git-ignored files held by the channel administrator.</p></div>
+      <div class="card rv d3"><div class="ico"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></div><h3>Limited API use</h3><p>The TikTok Content Posting API and YouTube Data API are used only to publish authorised videos to the official channels. No profiles, comments or audience data are scraped or stored.</p></div>
+    </div>
+    <div class="notice2 rv"><strong>Trademark &amp; fair use.</strong> Product names, logos, hardware architectures and game titles mentioned in the content (including AMD, NVIDIA, Intel, Ryzen, GeForce, Cyberpunk 2077, Starfield, Baldur's Gate 3, Steam and Minecraft) belong to their respective owners. Their appearance implies no affiliation, sponsorship or endorsement. Analysis and commentary are produced independently for educational purposes under nominative fair use; game screenshots and trailer clips come from official Steam store pages and are credited in each video description.</div>
+    <div class="btns rv" style="margin-top:34px"><a href="terms.html" class="btn btn-s"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>Terms of Service</a><a href="privacy.html" class="btn btn-s"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Privacy Policy</a></div>
+  </section>
+
+  <!-- CTA -->
+  <section class="blk container" style="padding-top:20px">
+    <div class="cta rv z">
+      <h2><span class="grad">Follow the verdict.</span></h2>
+      <p>New vertical explainers on PC hardware, gaming tech and computing curiosities.</p>
+      <div class="btns" style="margin:0">
+        <a class="btn btn-p" href="https://www.youtube.com/@SiliconVerdictHQ" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M7 3v18M17 3v18M2 8h5M2 16h5M17 8h5M17 16h5"/></svg>YouTube</a>
+        <a class="btn btn-s" href="https://www.tiktok.com/@siliconverdict" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>TikTok</a>
+        <a class="btn btn-s" href="mailto:imnotchego@gmail.com"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg>Contact</a>
+      </div>
+    </div>
+  </section>
   </main>
+
   <footer>
     <div class="container foot">
       <div>&copy; 2026 Silicon Verdict. All rights reserved.<br><small>Independent hardware benchmark &amp; microarchitecture analysis pipeline.</small></div>
       <ul>
-        <li><a href="index.html">Portal</a></li>
         <li><a href="terms.html">Terms of Service</a></li>
         <li><a href="privacy.html">Privacy Policy</a></li>
         <li><a href="mailto:imnotchego@gmail.com">Contact</a></li>
         <li><a href="https://www.tiktok.com/@siliconverdict" target="_blank" rel="noopener">TikTok</a></li>
-        <li><a href="https://youtube.com/@SiliconVerdict" target="_blank" rel="noopener">YouTube</a></li>
+        <li><a href="https://www.youtube.com/@SiliconVerdictHQ" target="_blank" rel="noopener">YouTube</a></li>
       </ul>
     </div>
   </footer>
   <script src="site.js"></script>
+  <script src="portal.js"></script>
 </body>
 </html>
