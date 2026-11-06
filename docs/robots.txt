@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://adrlopech.github.io/Silicon-Verdict/sitemap.xml

@@ -54,3 +54,6 @@ data/gemini_state.json
 assets/games/manifest.json
 data/game_facts/
 assets/audio/mc_bed.wav
+
+# Web portal assets
+!docs/og-image.png
