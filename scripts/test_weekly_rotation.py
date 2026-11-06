@@ -49,7 +49,7 @@ def run_weekly_rotation_simulation(test_db_path: Path):
         # 2. Record short in database
         topic_summary = f"{spec.theme_description} in {spec.game_title}"
         title = f"{spec.pillar_title} Telemetry: {spec.game_title} #Shorts"
-        record_id = record_short_history(
+        record_short_history(
             weekday_index=spec.weekday_index,
             theme_key=spec.theme_key,
             game_title=spec.game_title,

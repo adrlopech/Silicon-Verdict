@@ -1,0 +1,11 @@
+[tool.ruff]
+line-length = 200
+target-version = "py311"
+extend-exclude = ["remotion_studio", "output", "temp", ".venv"]
+
+[tool.ruff.lint]
+select = ["E9", "F"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

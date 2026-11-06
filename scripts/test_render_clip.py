@@ -317,11 +317,9 @@ def main():
         test_video_file = temp_dir / "test_liquid_glass_preview.mp4"
 
         # 1. Generate Synthetic 4.0s Audio Dummy
-        t_audio_start = time.time()
         generate_dummy_audio(dummy_audio_file, duration_sec=4.0)
 
         # 2. Render High-Resolution Static Glass Master Frame (1920x1080)
-        t_frame_start = time.time()
         render_benchmark_chart(
             chart_data=mock_chart_data,
             output_path=test_frame_file,
@@ -329,7 +327,6 @@ def main():
         )
 
         # 3. Render 1080p 60fps Motion Graphics Video (4.0s, 240 frames animated)
-        t_video_start = time.time()
         render_animated_benchmark_video(
             chart_data=mock_chart_data,
             audio_path=dummy_audio_file,

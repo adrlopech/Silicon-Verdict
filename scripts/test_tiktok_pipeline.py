@@ -163,7 +163,6 @@ def main():
     # -------------------------------------------------------------
     # STEP 1: Thematic Matrix & Voice Rotation
     # -------------------------------------------------------------
-    t1 = time.time()
     current_weekday = datetime.now().weekday()
     spec: DailyShortSpec = select_daily_short_spec(weekday_index=current_weekday)
     logger.info(
@@ -195,7 +194,6 @@ def main():
     # -------------------------------------------------------------
     # STEP 3: Voice Narration & Strict Duration Calibration (>60.5s)
     # -------------------------------------------------------------
-    t_audio = time.time()
     logger.info("--- Step 3: Synthesizing 5-Act Narration & Calibrating Duration ---")
     act_texts = [
         project.act1.voiceover,

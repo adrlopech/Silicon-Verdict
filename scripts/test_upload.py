@@ -65,7 +65,7 @@ def run_test():
         # Step 2: Initialize YouTube Service & verify authentication
         yt_service = YouTubeService()
         logger.info("Testing client authentication and token refresh...")
-        client = yt_service.get_authenticated_client()
+        yt_service.get_authenticated_client()
         logger.info("Successfully established connection to YouTube API service.")
 
         # Step 3: Execute resumable upload in 'private' state

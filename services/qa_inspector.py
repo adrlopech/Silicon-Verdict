@@ -342,7 +342,7 @@ def audit_audio(video_path: Path, qa_rules: Dict[str, Any]) -> Dict[str, Any]:
     elif max_vol == -99.0:
         issues_desc.append("No se pudo detectar el volumen de audio")
     else:
-        status_audio = f"Niveles correctos (max: {max_vol:.1f} dB, mean: {mean_vol:.1f} dB, sin clipping)"
+        pass
 
     if too_quiet:
         issues_desc.append(f"Volumen promedio bajo (mean: {mean_vol:.1f} dB, recomendado -16 a -18 dB)")
@@ -546,7 +546,6 @@ def apply_qa_fixes(audit_data: Optional[Dict[str, Any]] = None) -> Dict[str, Any
     ffmpeg_bin = get_ffmpeg_bin()
 
     fixes_applied: List[str] = []
-    run_dir = assets.get("run_dir")
     ass_file: Optional[Path] = assets.get("ass_file")
     metadata_file: Optional[Path] = assets.get("metadata_file")
     yt_video: Optional[Path] = assets.get("youtube_video")

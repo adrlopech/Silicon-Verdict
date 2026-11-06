@@ -212,7 +212,6 @@ def build_selection() -> None:
     shutil.copy(tex / "environment/clouds.png", out / "clouds.png")
     for name, rel in MOBS.items():
         shutil.copy(tex / f"{rel}.png", out / f"{name}.png")
-    shelf = op("block/bookshelf").convert("RGBA")  # empty shelf: same planks frame, dark compartments instead of books
     planks = op("block/oak_planks").convert("RGBA")
     empty = planks.copy()
     for (x0, y0, x1, y1) in ((1, 1, 15, 7), (1, 9, 15, 15)):

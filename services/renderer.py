@@ -71,7 +71,6 @@ def generate_schematic_canvas(
     # 1. Vignette Gradient: Midnight Blue center/top radiating to Obsidian Black
     center_x = width // 2
     center_y = int(height * 0.38)  # Centered slightly towards upper-middle
-    max_radius = math.hypot(width, height) * 0.65
 
     # Render soft radial gradient using Pillow radial concentric ellipses
     gradient_img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
@@ -679,7 +678,6 @@ def generate_wifi_rf_interference_schematic(output_path: Optional[Path] = None) 
     draw.text((wx, wy + 85), "WI-FI ROUTER (0.1 W)", font=f_lbl, fill=(*COLOR_ELECTRIC_BLUE, 255), anchor="mm")
     draw.text((wx, wy + 105), "CHANNELS 1-11 (2,412-2,462 MHz)", font=f_sub, fill=(*COLOR_TEXT_MUTED_GRAY, 220), anchor="mm")
 
-    cx = 460
     pts_mag = []
     for x in range(340, 600, 5):
         y = int(my - 50 * math.sin((x - 340) / 260.0 * 4 * math.pi))

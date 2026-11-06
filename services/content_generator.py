@@ -1035,7 +1035,6 @@ def enforce_script_word_guardrail(
     if is_curiosity:
         min_words = 130
         max_words = 160
-        target_words = 145
 
     current_w = project.get_total_words()
     logger.info("Evaluating script word budget guardrail: %d words (Allowed range: [%d, %d] | Category: %s)...", current_w, min_words, max_words, category)

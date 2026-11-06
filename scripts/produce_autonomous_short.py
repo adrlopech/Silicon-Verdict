@@ -593,7 +593,6 @@ def run_autonomous_short(
         logger.info("Visual rendering completed in %.2fs", time.time() - t_visual_start)
 
         # Step 5: Concat, Subtitle Burning & YouTube Upload
-        t_final_start = time.time()
         logger.info("--- Step 5: Assembling Final Short & Uploading to YouTube ---")
         final_short = work_dir / "final_short_1080x1920.mp4"
         assemble_final_short(
