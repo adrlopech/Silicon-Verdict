@@ -103,8 +103,6 @@ def sv_mark(size, tile=False):
             d.polygon([pt(q) for q in poly], fill=255)
     # scan-line cuts (parallel diagonal slits) for a glitch / chip feel
     cut = ImageDraw.Draw(mask)
-    for off in (-35, 120, 275):
-        a_ = (n * 0.0, n * (0.50 + off / 1000 * 0) + off * sc * 0.0)
     for cy in (455, 505):
         cut.line((0, cy * sc + oy + n * 0.10, n, (cy - 140) * sc + oy + n * 0.10), fill=0, width=max(2, int(11 * sc)))
     # gradient: cyan top-left -> blue bottom-right
@@ -122,7 +120,6 @@ def sv_mark(size, tile=False):
     tip_poly = _stroke_polys([V_PATH[1], V_PATH[2]], STROKE)[0]
     td.polygon([pt(q) for q in tip_poly], fill=255)
     tipmask = Image.composite(tipmask, Image.new("L", (n, n), 0), mask)
-    tip = Image.new("RGBA", (n, n), CYAN + (255,))
     fade = Image.new("L", (n, n), 0)
     fd = ImageDraw.Draw(fade)
     y0, y1 = pt(V_PATH[1])[1], pt(V_PATH[2])[1]
@@ -301,8 +298,8 @@ def cursor_arrow(img, tip, scale=1.8, ripples=True):
 
 def banner(w=2560, h=1440, with_cursor=False, compact=False):
     img = glow_background(w, h, grid=96).convert("RGBA")
-    sw, sh = 1546, 423  # YouTube safe area, visible on every device
-    sx, sy = (w - sw) // 2, (h - sh) // 2
+    sw = 1546  # YouTube safe area (1546 x 423), visible on every device
+    sx = (w - sw) // 2
     cy = h // 2
     # soft cyan bloom + light streak behind the lockup
     bl = Image.new("RGBA", (w, h), (0, 0, 0, 0))

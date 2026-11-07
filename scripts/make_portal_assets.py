@@ -40,6 +40,7 @@ def logo_svg(glow=True, tile=False):
     shapes = "".join(f'<polygon points="{pts(p)}" fill="url(#svg)" stroke="url(#svg)" stroke-width="1.2" stroke-linejoin="round"/>' for p in polys)
     tip_ys = [p[1] for p in tip_poly]
     glow_f = '<filter id="glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="14" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' if glow else ""
+    filt = ' filter="url(#glow)"' if glow else ""
     bg = f'<rect x="{vx}" y="{vy}" width="{side}" height="{side}" rx="{side * 0.22}" fill="#05070C"/>' if tile else ""
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{vx:.1f} {vy:.1f} {side:.1f} {side:.1f}" role="img" aria-label="Silicon Verdict SV logo">'
@@ -47,7 +48,7 @@ def logo_svg(glow=True, tile=False):
         f'<linearGradient id="tip" gradientUnits="userSpaceOnUse" x1="0" y1="{max(tip_ys):.0f}" x2="0" y2="{min(tip_ys):.0f}"><stop offset="0" stop-color="#C8FFFF" stop-opacity="0"/><stop offset="1" stop-color="#C8FFFF" stop-opacity=".85"/></linearGradient>'
         f'<mask id="cut" maskUnits="userSpaceOnUse" x="{vx - 50:.0f}" y="{vy - 50:.0f}" width="{side + 100:.0f}" height="{side + 100:.0f}"><rect x="{vx - 50:.0f}" y="{vy - 50:.0f}" width="{side + 100:.0f}" height="{side + 100:.0f}" fill="#fff"/>{cut}</mask>'
         f'{glow_f}</defs>{bg}'
-        f'<g mask="url(#cut)"{" filter=\"url(#glow)\"" if glow else ""}>{shapes}<polygon points="{pts(tip_poly)}" fill="url(#tip)"/></g></svg>'
+        f'<g mask="url(#cut)"{filt}>{shapes}<polygon points="{pts(tip_poly)}" fill="url(#tip)"/></g></svg>'
     )
 
 
