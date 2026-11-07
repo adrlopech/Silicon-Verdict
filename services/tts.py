@@ -112,6 +112,15 @@ def synthesize_scene_audio(scene: Scene, output_dir: Path, voice_id: Optional[st
     output_dir.mkdir(parents=True, exist_ok=True)
     audio_file = output_dir / f"scene_{scene.scene_id:03d}.mp3"
 
+    def _local() -> SceneAudio:
+        from services import local_tts
+
+        local_tts.synthesize(scene.voiceover_text, audio_file, voice_id=voice_id or settings.ELEVENLABS_VOICE_ID, timestamps=False)
+        return SceneAudio(scene_id=scene.scene_id, audio_path=str(audio_file), duration_seconds=get_audio_duration(str(audio_file)))
+
+    if settings.TTS_BACKEND.lower() == "local":
+        return _local()
+
     active_voice_id = resolve_active_voice_id(target_voice=voice_id)
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{active_voice_id}"
     headers = {
@@ -132,11 +141,16 @@ def synthesize_scene_audio(scene: Scene, output_dir: Path, voice_id: Optional[st
 
     logger.info("Generating ElevenLabs TTS for scene %d (words: %d)", scene.scene_id, len(scene.voiceover_text.split()))
 
-    response = requests.post(url, headers=headers, json=payload, timeout=60)
-    if response.status_code != 200:
-        error_msg = f"ElevenLabs API error (status {response.status_code}): {response.text}"
-        logger.error(error_msg)
-        raise RuntimeError(error_msg)
+    try:
+        response = requests.post(url, headers=headers, json=payload, timeout=60)
+        if response.status_code != 200:
+            raise RuntimeError(f"ElevenLabs API error (status {response.status_code}): {response.text}")
+    except Exception as exc:
+        logger.error("%s", exc)
+        if settings.LOCAL_TTS_FALLBACK:
+            logger.warning("Narrating scene %d with the local cloned voice.", scene.scene_id)
+            return _local()
+        raise
 
     with open(audio_file, "wb") as f:
         f.write(response.content)
@@ -181,9 +195,11 @@ def synthesize_speech(
     """
     output_file = Path(output_file).resolve()
     output_file.parent.mkdir(parents=True, exist_ok=True)
-    active_voice_id = resolve_active_voice_id(target_voice=voice_id)
 
-    if settings.ELEVENLABS_API_KEY and not settings.ELEVENLABS_API_KEY.startswith("your_"):
+    local_only = settings.TTS_BACKEND.lower() == "local"
+    active_voice_id = voice_id or "" if local_only else resolve_active_voice_id(target_voice=voice_id)
+
+    if not local_only and settings.ELEVENLABS_API_KEY and not settings.ELEVENLABS_API_KEY.startswith("your_"):
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{active_voice_id}"
         headers = {
             "xi-api-key": settings.ELEVENLABS_API_KEY,
@@ -212,6 +228,15 @@ def synthesize_speech(
                 logger.warning("ElevenLabs API returned HTTP %d: %s. Using local fallback.", response.status_code, response.text[:120])
         except Exception as exc:
             logger.warning("ElevenLabs TTS network failure (%s). Using local fallback.", exc)
+
+    if local_only or settings.LOCAL_TTS_FALLBACK:  # backup: the cloned local voice
+        try:
+            from services import local_tts
+
+            local_tts.synthesize(text, output_file, voice_id=voice_id or settings.ELEVENLABS_VOICE_ID, timestamps=False)
+            return get_audio_duration(str(output_file))
+        except Exception as exc:
+            logger.warning("Local TTS failed (%s). Using system fallback.", exc)
 
     # Local fallback: try macOS 'say' command if available, otherwise synthesize via ffmpeg
     if shutil.which("say"):

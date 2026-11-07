@@ -101,7 +101,8 @@ def synthesize_voice_with_timestamps(
 
     # 1. Phonetic normalization
     normalized_text = normalize_phonetics_us_english(text)
-    active_voice = resolve_active_voice_id(target_voice=voice_id)
+    use_local = settings.TTS_BACKEND.lower() == "local"
+    active_voice = (voice_id or settings.ELEVENLABS_VOICE_ID) if use_local else resolve_active_voice_id(target_voice=voice_id)
     word_count = len(normalized_text.split())
 
     logger.info(
@@ -113,7 +114,7 @@ def synthesize_voice_with_timestamps(
     word_timestamps: List[Dict[str, Any]] = []
     synthesized_remote = False
 
-    if settings.ELEVENLABS_API_KEY and not settings.ELEVENLABS_API_KEY.startswith("your_"):
+    if not use_local and settings.ELEVENLABS_API_KEY and not settings.ELEVENLABS_API_KEY.startswith("your_"):
         try:
             from elevenlabs import ElevenLabs
             from elevenlabs.types.voice_settings import VoiceSettings
@@ -162,6 +163,19 @@ def synthesize_voice_with_timestamps(
             )
         except Exception as exc:
             logger.warning("ElevenLabs convert_with_timestamps failed (%s). Deploying local fallback.", exc)
+
+    # Backup voice: the cloned local VoxCPM2 voice when ElevenLabs failed (or TTS_BACKEND=local)
+    if not synthesized_remote and (use_local or settings.LOCAL_TTS_FALLBACK):
+        try:
+            from services import local_tts
+
+            if not use_local:
+                logger.warning("ElevenLabs unavailable: narrating with the local cloned voice.")
+            word_timestamps = local_tts.synthesize(normalized_text, raw_mp3_path, voice_id=voice_id or settings.ELEVENLABS_VOICE_ID)  # the requested voice, not the probe's substitute
+            synthesized_remote = True
+            logger.info("Local VoxCPM2 TTS synthesized in %.2fs | %d aligned words", time.time() - t0, len(word_timestamps))
+        except Exception as exc:
+            logger.warning("Local TTS failed (%s). Deploying system fallback.", exc)
 
     # Local macOS fallback if remote failed
     if not synthesized_remote:

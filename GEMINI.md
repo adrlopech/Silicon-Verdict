@@ -302,3 +302,7 @@ Este sistema **NO se ejecuta de forma automática ni silenciosa** durante el pro
   - Fórmula de coste real:
     $$\text{Cost} = (\text{Chars}_{ElevenLabs} \times 0.00030) + (\text{Tokens}_{Gemini} \times 0.000002)$$
   - Permite auditoría de costes históricos y optimización de márgenes operativos.
+
+## Voz de respaldo local
+
+Si ElevenLabs falla (sin créditos o sin red), `services/voice_synthesizer.py` y `services/tts.py` narran con un clon local de las mismas tres voces (VoxCPM2 8-bit en MLX vía VoiceStudio, pesos Apache-2.0, sin coste). Configuración: `TTS_BACKEND`, `LOCAL_TTS_FALLBACK` y `LOCAL_TTS_ENGINE` en `.env`; arranque con `scripts/voicestudio_server.sh`; muestras de referencia con `scripts/make_voice_refs.py`. Los modelos OmniVoice y NLLB de VoiceStudio son no comerciales: no usarlos.

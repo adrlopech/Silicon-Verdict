@@ -2,7 +2,7 @@
 
 <p align="center">
   <strong>Automated vertical-video studio for PC hardware, gaming tech and computing curiosities</strong><br>
-  Python • Remotion • ElevenLabs • Gemini • YouTube Shorts &amp; TikTok
+  Python • Remotion • ElevenLabs (+ local voice backup) • Gemini • YouTube Shorts &amp; TikTok
 </p>
 
 <p align="center">
@@ -48,7 +48,8 @@ topic ─► Gemini script ─► fact-check gate ─► ElevenLabs voice ─►
   the same request is answered automatically by the configured fallback providers (Groq today; adding another OpenAI-compatible API is one line). The *minecraft*
   series draws from a **story bank**: below 30 ready scripts, a batch of 20 new ones is generated; an empty bank pauses production. The *motion* series draws its curiosity videos (every format, including hardware and simple) from a `motion` bank in the same table before asking the LLM, matching the requested format; it is filled with `scripts/refill_story_bank.py --series hardware|simple|motion --format ...` (never automatically). Scripts written for the old categories are moved into this model by `scripts/migrate_legacy_bank.py`.
 * **Voice**: ElevenLabs with word-level timestamps; natural mode (no time-stretching). Minecraft videos synthesize one line per scene in parallel and
-  place each at its scene's start frame. A robotic local voice is never published.
+  place each at its scene's start frame. When ElevenLabs fails (no credits, network) the same three voices are served by a **local clone** (VoxCPM2 8-bit
+  on MLX through VoiceStudio, Apache-2.0 weights, free, timestamps from local ASR; see [Local voice backup](#local-voice-backup)). A robotic system voice is never published.
 * **Visuals**: Remotion compositions (`MotionGraphic` with the cursor-character layer, `McStory`) at 1080×1920 / 30 fps with safe-zone-aware layouts, kinetic typography, a
   mouse-cursor character that clicks, selects, drags and opens tabs on the scenes themselves, game footage integrated into the brand look, and a Minecraft director that turns a script into animation, camera and sound.
 * **Fact-check gate (Minecraft)**: a second Gemini pass looks for false technical claims, wrong figures, a metaphor that changes midway and misuse of
@@ -57,6 +58,19 @@ topic ─► Gemini script ─► fact-check gate ─► ElevenLabs voice ─►
   Anything that fails stays local and is **not** uploaded.
 * **Resilient LLM layer**: one client (`services/gemini_client.py`) for every call: Gemini first (quota-aware cooldowns persisted in `data/gemini_state.json`), then Groq and Cloudflare Workers AI as automatic fallbacks, with batch generation for the script banks.
 * **Output layout**: one folder per video named after its title, files named by creation date-time, cover and metadata `.txt` included.
+
+## Local voice backup
+
+ElevenLabs credits are limited, so every narration call falls back to a free local voice cloned from the same three voices (Daniel, Adam, Liam).
+It is not a different narrator: `services/local_tts.py` maps each ElevenLabs voice id to its reference clip.
+
+* **Engine**: VoxCPM2 8-bit on MLX (`scripts/mlx_tts_server.py`, port 3901; Apache-2.0 weights, commercial use allowed), about 3 s of compute per second of audio on an M2.
+  Word timestamps come from the local ASR of [VoiceStudio](https://github.com/debpalash/voicestudio) (port 3900). Both run headless, no app window.
+* **One-time setup** (Apple Silicon): `brew tap debpalash/tap && brew install --cask debpalash/tap/voicestudio`, open VoiceStudio once, then install the VoxCPM2 engine from its
+  Model Manager (or `curl -X POST localhost:3900/engines/sidecar/voxcpm2/install`), and generate the reference clips with `.venv/bin/python scripts/make_voice_refs.py`
+  (about 700 ElevenLabs characters; the clips are git-ignored). Do not enable the OmniVoice or NLLB models in VoiceStudio: their weights are non-commercial.
+* **Run**: `scripts/voicestudio_server.sh start|stop|status`. The pipeline starts it on demand the first time ElevenLabs fails.
+* **Settings** (`.env`): `TTS_BACKEND=elevenlabs` (default; `local` skips ElevenLabs), `LOCAL_TTS_FALLBACK=true`, `LOCAL_TTS_ENGINE=mlx` (`pytorch` uses VoiceStudio's slower full-precision engine).
 
 ## Quick start
 
@@ -174,7 +188,7 @@ A demo of all four: `remotion_studio/src/motion/sample_formats.json`. `easter` i
 * Brand look: obsidian background (`#05070C`) with a blue (`#007AFF`) glow, electric-cyan (`#00F0FF`) accents. The generator can never pick another accent colour.
   Every text auto-fits: a long word, headline, list item, code line or number shrinks instead of leaving the frame.
 * The script is structured JSON from the LLM layer (validated and retried); a language gate rejects anything that is not English, and a second pass fact-checks it.
-* **Voice**: ElevenLabs narration, one line per scene; the voice decides each scene's length. Sound is that narration over a quiet ambient bed and a soft whoosh per scene
+* **Voice**: ElevenLabs narration (local cloned voice as backup), one line per scene; the voice decides each scene's length. Sound is that narration over a quiet ambient bed and a soft whoosh per scene
   (own assets in `assets/audio/`; fonts are Google Fonts only).
 * Rendering goes through `@remotion/renderer` (`scripts/render_motion.mjs`: bundle → selectComposition → renderMedia, progress in the logs).
 * Preview and tweak the design live: `cd remotion_studio && npx remotion studio`, then open the **MotionGraphic** composition and edit its props.
