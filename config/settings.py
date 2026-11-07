@@ -55,11 +55,8 @@ class Settings(BaseSettings):
     # Narration backend: "elevenlabs" (default; paid credits) with the free local voice as backup, or "local" (local only)
     TTS_BACKEND: str = "elevenlabs"
     LOCAL_TTS_FALLBACK: bool = True  # when ElevenLabs fails (no credits, network), narrate with the cloned local voice
-    LOCAL_TTS_URL: str = "http://127.0.0.1:3900"
-    LOCAL_TTS_ENGINE: str = "mlx"  # "mlx" (fast, scripts/mlx_tts_server.py) or "pytorch" (VoiceStudio voxcpm2 engine)
+    LOCAL_TTS_URL: str = "http://127.0.0.1:3900"  # VoiceStudio backend (ASR for word timestamps)
     MLX_TTS_URL: str = "http://127.0.0.1:3901"
-    LOCAL_TTS_MODEL: str = "voxcpm2"
-    LOCAL_TTS_VOICE: str = "SV liam"  # cloned-profile name used when a call has no ElevenLabs voice id
 
     # Minecraft series: on-screen language (en default / es)
     MC_LANGUAGE: str = "en"

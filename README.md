@@ -66,11 +66,10 @@ It is not a different narrator: `services/local_tts.py` maps each ElevenLabs voi
 
 * **Engine**: VoxCPM2 8-bit on MLX (`scripts/mlx_tts_server.py`, port 3901; Apache-2.0 weights, commercial use allowed), about 3 s of compute per second of audio on an M2.
   Word timestamps come from the local ASR of [VoiceStudio](https://github.com/debpalash/voicestudio) (port 3900). Both run headless, no app window.
-* **One-time setup** (Apple Silicon): `brew tap debpalash/tap && brew install --cask debpalash/tap/voicestudio`, open VoiceStudio once, then install the VoxCPM2 engine from its
-  Model Manager (or `curl -X POST localhost:3900/engines/sidecar/voxcpm2/install`), and generate the reference clips with `.venv/bin/python scripts/make_voice_refs.py`
+* **One-time setup** (Apple Silicon): `brew tap debpalash/tap && brew install --cask debpalash/tap/voicestudio`, open VoiceStudio once, then generate the reference clips with `.venv/bin/python scripts/make_voice_refs.py`
   (about 700 ElevenLabs characters; the clips are git-ignored). Do not enable the OmniVoice or NLLB models in VoiceStudio: their weights are non-commercial.
 * **Run**: `scripts/voicestudio_server.sh start|stop|status`. The pipeline starts it on demand the first time ElevenLabs fails.
-* **Settings** (`.env`): `TTS_BACKEND=elevenlabs` (default; `local` skips ElevenLabs), `LOCAL_TTS_FALLBACK=true`, `LOCAL_TTS_ENGINE=mlx` (`pytorch` uses VoiceStudio's slower full-precision engine).
+* **Settings** (`.env`): `TTS_BACKEND=elevenlabs` (default; `local` skips ElevenLabs), `LOCAL_TTS_FALLBACK=true`.
 
 ## Quick start
 
