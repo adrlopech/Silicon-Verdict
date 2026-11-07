@@ -58,7 +58,7 @@ HELP_TEXT = """=================================================================
 3. TERMINAL COMMANDS & CLI (Headless Execution & Maintenance)
 --------------------------------------------------------------------------------
  • Direct production via CLI:
-   .venv/bin/python main.py --series motion --motion-format myth   # Motion formats: classic, myth, tier, whatif, evolution, versus, easter, hardware, simple
+   .venv/bin/python main.py --series motion --motion-format myth   # Motion formats: classic, myth, tier, whatif, evolution, versus, easter, hardware, simple, fix, decode
    .venv/bin/python main.py --series simple                   # Everyday tech with the cursor (= --motion-format simple)
    .venv/bin/python main.py --series hardware                 # Hardware deep dive (= --motion-format hardware)
    .venv/bin/python main.py --category 1 --privacy public     # Hardware Benchmarks

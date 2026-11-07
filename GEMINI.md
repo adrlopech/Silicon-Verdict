@@ -121,19 +121,22 @@ Selecciona el enfoque temático para este vídeo (60-120s):
 7. **Evolución** (líneas de tiempo con hitos y contadores de crecimiento).
 8. **Versus** (dos contendientes, 3-5 rondas de barras).
 9. **Detalle oculto de un juego** (footage real; solo hechos de la fuente).
-10. **Automático** (la IA elige uno de los 9 temas anteriores, distinto del último vídeo de Motion Graphics).
+10. **Arréglalo ya** (un síntoma que todos han sufrido y un ajuste exacto para arreglarlo; el cursor hace los clics).
+11. **Decodificado** (qué significa de verdad el nombre o la etiqueta de un producto: RTX 5070 Ti, DDR5-6000 CL30, AX3000...).
+12. **Automático** (la IA elige uno de los 11 temas anteriores, distinto del último vídeo de Motion Graphics).
 
-👉 Responde únicamente con el número deseado: **[1 al 10]**
+👉 Responde únicamente con el número deseado: **[1 al 12]**
 ---
 
      Tras la respuesta ejecuta (siempre con `--series motion --privacy public`):
      * `1` → sin flags extra (alterna). `2` → `--motion-kind curiosity`. `3` → `--motion-kind game`.
      * `4` → `--motion-format myth`, `5` → `--motion-format tier`, `6` → `--motion-format whatif`, `7` → `--motion-format evolution`, `8` → `--motion-format versus`, `9` → `--motion-format easter`.
-     * `10` → `--motion-format any` (elige al azar uno de los 9 temas, excluye el del último vídeo y descarta los de juegos si no queda ningún juego con footage sin usar).
+     * `10` → `--motion-format fix`, `11` → `--motion-format decode`.
+     * `12` → `--motion-format any` (elige al azar uno de los 11 temas, excluye el del último vídeo y descarta los de juegos si no queda ningún juego con footage sin usar).
      * `9` es siempre un juego: necesita un juego con footage sin usar y dossier de fuentes; si no hay ninguno, el proceso se detiene y lo dice.
-     * Entrada no válida en este segundo menú: *"Opción no válida. Introduce un número del 1 al 10."* y sigue esperando.
+     * Entrada no válida en este segundo menú: *"Opción no válida. Introduce un número del 1 al 12."* y sigue esperando.
      * Los vídeos de juegos usan capturas y clips reales: cada elemento se usa una sola vez y se borra, y el juego queda bloqueado 14 días.
-     * Pipeline `services/motion_pipeline.py`: guion JSON de Gemini (con respaldos), revisión de hechos, render con `@remotion/renderer`, sonido, control de calidad y subida. Cada formato tiene sus propias escenas (`tier`, `versus`, `verdict`, `timeline`), reglas y validadores en `services/motion_generator.py`.
+     * Pipeline `services/motion_pipeline.py`: guion JSON de Gemini (con respaldos), revisión de hechos, render con `@remotion/renderer`, sonido, control de calidad y subida. Cada formato tiene sus propias escenas (`tier`, `versus`, `verdict`, `timeline`), reglas y validadores en `services/motion_generator.py`. `fix` y `decode` salen de la investigación de nicho de nov. 2026 (`notes/niche_research_2026-11.md`) y reutilizan las escenas generales: exigen un `codeBlock` y un `list`, y el cursor (`fix`: 2+ escenas; `decode`: un `select` sobre la etiqueta).
    - **Entrada no válida**:
      * Si el usuario introduce cualquier otro carácter o texto, notifica:
        *"Opción no válida. Por favor, introduce 1, 2, 3, 4, 5 o 6 para continuar con 'genera'."*

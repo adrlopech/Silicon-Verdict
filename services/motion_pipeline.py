@@ -262,7 +262,7 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
     from services.game_images import available_games
 
     from services.motion_generator import FORMATS
-    if fmt == "any":  # automatic: one of the nine topics of the Motion Graphics menu (classic, curiosity, game and the six formats), never the same as last time
+    if fmt == "any":  # automatic: one of the topics of the Motion Graphics menu (classic, curiosity, game and every format), never the same as last time
         options = [("auto", "auto"), ("curiosity", "auto"), ("game", "auto")] + [("auto", f) for f in FORMATS]
         if not available_games():
             options = [o for o in options if o[0] != "game" and o[1] != "easter"]

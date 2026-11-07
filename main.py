@@ -460,9 +460,9 @@ def parse_args():
     parser.add_argument(
         "--motion-format",
         type=str,
-        choices=["auto", "any", "myth", "tier", "whatif", "easter", "evolution", "versus", "hardware", "simple"],
+        choices=["auto", "any", "myth", "tier", "whatif", "easter", "evolution", "versus", "hardware", "simple", "fix", "decode"],
         default="auto",
-        help="With --series motion: content format. myth (myth or fact verdicts), tier (S-F tier list), whatif (a hypothetical about computing), easter (a hidden detail of a game, with footage), evolution (timelines), versus (two contenders over several rounds), hardware (silicon / engineering deep dive, the cursor as an accent), simple (everyday tech mystery hosted by the cursor), any (a random one) or auto (the classic explainer).",
+        help="With --series motion: content format. myth (myth or fact verdicts), tier (S-F tier list), whatif (a hypothetical about computing), easter (a hidden detail of a game, with footage), evolution (timelines), versus (two contenders over several rounds), hardware (silicon / engineering deep dive, the cursor as an accent), simple (everyday tech mystery hosted by the cursor), fix (a symptom fixed with one exact setting, the cursor does the clicks), decode (what a product name or spec label really means), any (a random one) or auto (the classic explainer).",
     )
     parser.add_argument(
         "--from-bank",

@@ -2,7 +2,7 @@
 """Builds + validates hand-written script banks.
 
 Source files (compact JSON Lines, one script per line): docs/generated_scripts/bank/src/<type>.jsonl
-  types: classic, myth, tier, whatif, evolution, versus  -> Motion Graphics (MotionProject, validated with services.motion_generator.make_validator)
+  types: classic, myth, tier, whatif, evolution, versus, fix, decode  -> Motion Graphics (MotionProject, validated with services.motion_generator.make_validator)
          minecraft                                        -> McStory (validated with services.mc_story_generator._problems)
 Output: docs/generated_scripts/bank/<type>/<type>_NNN.json  (exactly what scripts/render_motion_json.py takes for Motion types)
 
@@ -81,14 +81,16 @@ def build_myth(s):
     return scenes
 
 
-BUILDERS = {"classic": build_general, "whatif": build_general, "evolution": build_general, "tier": build_tier, "versus": build_versus, "myth": build_myth}
-FORMAT_OF = {"classic": None, "whatif": "whatif", "evolution": "evolution", "tier": "tier", "versus": "versus", "myth": "myth"}
+BUILDERS = {"classic": build_general, "whatif": build_general, "evolution": build_general, "tier": build_tier, "versus": build_versus, "myth": build_myth, "fix": build_general, "decode": build_general}
+FORMAT_OF = {"classic": None, "whatif": "whatif", "evolution": "evolution", "tier": "tier", "versus": "versus", "myth": "myth", "fix": "fix", "decode": "decode"}
 
 
 def build_motion(kind, s):
     scenes = BUILDERS[kind](s)
     if kind == "whatif":
         scenes[0].setdefault("kicker", "what if")
+    if kind in ("fix", "decode"):
+        scenes[0].setdefault("kicker", "fix it now" if kind == "fix" else "decoded")
     for x in scenes:
         if x["type"] == "timeline":
             x.setdefault("kicker", "evolution")
@@ -160,7 +162,7 @@ def import_bank():
     from core.schemas import McStory
     from services.story_bank import add_story, count_ready, topics_in_bank
     added = 0
-    for kind in ("classic", "myth", "tier", "versus", "whatif", "evolution", "minecraft"):
+    for kind in ("classic", "myth", "tier", "versus", "whatif", "evolution", "fix", "decode", "minecraft"):
         series = "minecraft" if kind == "minecraft" else "motion"
         have = {t.strip().lower() for t in topics_in_bank(series)}
         n = 0

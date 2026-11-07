@@ -29,3 +29,50 @@ def test_invented_quote_rejected():
 
 def test_too_short_quote_rejected():
     assert not quote_supported("open world", FACTS)
+
+
+# ---- fix / decode formats (niche research, Nov 2026) ----
+from services.motion_generator import FORMAT_RULES, FORMATS, MotionProject, MotionSceneModel, make_validator  # noqa: E402
+
+_NARR = "So your computer behaves differently once this one setting is changed, and you will notice it quickly."
+_TYPES = ["bigText", "textWithAccent", "codeBlock", "textWithAccent", "list", "bigText", "textWithAccent", "codeBlock", "bigText", "textWithAccent", "list", "bigText", "outro"]
+
+
+def _project(fmt, cursors, types=_TYPES):
+    scenes = []
+    for i, t in enumerate(types):
+        extra = {}
+        if t == "codeBlock":
+            extra["code"] = ["Settings > System", "Display"]
+        if t == "list":
+            extra["items"] = ["First step", "Second step"]
+        scenes.append(MotionSceneModel(type=t, text="Short line", accentText="Key word" if t in ("textWithAccent", "outro") else None,
+                                       narration=_NARR, durationInFrames=90, cursor=cursors.get(i), **extra))
+    return MotionProject(topic="t", screen_title="Test", title="A test title #siliconverdict #tech", description="One. Two.", tags=["a"] * 6,
+                         pinned_comment="Why?", scenes=scenes, format=fmt)
+
+
+def test_new_formats_are_registered():
+    for name in ("fix", "decode"):
+        assert name in FORMATS and name in FORMAT_RULES
+
+
+def test_fix_format_passes_with_steps_and_cursor():
+    assert make_validator(None, None, "fix")(_project("fix", {2: "select", 4: "drag", 7: "click"})) == []
+
+
+def test_fix_format_needs_a_codeblock():
+    types = [t if t != "codeBlock" else "textWithAccent" for t in _TYPES]
+    types = ["bigText", "textWithAccent", "list", "textWithAccent", "list", "bigText", "textWithAccent", "list", "bigText", "textWithAccent", "list", "bigText", "outro"]
+    problems = make_validator(None, None, "fix")(_project("fix", {2: "drag", 4: "drag"}, types))
+    assert any("codeBlock" in p for p in problems)
+
+
+def test_fix_format_needs_the_cursor_twice():
+    problems = make_validator(None, None, "fix")(_project("fix", {2: "select"}))
+    assert any("cursor" in p for p in problems)
+
+
+def test_decode_format_needs_a_select_cursor():
+    assert any("select" in p for p in make_validator(None, None, "decode")(_project("decode", {4: "drag"})))
+    assert make_validator(None, None, "decode")(_project("decode", {0: "select", 4: "drag"})) == []

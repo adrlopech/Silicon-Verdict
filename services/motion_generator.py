@@ -35,8 +35,8 @@ FX_NAMES = ("plane", "rocket", "satellite", "waves", "bolts", "embers", "snow", 
 
 def limit_cursor(scenes, fmt: Optional[str]) -> None:
     """The cursor only appears when it DOES something: the tab that opens the video, a drag on a list or code, a click on the reveal, a selection of the key phrase, a hover on a number.
-    Keeps the most useful moments up to a small budget (4 in the everyday format, 3 elsewhere) and drops the decorative ones (waiting, loading, repeated clicks)."""
-    budget = 4 if fmt == "simple" else 3
+    Keeps the most useful moments up to a small budget (4 in the everyday and fix-it formats, 3 elsewhere) and drops the decorative ones (waiting, loading, repeated clicks)."""
+    budget = 4 if fmt in ("simple", "fix") else 3
     n = len(scenes)
     want = {"tab": [], "toggle": [], "drag": [], "click": [], "select": [], "hover": []}
     for i, sc in enumerate(scenes):
@@ -79,7 +79,7 @@ def cursor_from_pose(pose: Optional[str], scene_type: str, index: int, total: in
 
 
 SceneType = Literal["bigText", "textWithAccent", "counter", "list", "codeBlock", "progressBar", "outro", "curve", "flash", "footage", "tier", "versus", "verdict", "timeline"]
-FORMATS = ("myth", "tier", "whatif", "easter", "evolution", "versus", "hardware", "simple")   # content formats on top of the two kinds (curiosity / game); "easter" is always a game video; "hardware" and "simple" are the old Hardware / Everyday-with-mascot categories, now told in the Motion style
+FORMATS = ("myth", "tier", "whatif", "easter", "evolution", "versus", "hardware", "simple", "fix", "decode")   # content formats on top of the two kinds (curiosity / game); "easter" is always a game video; "hardware" and "simple" are the old Hardware / Everyday-with-mascot categories, now told in the Motion style; "fix" and "decode" come from the Nov 2026 niche research (notes/niche_research_2026-11.md)
 TIER_LETTERS = ("S", "A", "B", "C", "D", "F")
 
 
@@ -123,7 +123,7 @@ class MotionProject(BaseModel):
     accent: str = Field(default="#00F0FF", description="Accent colour: always the channel electric cyan #00F0FF (or the channel blue #007AFF)")
     scenes: List[MotionSceneModel]
     kind: str = Field(default="curiosity", description="Set by the pipeline: curiosity | game")
-    format: Optional[str] = Field(default=None, description="Set by the pipeline: myth | tier | whatif | easter | evolution | versus (None = the classic explainer)")
+    format: Optional[str] = Field(default=None, description="Set by the pipeline: myth | tier | whatif | easter | evolution | versus | hardware | simple | fix | decode (None = the classic explainer)")
     game: Optional[str] = Field(default=None, description="Set by the pipeline for game videos")
     fact_checked: bool = Field(default=True, description="Set by the pipeline; False when no model could run the fact-check")
     gemini_input_tokens: int = Field(default=0)
@@ -265,6 +265,21 @@ FORMAT = EVERYDAY TECH MYSTERY (the old Everyday category, now in the Motion sty
 USB plugs, Bluetooth and Wi-Fi quirks, batteries and charging, touchscreens, cameras, QR codes, GPS, headphones, microwaves, passwords, e-readers, smart homes, airplane mode...
 - Friendly, conversational, with an analogy and a twist ("But there is more."); the closing line loops back to the hook.
 - Cursor: the mouse cursor is the host, but it acts only when it helps the line: `tab` on the hook, `select` on one key phrase, `drag` on a list or code scene, `click` on the reveal, `hover` on a key number. 3 or 4 scenes in all, never idle, never decorative.""",
+    "fix": FORMAT_COMMON + """
+FORMAT = FIX IT NOW. A symptom almost everyone has felt (a slow PC, stutter, a washed-out monitor, high ping, loud fans, a battery that drains, a blurry screen) fixed with ONE concrete setting or habit.
+- Scene 1 (bigText or textWithAccent) is the symptom as the viewer feels it ("Your PC feels slow?"). Scene 2 gives the real cause in one line: what is actually happening.
+- Then the fix in 2 or 3 steps. Each step names the EXACT place: a `codeBlock` whose 2-6 lines are the menu path or the command ("Settings > System > Display"), and a `list` of the steps. At least one codeBlock and one list.
+- The mouse cursor is the hand that does the fix: `click`, `select` or `drag` on 2 to 4 scenes (the steps, the setting, the payoff). Never idle, never decorative.
+- Say what usually improves, hedged ("often", "up to", "a few percent"); never promise a number you cannot back. Say "in Windows 11" when the menu differs by version.
+- SAFETY: only built-in Windows settings, BIOS options or physical habits. Never a third-party "optimizer", never a registry edit, never disable antivirus, updates or any security feature. If a step is risky (BIOS), tell the viewer to note the old value first.
+- Last scene before the outro is a textWithAccent recap ("Check this first"). The outro asks a question.""",
+    "decode": FORMAT_COMMON + """
+FORMAT = DECODED. A name or spec string everyone sees and few can read ("RTX 5070 Ti", "DDR5-6000 CL30", "Ryzen 7 7800X3D", "AX3000", "USB 3.2 Gen 2x2", "80 Plus Gold").
+- Scene 1 shows the label itself as the hook ("What does Ti mean?"). Put the cursor action `select` on the scene that shows the label.
+- Then split it into parts: ONE scene per part that matters (textWithAccent: the part in white, its meaning as the accent) and a `codeBlock` that shows the label broken apart, one part per line ("DDR5   = memory generation"). At least one codeBlock and one list.
+- Make ONE number concrete with a counter or progressBar that is said in the narration (what 6000 transfers per second, 20 Gbps or 750 watts really means).
+- Only naming schemes that are stable and well documented. Say "roughly" for any rule with exceptions ("vendors bend this pattern now and then"). No prices, no benchmarks, no rumours about unreleased products.
+- Last scene before the outro is a textWithAccent takeaway ("Now you can read the next one"). The outro asks a question.""",
     "easter": FORMAT_COMMON + """
 FORMAT = HIDDEN DETAIL (the 'easter egg' format). Tell the most surprising, little-known detail the SOURCE TEXT gives about the game's development, design or technology, as a reveal:
 setup ("You have played this a hundred times"), clue, then the reveal. Open scene 1 with the game name and the promise of a secret, put kicker "hidden detail" on the reveal scenes, and show the
@@ -406,6 +421,11 @@ def _format_problems(p: MotionProject, fmt: Optional[str]) -> List[str]:
     elif fmt == "whatif":
         if sum(count(t) for t in ("counter", "progressBar", "curve", "list", "codeBlock")) < 3:
             out.append("what-if format needs at least 3 consequence scenes (counter, progressBar, curve, list or codeBlock)")
+    if fmt in ("fix", "decode"):
+        if not count("codeBlock"):
+            out.append(f"{fmt} format needs a codeBlock scene ({'the exact menu path or command' if fmt == 'fix' else 'the label broken into its parts'})")
+        if not count("list"):
+            out.append(f"{fmt} format needs a list scene ({'the steps' if fmt == 'fix' else 'what each part tells you'})")
     if fmt not in ("myth", "tier", "versus", "evolution") and (tiers or count("versus") or count("verdict") or count("timeline")):
         out.append("tier / versus / verdict / timeline scenes belong only to their own format")
     if fmt == "myth" and (tiers or count("versus") or count("timeline")):
@@ -477,6 +497,11 @@ def make_validator(catalog: Optional[Dict[str, dict]] = None, facts: Optional[st
             p.scenes[i].cursor = None
         if sum(1 for sc_ in p.scenes if sc_.cursor) > 4:
             limit_cursor(p.scenes, fmt)  # a generation that over-uses the cursor is trimmed to its most useful moments instead of being rejected
+        cursor_acts = [sc_.cursor for sc_ in p.scenes if sc_.cursor]
+        if fmt == "fix" and len(cursor_acts) < 2:
+            out.append("fix format needs the cursor on at least 2 scenes (click, select or drag): it is the hand that does the fix")
+        if fmt == "decode" and "select" not in cursor_acts:
+            out.append("decode format needs a `select` cursor on the scene that shows the label")
         used_media = [s.mediaId for s in p.scenes if s.type == "footage"]
         if catalog is None and used_media:
             out.append("footage scenes are only allowed in game videos")
