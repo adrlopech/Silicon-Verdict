@@ -33,18 +33,15 @@
   <nav class="dots" aria-label="Sections"><a href="#top" data-l="Top" aria-label="Top"></a><a href="#about" data-l="Overview" aria-label="Overview"></a><a href="#pipeline" data-l="Pipeline" aria-label="Pipeline"></a><a href="#series" data-l="Series" aria-label="Series"></a><a href="#formats" data-l="Formats" aria-label="Formats"></a><a href="#cursor" data-l="Cursor" aria-label="Cursor"></a><a href="#games" data-l="Games" aria-label="Games"></a><a href="#gates" data-l="Quality" aria-label="Quality"></a><a href="#minecraft" data-l="Minecraft" aria-label="Minecraft"></a><a href="#llm" data-l="LLM layer" aria-label="LLM layer"></a><a href="#stack" data-l="Stack" aria-label="Stack"></a><a href="#brand" data-l="Brand" aria-label="Brand"></a><a href="#map" data-l="Repo map" aria-label="Repo map"></a><a href="#start" data-l="Quick start" aria-label="Quick start"></a><a href="#changelog" data-l="Updates" aria-label="Updates"></a><a href="#faq" data-l="FAQ" aria-label="FAQ"></a><a href="#compliance" data-l="Compliance" aria-label="Compliance"></a></nav>
   <div class="totop" aria-label="Back to top"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
 
-  <header>
-    <div class="container">
-      <nav>
-        <a href="#top" class="brand"><img src="logo.svg" alt="" width="40" height="40"><span>Silicon<b>Verdict</b></span></a>
-        <ul class="nav-links long">
-          <li><a href="#pipeline">Pipeline</a></li><li><a href="#series">Series</a></li><li><a href="#formats">Formats</a></li><li><a href="#games">Games</a></li><li><a href="#brand">Brand</a></li><li><a href="#changelog">Updates</a></li><li><a href="#faq">FAQ</a></li>
-          <li><a href="terms.html">Terms</a></li>
-          <li><a href="privacy.html">Privacy</a></li>
-        </ul>
-        <button class="burger" aria-label="Menu">☰</button>
-      </nav>
-    </div>
+  <header class="pill-wrap">
+    <nav class="navpill" aria-label="Main">
+      <a href="#top" class="brand"><img src="logo.svg" alt="" width="40" height="40"><span>Silicon<b>Verdict</b></span></a>
+      <ul class="pill-links">
+        <li><a href="#pipeline">Pipeline</a></li><li><a href="#series">Series</a></li><li><a href="#games">Games</a></li><li><a href="#brand">Brand</a></li>
+      </ul>
+      <button class="cmdk" type="button" data-cmdk aria-label="Open the jump menu" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span>Jump to…</span><kbd>⌘K</kbd></button>
+      <a class="cta-pill" href="https://www.youtube.com/@SiliconVerdictHQ" target="_blank" rel="noopener">Watch</a>
+    </nav>
   </header>
 
   <main>
@@ -383,6 +380,7 @@ cd remotion_studio &amp;&amp; npx remotion studio</pre>
     </div>
   </footer>
   <script src="site.js"></script>
+  <script src="nav.js"></script>
   <script src="portal.js"></script>
 </body>
 </html>

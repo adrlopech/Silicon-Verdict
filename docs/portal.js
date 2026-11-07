@@ -74,13 +74,6 @@
   onScroll();
   if (top) top.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: RM ? 'auto' : 'smooth' }); });
 
-  // mobile menu
-  var bg = $('.burger'), nl = $('.nav-links.long');
-  if (bg) {
-    bg.addEventListener('click', function () { nl.classList.toggle('open'); });
-    $$('a', nl).forEach(function (a) { a.addEventListener('click', function () { nl.classList.remove('open'); }); });
-  }
-
   // tabs
   $$('.tabs').forEach(function (tb) {
     var root = tb.parentNode;
