@@ -143,9 +143,64 @@
     "trademark": false
   },
   {
+    "file": "ui-atom.svg",
+    "icon": "ui:atom",
+    "name": "Atom",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
+    "file": "ui-ban.svg",
+    "icon": "ui:ban",
+    "name": "Ban",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
+    "file": "ui-book-open.svg",
+    "icon": "ui:book-open",
+    "name": "Book Open",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
+    "file": "ui-calendar.svg",
+    "icon": "ui:calendar",
+    "name": "Calendar",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
     "file": "ui-captions.svg",
     "icon": "ui:captions",
     "name": "Captions",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
+    "file": "ui-car.svg",
+    "icon": "ui:car",
+    "name": "Car",
     "kind": "line",
     "source": "@iconify-json/lucide@1.2.100",
     "author": "Lucide Contributors",
@@ -176,6 +231,28 @@
     "trademark": false
   },
   {
+    "file": "ui-circle-check.svg",
+    "icon": "ui:circle-check",
+    "name": "Circle Check",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
+    "file": "ui-circle-dot.svg",
+    "icon": "ui:circle-dot",
+    "name": "Circle Dot",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
     "file": "ui-clapperboard.svg",
     "icon": "ui:clapperboard",
     "name": "Clapperboard",
@@ -187,9 +264,42 @@
     "trademark": false
   },
   {
+    "file": "ui-clock.svg",
+    "icon": "ui:clock",
+    "name": "Clock",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
     "file": "ui-cpu.svg",
     "icon": "ui:cpu",
     "name": "Cpu",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
+    "file": "ui-crosshair.svg",
+    "icon": "ui:crosshair",
+    "name": "Crosshair",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
+    "file": "ui-dices.svg",
+    "icon": "ui:dices",
+    "name": "Dices",
     "kind": "line",
     "source": "@iconify-json/lucide@1.2.100",
     "author": "Lucide Contributors",
@@ -231,6 +341,17 @@
     "trademark": false
   },
   {
+    "file": "ui-flame.svg",
+    "icon": "ui:flame",
+    "name": "Flame",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
     "file": "ui-folder-lock.svg",
     "icon": "ui:folder-lock",
     "name": "Folder Lock",
@@ -242,9 +363,31 @@
     "trademark": false
   },
   {
+    "file": "ui-gamepad-2.svg",
+    "icon": "ui:gamepad-2",
+    "name": "Gamepad",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
     "file": "ui-gauge.svg",
     "icon": "ui:gauge",
     "name": "Gauge",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
+    "file": "ui-image.svg",
+    "icon": "ui:image",
+    "name": "Image",
     "kind": "line",
     "source": "@iconify-json/lucide@1.2.100",
     "author": "Lucide Contributors",
@@ -308,6 +451,17 @@
     "trademark": false
   },
   {
+    "file": "ui-mountain.svg",
+    "icon": "ui:mountain",
+    "name": "Mountain",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
     "file": "ui-mouse-pointer-2.svg",
     "icon": "ui:mouse-pointer-2",
     "name": "Mouse Pointer",
@@ -319,9 +473,42 @@
     "trademark": false
   },
   {
+    "file": "ui-package.svg",
+    "icon": "ui:package",
+    "name": "Package",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
     "file": "ui-palette.svg",
     "icon": "ui:palette",
     "name": "Palette",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
+    "file": "ui-quote.svg",
+    "icon": "ui:quote",
+    "name": "Quote",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
+    "file": "ui-rocket.svg",
+    "icon": "ui:rocket",
+    "name": "Rocket",
     "kind": "line",
     "source": "@iconify-json/lucide@1.2.100",
     "author": "Lucide Contributors",
@@ -352,6 +539,17 @@
     "trademark": false
   },
   {
+    "file": "ui-skull.svg",
+    "icon": "ui:skull",
+    "name": "Skull",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
     "file": "ui-sparkles.svg",
     "icon": "ui:sparkles",
     "name": "Sparkles",
@@ -363,9 +561,31 @@
     "trademark": false
   },
   {
+    "file": "ui-swords.svg",
+    "icon": "ui:swords",
+    "name": "Swords",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
     "file": "ui-terminal.svg",
     "icon": "ui:terminal",
     "name": "Terminal",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
+    "file": "ui-trash-2.svg",
+    "icon": "ui:trash-2",
+    "name": "Trash",
     "kind": "line",
     "source": "@iconify-json/lucide@1.2.100",
     "author": "Lucide Contributors",
@@ -388,6 +608,17 @@
     "file": "ui-workflow.svg",
     "icon": "ui:workflow",
     "name": "Workflow",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
+    "file": "ui-x.svg",
+    "icon": "ui:x",
+    "name": "X",
     "kind": "line",
     "source": "@iconify-json/lucide@1.2.100",
     "author": "Lucide Contributors",

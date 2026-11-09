@@ -155,3 +155,26 @@ small, .tagline { opacity: 1; }
 .llm-p.live { border-color: rgba(var(--ac), .6); background: linear-gradient(160deg, rgba(var(--ac), .14), rgba(var(--ac2), .05)); } .llm-p.live .st { background: rgba(var(--ac), .22); color: var(--cyan); } .llm-p.live::before { background: var(--cyan); }
 .llm-chips { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 28px; } .llm-chips .pl { display: inline-flex; align-items: center; gap: 8px; font-size: .88rem; padding: 8px 14px; } .llm-chips .mono { width: 16px; height: 16px; }
 @media (max-width: 900px) { .llmv { grid-template-columns: 1fr; gap: 14px; padding: 22px; justify-items: center; } .llm-link { width: 2px; height: 36px; margin: 0; background: repeating-linear-gradient(180deg, rgba(var(--ac), .6) 0 6px, transparent 6px 12px); } .llm-link i { display: none; } .llm-stack { width: 100%; padding-left: 0; } .llm-stack::before, .llm-p::before { display: none; } }
+
+/* gates and game sections */
+.gtrack { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 0 auto 36px; }
+.gtrack span { display: inline-flex; align-items: center; gap: 8px; padding: 9px 15px; border-radius: 99px; background: rgba(var(--wh), .05); border: 1px solid rgba(var(--wh), .1); color: var(--ink2); font-size: .9rem; font-weight: 500; }
+.gtrack .gt { background: rgba(var(--ac), .16); border-color: rgba(var(--ac), .5); color: var(--cyan); } .gtrack .ok { color: #fff; background: rgba(var(--ac2), .35); border-color: rgba(var(--ac2), .6); }
+.gtrack i { width: 34px; height: 2px; background: repeating-linear-gradient(90deg, rgba(var(--ac), .6) 0 5px, transparent 5px 10px); }
+.gtrack .mono { width: 18px; height: 18px; }
+.gate2s { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 1000px; margin: 0 auto 28px; }
+.gate2 { display: flex; flex-direction: column; padding: 30px; border-radius: 24px; background: linear-gradient(180deg, rgba(var(--wh), .06), rgba(var(--wh), .02)); border: 1px solid rgba(var(--wh), .1); }
+.g2-top { display: flex; align-items: center; gap: 18px; margin-bottom: 22px; } .g2-top .tile.lg { margin: 0; flex: none; width: 60px; height: 60px; }
+.g2-top small { font: 600 .76rem var(--font); letter-spacing: .12em; text-transform: uppercase; color: var(--cyan); } .g2-top h3 { font-size: 1.6rem; letter-spacing: -.03em; margin: 2px 0 0; color: #fff; }
+.g2-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.g2-list li { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 14px; background: rgba(var(--wh), .045); border: 1px solid rgba(var(--wh), .07); color: var(--text); font-size: 1rem; font-weight: 500; }
+.g2-list li .mono { width: 22px; height: 22px; }
+.g2-foot { display: flex; align-items: center; gap: 12px; margin-top: 20px; padding: 14px 16px; border-radius: 14px; background: rgba(var(--ac2), .14); border: 1px dashed rgba(var(--ac), .45); color: #fff; font-weight: 500; font-size: .98rem; margin-top: auto; }
+.g2-list + .g2-foot { margin-top: 20px; } .g2-foot .mono { width: 20px; height: 20px; }
+.gwall { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; max-width: 1000px; margin: 0 auto 32px; }
+.gtile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 24px 10px 18px; border-radius: 20px; background: radial-gradient(circle at 50% 0%, rgba(var(--ac2), .3), rgba(var(--cardc), .75)); border: 1px solid rgba(var(--ac), .25); transition: border-color .4s ease, transform .5s cubic-bezier(.22,1,.36,1); }
+.gtile:hover { border-color: rgba(var(--ac), .65); transform: translateY(-3px); }
+.gtile .mono { width: 40px; height: 40px; background: var(--cyan); } .gtile b { color: #fff; font-size: .9rem; font-weight: 600; letter-spacing: -.01em; }
+.ledger { max-width: 1000px; margin: 0 auto; }
+@media (max-width: 900px) { .gate2s { grid-template-columns: 1fr; } .gwall { grid-template-columns: repeat(3, 1fr); } .gtrack i { display: none; } }
+@media (max-width: 520px) { .gwall { grid-template-columns: repeat(2, 1fr); } }
