@@ -48,7 +48,7 @@
 
   <main>
   <!-- HERO -->
-  <section id="top" class="container">
+  <section id="top" data-look="obsidian" class="container">
     <div class="hero2">
       <div>
         <div class="pill"><span class="dot"></span>Automated vertical-video studio</div>
@@ -99,7 +99,7 @@
   </section>
 
   <!-- ABOUT -->
-  <section id="about" class="blk container">
+  <section id="about" data-look="ocean" class="blk container">
     <div class="split">
       <div class="rv l">
         <div class="eyebrow">What it is</div>
@@ -107,26 +107,28 @@
         <p class="sub">Silicon Verdict is a single-owner automation suite: no public accounts, no multi-tenant service, no third-party data processing. It exists to publish original, accurate, narrated explainers about PC hardware, gaming tech and everyday computing curiosities, at a pace a human editor cannot match.</p>
         <div class="checks">
           <div><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><p><strong>Accuracy first.</strong> Every script goes through a fact-check gate; game claims must be backed by verbatim quotes from a source dossier.</p></div>
-          <div><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><p><strong>Always on-brand.</strong> Obsidian background, blue glow, electric-cyan accents. The generator can never pick another accent colour.</p></div>
+          <div><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><p><strong>Always on-brand.</strong> Eight blue looks, one channel: the palette changes from video to video but never leaves the blue family.</p></div>
           <div><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><p><strong>Safe by construction.</strong> A video that fails QA stays local and is never uploaded.</p></div>
         </div>
       </div>
       <div class="rv r">
         <div class="orbit">
-          <div class="ring r2"></div><div class="ring r1"></div>
-          <div class="core">SILICON<br>VERDICT</div>
-          <div class="node" style="left:50%;top:0"><span><svg viewBox="0 0 24 24"><path d="M9 3a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 3 5h1V3z"/><path d="M15 3a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-3 5h-1V3z"/></svg></span><em>Gemini</em></div>
-          <div class="node" style="left:93%;top:28%"><svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg><em>ElevenLabs</em></div>
-          <div class="node" style="left:80%;top:82%"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M7 3v18M17 3v18M2 8h5M2 16h5M17 8h5M17 16h5"/></svg><em>Remotion</em></div>
-          <div class="node" style="left:20%;top:82%"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10H3z"/><path d="M9 21v-6h6v6"/></svg><em>QA gate</em></div>
-          <div class="node" style="left:7%;top:28%"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg><em>Upload</em></div>
+          <div class="halo"></div><div class="disc d3"></div><div class="disc d2"></div><div class="disc d1"></div>
+          <div class="core"><img src="logo.svg" alt="Silicon Verdict" width="96" height="96"></div>
+          <div class="spin">
+            <div class="node" style="--a:0deg"><div class="in"><span><svg viewBox="0 0 24 24"><path d="M9 3a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 3 5h1V3z"/><path d="M15 3a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-3 5h-1V3z"/></svg></span><em>Gemini</em></div></div>
+            <div class="node" style="--a:72deg"><div class="in"><span><svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg></span><em>ElevenLabs</em></div></div>
+            <div class="node" style="--a:144deg"><div class="in"><span><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M7 3v18M17 3v18M2 8h5M2 16h5M17 8h5M17 16h5"/></svg></span><em>Remotion</em></div></div>
+            <div class="node" style="--a:216deg"><div class="in"><span><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></span><em>QA gate</em></div></div>
+            <div class="node" style="--a:288deg"><div class="in"><span><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></span><em>Upload</em></div></div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- PIPELINE -->
-  <section id="pipeline" class="blk container">
+  <section id="pipeline" data-look="indigo" class="blk container">
     <div class="head c rv"><div class="eyebrow">How a video is made</div><h2 class="h2">Seven stages. Zero manual steps.</h2><p class="sub">Scroll through the life of a video, from the first idea to the published Short.</p></div>
     <div class="flow rv"><span class="k">topic</span><i>→</i><span>Gemini script</span><i>→</i><span>fact-check</span><i>→</i><span>ElevenLabs voice</span><i>→</i><span>Remotion render</span><i>→</i><span>QA gate</span><i>→</i><span class="k">YouTube / TikTok</span></div>
     <div class="tl">
@@ -142,7 +144,7 @@
   </section>
 
   <!-- SERIES -->
-  <section id="series" class="blk container">
+  <section id="series" data-look="cobalt" class="blk container">
     <div class="head c rv"><div class="eyebrow">Content</div><h2 class="h2">Five series, one engine</h2><p class="sub">Motion Graphics is the main series; hardware, everyday tech and gaming are formats of the same engine.</p></div>
     <div class="series">
       <div class="card main rv"><div class="n">01</div><span class="badge">Main series</span><h3>Motion Graphics</h3><p>Narrated kinetic-typography explainers of 62-90 s: big words, one accent phrase, counters, code, bars, cards and an outro. Always vertical, in English, in one of eight blue looks. Two kinds: tech <em>curiosities</em> and <em>games</em> (an engineering fact told over real footage).</p><div class="cmd"><code>main.py --series motion --export-only</code></div></div>
@@ -154,13 +156,13 @@
   </section>
 
   <!-- FORMATS -->
-  <section id="formats" class="blk container">
+  <section id="formats" data-look="glass" class="blk container">
     <div class="head c rv"><div class="eyebrow">Motion Graphics</div><h2 class="h2">Eleven content formats</h2><p class="sub">Each format has its own scene types, prompt rules and validators. The same fact-check pass applies to every one.</p></div>
     <div class="rv z">
       <div class="tabs">
         <button class="tab on" data-t="f1">Classic</button><button class="tab" data-t="f2">Myth</button><button class="tab" data-t="f3">Tier list</button><button class="tab" data-t="f4">What if</button><button class="tab" data-t="f5">Evolution</button><button class="tab" data-t="f6">Versus</button><button class="tab" data-t="f7">Easter egg</button><button class="tab" data-t="f8">Hardware</button><button class="tab" data-t="f9">Simple</button><button class="tab" data-t="f10">Fix it now</button><button class="tab" data-t="f11">Decoded</button>
       </div>
-      <div class="panel on" id="f1"><div><h3>Classic</h3><p>The default format. A tech or hardware idea told with big words, one cyan accent word, counters, code blocks, progress bars and curves, closing with an outro.</p><div class="pills"><span class="pl c">bigText</span><span class="pl c">textWithAccent</span><span class="pl c">counter</span><span class="pl c">codeBlock</span><span class="pl c">curve</span></div><div class="cmd"><code>--series motion --export-only</code></div></div><div class="mini"><div class="q">Your SSD <em>forgets</em><br>on purpose.</div></div></div>
+      <div class="panel on" id="f1"><div><h3>Classic</h3><p>The default format. A tech or hardware idea told with big words, one accent word, counters, code blocks, progress bars and curves, closing with an outro.</p><div class="pills"><span class="pl c">bigText</span><span class="pl c">textWithAccent</span><span class="pl c">counter</span><span class="pl c">codeBlock</span><span class="pl c">curve</span></div><div class="cmd"><code>--series motion --export-only</code></div></div><div class="mini"><div class="q">Your SSD <em>forgets</em><br>on purpose.</div></div></div>
       <div class="panel" id="f2"><div><h3>Myth / Fact</h3><p>A claim appears on screen, then a stamp slams down: <strong>MYTH</strong>, <strong>FACT</strong> or <strong>PARTLY</strong>, followed by the one-line truth.</p><div class="pills"><span class="pl c">verdict</span><span class="pl">accentText = the truth</span></div><div class="cmd"><code>--motion-format myth</code></div></div><div class="mini"><div><div class="q" style="margin-bottom:22px">“More megapixels<br>= better photos”</div><div class="stamp">MYTH</div></div></div></div>
       <div class="panel" id="f3"><div><h3>Tier list</h3><p>An S-to-F tier board that fills up item by item. Every scene repeats the board and adds one more entry, so the viewer watches the ranking build.</p><div class="pills"><span class="pl c">tier</span><span class="pl">items: "S|label"</span></div><div class="cmd"><code>--motion-format tier</code></div></div><div class="mini"><div class="tier"><div><b style="background:#7DD3FF">S</b><span></span></div><div><b style="background:#4FA8FF">A</b><span></span></div><div><b style="background:#2F7DF6">B</b><span></span></div><div><b style="background:#1F56C4">C</b><span></span></div></div></div></div>
       <div class="panel" id="f4"><div><h3>What if…</h3><p>A hypothetical about computing with escalating consequences, each scene raising the stakes of the last.</p><div class="pills"><span class="pl c">bigText</span><span class="pl c">counter</span><span class="pl c">flash</span></div><div class="cmd"><code>--motion-format whatif</code></div></div><div class="mini"><div class="q">What if every<br>CPU lost its<br><em>cache?</em></div></div></div>
@@ -175,7 +177,7 @@
   </section>
 
   <!-- CURSOR -->
-  <section id="cursor" class="blk container">
+  <section id="cursor" data-look="ice" class="blk container">
     <div class="split">
       <div class="rv l">
         <div class="eyebrow">Signature element</div>
@@ -207,9 +209,8 @@
   </section>
 
   <!-- LOOKS AND RETENTION -->
-  <section id="looks" class="blk container">
-    <div class="head c rv"><div class="eyebrow">Looks and retention</div><h2 class="h2">No two videos look the same</h2><p class="sub">Every video gets one of eight blue looks, and so does this page: pick one below and the whole site changes with it. Six retention devices are enforced on every script.</p></div>
-    <div class="lookgrid rv" aria-label="Try a look"></div>
+  <section id="looks" data-look="blueprint" class="blk container">
+    <div class="head c rv"><div class="eyebrow">Looks and retention</div><h2 class="h2">No two videos look the same</h2><p class="sub">Every video gets one of eight blue looks, and this page wears all of them: the colours change as you scroll. Six retention devices are enforced on every script.</p></div>
     <div class="series looks">
       <div class="card rv"><div class="n">01</div><span class="tag">Eight looks</span><h3>A new blue every time</h3><p>Own palette, background, typeface, camera, transitions, HUD and captions. The next look never repeats the last three.</p><div class="dots8"><i style="background:#0B1F3A"></i><i style="background:#0E4A8A"></i><i style="background:#2B3A9E"></i><i style="background:#1E5BD8"></i><i style="background:#7DB9FF"></i><i style="background:#E6F1FF"></i><i style="background:#A8D4FF"></i><i style="background:#0A3B7A"></i></div></div>
       <div class="card rv d1"><div class="n">02</div><span class="tag">Cold open</span><h3>The claim first</h3><p>Scene 1 is the claim in 14 words or fewer, never a greeting, and one of scenes 2-5 promises a payoff the last third delivers.</p><div class="key">≤ 14 words · open loop</div></div>
@@ -221,7 +222,7 @@
   </section>
 
   <!-- GAMES -->
-  <section id="games" class="blk container">
+  <section id="games" data-look="ocean" class="blk container">
     <div class="head c rv"><div class="eyebrow">Game videos</div><h2 class="h2">Real footage. Grounded facts.</h2><p class="sub">Game videos show an engineering fact over official footage, inside the channel look: blue/cyan grade, scan line, corner brackets and a game tag.</p></div>
     <div class="gates">
       <div class="gate rv l"><h3><span class="ico"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M7 3v18M17 3v18M2 8h5M2 16h5M17 8h5M17 16h5"/></svg></span>Footage rules</h3><ul><li>Official <strong>Steam screenshots</strong> and clips cut from <strong>official trailers</strong>.</li><li>A vision model describes every item once, so a footage scene shows what its narration mentions.</li><li>Each item is used in <strong>one video only</strong>, then deleted. Its key goes to a ledger, so it is never downloaded again.</li><li>A game stays blacklisted for <strong>14 days</strong> after it appears.</li><li>A game with fewer than 6 unused items is skipped until more are fetched. Near-black shots are never used.</li></ul></div>
@@ -231,7 +232,7 @@
   </section>
 
   <!-- QUALITY -->
-  <section id="gates" class="blk container">
+  <section id="gates" data-look="paper" class="blk container">
     <div class="head c rv"><div class="eyebrow">Quality</div><h2 class="h2">Two gates before anything goes public</h2></div>
     <div class="gates">
       <div class="gate rv l"><h3><span class="ico"><svg viewBox="0 0 24 24"><path d="M9 3a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 3 5h1V3z"/><path d="M15 3a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-3 5h-1V3z"/></svg></span>Fact-check gate</h3><ul><li>A second pass looks for false technical claims and wrong figures.</li><li>Catches a metaphor that changes midway and misuse of "but there is a catch".</li><li>Rewrites flagged scenes and re-checks them; unfixable scripts are discarded.</li><li>Runs on the strongest reviewer, retried once if its window is full.</li><li>If it is unavailable, a panel of the other reviewers answers and their issues are merged (stricter than any single one).</li></ul></div>
@@ -241,7 +242,7 @@
 
 
   <!-- LLM -->
-  <section id="llm" class="blk container">
+  <section id="llm" data-look="obsidian" class="blk container">
     <div class="head c rv"><div class="eyebrow">Resilience</div><h2 class="h2">One LLM client, automatic fallbacks</h2><p class="sub">Every call goes through <code>services/gemini_client.py</code>. If a provider runs out of quota, the same request is answered by the next one.</p></div>
     <div class="chain rv z">
       <div class="lk first"><b>Gemini</b><span>model chain · quota-aware cooldowns persisted in data/gemini_state.json</span></div>
@@ -254,15 +255,15 @@
   </section>
 
   <!-- STACK -->
-  <section id="stack" class="blk container">
+  <section id="stack" data-look="indigo" class="blk container">
     <div class="head c rv"><div class="eyebrow">Technology</div><h2 class="h2">Built with</h2></div>
     <div class="marq"><div><span>Python<em>pipeline</em></span><span>Remotion<em>render</em></span><span>React<em>compositions</em></span><span>TypeScript<em>engine</em></span><span>Gemini<em>script</em></span><span>ElevenLabs<em>voice</em></span><span>ffmpeg<em>QA</em></span><span>SQLite<em>history</em></span><span>Node.js<em>render CLI</em></span><span>Groq<em>fallback</em></span><span>Python<em>pipeline</em></span><span>Remotion<em>render</em></span><span>React<em>compositions</em></span><span>TypeScript<em>engine</em></span><span>Gemini<em>script</em></span><span>ElevenLabs<em>voice</em></span><span>ffmpeg<em>QA</em></span><span>SQLite<em>history</em></span><span>Node.js<em>render CLI</em></span><span>Groq<em>fallback</em></span></div></div>
     <div class="marq rev"><div><span>YouTube Data API v3<em>publish</em></span><span>TikTok Content Posting API v2<em>export</em></span><span>Steam<em>footage</em></span><span>Wikipedia<em>dossiers</em></span><span>Cloudflare Workers AI<em>fallback</em></span><span>H.264<em>1080×1920</em></span><span>Docker<em>deploy</em></span><span>Google Fonts<em>type</em></span><span>YouTube Data API v3<em>publish</em></span><span>TikTok Content Posting API v2<em>export</em></span><span>Steam<em>footage</em></span><span>Wikipedia<em>dossiers</em></span><span>Cloudflare Workers AI<em>fallback</em></span><span>H.264<em>1080×1920</em></span><span>Docker<em>deploy</em></span><span>Google Fonts<em>type</em></span></div></div>
   </section>
 
   <!-- BRAND -->
-  <section id="brand" class="blk container">
-    <div class="head c rv"><div class="eyebrow">Brand look</div><h2 class="h2">Obsidian, blue glow, electric cyan</h2><p class="sub">The generator can never pick another accent colour. Every text auto-fits: a long word, headline, list item, code line or number shrinks instead of leaving the frame.</p></div>
+  <section id="brand" data-look="cobalt" class="blk container">
+    <div class="head c rv"><div class="eyebrow">Brand look</div><h2 class="h2">One blue, eight ways</h2><p class="sub">Every video wears one of eight blue looks and the generator can never leave the blue family. Every text auto-fits: a long word, headline, list item, code line or number shrinks instead of leaving the frame.</p></div>
     <div class="lockup rv">
       <div class="lk-mark"><img src="logo.svg" alt="Silicon Verdict SV monogram" width="220" height="220"></div>
       <div class="lk-text">
@@ -287,7 +288,7 @@
   </section>
 
   <!-- MAP -->
-  <section id="map" class="blk container">
+  <section id="map" data-look="blueprint" class="blk container">
     <div class="head c rv"><div class="eyebrow">Codebase</div><h2 class="h2">Repository map</h2></div>
     <div class="tree rv">
       <div class="r"><span class="p">main.py</span><span class="d">Pipeline entry point and CLI</span></div>
@@ -308,7 +309,7 @@
   </section>
 
   <!-- QUICK START -->
-  <section id="start" class="blk container">
+  <section id="start" data-look="glass" class="blk container">
     <div class="head c rv"><div class="eyebrow">Run it</div><h2 class="h2">Everyday commands</h2></div>
     <div class="term rv">
       <div class="bar"><i style="background:#FF5F57"></i><i style="background:#FEBC2E"></i><i style="background:#28C840"></i><span>zsh — silicon-verdict</span><button class="cp">Copy</button></div>
@@ -339,19 +340,19 @@ cd remotion_studio &amp;&amp; npx remotion studio</pre>
   </section>
 
   <!-- CHANGELOG -->
-  <section id="changelog" class="blk container">
+  <section id="changelog" data-look="ocean" class="blk container">
     <div class="head c rv"><div class="eyebrow">Progress</div><h2 class="h2">What's new</h2><p class="sub">Milestones of the project, newest first.</p></div>
-    <div class="clist"><div class="cl rv"><span class="when">Nov 2026</span><div><h3>A softer site with the eight looks</h3><p>The portal wears the same eight blue looks as the videos (pick one from the nav or the gallery), with softer colours, hairline borders, long shadows and slower motion. Your choice is remembered.</p></div></div><div class="cl rv"><span class="when">Nov 2026</span><div><h3>The genera command and real analytics</h3><p>YouTube Analytics is connected: a retention report by format and look, and one word, <em>genera</em>, now picks four videos from those numbers, renders them and schedules them for the next day on YouTube and TikTok.</p></div></div><div class="cl rv"><span class="when">Nov 2026</span><div><h3>Every banked script follows the retention rules</h3><p>All unpublished scripts now open on the claim, carry a short open loop, end on a two-option vote and keep every scene to the pace limit; runs of three headlines are broken by a framed card scene. Videos stay above 60 seconds.</p></div></div><div class="cl rv"><span class="when">Nov 2026</span><div><h3>Eight looks, captions and a video audit</h3><p>Every video now gets its own look (a blue palette, background, typeface, layout, camera, transitions, HUD) and never reuses one of the last three, with word-by-word captions, an accent that pulses as it is spoken and a progress indicator.</p></div></div><div class="cl rv"><span class="when">Nov 2026</span><div><h3>Pointer, UI presets and sound design</h3><p>The pointer only acts when it means something (select, drag, click), 20 drawn interfaces it can use, seven music beds and more than a dozen sound effects chosen per format and per event. The Minecraft series was retired.</p></div></div><div class="cl rv"><span class="when">Nov 2026</span><div><h3>Local voice backup</h3><p>When ElevenLabs runs out of credits, narration continues with a free local clone of the same voices (VoxCPM2 on Apple Silicon, Apache-2.0).</p></div></div><div class="cl rv"><span class="when">Nov 2026</span><div><h3>Web portal rebuilt</h3><p>Full scroll-driven walkthrough of the project, redesigned Terms and Privacy pages.</p></div></div><div class="cl rv"><span class="when">Motion as the main series</span><div><h3>Cursor character & scene effects</h3><p>Motion Graphics becomes the main series; mouse-cursor character, 18 scene effects and one continuous narration take sliced per scene.</p></div></div><div class="cl rv"><span class="when">Six content formats</span><div><h3>93 current games</h3><p>Myth, tier, what-if, evolution, versus and easter-egg formats plus 93 current games in the roster.</p></div></div><div class="cl rv"><span class="when">Grounded game facts</span><div><h3>Quoted and verified</h3><p>Source dossiers, verbatim evidence quotes checked by code, reviewer panel and 62-84 s narrated videos.</p></div></div><div class="cl rv"><span class="when">Resilient LLM layer</span><div><h3>Gemini + Groq + Cloudflare</h3><p>One client with quota-aware cooldowns, automatic fallbacks and managed story banks.</p></div></div></div>
+    <div class="clist"><div class="cl rv"><span class="when">Nov 2026</span><div><h3>A softer site that changes look as you scroll</h3><p>The portal wears the same eight blue looks as the videos and blends from one to the next while you read, with softer colours, hairline borders, long shadows and slower motion.</p></div></div><div class="cl rv"><span class="when">Nov 2026</span><div><h3>The genera command and real analytics</h3><p>YouTube Analytics is connected: a retention report by format and look, and one word, <em>genera</em>, now picks four videos from those numbers, renders them and schedules them for the next day on YouTube and TikTok.</p></div></div><div class="cl rv"><span class="when">Nov 2026</span><div><h3>Every banked script follows the retention rules</h3><p>All unpublished scripts now open on the claim, carry a short open loop, end on a two-option vote and keep every scene to the pace limit; runs of three headlines are broken by a framed card scene. Videos stay above 60 seconds.</p></div></div><div class="cl rv"><span class="when">Nov 2026</span><div><h3>Eight looks, captions and a video audit</h3><p>Every video now gets its own look (a blue palette, background, typeface, layout, camera, transitions, HUD) and never reuses one of the last three, with word-by-word captions, an accent that pulses as it is spoken and a progress indicator.</p></div></div><div class="cl rv"><span class="when">Nov 2026</span><div><h3>Pointer, UI presets and sound design</h3><p>The pointer only acts when it means something (select, drag, click), 20 drawn interfaces it can use, seven music beds and more than a dozen sound effects chosen per format and per event. The Minecraft series was retired.</p></div></div><div class="cl rv"><span class="when">Nov 2026</span><div><h3>Local voice backup</h3><p>When ElevenLabs runs out of credits, narration continues with a free local clone of the same voices (VoxCPM2 on Apple Silicon, Apache-2.0).</p></div></div><div class="cl rv"><span class="when">Nov 2026</span><div><h3>Web portal rebuilt</h3><p>Full scroll-driven walkthrough of the project, redesigned Terms and Privacy pages.</p></div></div><div class="cl rv"><span class="when">Motion as the main series</span><div><h3>Cursor character & scene effects</h3><p>Motion Graphics becomes the main series; mouse-cursor character, 18 scene effects and one continuous narration take sliced per scene.</p></div></div><div class="cl rv"><span class="when">Six content formats</span><div><h3>93 current games</h3><p>Myth, tier, what-if, evolution, versus and easter-egg formats plus 93 current games in the roster.</p></div></div><div class="cl rv"><span class="when">Grounded game facts</span><div><h3>Quoted and verified</h3><p>Source dossiers, verbatim evidence quotes checked by code, reviewer panel and 62-84 s narrated videos.</p></div></div><div class="cl rv"><span class="when">Resilient LLM layer</span><div><h3>Gemini + Groq + Cloudflare</h3><p>One client with quota-aware cooldowns, automatic fallbacks and managed story banks.</p></div></div></div>
   </section>
 
   <!-- FAQ -->
-  <section id="faq" class="blk container">
+  <section id="faq" data-look="ice" class="blk container">
     <div class="head c rv"><div class="eyebrow">FAQ</div><h2 class="h2">Questions, answered</h2></div>
     <div class="faq"><details class="rv"><summary>Is Silicon Verdict a public app or service?</summary><p>No. It is a single-owner automation suite that produces videos for the official @siliconverdict channels. There are no public accounts, no registration and no third-party data processing.</p></details><details class="rv"><summary>Does it collect data from viewers or visitors?</summary><p>No. No personal data, IP addresses or browsing behaviour is collected, and this portal uses no trackers. The APIs are used only to publish videos; comments, profiles and audience data are never read or stored.</p></details><details class="rv"><summary>Who writes the scripts, and how are facts checked?</summary><p>Scripts are written by an LLM as structured JSON, then pass a second fact-check pass. Game videos must back every claim with a verbatim quote from a source dossier, which code verifies.</p></details><details class="rv"><summary>Is the narration a real voice?</summary><p>Yes, it is generated with ElevenLabs as one continuous take with word-level timestamps. A robotic local voice is never published.</p></details><details class="rv"><summary>What happens if a video fails quality checks?</summary><p>It stays on the local machine and is not uploaded. Duration, resolution, audio level, dead air, word count and subtitle length are all verified with ffmpeg.</p></details><details class="rv"><summary>Where does the game footage come from?</summary><p>Official Steam screenshots and clips cut from official trailers, credited in each video description. Every item is used in one video only, and a game rests for 14 days after appearing.</p></details><details class="rv"><summary>How do I revoke access or request deletion?</summary><p>Revoke the app in TikTok under Settings and privacy, Security, Manage app permissions, or in your Google permissions page. Write to imnotchego@gmail.com and local tokens are purged within 24 hours.</p></details></div>
   </section>
 
   <!-- COMPLIANCE -->
-  <section id="compliance" class="blk container">
+  <section id="compliance" data-look="obsidian" class="blk container">
     <div class="head c rv"><div class="eyebrow">Privacy &amp; platform compliance</div><h2 class="h2">Built to respect your data</h2><p class="sub">Silicon Verdict follows the TikTok Developer Terms of Service, the TikTok Partner Policies and the Google API Services User Data Policy.</p></div>
     <div class="comp">
       <div class="card rv "><div class="ico"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div><h3>No user data collected</h3><p>No personal data, IP addresses or browsing behaviour of visitors or viewers is collected, tracked, sold or profiled.</p></div>

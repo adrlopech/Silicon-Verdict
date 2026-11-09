@@ -1,3 +1,30 @@
+@property --bg { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --text { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --ink-strong { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --ink2 { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --muted { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --dim { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --cyan { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --blue { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --blue2 { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --teal { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --green { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --amber { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --card { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --card-2 { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --line { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --line-c { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --o1 { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --o2 { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --o3 { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --bgc { syntax: "<number>#"; inherits: true; initial-value: 0,0,0; }
+@property --ac { syntax: "<number>#"; inherits: true; initial-value: 0,0,0; }
+@property --ac2 { syntax: "<number>#"; inherits: true; initial-value: 0,0,0; }
+@property --wh { syntax: "<number>#"; inherits: true; initial-value: 0,0,0; }
+@property --cardc { syntax: "<number>#"; inherits: true; initial-value: 0,0,0; }
+@property --orb-op { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --grid-op { syntax: "<number>"; inherits: true; initial-value: 0; }
+html { transition: --bg 1.6s cubic-bezier(.4,0,.2,1), --text 1.6s cubic-bezier(.4,0,.2,1), --ink-strong 1.6s cubic-bezier(.4,0,.2,1), --ink2 1.6s cubic-bezier(.4,0,.2,1), --muted 1.6s cubic-bezier(.4,0,.2,1), --dim 1.6s cubic-bezier(.4,0,.2,1), --cyan 1.6s cubic-bezier(.4,0,.2,1), --blue 1.6s cubic-bezier(.4,0,.2,1), --blue2 1.6s cubic-bezier(.4,0,.2,1), --teal 1.6s cubic-bezier(.4,0,.2,1), --green 1.6s cubic-bezier(.4,0,.2,1), --amber 1.6s cubic-bezier(.4,0,.2,1), --card 1.6s cubic-bezier(.4,0,.2,1), --card-2 1.6s cubic-bezier(.4,0,.2,1), --line 1.6s cubic-bezier(.4,0,.2,1), --line-c 1.6s cubic-bezier(.4,0,.2,1), --o1 1.6s cubic-bezier(.4,0,.2,1), --o2 1.6s cubic-bezier(.4,0,.2,1), --o3 1.6s cubic-bezier(.4,0,.2,1), --bgc 1.6s cubic-bezier(.4,0,.2,1), --ac 1.6s cubic-bezier(.4,0,.2,1), --ac2 1.6s cubic-bezier(.4,0,.2,1), --wh 1.6s cubic-bezier(.4,0,.2,1), --cardc 1.6s cubic-bezier(.4,0,.2,1), --orb-op 1.6s cubic-bezier(.4,0,.2,1), --grid-op 1.6s cubic-bezier(.4,0,.2,1); }
 /* Looks: the site wears the same eight blue looks as the videos (remotion_studio/src/motion/looks.ts), softened for reading.
    Every colour in style.css / portal.css is a token; a look only swaps the tokens, the backdrop and a few type details.
    Loaded after style.css and portal.css. The choice is stored in localStorage and can be forced with ?look=ocean. */
@@ -143,27 +170,6 @@ html[data-look="paper"] .series.looks .tag { color: var(--cyan); }
 html[data-look="paper"] .tier b, html[data-look="paper"] .term, html[data-look="paper"] .cur-stage { color: #E8EEF8; }
 html[data-look="paper"] footer { color: var(--muted); }
 
-/* the look picker (injected by looks.js) */
-.lookpick { position: relative; display: inline-flex; }
-.lookbtn { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px 0 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--text); font: 600 .82rem var(--font); cursor: pointer; transition: border-color .4s ease, background-color .4s ease; }
-.lookbtn:hover { border-color: var(--line-c); }
-.lookbtn i { width: 18px; height: 18px; border-radius: 50%; background: linear-gradient(135deg, var(--cyan), var(--blue)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); }
-.lookmenu { position: absolute; right: 0; top: calc(100% + 12px); z-index: 300; width: 250px; padding: 10px; border-radius: 22px; background: rgba(var(--bgc), .92); border: 1px solid var(--line); box-shadow: 0 30px 70px -20px rgba(0,0,0,.5); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); opacity: 0; transform: translateY(-6px) scale(.98); pointer-events: none; transition: opacity .35s ease, transform .45s cubic-bezier(.22,1,.36,1); }
-.lookmenu.on { opacity: 1; transform: none; pointer-events: auto; }
-.lookmenu button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 9px 10px; border: 0; border-radius: 14px; background: transparent; color: var(--text); font: 500 .9rem var(--font); text-align: left; cursor: pointer; transition: background-color .3s ease; }
-.lookmenu button:hover, .lookmenu button[aria-checked="true"] { background: rgba(var(--wh), .07); }
-.lookmenu small { margin-left: auto; color: var(--dim); font: 500 .72rem var(--mono); }
-.sw8 { width: 26px; height: 26px; flex: none; border-radius: 9px; border: 1px solid rgba(255,255,255,.2); }
-
-/* gallery of looks inside the Looks section */
-.lookgrid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 12px; margin: 0 auto 34px; max-width: 980px; }
-.lookgrid button { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 14px 6px 12px; border-radius: 20px; border: 1px solid var(--line); background: var(--card); color: var(--muted); font: 600 .78rem var(--font); cursor: pointer; transition: border-color .5s ease, transform .6s cubic-bezier(.22,1,.36,1), background-color .4s ease, color .3s ease; }
-.lookgrid button:hover { transform: translateY(-3px); color: var(--text); }
-.lookgrid button[aria-pressed="true"] { border-color: var(--line-c); color: var(--ink-strong); background: var(--card-2); }
-.lookgrid .sw8 { width: 100%; height: 46px; border-radius: 14px; }
-@media (max-width: 920px) { .lookgrid { grid-template-columns: repeat(4, 1fr); } }
-@media (max-width: 520px) { .lookgrid { grid-template-columns: repeat(2, 1fr); } .lookbtn span { display: none; } .lookbtn { padding: 0 10px; } }
-
 @media (prefers-reduced-motion: reduce) { * { transition-duration: .01ms !important; animation-duration: .01ms !important; } .rv { opacity: 1; transform: none; } }
 
 /* dark islands (phone, previews, terminal, tree, pointer demo) keep a dark face in every look, light one included */
@@ -175,7 +181,20 @@ html[data-look="paper"] .phone, html[data-look="paper"] .mini, html[data-look="p
   --cyan: #8CBBFF; --ac: 140,187,255; --blue: #5B97FF; --card: rgba(255,255,255,.06); --line-c: rgba(140,187,255,.3);
 }
 .phone, .mini, .term, .tree { box-shadow: 0 30px 70px -30px rgba(0,0,0,.55); }
-@media (max-width: 640px) {
-  .lookmenu { position: fixed; left: 14px; right: 14px; top: 78px; width: auto; }
-  .navpill { background: rgba(var(--bgc), .78); }
-}
+@media (max-width: 640px) { .navpill { background: rgba(var(--bgc), .78); } }
+
+/* ---------- the studio constellation (About) ---------- */
+.orbit { --S: min(440px, 84vw); --R: calc(var(--S) * .385); position: relative; width: var(--S); height: var(--S); aspect-ratio: auto; margin: 0 auto; }
+.orbit .halo { position: absolute; inset: -14%; border-radius: 50%; background: radial-gradient(circle, rgba(var(--ac), .16), rgba(var(--ac2), .06) 45%, transparent 68%); animation: breathe 9s ease-in-out infinite; }
+.orbit .disc { position: absolute; border-radius: 50%; border: 1px solid rgba(var(--wh), .07); background: radial-gradient(circle at 50% 38%, rgba(var(--wh), .045), rgba(var(--wh), 0) 70%); }
+.orbit .d1 { inset: 27%; } .orbit .d2 { inset: 13%; border-color: rgba(var(--wh), .05); } .orbit .d3 { inset: 0; border-style: dashed; border-color: rgba(var(--ac), .18); }
+.orbit .core { position: absolute; inset: 33%; display: grid; place-items: center; border-radius: 50%; background: radial-gradient(circle at 50% 35%, rgba(var(--wh), .1), rgba(var(--cardc), .75) 70%); border: 1px solid var(--line-c); box-shadow: 0 0 0 10px rgba(var(--ac), .05), 0 20px 60px -20px rgba(var(--ac2), .5); }
+.orbit .core img { width: 62%; height: auto; filter: drop-shadow(0 4px 14px rgba(var(--ac), .3)); }
+.orbit .spin { position: absolute; inset: 0; animation: spin 120s linear infinite; }
+.orbit .node { position: absolute; left: 50%; top: 50%; width: 0; height: 0; margin: 0; padding: 0; background: none; border: 0; box-shadow: none; transform: rotate(var(--a)) translateY(calc(var(--R) * -1)) rotate(calc(var(--a) * -1)); }
+.orbit .node .in { position: absolute; left: -30px; top: -30px; width: 60px; display: flex; flex-direction: column; align-items: center; gap: 8px; animation: spin 120s linear infinite reverse; }
+.orbit .node span { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 20px; background: var(--card-2); border: 1px solid var(--line); box-shadow: var(--shadow); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.orbit .node svg { width: 24px; height: 24px; stroke: var(--cyan); fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.orbit .node em { position: static; margin: 0; font: 600 .72rem var(--font); letter-spacing: .02em; color: var(--muted); white-space: nowrap; }
+@keyframes breathe { 50% { transform: scale(1.06); opacity: .75; } }
+@media (prefers-reduced-motion: reduce) { .orbit .spin, .orbit .node .in, .orbit .halo { animation: none; } }
