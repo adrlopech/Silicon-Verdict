@@ -58,9 +58,10 @@ export const cursorSides = (scenes: MotionScene[]): number[] => {
 const ARROW = 'M2.1 2.1 L2.1 34.1 L10.3 27.3 L17.3 45.1 L22.9 42.9 L16.3 25.7 L27.1 25.5 Z';
 const ARROW_ROUND = 4.2; // stroke width of the white body = 2 x the corner radius
 const ARROW_OUTLINE = 1.5; // dark outline on each side of the body
+const ARROW_SIZE = 0.7; // overall size of the pointer (1 = the size of the banner drawing at 2.5 px per unit); the tip stays put when it shrinks
 
 const Arrow: React.FC<{ x: number; y: number; scale: number; accent: string; press: number }> = ({ x, y, scale, accent, press }) => (
-  <svg width={120} height={150} viewBox="-6 -6 48 60" style={{ position: 'absolute', left: x - 6 * 2.5, top: y - 6 * 2.5, overflow: 'visible', transform: `scale(${scale * (1 - 0.14 * press)})`, transformOrigin: '6px 6px', filter: `drop-shadow(0 0 14px ${accent}AA) drop-shadow(0 6px 10px rgba(0,0,0,0.55))` }}>
+  <svg width={120} height={150} viewBox="-6 -6 48 60" style={{ position: 'absolute', left: x - 6 * 2.5, top: y - 6 * 2.5, overflow: 'visible', transform: `scale(${scale * ARROW_SIZE * (1 - 0.14 * press)})`, transformOrigin: '6px 6px', filter: `drop-shadow(0 0 10px ${accent}AA) drop-shadow(0 4px 7px rgba(0,0,0,0.55))` }}>
     <path d={ARROW} fill="#05070C" stroke="#05070C" strokeWidth={ARROW_ROUND + 2 * ARROW_OUTLINE} strokeLinejoin="round" />
     <path d={ARROW} fill="#FFFFFF" stroke="#FFFFFF" strokeWidth={ARROW_ROUND} strokeLinejoin="round" />
   </svg>
