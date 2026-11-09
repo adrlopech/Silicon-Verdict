@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Adds an open loop (a promise of a later payoff, see RETENTION_RULES) to the banked `fix` and `decode` scripts that do not have one.
+"""Adds an open loop (a promise of a later payoff) and a two-option vote (outro line and pinned comment), see RETENTION_RULES, to the banked `fix` and `decode` scripts that lack them.
 
 Only scripts that were NEVER published are touched: whatif / versus / evolution already produced our best TikTok results, so their bank stays as the control group of the style test.
-The phrase is appended to scene 2's narration and promises only what the format itself guarantees (the fix has a last step, a decoded label has a last part).
+The loop phrase is appended to scene 2's narration and promises only what the format itself guarantees (the fix has a last step, a decoded label has a last part).
+The vote is a binary question that fits every script of the format ("fixed it, or still no luck?", "already knew it, or news to you?"), so it replaces the open question of the outro.
 It is chosen from a small pool by a hash of the topic, so reruns give the same result and the channel does not repeat one sentence everywhere.
 
 Updates the story bank rows that are still unused in data/history.db and the built bank files in docs/generated_scripts/bank/<format>/.
@@ -15,6 +16,7 @@ Usage:
 import argparse
 import hashlib
 import json
+import re
 import shutil
 import sys
 from datetime import datetime
@@ -40,6 +42,10 @@ POOLS = {
         "Stay to the end, the last part is the one to remember.",
     ],
 }
+VOTES = {
+    "fix": ("Did that fix it for you, or still no luck? Tell me below, and follow for more tech.", "Did it fix it for you? Reply FIXED or NOPE."),
+    "decode": ("Did you already know that, or is it news to you? Tell me below, and follow for more tech.", "Did you know this already? Reply KNEW IT or NEW TO ME."),
+}
 BANK_DIR = BASE_DIR / "docs" / "generated_scripts" / "bank"
 
 
@@ -49,13 +55,19 @@ def pick(fmt: str, topic: str) -> str:
 
 
 def upgrade(data: dict) -> bool:
-    """Appends the open-loop phrase to scene 2 when scenes 2-5 have none. Returns True when the script changed."""
+    """Adds the open-loop phrase to scene 2 (when scenes 2-5 have none) and the two-option vote to the outro and the pinned comment (when missing). True when the script changed."""
     fmt = data.get("format")
     scenes = data.get("scenes") or []
-    if fmt not in POOLS or len(scenes) < 5 or any(OPEN_LOOP.search(s.get("narration", "")) for s in scenes[1:5]):
+    if fmt not in POOLS or len(scenes) < 5:
         return False
-    scenes[1]["narration"] = scenes[1]["narration"].rstrip() + " " + pick(fmt, data["topic"])
-    return True
+    changed = False
+    if not any(OPEN_LOOP.search(s.get("narration", "")) for s in scenes[1:5]):
+        scenes[1]["narration"] = scenes[1]["narration"].rstrip() + " " + pick(fmt, data["topic"])
+        changed = True
+    if not re.search(r"\bor\b[^?]*\?", scenes[-1].get("narration", "")) or not (re.search(r"\bor\b", data.get("pinned_comment", "")) and "?" in data.get("pinned_comment", "")):
+        scenes[-1]["narration"], data["pinned_comment"] = VOTES[fmt]
+        changed = True
+    return changed
 
 
 def main() -> int:
@@ -75,7 +87,7 @@ def main() -> int:
             data = json.loads(row["payload"])
             if upgrade(data):
                 todo.append((row["id"], data))
-        print(f"story bank: {len(todo)} unused fix/decode scripts need an open loop")
+        print(f"story bank: {len(todo)} unused fix/decode scripts need an open loop or a vote")
         if todo:
             print(f"  e.g. #{todo[0][0]} {todo[0][1]['topic']!r}: ... {todo[0][1]['scenes'][1]['narration']}")
         if not args.dry_run and todo:

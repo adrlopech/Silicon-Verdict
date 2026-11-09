@@ -19,6 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 
 from services.motion_generator import WORDS_PER_SECOND, MotionProject  # noqa: E402
+from services.series import apply_series  # noqa: E402
 from services.motion_pipeline import FPS, MIN_VIDEO_SECONDS, VOICE_LEAD, add_sound, qa_motion, render_motion  # noqa: E402
 
 
@@ -40,6 +41,7 @@ def render_one(path: Path, out_dir: Path) -> Path:
     name = data.pop("name", path.stem)
     data.pop("estimated_seconds", None)
     project = MotionProject.model_validate(data)
+    apply_series(project, number=1)  # the title and the first-frame kicker as they will look in production (number 1 in the preview)
     time_scenes(project)
     out_dir.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="silent_preview_") as tmp:
@@ -48,7 +50,7 @@ def render_one(path: Path, out_dir: Path) -> Path:
         for sc in project.scenes:
             starts.append(acc)
             acc += sc.durationInFrames
-        final = add_sound(raw, out_dir / f"{name}_silent.mp4", starts, None)
+        final = add_sound(raw, out_dir / f"{name}_silent.mp4", starts, None, kinds=[sc.type for sc in project.scenes])
     problems = qa_motion(final)
     print(f"{final}  ({project.total_frames / FPS:.1f} s){'  QA: ' + '; '.join(problems) if problems else '  QA ok'}")
     return final

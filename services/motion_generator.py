@@ -122,7 +122,7 @@ class MotionProject(BaseModel):
     title: str = Field(..., max_length=100, description="YouTube title in English, at most 80 characters, plus 2-3 hashtags")
     description: str = Field(..., description="Two English sentences")
     tags: List[str] = Field(..., description="6-8 English tags")
-    pinned_comment: str = Field(..., description="An English question that invites debate")
+    pinned_comment: str = Field(..., description="The same two-option vote as the outro, in the form \"A or B? Reply with one word.\" (at most 120 characters)")
     accent: str = Field(default="#00F0FF", description="Accent colour: always the channel electric cyan #00F0FF (or the channel blue #007AFF)")
     scenes: List[MotionSceneModel]
     kind: str = Field(default="curiosity", description="Set by the pipeline: curiosity | game")
@@ -189,7 +189,7 @@ CURSOR (optional, use it SPARINGLY): the channel's character is a MOUSE CURSOR t
 Set `cursor` on a scene only for: tab (opens a new browser tab: ONLY the first scene, as the video opens), toggle (ONLY the first scene and ONLY when the whole video is about a phone or computer setting such as airplane mode: opens a macOS-style Control Center panel and flips the switch named in `toggle`: airplane, wifi, bluetooth or airdrop; it replaces `tab`), drag (grabs a list item, code panel or bar: list, codeBlock, progressBar scenes), click (presses the key text: THE reveal or payoff, once),
 select (drags across the headline like selecting text: one key phrase), hover (rests on a key number), busy (a loading ring: at most once, for a real "working it out" beat). Never on flash scenes. At most 4 scenes per video, usually 2 or 3.
 On-screen effects appear automatically when the narration names them, each only once or rarely: plane/rocket/satellite fly-bys, signal waves and bars, lightning, embers, snow, drops, data packets, coins, equalizer, notification banners, a filling battery, a clock, a padlock, a magnifier, binary rain. Set `fx` only to force one.
-Metadata: title <= 80 characters + 2-3 hashtags (#siliconverdict first), description 2 sentences, 6-8 tags, pinned_comment = a debate question.
+Metadata: title <= 80 characters + 2-3 hashtags (#siliconverdict first), description 2 sentences, 6-8 tags, pinned_comment = the two-option vote of the outro.
 screen_title <= 24 characters. accent = always #00F0FF (channel electric cyan)."""
 
 RETENTION_RULES = """
@@ -198,7 +198,9 @@ RETENTION RULES (they decide whether people keep watching; the validator checks 
   "did you know", "have you ever wondered", "let's" or a definition. Example: "Your three nanometer chip has no three nanometer part inside." When a figure or a contrast makes the claim stronger, show it in scene 1 or 2.
 - OPEN LOOP. In scene 2, 3, 4 or 5 the narration promises something that comes later ("And the last reason is the one nobody checks.", "Stay to the end, the last step matters most.",
   "But the real catch comes in a moment."). Pay it off in the last third, before the outro, with a scene that clearly delivers it. Never promise something the video does not deliver.
-- PATTERN BREAK. Never more than two headline scenes (bigText / textWithAccent) in a row: break the rhythm with a counter, list, codeBlock, progressBar, curve, flash or footage scene at least every third scene."""
+- PATTERN BREAK. Never more than two headline scenes (bigText / textWithAccent) in a row: break the rhythm with a counter, list, codeBlock, progressBar, curve, flash or footage scene at least every third scene.
+- VOTE. The outro narration ends with a TWO-OPTION question the viewer can answer in one word ("Would you buy it, or skip it?", "Team DDR4 or team DDR5?") and `pinned_comment` repeats the SAME choice
+  as "A or B? Reply with one word." (at most 120 characters). Never an open question such as "What do you think?"."""
 
 GAME_RULES = """
 GAME VIDEO. This video is about the game {game}: tell ONE true engineering fact about it (engine behaviour, physics, streaming, rendering trick,
@@ -459,7 +461,7 @@ HOOK_MAX_WORDS = 16  # the prompt asks for 14; two more words of tolerance
 
 
 def retention_problems(p: MotionProject) -> List[str]:
-    """Style checks from the Nov 2026 content study (notes/content_style_study_2026-11.md): a cold open, an open loop early on and a visual break at least every third scene.
+    """Style checks from the Nov 2026 content study (notes/content_style_study_2026-11.md): a cold open, an open loop early on, a visual break at least every third scene and a two-option vote at the end.
     Only generated scripts are held to these; the hand-written banks are measured with `scripts/lint_retention.py`."""
     out: List[str] = []
     if not p.scenes:
@@ -471,6 +473,10 @@ def retention_problems(p: MotionProject) -> List[str]:
         out.append(f"scene 1 narration has {len(hook.split())} words: the cold open is at most 14 words, the claim and nothing else")
     if not any(OPEN_LOOP.search(s.narration) for s in p.scenes[1:5]):
         out.append("scenes 2-5 need an open loop: one narration line that promises a later payoff (for example \"And the last step is the one most people skip.\" or \"Stay to the end, the catch comes last.\")")
+    if not re.search(r"\bor\b[^?]*\?", p.scenes[-1].narration):
+        out.append("the outro narration must end with a two-option vote (\"A or B?\"), not an open question")
+    if not (re.search(r"\bor\b", p.pinned_comment) and "?" in p.pinned_comment) or len(p.pinned_comment) > 120:
+        out.append("pinned_comment must be the same two-option vote (\"A or B? Reply with one word.\"), at most 120 characters")
     run = 0
     for i, s in enumerate(p.scenes, 1):
         run = run + 1 if s.type in HEADLINE else 0

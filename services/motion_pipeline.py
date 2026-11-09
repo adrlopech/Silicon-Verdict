@@ -15,6 +15,18 @@ logger = logging.getLogger(__name__)
 FPS = 30
 MIN_VIDEO_SECONDS = 62.0  # final length floor (YouTube monetisation: more than 60 s)
 VOICE_LEAD = 0.12  # seconds after a scene starts before the narrator speaks (the text lands first)
+# One narrator per format (content study, Nov 2026: viewers had already commented on hearing the same voice in every video). The numbers match ELEVENLABS_VOICE_1/2/3:
+# Daniel (steady broadcaster) tells the explainers, Adam (dominant, firm) the verdicts and fights, Liam (energetic) the quick, punchy formats. Game videos keep Liam.
+VOICE_BY_FORMAT = {"hardware": 1, "evolution": 1, "decode": 1, None: 1, "versus": 2, "myth": 2, "tier": 2, "whatif": 3, "fix": 3, "simple": 3, "easter": 3}
+
+
+def narrator_voice(project: Any) -> str:
+    """ElevenLabs voice id for a project: rotates by format unless MOTION_VOICE_ROTATION is off (then always Liam, as before)."""
+    liam = settings.ELEVENLABS_VOICE_3
+    if not settings.MOTION_VOICE_ROTATION or getattr(project, "kind", "curiosity") == "game":
+        return liam
+    number = VOICE_BY_FORMAT.get(getattr(project, "format", None), 3)
+    return {1: settings.ELEVENLABS_VOICE_1, 2: settings.ELEVENLABS_VOICE_2, 3: liam}[number]
 
 
 def render_motion(props: dict, out_mp4: Path, public_dir: Optional[Path] = None) -> Path:
@@ -65,7 +77,7 @@ def narrate_scenes(project: Any, work_dir: Path):
     total = 0.0
     for _attempt in (1, 2):  # a failed take is retried once after a pause before giving up
         before = voice_synthesizer.FALLBACK_COUNT
-        full_path, total, words = synthesize_voice_with_timestamps(" ".join(texts), work_dir / "voice_full.mp3", voice_id=settings.ELEVENLABS_VOICE_3, model_id="eleven_multilingual_v2",
+        full_path, total, words = synthesize_voice_with_timestamps(" ".join(texts), work_dir / "voice_full.mp3", voice_id=narrator_voice(project), model_id="eleven_multilingual_v2",
                                                                     natural=True, min_duration=None, max_duration=None, stability=0.32, style=0.5)
         if voice_synthesizer.FALLBACK_COUNT == before:
             break
@@ -127,7 +139,7 @@ def _narrate_per_scene(project: Any, work_dir: Path) -> list:
 
     def one(i: int):
         path, dur, _ = synthesize_voice_with_timestamps(
-            project.scenes[i].narration, work_dir / f"scene_{i:02d}.mp3", voice_id=settings.ELEVENLABS_VOICE_3, model_id="eleven_multilingual_v2",
+            project.scenes[i].narration, work_dir / f"scene_{i:02d}.mp3", voice_id=narrator_voice(project), model_id="eleven_multilingual_v2",
             natural=True, min_duration=None, max_duration=None, stability=0.32, style=0.5,
             previous_text=project.scenes[i - 1].narration if i > 0 else None, next_text=project.scenes[i + 1].narration if i + 1 < len(project.scenes) else None)
         return i, path, dur
@@ -157,7 +169,25 @@ def _narrate_per_scene(project: Any, work_dir: Path) -> list:
     return clips
 
 
-def add_sound(raw: Path, out: Path, scene_starts: list, voice_clips: Optional[list] = None, lead: float = VOICE_LEAD) -> Path:
+RISER_TYPES = ("counter", "versus", "verdict", "timeline")  # data reveals: a rising sweep lands on the scene start
+MAX_RISERS = 4
+
+
+def sound_cues(scene_starts: list, kinds: Optional[list]) -> list:
+    """Sound-design cues as (file, start seconds, kind): a soft impact on the first frame and on flash scenes, a riser before each data reveal (at most MAX_RISERS, spread out)."""
+    cues = []
+    if not kinds:
+        return cues
+    cues.append(("sfx_hit.wav", 0.05, "first"))
+    reveals = [i for i, k in enumerate(kinds) if k in RISER_TYPES and i > 0]
+    if len(reveals) > MAX_RISERS:
+        reveals = [reveals[round(j * (len(reveals) - 1) / (MAX_RISERS - 1))] for j in range(MAX_RISERS)]
+    cues += [("sfx_riser.wav", max(0.0, scene_starts[i] / FPS - 0.95), "riser") for i in reveals]
+    cues += [("sfx_hit.wav", scene_starts[i] / FPS, "flash") for i, k in enumerate(kinds) if k == "flash"]
+    return cues
+
+
+def add_sound(raw: Path, out: Path, scene_starts: list, voice_clips: Optional[list] = None, lead: float = VOICE_LEAD, kinds: Optional[list] = None) -> Path:
     """Muxes a quiet ambient bed, a soft whoosh on every scene start and the narration (both effects are the project's own assets). The loudness is normalised in TWO passes
     (measure, then apply one fixed gain): a single dynamic pass pumps the volume and the voice seems to dip or cut at scene changes."""
     import json as _json
@@ -166,14 +196,29 @@ def add_sound(raw: Path, out: Path, scene_starts: list, voice_clips: Optional[li
     audio = settings.BASE_DIR / "assets" / "audio"
     ins = ["-i", str(raw), "-stream_loop", "-1", "-i", str(audio / "schematic_ambient.wav")]
     voiced = bool(voice_clips)
-    parts = [f"[1:a]volume={0.12 if voiced else 0.22},afade=t=in:d=1.2[bed]"]
+    music = audio / "motion_bed.wav"
+    parts = [f"[1:a]volume={(0.09 if music.is_file() else 0.12) if voiced else 0.22},afade=t=in:d=1.2[bed]"]
     labels = ["[bed]"]
     n = 2
+    if music.is_file():  # a quiet electronic pulse under the ambient bed (own asset, scripts/make_motion_sfx.py)
+        ins += ["-stream_loop", "-1", "-i", str(music)]
+        parts.append(f"[{n}:a]volume={0.07 if voiced else 0.16},afade=t=in:d=1.5[music]")
+        labels.append("[music]")
+        n += 1
     for start in scene_starts:
         ins += ["-i", str(audio / "sfx_whoosh.wav")]
         ms = int(start / FPS * 1000)
         parts.append(f"[{n}:a]adelay={ms}|{ms},volume={0.3 if voiced else 0.55}[w{n}]")
         labels.append(f"[w{n}]")
+        n += 1
+    for fname, at, cue in sound_cues(scene_starts, kinds):  # pattern breaks you can hear: an impact on the cold open and on flashes, a riser into each data reveal
+        if not (audio / fname).is_file():
+            continue
+        ins += ["-i", str(audio / fname)]
+        ms = int(at * 1000)
+        vol = {"first": 0.35, "flash": 0.5, "riser": 0.26}[cue] if voiced else {"first": 0.5, "flash": 0.7, "riser": 0.45}[cue]
+        parts.append(f"[{n}:a]adelay={ms}|{ms},volume={vol}[c{n}]")
+        labels.append(f"[c{n}]")
         n += 1
     for idx, clip, _d in voice_clips or []:
         ins += ["-i", str(clip)]
@@ -312,6 +357,11 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
         project = generate_motion_project(topic, avoid_topics=get_recently_used_topics_safe(), kind="game" if game else "curiosity", game=game, catalog=catalog, facts=facts, fmt=format_name)
     logger.info("Motion Graphics (%s%s%s): '%s' (%d scenes)", project.kind, f", {game}" if game else "", f", format {format_name}" if format_name else "", project.title, len(project.scenes))
 
+    from services.series import apply_series, joined_hashtag
+    label = apply_series(project)  # "Fix It Now #7": the title, the first frame and a series hashtag repeat from video to video
+    if label:
+        logger.info("Series: %s", label)
+
     work = Path(settings.TMP_DIR) / f"run_motion_{run_id}"
     work.mkdir(parents=True, exist_ok=True)
     public = work / "public"
@@ -335,7 +385,7 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
         for sc in project.scenes:
             starts.append(acc)
             acc += sc.durationInFrames
-        video = add_sound(raw, work / "motion_master.mp4", starts, clips, lead=0.0 if continuous else VOICE_LEAD)
+        video = add_sound(raw, work / "motion_master.mp4", starts, clips, lead=0.0 if continuous else VOICE_LEAD, kinds=[sc.type for sc in project.scenes])
 
         fails = qa_motion(video)
         if fails:
@@ -353,7 +403,7 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
             d = video_dir(platform, project.title)
             shutil.copyfile(video, d / f"{stem}.mp4")
             out[platform] = d / f"{stem}.mp4"
-        tags = [t if t.startswith("#") else f"#{t}" for t in project.tags]
+        tags = list(dict.fromkeys(joined_hashtag(t) for t in project.tags))  # hashtags are always one joined word ("#techexplained", never "#tech explained")
         meta = out["tiktok"].with_suffix(".txt")
         meta.write_text(
             "=" * 80 + "\nSILICON VERDICT • MOTION GRAPHICS • TIKTOK & SHORTS METADATA\n"

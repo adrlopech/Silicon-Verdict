@@ -50,6 +50,7 @@ class Settings(BaseSettings):
     ELEVENLABS_VOICE_1: str = "onwK4e9ZLuTAKqWW03F9"   # Voice 1: Daniel (Steady Broadcaster)
     ELEVENLABS_VOICE_2: str = "pNInz6obpgDQGcFmaJgB"   # Voice 2: Adam (Dominant, Firm)
     ELEVENLABS_VOICE_3: str = "TX3LPaxmHKxFdv7VOQHJ"   # Voice 3: Liam (Energetic, Social Media Creator)
+    MOTION_VOICE_ROTATION: bool = True  # Motion videos rotate the narrator by format (Daniel / Adam / Liam); False = always Liam
     ELEVENLABS_MODEL_ID: str = "eleven_turbo_v2_5"
 
     # Narration backend: "elevenlabs" (default; paid credits) with the free local voice as backup, or "local" (local only)

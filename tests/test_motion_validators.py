@@ -85,18 +85,18 @@ _COLD = "Your three nanometer chip has no three nanometer part inside."
 _LOOP = "And the last step is the one most people skip."
 
 
-def _retention_project(narrations, types=None):
+def _retention_project(narrations, types=None, pinned="Team A or team B? Reply with one word."):
     types = types or ["bigText", "counter", "textWithAccent", "list", "bigText", "codeBlock", "outro"]
     scenes = []
     for t, narr in zip(types, narrations):
         extra = {"value": 5} if t == "counter" else {"items": ["A one", "B two"]} if t == "list" else {"code": ["a = 1", "b = 2"]} if t == "codeBlock" else {}
         scenes.append(MotionSceneModel(type=t, text="Short line", narration=narr, durationInFrames=90, **extra))
-    return MotionProject(topic="t", screen_title="Test", title="A test title #siliconverdict #tech", description="One. Two.", tags=["a"] * 6, pinned_comment="Why?", scenes=scenes)
+    return MotionProject(topic="t", screen_title="Test", title="A test title #siliconverdict #tech", description="One. Two.", tags=["a"] * 6, pinned_comment=pinned, scenes=scenes)
 
 
 def _narrs(**override):
     base = [_COLD, "Five of them stack up, and that changes the picture quite a lot.", _LOOP, "Each step adds a little more to the pile of evidence here.",
-            "Together they explain why the number on the box is misleading.", "Here is the label broken down into its parts for you.", "Follow for more."]
+            "Together they explain why the number on the box is misleading.", "Here is the label broken down into its parts for you.", "Is it team A or team B? Tell me below."]
     for k, v in override.items():
         base[int(k[1:])] = v
     return base
@@ -132,3 +132,86 @@ def test_retention_is_off_by_default_and_on_when_asked():
 
 def test_number_formats_are_weighted_above_the_stalled_ones():
     assert min(FORMAT_WEIGHTS[f] for f in ("whatif", "versus", "evolution", "fix", "decode")) > max(FORMAT_WEIGHTS[f] for f in ("myth", "tier"))
+
+
+def test_retention_needs_a_two_option_vote():
+    open_question = _narrs(n6="What do you think about it? Tell me below.")
+    assert any("two-option vote" in p for p in retention_problems(_retention_project(open_question)))
+    assert any("pinned_comment" in p for p in retention_problems(_retention_project(_narrs(), pinned="What do you think?")))
+
+
+# ---- numbered series, sound design, voice rotation ----
+from types import SimpleNamespace  # noqa: E402
+
+from services.motion_pipeline import RISER_TYPES, narrator_voice, sound_cues  # noqa: E402
+from services.series import SERIES, apply_series, joined_hashtag, next_number  # noqa: E402
+
+
+def _series_project(fmt="fix", title="Monitor Stuck at 60 Hz in Windows #siliconverdict #monitor #windows"):
+    p = _retention_project(_narrs())
+    p.format, p.title, p.tags = fmt, title, ["siliconverdict", "monitor"]
+    return p
+
+
+def test_series_prefixes_title_kicker_tags_and_description():
+    p = _series_project()
+    assert apply_series(p, number=7) == "Fix It Now #7"
+    assert p.title == "Fix It Now #7: Monitor Stuck at 60 Hz in Windows #siliconverdict #monitor #windows"
+    assert p.scenes[0].kicker == "fix it now #7" and "fixitnow" in p.tags and "Part of the Fix It Now series." in p.description
+
+
+def test_series_is_idempotent_and_skips_formats_without_one():
+    p = _series_project()
+    apply_series(p, number=1)
+    assert apply_series(p, number=2) is None and p.title.count("#1") == 1
+    assert apply_series(_series_project(fmt="hardware2")) is None
+
+
+def test_series_title_stays_within_the_limit():
+    p = _series_project(title="A very long title that keeps going and going about a monitor and its refresh rate in Windows and beyond #siliconverdict #monitor #windows")
+    apply_series(p, number=123)
+    assert len(p.title) <= 100 and p.title.endswith("#siliconverdict #monitor #windows")
+
+
+def test_series_number_counts_different_topics_of_the_format(tmp_db):
+    from services.history import record_short_history
+    assert next_number("fix") == 1
+    for topic in ("a", "a", "b"):  # a repeated topic (re-rendered) is one video of the series
+        record_short_history(0, "motion_graphics", "t", "none", topic=topic, title=topic, video_id="x", category="MOTION GRAPHICS FIX")
+    record_short_history(0, "motion_graphics", "t", "none", topic="c", title="c", video_id="x", category="MOTION GRAPHICS DECODE")
+    assert next_number("fix") == 3 and next_number("decode") == 2
+
+
+def test_every_series_has_a_one_word_hashtag():
+    for name, tag in SERIES.values():
+        assert tag.isalnum() and tag == tag.lower() and name
+
+
+def test_hashtags_are_joined_words():
+    assert joined_hashtag("tech explained") == "#techexplained" and joined_hashtag("#3D V-Cache") == "#3DVCache"
+
+
+def test_sound_cues_hit_first_riser_before_reveals_hit_on_flash():
+    kinds = ["bigText", "textWithAccent", "counter", "list", "flash", "versus", "outro"]
+    starts = [0, 100, 200, 300, 400, 500, 600]
+    cues = sound_cues(starts, kinds)
+    assert ("sfx_hit.wav", 0.05, "first") in cues
+    assert ("sfx_riser.wav", 200 / 30 - 0.95, "riser") in cues and ("sfx_hit.wav", 400 / 30, "flash") in cues
+    assert sound_cues(starts, None) == []
+
+
+def test_sound_cues_cap_the_risers():
+    kinds = ["bigText"] + ["verdict"] * 9 + ["outro"]
+    cues = sound_cues([i * 100 for i in range(len(kinds))], kinds)
+    assert sum(1 for c in cues if c[2] == "riser") == 4 and "verdict" in RISER_TYPES
+
+
+def test_narrator_rotates_by_format_and_can_be_turned_off(monkeypatch):
+    from config.settings import settings
+    daniel, adam, liam = settings.ELEVENLABS_VOICE_1, settings.ELEVENLABS_VOICE_2, settings.ELEVENLABS_VOICE_3
+    voice = lambda fmt, kind="curiosity": narrator_voice(SimpleNamespace(format=fmt, kind=kind))  # noqa: E731
+    monkeypatch.setattr(settings, "MOTION_VOICE_ROTATION", True)
+    assert (voice("decode"), voice(None), voice("versus"), voice("myth"), voice("fix"), voice("whatif")) == (daniel, daniel, adam, adam, liam, liam)
+    assert voice("decode", "game") == liam
+    monkeypatch.setattr(settings, "MOTION_VOICE_ROTATION", False)
+    assert voice("decode") == liam
