@@ -53,9 +53,16 @@ export const cursorSides = (scenes: MotionScene[]): number[] => {
   return scenes.map((s) => (s.cursor && s.type !== 'flash' ? (n++ % 2 === 0 ? 1 : -1) : 0));
 };
 
+/** The channel pointer, the same one as the YouTube banner (scripts/make_brand_assets.py `cursor_arrow`): a long, slim arrow with rounded corners and a thin dark outline.
+ *  The outline is a thicker round-joined stroke under the white body; the same stroke on the body rounds its corners (radius = half the stroke width). The tip rests at (2, 2). */
+const ARROW = 'M2.1 2.1 L2.1 34.1 L10.3 27.3 L17.3 45.1 L22.9 42.9 L16.3 25.7 L27.1 25.5 Z';
+const ARROW_ROUND = 4.2; // stroke width of the white body = 2 x the corner radius
+const ARROW_OUTLINE = 1.5; // dark outline on each side of the body
+
 const Arrow: React.FC<{ x: number; y: number; scale: number; accent: string; press: number }> = ({ x, y, scale, accent, press }) => (
   <svg width={120} height={150} viewBox="-6 -6 48 60" style={{ position: 'absolute', left: x - 6 * 2.5, top: y - 6 * 2.5, overflow: 'visible', transform: `scale(${scale * (1 - 0.14 * press)})`, transformOrigin: '6px 6px', filter: `drop-shadow(0 0 14px ${accent}AA) drop-shadow(0 6px 10px rgba(0,0,0,0.55))` }}>
-    <path d="M2 2 L2 33 L10 25.5 L16 39 L22 36.5 L16 23.5 L27 23.5 Z" fill="#FFFFFF" stroke="#05070C" strokeWidth={2.4} strokeLinejoin="round" />
+    <path d={ARROW} fill="#05070C" stroke="#05070C" strokeWidth={ARROW_ROUND + 2 * ARROW_OUTLINE} strokeLinejoin="round" />
+    <path d={ARROW} fill="#FFFFFF" stroke="#FFFFFF" strokeWidth={ARROW_ROUND} strokeLinejoin="round" />
   </svg>
 );
 
