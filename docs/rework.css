@@ -132,3 +132,26 @@ small, .tagline { opacity: 1; }
   linear-gradient(135deg, color-mix(in srgb, rgb(var(--ac2)) 38%, #06112E), color-mix(in srgb, rgb(var(--ac2)) 16%, #040B22)); border-color: rgba(var(--wh), .14); }
 .cta h2 .grad { color: #5EC8FF; -webkit-text-fill-color: #5EC8FF; text-decoration-color: rgba(94, 200, 255, .55); }
 .cta p { color: rgba(255, 255, 255, .8); }
+
+/* LLM resilience: request -> client -> three providers */
+.llmv { display: grid; grid-template-columns: auto 64px auto 64px minmax(300px, 1fr); align-items: center; max-width: 1040px; margin: 0 auto; padding: 36px; border-radius: 28px; background: linear-gradient(180deg, rgba(var(--wh), .055), rgba(var(--wh), .018)); border: 1px solid rgba(var(--wh), .09); }
+.llm-req, .llm-hub { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+.llm-req .tile, .llm-hub .tile { margin: 0 0 8px; } .llm-req b, .llm-hub b { color: #fff; font-size: 1rem; } .llm-req small, .llm-hub small { color: var(--muted); font-size: .84rem; }
+.llm-hub .tile.lg { width: 84px; height: 84px; border-radius: 26px; border-color: rgba(var(--ac), .6); } .llm-hub .tile.lg .ui, .llm-hub .tile.lg .mono { width: 38px; height: 38px; }
+.tile .mono { width: 24px; height: 24px; }
+.llm-link { position: relative; height: 2px; margin: 0 6px; background: repeating-linear-gradient(90deg, rgba(var(--ac), .6) 0 6px, transparent 6px 12px); }
+.llm-link i { position: absolute; top: -4px; left: 0; width: 10px; height: 10px; border-radius: 50%; background: var(--cyan); animation: llmrun 2.6s linear infinite; }
+@keyframes llmrun { from { left: 0; opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } to { left: calc(100% - 10px); opacity: 0; } }
+.llm-stack { position: relative; display: flex; flex-direction: column; gap: 12px; padding-left: 26px; }
+.llm-stack::before { content: ""; position: absolute; left: 0; top: 34px; bottom: 34px; width: 2px; background: rgba(var(--ac), .45); border-radius: 2px; }
+.llm-p { position: relative; display: grid; grid-template-columns: 46px 1fr auto; grid-template-areas: "lg tx st" "qb qb qb"; align-items: center; gap: 8px 14px; padding: 16px 18px; border-radius: 16px; background: rgba(var(--wh), .04); border: 1px solid rgba(var(--wh), .1); }
+.llm-p::before { content: ""; position: absolute; left: -26px; top: 50%; width: 26px; height: 2px; background: rgba(var(--ac), .45); }
+.llm-p .lg { grid-area: lg; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 13px; background: linear-gradient(160deg, rgba(var(--ac), .2), rgba(var(--ac2), .08)); border: 1px solid rgba(var(--ac), .35); }
+.llm-p .lg .mono { width: 26px; height: 26px; }
+.llm-p > div:nth-of-type(1) { grid-area: tx; } .llm-p b { display: block; color: #fff; font-size: 1.02rem; } .llm-p small { color: var(--muted); font-size: .84rem; }
+.llm-p .st { grid-area: st; padding: 4px 11px; border-radius: 99px; font: 600 .76rem var(--font); background: rgba(var(--wh), .08); color: var(--ink2); }
+.llm-p .qb { grid-area: qb; height: 6px; border-radius: 3px; background: rgba(var(--wh), .1); overflow: hidden; } .llm-p .qb i { display: block; height: 100%; border-radius: 3px; background: rgba(var(--ac2), .85); }
+.llm-p.used { opacity: .6; } .llm-p.used .qb i { background: rgba(var(--wh), .45); }
+.llm-p.live { border-color: rgba(var(--ac), .6); background: linear-gradient(160deg, rgba(var(--ac), .14), rgba(var(--ac2), .05)); } .llm-p.live .st { background: rgba(var(--ac), .22); color: var(--cyan); } .llm-p.live::before { background: var(--cyan); }
+.llm-chips { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 28px; } .llm-chips .pl { display: inline-flex; align-items: center; gap: 8px; font-size: .88rem; padding: 8px 14px; } .llm-chips .mono { width: 16px; height: 16px; }
+@media (max-width: 900px) { .llmv { grid-template-columns: 1fr; gap: 14px; padding: 22px; justify-items: center; } .llm-link { width: 2px; height: 36px; margin: 0; background: repeating-linear-gradient(180deg, rgba(var(--ac), .6) 0 6px, transparent 6px 12px); } .llm-link i { display: none; } .llm-stack { width: 100%; padding-left: 0; } .llm-stack::before, .llm-p::before { display: none; } }

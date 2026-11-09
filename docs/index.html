@@ -260,16 +260,19 @@
 
   <!-- LLM -->
   <section id="llm" data-look="obsidian" class="blk container">
-    <div class="head c rv"><div class="eyebrow">Resilience</div><h2 class="h2">One LLM client, automatic fallbacks</h2><p class="sub">Every call goes through <code>services/gemini_client.py</code>. If a provider runs out of quota, the same request is answered by the next one.</p></div>
-    <div class="vis rv" role="img" aria-label="Diagram"><svg viewBox="0 0 760 110" xmlns="http://www.w3.org/2000/svg"><rect class="fr" x="30" y="14" width="190" height="80" rx="12"/><text class="lb" x="125" y="62" text-anchor="middle">Gemini</text><path class="ar" d="M226 54h100"/><rect class="fr" x="332" y="14" width="190" height="80" rx="12"/><text class="lb" x="427" y="62" text-anchor="middle">Groq</text><path class="ar" d="M528 54h100"/><rect class="fr" x="534" y="14" width="196" height="80" rx="12" style="display:none"/><text class="lb" x="690" y="62" text-anchor="middle">Cloudflare</text></svg></div>
-    <div class="chain rv z">
-      <div class="lk first"><b>Gemini</b><span>model chain · quota-aware cooldowns persisted in data/gemini_state.json</span></div>
-      <div class="ar">fallback</div>
-      <div class="lk"><b>Groq</b><span>OpenAI-compatible · reviewer panel</span></div>
-      <div class="ar">fallback</div>
-      <div class="lk"><b>Cloudflare Workers AI</b><span>last-resort provider</span></div>
+    <div class="head c rv"><div class="eyebrow">Resilience</div><h2 class="h2">One LLM client, automatic fallbacks</h2><p class="sub">If a provider runs out of quota, the next one answers the same request.</p></div>
+    <div class="llmv rv" role="img" aria-label="A request enters one client. Gemini has used its quota, so Groq answers; Cloudflare waits as the last resort.">
+      <div class="llm-req"><span class="tile"><span class="mono" style="--i:url(assets/icons/ui-terminal.svg)"></span></span><b>Script request</b><small>one call</small></div>
+      <div class="llm-link"><i></i></div>
+      <div class="llm-hub"><span class="tile lg"><span class="mono" style="--i:url(assets/icons/ui-cpu.svg)"></span></span><b>gemini_client</b><small>one client</small></div>
+      <div class="llm-link"><i></i></div>
+      <div class="llm-stack">
+        <div class="llm-p used"><span class="lg"><span class="mono" style="--i:url(assets/icons/gemini.svg)"></span></span><div><b>Gemini</b><small>Primary · model chain</small></div><span class="st">Quota used</span><div class="qb"><i style="width:100%"></i></div></div>
+        <div class="llm-p live"><span class="lg"><span class="mono" style="--i:url(assets/icons/groq.svg)"></span></span><div><b>Groq</b><small>Fallback · reviewer panel</small></div><span class="st">Answering</span><div class="qb"><i style="width:38%"></i></div></div>
+        <div class="llm-p"><span class="lg"><span class="mono" style="--i:url(assets/icons/cloudflare.svg)"></span></span><div><b>Cloudflare</b><small>Last resort</small></div><span class="st">Standby</span><div class="qb"><i style="width:6%"></i></div></div>
+      </div>
     </div>
-    <p class="sub rv" style="text-align:center;margin:30px auto 0">Adding another OpenAI-compatible API is one line. Provider requests size their output reserve to fit per-minute token limits, so a token overflow cannot happen.</p>
+    <div class="llm-chips rv"><span class="pl"><span class="mono" style="--i:url(assets/icons/ui-gauge.svg)"></span>Quota-aware cooldowns</span><span class="pl"><span class="mono" style="--i:url(assets/icons/ui-shield-check.svg)"></span>No token overflow</span><span class="pl"><span class="mono" style="--i:url(assets/icons/ui-zap.svg)"></span>New provider in one line</span></div>
   </section>
 
   <!-- STACK -->
