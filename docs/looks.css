@@ -1,30 +1,3 @@
-@property --bg { syntax: "<color>"; inherits: true; initial-value: #000; }
-@property --text { syntax: "<color>"; inherits: true; initial-value: #000; }
-@property --ink-strong { syntax: "<color>"; inherits: true; initial-value: #000; }
-@property --ink2 { syntax: "<color>"; inherits: true; initial-value: #000; }
-@property --muted { syntax: "<color>"; inherits: true; initial-value: #000; }
-@property --dim { syntax: "<color>"; inherits: true; initial-value: #000; }
-@property --cyan { syntax: "<color>"; inherits: true; initial-value: #000; }
-@property --blue { syntax: "<color>"; inherits: true; initial-value: #000; }
-@property --blue2 { syntax: "<color>"; inherits: true; initial-value: #000; }
-@property --teal { syntax: "<color>"; inherits: true; initial-value: #000; }
-@property --green { syntax: "<color>"; inherits: true; initial-value: #000; }
-@property --amber { syntax: "<color>"; inherits: true; initial-value: #000; }
-@property --card { syntax: "<color>"; inherits: true; initial-value: #000; }
-@property --card-2 { syntax: "<color>"; inherits: true; initial-value: #000; }
-@property --line { syntax: "<color>"; inherits: true; initial-value: #000; }
-@property --line-c { syntax: "<color>"; inherits: true; initial-value: #000; }
-@property --o1 { syntax: "<color>"; inherits: true; initial-value: #000; }
-@property --o2 { syntax: "<color>"; inherits: true; initial-value: #000; }
-@property --o3 { syntax: "<color>"; inherits: true; initial-value: #000; }
-@property --bgc { syntax: "<number>#"; inherits: true; initial-value: 0,0,0; }
-@property --ac { syntax: "<number>#"; inherits: true; initial-value: 0,0,0; }
-@property --ac2 { syntax: "<number>#"; inherits: true; initial-value: 0,0,0; }
-@property --wh { syntax: "<number>#"; inherits: true; initial-value: 0,0,0; }
-@property --cardc { syntax: "<number>#"; inherits: true; initial-value: 0,0,0; }
-@property --orb-op { syntax: "<number>"; inherits: true; initial-value: 0; }
-@property --grid-op { syntax: "<number>"; inherits: true; initial-value: 0; }
-html { transition: --bg 1.6s cubic-bezier(.4,0,.2,1), --text 1.6s cubic-bezier(.4,0,.2,1), --ink-strong 1.6s cubic-bezier(.4,0,.2,1), --ink2 1.6s cubic-bezier(.4,0,.2,1), --muted 1.6s cubic-bezier(.4,0,.2,1), --dim 1.6s cubic-bezier(.4,0,.2,1), --cyan 1.6s cubic-bezier(.4,0,.2,1), --blue 1.6s cubic-bezier(.4,0,.2,1), --blue2 1.6s cubic-bezier(.4,0,.2,1), --teal 1.6s cubic-bezier(.4,0,.2,1), --green 1.6s cubic-bezier(.4,0,.2,1), --amber 1.6s cubic-bezier(.4,0,.2,1), --card 1.6s cubic-bezier(.4,0,.2,1), --card-2 1.6s cubic-bezier(.4,0,.2,1), --line 1.6s cubic-bezier(.4,0,.2,1), --line-c 1.6s cubic-bezier(.4,0,.2,1), --o1 1.6s cubic-bezier(.4,0,.2,1), --o2 1.6s cubic-bezier(.4,0,.2,1), --o3 1.6s cubic-bezier(.4,0,.2,1), --bgc 1.6s cubic-bezier(.4,0,.2,1), --ac 1.6s cubic-bezier(.4,0,.2,1), --ac2 1.6s cubic-bezier(.4,0,.2,1), --wh 1.6s cubic-bezier(.4,0,.2,1), --cardc 1.6s cubic-bezier(.4,0,.2,1), --orb-op 1.6s cubic-bezier(.4,0,.2,1), --grid-op 1.6s cubic-bezier(.4,0,.2,1); }
 /* Looks: the site wears the same eight blue looks as the videos (remotion_studio/src/motion/looks.ts), softened for reading.
    Every colour in style.css / portal.css is a token; a look only swaps the tokens, the backdrop and a few type details.
    Loaded after style.css and portal.css. The choice is stored in localStorage and can be forced with ?look=ocean. */
@@ -103,20 +76,24 @@ h1, h2, h3 { color: var(--ink-strong); }
 h1 { font-weight: 700; letter-spacing: -.028em; }
 .h2, .sec-title h2 { font-weight: 700; letter-spacing: -.02em; }
 
-/* backdrop: one soft wash per look instead of a hard grid and neon orbs */
-.bg { transition: opacity .6s ease; }
-.bg::before { background-image: linear-gradient(rgba(var(--wh), .05) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--wh), .05) 1px, transparent 1px); background-size: 64px 64px; opacity: var(--grid-op); }
-.bg::after { content: ""; position: absolute; inset: 0; background: radial-gradient(1100px 700px at 50% -10%, rgba(var(--ac2), .12), transparent 70%), radial-gradient(900px 600px at 100% 100%, rgba(var(--ac), .07), transparent 70%); }
-.orb { filter: blur(120px); opacity: var(--orb-op); animation-duration: 32s; transition: background-color .8s ease, opacity .8s ease; }
-.o1 { background: var(--o1); } .o2 { background: var(--o2); } .o3 { background: var(--o3); }
-html[data-look="obsidian"] .bg::before, html[data-look="ocean"] .bg::before, html[data-look="indigo"] .bg::before { opacity: 0; }
-html[data-look="ocean"] .orb, html[data-look="indigo"] .orb { width: 90vw; height: 360px; border-radius: 50%; filter: blur(110px); }
-html[data-look="ocean"] .o1, html[data-look="indigo"] .o1 { top: -140px; left: -20vw; } html[data-look="ocean"] .o2, html[data-look="indigo"] .o2 { top: 38%; right: -30vw; }
-html[data-look="cobalt"] .bg::after { background: radial-gradient(900px 600px at 15% 10%, rgba(155,232,255,.2), transparent 65%), radial-gradient(900px 700px at 90% 60%, rgba(76,141,255,.35), transparent 65%), radial-gradient(700px 500px at 40% 100%, rgba(45,92,240,.4), transparent 70%); }
-html[data-look="glass"] .orb { border: 1px solid rgba(255,255,255,.16); background: radial-gradient(circle at 30% 25%, rgba(255,255,255,.35), rgba(var(--ac2), .5) 60%); filter: blur(28px); }
-html[data-look="paper"] .bg::before { background-image: radial-gradient(rgba(20,50,110,.2) 1.2px, transparent 1.4px); background-size: 26px 26px; mask-image: linear-gradient(#000, transparent 85%); -webkit-mask-image: linear-gradient(#000, transparent 85%); }
-html[data-look="ice"] .bg::after { background: radial-gradient(1000px 600px at 50% 0%, rgba(228,241,255,.07), transparent 70%); }
-html[data-look="blueprint"] .bg::before { background-image: linear-gradient(rgba(166,220,255,.2) 1px, transparent 1px), linear-gradient(90deg, rgba(166,220,255,.2) 1px, transparent 1px); background-size: 48px 48px; mask-image: linear-gradient(#000 30%, transparent 95%); -webkit-mask-image: linear-gradient(#000 30%, transparent 95%); opacity: .65; }
+/* backdrop: ONE fixed mix of all eight looks (aurora bands, cobalt mesh, glass spheres, dot matrix, blueprint grid, mono vignette, obsidian glow).
+   It never changes; only its tint follows the colour tokens, which looks.js blends slowly while you scroll. */
+.bg { transition: none; }
+.bg::before { content: ""; position: absolute; inset: 0; opacity: .55;
+  background-image: radial-gradient(rgba(var(--wh), .16) 1px, transparent 1.4px), linear-gradient(rgba(var(--ac), .07) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--ac), .07) 1px, transparent 1px);
+  background-size: 30px 30px, 72px 72px, 72px 72px;
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 25%, #000 10%, transparent 78%); -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 25%, #000 10%, transparent 78%); }
+.bg::after { content: ""; position: absolute; inset: 0;
+  background:
+    radial-gradient(1100px 650px at 50% -12%, rgba(var(--ac2), .20), transparent 70%),
+    radial-gradient(800px 520px at 12% 38%, rgba(var(--ac), .10), transparent 68%),
+    radial-gradient(900px 600px at 92% 62%, rgba(var(--ac2), .16), transparent 68%),
+    radial-gradient(700px 480px at 40% 105%, rgba(var(--ac), .10), transparent 70%),
+    linear-gradient(115deg, transparent 18%, rgba(var(--ac), .05) 38%, transparent 58%),
+    linear-gradient(245deg, transparent 22%, rgba(var(--ac2), .07) 44%, transparent 64%); }
+.orb { filter: blur(46px); opacity: .5; animation-duration: 40s; border: 1px solid rgba(var(--wh), .1);
+  background: radial-gradient(circle at 30% 25%, rgba(var(--wh), .22), rgba(var(--ac2), .35) 55%, rgba(var(--ac2), .05) 100%); }
+.o1 { width: 420px; height: 420px; top: -120px; left: -100px; } .o2 { width: 360px; height: 360px; top: 34%; right: -120px; } .o3 { width: 320px; height: 320px; bottom: -120px; left: 28%; }
 
 /* header and navigation */
 header, .pill-wrap { background: transparent; border-bottom: 0; backdrop-filter: none; }
