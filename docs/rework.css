@@ -122,3 +122,5 @@ small, .tagline { opacity: 1; }
 .faqx-ill { margin-top: auto; padding-top: 22px; }
 .faqx-ill .il { width: 100%; height: auto; max-height: 170px; border-radius: 16px; background: radial-gradient(circle at 50% 40%, rgba(var(--ac2), .16), rgba(var(--cardc), .5)); border: 1px solid rgba(var(--wh), .08); }
 @media (max-width: 520px) { .faqx-t { grid-template-columns: 1fr; } }
+
+.logos .lg.wide { width: 96px; } .logos .lg.wide .mono { width: 70px; height: 24px; }
