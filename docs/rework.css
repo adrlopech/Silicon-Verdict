@@ -112,3 +112,13 @@ small, .tagline { opacity: 1; }
 .up-h { margin-left: auto; font: 500 .8rem var(--mono); color: var(--muted); }
 .up h3 { font-size: 1.15rem; letter-spacing: -.01em; line-height: 1.35; margin-bottom: 8px; color: #fff; }
 .up p { font-size: .98rem; color: var(--ink2); margin-top: 8px; }
+
+/* FAQ: icon + text on top, chips, an illustration that fills the panel */
+.faqx-a { justify-content: flex-start; gap: 0; }
+.faqx-t { display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: start; }
+.faqx-a .tile.lg { margin: 0; width: 60px; height: 60px; }
+.faqx-a h3 { font-size: 1.5rem; margin-bottom: 10px; } .faqx-a p { font-size: 1.04rem; max-width: none; }
+.faqx-a .pills { margin-top: 22px; } .faqx-a .pl { display: inline-flex; align-items: center; gap: 7px; } .faqx-a .pl .ui { width: 14px; height: 14px; background: var(--cyan); -webkit-mask: var(--i) center / contain no-repeat; mask: var(--i) center / contain no-repeat; }
+.faqx-ill { margin-top: auto; padding-top: 22px; }
+.faqx-ill .il { width: 100%; height: auto; max-height: 170px; border-radius: 16px; background: radial-gradient(circle at 50% 40%, rgba(var(--ac2), .16), rgba(var(--cardc), .5)); border: 1px solid rgba(var(--wh), .08); }
+@media (max-width: 520px) { .faqx-t { grid-template-columns: 1fr; } }

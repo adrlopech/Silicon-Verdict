@@ -209,6 +209,17 @@
     "trademark": false
   },
   {
+    "file": "ui-file-check.svg",
+    "icon": "ui:file-check",
+    "name": "File Check",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
     "file": "ui-film.svg",
     "icon": "ui:film",
     "name": "Film",
@@ -220,9 +231,31 @@
     "trademark": false
   },
   {
+    "file": "ui-folder-lock.svg",
+    "icon": "ui:folder-lock",
+    "name": "Folder Lock",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
     "file": "ui-gauge.svg",
     "icon": "ui:gauge",
     "name": "Gauge",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
+    "file": "ui-key-round.svg",
+    "icon": "ui:key-round",
+    "name": "Key Round",
     "kind": "line",
     "source": "@iconify-json/lucide@1.2.100",
     "author": "Lucide Contributors",
@@ -264,6 +297,17 @@
     "trademark": false
   },
   {
+    "file": "ui-mic.svg",
+    "icon": "ui:mic",
+    "name": "Mic",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
     "file": "ui-mouse-pointer-2.svg",
     "icon": "ui:mouse-pointer-2",
     "name": "Mouse Pointer",
@@ -278,6 +322,17 @@
     "file": "ui-palette.svg",
     "icon": "ui:palette",
     "name": "Palette",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
+    "file": "ui-search-check.svg",
+    "icon": "ui:search-check",
+    "name": "Search Check",
     "kind": "line",
     "source": "@iconify-json/lucide@1.2.100",
     "author": "Lucide Contributors",
