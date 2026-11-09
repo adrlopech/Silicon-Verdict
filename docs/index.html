@@ -266,19 +266,25 @@
 
   <!-- LLM -->
   <section id="llm" data-look="obsidian" class="blk container">
-    <div class="head c rv"><div class="eyebrow">Resilience</div><h2 class="h2">One LLM client, automatic fallbacks</h2><p class="sub">If a provider runs out of quota, the next one answers the same request.</p></div>
-    <div class="llmv rv" role="img" aria-label="A request enters one client. Gemini has used its quota, so Groq answers; Cloudflare waits as the last resort.">
-      <div class="llm-req"><span class="tile"><span class="mono" style="--i:url(assets/icons/ui-terminal.svg)"></span></span><b>Script request</b><small>one call</small></div>
-      <div class="llm-link"><i></i></div>
-      <div class="llm-hub"><span class="tile lg"><span class="mono" style="--i:url(assets/icons/ui-cpu.svg)"></span></span><b>gemini_client</b><small>one client</small></div>
-      <div class="llm-link"><i></i></div>
-      <div class="llm-stack">
-        <div class="llm-p used"><span class="lg"><span class="mono" style="--i:url(assets/icons/gemini.svg)"></span></span><div><b>Gemini</b><small>Primary · model chain</small></div><span class="st">Quota used</span><div class="qb"><i style="width:100%"></i></div></div>
-        <div class="llm-p live"><span class="lg"><span class="mono" style="--i:url(assets/icons/groq.svg)"></span></span><div><b>Groq</b><small>Fallback · reviewer panel</small></div><span class="st">Answering</span><div class="qb"><i style="width:38%"></i></div></div>
-        <div class="llm-p"><span class="lg"><span class="mono" style="--i:url(assets/icons/cloudflare.svg)"></span></span><div><b>Cloudflare</b><small>Last resort</small></div><span class="st">Standby</span><div class="qb"><i style="width:6%"></i></div></div>
+    <div class="split llmx">
+      <div class="rv l">
+        <div class="eyebrow">Resilience</div>
+        <h2 class="h2">One LLM client, automatic fallbacks</h2>
+        <p class="sub">A provider runs out of quota in the middle of a script. The same request moves to the next one, and nobody notices.</p>
+        <div class="checks">
+          <div><span class="mono" style="--i:url(assets/icons/ui-workflow.svg)"></span><p><strong>Same request, next provider.</strong> No script is lost to a quota.</p></div>
+          <div><span class="mono" style="--i:url(assets/icons/ui-gauge.svg)"></span><p><strong>Quota-aware cooldowns.</strong> A provider that is out of quota rests before it is tried again.</p></div>
+          <div><span class="mono" style="--i:url(assets/icons/ui-zap.svg)"></span><p><strong>One line adds a provider.</strong> Any OpenAI-compatible API fits.</p></div>
+        </div>
+      </div>
+      <div class="rv r">
+        <div class="rail" role="img" aria-label="A request tries Gemini, which has no quota left, then moves to Groq, which answers. Cloudflare stays on standby.">
+          <div class="rail-head"><span class="mono" style="--i:url(assets/icons/ui-terminal.svg)"></span><b>One request</b><small>gemini_client</small></div>
+          <div class="rail-line"></div><div class="tok"></div>
+          <div class="rrow r1"><span class="rdot"></span><span class="lg"><span class="mono" style="--i:url(assets/icons/gemini.svg)"></span></span><div class="rtx"><b>Gemini</b><small>Primary · model chain</small></div><div class="stt"><span class="s try">Trying</span><span class="s fail">Quota reached</span></div></div><div class="rrow r2"><span class="rdot"></span><span class="lg"><span class="mono" style="--i:url(assets/icons/groq.svg)"></span></span><div class="rtx"><b>Groq</b><small>Fallback · reviewer panel</small></div><div class="stt"><span class="s wait">Next in line</span><span class="s try2">Trying</span><span class="s ok">Answered</span></div></div><div class="rrow r3"><span class="rdot"></span><span class="lg"><span class="mono" style="--i:url(assets/icons/cloudflare.svg)"></span></span><div class="rtx"><b>Cloudflare</b><small>Last resort</small></div><div class="stt"><span class="s idle">Standby</span></div></div>
+        </div>
       </div>
     </div>
-    <div class="llm-chips rv"><span class="pl"><span class="mono" style="--i:url(assets/icons/ui-gauge.svg)"></span>Quota-aware cooldowns</span><span class="pl"><span class="mono" style="--i:url(assets/icons/ui-shield-check.svg)"></span>No token overflow</span><span class="pl"><span class="mono" style="--i:url(assets/icons/ui-zap.svg)"></span>New provider in one line</span></div>
   </section>
 
   <!-- STACK -->

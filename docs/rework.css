@@ -178,3 +178,28 @@ small, .tagline { opacity: 1; }
 .ledger { max-width: 1000px; margin: 0 auto; }
 @media (max-width: 900px) { .gate2s { grid-template-columns: 1fr; } .gwall { grid-template-columns: repeat(3, 1fr); } .gtrack i { display: none; } }
 @media (max-width: 520px) { .gwall { grid-template-columns: repeat(2, 1fr); } }
+
+/* LLM resilience, version 3: a request travels down the provider list and moves on when one has no quota */
+.llmx { align-items: center; }
+.rail { --row: 92px; --gap: 14px; --top: 78px; position: relative; padding: 24px 24px 24px 24px; border-radius: 28px; background: linear-gradient(180deg, rgba(var(--wh), .06), rgba(var(--wh), .02)); border: 1px solid rgba(var(--wh), .1); display: flex; flex-direction: column; gap: var(--gap); max-width: 520px; margin-left: auto; }
+.rail-head { display: flex; align-items: center; gap: 10px; height: 36px; padding-bottom: 14px; margin-bottom: 4px; border-bottom: 1px solid rgba(var(--wh), .1); } .rail-head b { color: #fff; font-size: 1rem; } .rail-head small { margin-left: auto; font: 500 .8rem var(--mono); color: var(--muted); } .rail-head .mono { width: 20px; height: 20px; }
+.rail-line { position: absolute; left: 42px; top: calc(var(--top) + var(--row) / 2); height: calc(2 * (var(--row) + var(--gap))); width: 2px; background: repeating-linear-gradient(180deg, rgba(var(--ac), .55) 0 6px, transparent 6px 12px); }
+.tok { position: absolute; left: 34px; width: 18px; height: 18px; border-radius: 50%; background: var(--cyan); border: 3px solid rgba(255, 255, 255, .9); top: calc(var(--top) + var(--row) / 2 - 9px); animation: tokmove 9s ease-in-out infinite; z-index: 2; }
+.rrow { position: relative; display: grid; grid-template-columns: 38px 48px 1fr auto; align-items: center; gap: 12px; height: var(--row); padding: 0 18px 0 0; border-radius: 18px; background: rgba(var(--wh), .045); border: 1px solid rgba(var(--wh), .09); }
+.rdot { justify-self: center; width: 10px; height: 10px; border-radius: 50%; background: rgba(var(--ac), .5); }
+.rrow .lg { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(160deg, rgba(var(--ac), .22), rgba(var(--ac2), .08)); border: 1px solid rgba(var(--ac), .35); } .rrow .lg .mono { width: 26px; height: 26px; }
+.rtx b { display: block; color: #fff; font-size: 1.05rem; } .rtx small { color: var(--muted); font-size: .84rem; }
+.stt { position: relative; width: 132px; height: 30px; } .stt .s { position: absolute; right: 0; top: 0; padding: 5px 12px; border-radius: 99px; font: 600 .78rem var(--font); white-space: nowrap; background: rgba(var(--wh), .08); color: var(--ink2); opacity: 0; }
+.s.idle { opacity: 1; }
+.r1 { animation: r1dim 9s infinite; } .r2 { animation: r2lit 9s infinite; }
+.s.try { background: rgba(var(--ac), .2); color: var(--cyan); animation: s1try 9s infinite; } .s.fail { animation: s1fail 9s infinite; }
+.s.wait { animation: s2wait 9s infinite; } .s.try2 { background: rgba(var(--ac), .2); color: var(--cyan); animation: s2try 9s infinite; } .s.ok { background: rgba(var(--ac2), .45); color: #fff; animation: s2ok 9s infinite; }
+@keyframes tokmove { 0%, 16% { top: calc(var(--top) + var(--row) / 2 - 9px); opacity: 1; } 34%, 88% { top: calc(var(--top) + var(--row) + var(--gap) + var(--row) / 2 - 9px); opacity: 1; } 96% { opacity: 0; } 100% { top: calc(var(--top) + var(--row) / 2 - 9px); opacity: 0; } }
+@keyframes s1try { 0%, 16% { opacity: 1; } 18%, 100% { opacity: 0; } }
+@keyframes s1fail { 0%, 18% { opacity: 0; } 22%, 94% { opacity: 1; } 98%, 100% { opacity: 0; } }
+@keyframes r1dim { 0%, 18% { opacity: 1; } 26%, 94% { opacity: .5; } 100% { opacity: 1; } }
+@keyframes s2wait { 0%, 30% { opacity: 1; } 33%, 100% { opacity: 0; } }
+@keyframes s2try { 0%, 31% { opacity: 0; } 34%, 52% { opacity: 1; } 55%, 100% { opacity: 0; } }
+@keyframes s2ok { 0%, 53% { opacity: 0; } 58%, 94% { opacity: 1; } 98%, 100% { opacity: 0; } }
+@keyframes r2lit { 0%, 33% { border-color: rgba(var(--wh), .09); background: rgba(var(--wh), .045); } 40%, 94% { border-color: rgba(var(--ac), .65); background: linear-gradient(160deg, rgba(var(--ac), .16), rgba(var(--ac2), .06)); } 100% { border-color: rgba(var(--wh), .09); background: rgba(var(--wh), .045); } }
+@media (max-width: 900px) { .rail { margin: 0 auto; width: 100%; } }
