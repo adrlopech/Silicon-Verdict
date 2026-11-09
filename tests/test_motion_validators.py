@@ -549,3 +549,27 @@ def test_a_busy_mix_is_brought_under_the_peak_limit(tmp_path):
     info = [{"cursor": "click" if k == "ui" else None, "dur": 35, "cue": None, "verdict": "myth", "callout_at": 0.2} for k in kinds]
     out = add_sound(raw, tmp_path / "out.mp4", starts, None, kinds=kinds, music_file="bed_drive.mp3", info=info)  # unvoiced: effects at their loudest
     assert _peak_db(out) <= PEAK_CEILING_DB + 0.3
+
+
+# ---- YouTube Analytics client ----
+def test_analytics_refuses_a_token_without_the_scopes_and_says_how_to_get_them(tmp_path, monkeypatch):
+    import json
+
+    from config.settings import settings
+    from services import yt_analytics as ya
+
+    token = tmp_path / "token.json"
+    token.write_text(json.dumps({"token": "x", "refresh_token": "y", "client_id": "c", "client_secret": "s", "token_uri": "https://oauth2.googleapis.com/token", "scopes": ["https://www.googleapis.com/auth/youtube.upload"]}))
+    monkeypatch.setattr(settings, "YOUTUBE_TOKEN_PATH", str(token))
+    try:
+        ya._creds()
+        raise AssertionError("a token with only the upload scope must be refused")
+    except ya.AnalyticsUnavailable as exc:
+        assert "yt-analytics.readonly" in str(exc) and "authenticate_yt.py" in str(exc)
+
+
+def test_retention_reads_the_curve_at_a_point_of_the_video():
+    from services.yt_analytics import retention_at
+
+    curve = [1.0 - i / 100 for i in range(101)]
+    assert retention_at(curve, 0.2) == curve[20] and retention_at(curve, 0.8) == curve[80] and retention_at([], 0.5) is None

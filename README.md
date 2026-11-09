@@ -166,6 +166,18 @@ A demo of all four: `remotion_studio/src/motion/sample_formats.json`. `easter` i
 * Preview and tweak the design live: `cd remotion_studio && npx remotion studio`, then open the **MotionGraphic** composition and edit its props.
 * Render a JSON by hand: `node scripts/render_motion.mjs props.json out.mp4 [publicDir]` (`publicDir` holds the footage a game video references).
 
+## YouTube Analytics
+
+The token in `data/token.json` carries `youtube.upload`, `youtube.readonly` and `yt-analytics.readonly` (granted once with `.venv/bin/python scripts/authenticate_yt.py`: approve the three permissions in the browser, choosing the Silicon Verdict channel account; the script keeps a copy of the old token in `data/token_backups/`, which is git-ignored).
+`services/yt_analytics.py` reads the channel's real numbers (views, engaged views, average percentage viewed, retention curve, traffic sources). Two tools use it:
+
+```bash
+.venv/bin/python scripts/report_retention.py            # the real retention report: one row per video, averages by format and by look, traffic and the last days (also written to notes/)
+.venv/bin/python scripts/analytics_sync.py              # feeds analytics_history and the category weights with real numbers (never simulated ones once the token has the scopes)
+```
+
+`engaged` is engaged views over views, the closest the API gets to "viewed instead of swiped away". With fewer than about ten videos per format or look the averages are noise. If the Google Cloud app is in *Testing* mode the refresh token expires after 7 days: publish the consent screen to keep it.
+
 ## Development & checks
 
 ```bash

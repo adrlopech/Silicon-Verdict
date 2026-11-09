@@ -32,6 +32,7 @@ if str(BASE_DIR) not in sys.path:
 from config.settings import settings
 from services.history import (
     get_category_performance_averages,
+    get_db_connection,
     init_db,
     record_analytics_metric,
 )
@@ -67,109 +68,32 @@ def save_category_weights(weights: Dict[str, Any]) -> None:
 
 
 def fetch_youtube_video_stats(token_file: Path) -> List[Dict[str, Any]]:
-    """Fetches real metrics via YouTube Data API v3 and YouTube Analytics API v2 if credentials exist."""
-    videos_data = []
-    if not token_file.is_file():
-        logger.warning("Token file %s not found. Cannot connect to live YouTube API.", token_file)
-        return videos_data
+    """The channel's real numbers from YouTube Analytics (services/yt_analytics.py): views, engaged views (the closest thing the API has to "viewed instead of swiped away") and the
+    average percentage viewed per video. Videos without analytics yet are skipped: no number is ever invented. Returns [] when the token lacks the analytics scopes."""
+    from services import yt_analytics as ya
 
     try:
-        from datetime import timedelta
-        from google.oauth2.credentials import Credentials
-        from googleapiclient.discovery import build
-
-        creds = Credentials.from_authorized_user_file(str(token_file))
-        youtube = build("youtube", "v3", credentials=creds)
-
-        # Attempt to query real YouTube Analytics API v2 reports
-        analytics_map = {}
-        try:
-            youtube_analytics = build("youtubeAnalytics", "v2", credentials=creds)
-            now = datetime.now(timezone.utc)
-            start_date_str = (now - timedelta(days=90)).strftime("%Y-%m-%d")
-            end_date_str = now.strftime("%Y-%m-%d")
-
-            analytics_res = youtube_analytics.reports().query(
-                ids="channel==MINE",
-                startDate=start_date_str,
-                endDate=end_date_str,
-                metrics="views,averageViewPercentage,averageViewDuration,likes,comments",
-                dimensions="video",
-                sort="-views",
-                maxResults=50,
-            ).execute()
-
-            col_headers = [h["name"] for h in analytics_res.get("columnHeaders", [])]
-            for row in analytics_res.get("rows", []):
-                r_dict = dict(zip(col_headers, row))
-                v_id = r_dict.get("video")
-                if v_id:
-                    analytics_map[v_id] = r_dict
-            logger.info("Retrieved real YouTube Analytics API v2 reports for %d videos.", len(analytics_map))
-        except Exception as a_exc:
-            err_msg = str(a_exc)
-            if "insufficient authentication scopes" in err_msg.lower() or "403" in err_msg:
-                logger.warning(
-                    "YouTube Analytics API está habilitada en Google Cloud pero el token actual carece del scope "
-                    "'yt-analytics.readonly'. Ejecuta 'python scripts/authenticate_yt.py' (o con flag --auth) para autorizarlo."
-                )
-            else:
-                logger.warning("YouTube Analytics API query warning: %s", a_exc)
-
-        # Fetch channel's uploaded videos playlist
-        channels_res = youtube.channels().list(mine=True, part="contentDetails").execute()
-        uploads_playlist = channels_res["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
-
-        # Fetch last 20 video IDs
-        playlist_res = youtube.playlistItems().list(
-            playlistId=uploads_playlist,
-            part="snippet,contentDetails",
-            maxResults=20,
-        ).execute()
-
-        video_ids = [item["contentDetails"]["videoId"] for item in playlist_res.get("items", [])]
-
-        if video_ids:
-            # Fetch statistics
-            stats_res = youtube.videos().list(
-                id=",".join(video_ids),
-                part="snippet,statistics",
-            ).execute()
-
-            for item in stats_res.get("items", []):
-                vid_id = item["id"]
-                title = item["snippet"]["title"]
-                stats = item.get("statistics", {})
-                views = int(stats.get("viewCount", 0))
-                likes = int(stats.get("likeCount", 0))
-                comments = int(stats.get("commentCount", 0))
-
-                if vid_id in analytics_map:
-                    real_stats = analytics_map[vid_id]
-                    avg_view_pct = float(real_stats.get("averageViewPercentage", 0.0))
-                    views = int(real_stats.get("views", views))
-                    likes = int(real_stats.get("likes", likes))
-                    comments = int(real_stats.get("comments", comments))
-                    like_ratio = (likes / views * 100) if views > 0 else 5.0
-                    viewer_pct = min(95.0, max(50.0, avg_view_pct * 0.95))
-                else:
-                    like_ratio = (likes / views * 100) if views > 0 else 5.0
-                    viewer_pct = min(92.0, max(52.0, 65.0 + like_ratio))
-                    avg_view_pct = min(95.0, max(60.0, 72.0 + (like_ratio * 1.5)))
-
-                videos_data.append({
-                    "video_id": vid_id,
-                    "title": title,
-                    "views": views,
-                    "likes": likes,
-                    "comments": comments,
-                    "viewer_percentage": viewer_pct,
-                    "avg_view_percentage": avg_view_pct,
-                })
-    except Exception as exc:
-        logger.warning("Live YouTube API query failed (%s). Simulation available.", exc)
-
-    return videos_data
+        vids = ya.videos()
+        rep = ya.video_report(90)
+    except ya.AnalyticsUnavailable as exc:
+        logger.warning("YouTube Analytics is not set up (%s).", exc)
+        return []
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Live YouTube Analytics query failed (%s).", exc)
+        return []
+    out = []
+    for v in vids:
+        r = rep.get(v["video_id"])
+        if not r or not r.get("views"):
+            continue
+        views = int(r["views"])
+        out.append({
+            "video_id": v["video_id"], "title": v["title"], "views": views, "likes": int(r.get("likes", v["likes"])), "comments": int(r.get("comments", v["comments"])),
+            "viewer_percentage": min(100.0, 100.0 * r.get("engagedViews", 0) / views),
+            "avg_view_percentage": min(100.0, float(r.get("averageViewPercentage", 0.0))),  # a replayed loop passes 100: capped so the score stays comparable
+        })
+    logger.info("Read real analytics for %d of %d videos.", len(out), len(vids))
+    return out
 
 
 def generate_simulation_data() -> List[Dict[str, Any]]:
@@ -231,6 +155,9 @@ def run_analytics_sync(simulate: bool = False, dry_run: bool = False) -> Dict[st
     if not simulate and token_path.is_file():
         records = fetch_youtube_video_stats(token_path)
 
+    if records and not dry_run:  # real numbers replace the simulated rows of the first calibration
+        with get_db_connection() as conn:
+            conn.execute("DELETE FROM analytics_history WHERE video_id LIKE 'sim\\_%' ESCAPE '\\'")
     if not records:
         logger.info("Using simulated retention dataset for feedback loop calibration...")
         records = generate_simulation_data()

@@ -5,9 +5,7 @@ Run this script on your local workstation to generate the persistent `token.json
 credentials file with long-lived offline refresh capability.
 """
 import logging
-import subprocess
 import sys
-import webbrowser
 from pathlib import Path
 from google_auth_oauthlib.flow import InstalledAppFlow
 
@@ -54,23 +52,12 @@ def authenticate_local() -> None:
             scopes=SCOPES,
         )
 
-        flow.redirect_uri = "http://localhost:8080/"
-        auth_url, _ = flow.authorization_url(prompt="consent", access_type="offline")
-
+        # ONE authorisation URL: run_local_server builds it (with its own anti-forgery `state`), opens the browser and listens for the callback.
+        # Building a second URL here with flow.authorization_url() made the browser answer one state while the server waited for another (MismatchingStateError).
         print("\n" + "=" * 80)
         print(">>> GOOGLE OAUTH 2.0 AUTHORIZATION REQUIRED <<<")
-        print("Please visit the following URL in your browser to authorize 'Silicon Verdict':")
-        print(f"\n{auth_url}\n")
+        print("Approve the access in the browser window that opens (choose the Silicon Verdict channel account); if none opens, use the URL printed below.")
         print("=" * 80 + "\n")
-
-        # Attempt to open default browser automatically on macOS
-        try:
-            if sys.platform == "darwin":
-                subprocess.Popen(["open", auth_url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            else:
-                webbrowser.open(auth_url)
-        except Exception:
-            pass
 
         logger.info("Awaiting authorization callback on http://localhost:8080 ...")
 
@@ -78,7 +65,7 @@ def authenticate_local() -> None:
             port=8080,
             prompt="consent",
             access_type="offline",
-            open_browser=False,  # Already triggered above
+            open_browser=True,
         )
 
         if not credentials.refresh_token:

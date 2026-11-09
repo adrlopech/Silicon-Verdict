@@ -308,3 +308,7 @@ Este sistema **NO se ejecuta de forma automática ni silenciosa** durante el pro
 ## Voz de respaldo local
 
 Si ElevenLabs falla (sin créditos o sin red), `services/voice_synthesizer.py` y `services/tts.py` narran con un clon local de las mismas tres voces (VoxCPM2 8-bit en MLX vía VoiceStudio, pesos Apache-2.0, sin coste). Configuración: `TTS_BACKEND`, `LOCAL_TTS_FALLBACK` y `LOCAL_TTS_ENGINE` en `.env`; arranque con `scripts/voicestudio_server.sh`; muestras de referencia con `scripts/make_voice_refs.py`. Los modelos OmniVoice y NLLB de VoiceStudio son no comerciales: no usarlos.
+
+## Analytics de YouTube (datos reales)
+- El token (`data/token.json`) lleva `youtube.upload`, `youtube.readonly` y `yt-analytics.readonly`; se concede con `.venv/bin/python scripts/authenticate_yt.py` (aprobar en el navegador con la cuenta del canal Silicon Verdict). El script guarda copia del token anterior en `data/token_backups/`.
+- `services/yt_analytics.py` lee vistas, vistas comprometidas (`engagedViews`, lo más parecido a "visto vs deslizado"), % medio visto, curva de retención y tráfico. `scripts/report_retention.py` imprime y guarda (notes/) el informe por vídeo, formato y look; `scripts/analytics_sync.py` usa los mismos datos y ya no inventa cifras. Con menos de ~10 vídeos por formato o look, las medias son ruido.
