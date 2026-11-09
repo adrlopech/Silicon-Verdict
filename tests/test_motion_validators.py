@@ -403,3 +403,93 @@ def test_the_mix_has_music_effects_and_voice_without_clipping(tmp_path):
     out = add_sound(raw, tmp_path / "out.mp4", [0, 90], [(0, voice, 2.0)], lead=0.0, kinds=["bigText", "textWithAccent"], music_file="bed_chill.mp3", info=scene_audio_info(sc))
     log = subprocess.run([ff, "-hide_banner", "-i", str(out), "-af", "volumedetect", "-f", "null", "-"], capture_output=True, text=True).stderr
     assert "Audio:" in log and float(log.split("max_volume:")[1].split("dB")[0]) < -0.5
+
+
+# ---- looks, captions and cues (video audit, Nov 2026) ----
+import re  # noqa: E402
+
+from services.looks import AFFINITY, AVOID_LAST, LOOKS, choose_look  # noqa: E402
+from services.motion_pipeline import build_captions, synthetic_captions  # noqa: E402
+
+LOOKS_TS = Path(__file__).resolve().parent.parent / "remotion_studio" / "src" / "motion" / "looks.ts"
+
+
+def test_python_and_remotion_agree_on_the_looks():
+    ts_names = re.findall(r"^  (\w+): \{ name: '(\w+)'", LOOKS_TS.read_text(encoding="utf-8"), re.M)
+    assert {k for k, _ in ts_names} == set(LOOKS) and all(k == n for k, n in ts_names)
+
+
+def test_every_format_has_valid_affinities():
+    assert all(set(v) <= set(LOOKS) for v in AFFINITY.values()) and len(LOOKS) == 8
+
+
+def test_a_look_is_not_reused_within_the_last_videos():
+    seen = []
+    for i in range(24):
+        look = choose_look("fix", f"topic {i}", recent=seen)
+        assert look not in seen[:AVOID_LAST]
+        seen.insert(0, look)
+    assert len(set(seen)) >= 4  # real variety across many videos of the same format
+
+
+def test_the_same_topic_gets_the_same_look_and_formats_follow_their_affinity():
+    assert choose_look("decode", "RTX", recent=[]) == choose_look("decode", "RTX", recent=[])
+    assert all(choose_look("decode", f"t{i}", recent=[]) in AFFINITY["decode"] for i in range(10))
+
+
+def _voiced(texts):
+    sc = [MotionSceneModel(type="textWithAccent", text="Short line", accentText="key phrase", narration=t, durationInFrames=90) for t in texts]
+    return sc
+
+
+def test_captions_follow_the_voice_timing_and_the_accent_cue_is_set():
+    sc = _voiced(["The key phrase matters here.", "Then it ends."])
+    project = SimpleNamespace(scenes=sc, captions=None)
+    words, t = [], 0.0
+    for s_ in sc:
+        for _ in s_.narration.split():
+            words.append({"word": "x", "start": t, "end": t + 0.3})
+            t += 0.35
+    counts = [len(s_.narration.split()) for s_ in sc]
+    cuts = [0.0, counts[0] * 0.35 + 0.2, t + 0.2]
+    build_captions(project, words, [s_.narration for s_ in sc], counts, cuts)
+    caps = project.captions
+    assert [c.w for c in caps[:3]] == ["The", "key", "phrase"] and all(b.s >= a.s for a, b in zip(caps, caps[1:]))
+    assert caps[len(caps) - 1].s >= 90  # the second scene starts at frame 90
+    assert sc[0].accentCue == round(0.35 - 0.0, 2)  # "key" is the second word, said 0.35 s in
+
+
+def test_synthetic_captions_for_previews_cover_every_word():
+    sc = _voiced(["One two three four five.", "Six seven."])
+    project = SimpleNamespace(scenes=sc, captions=None)
+    synthetic_captions(project)
+    assert len(project.captions) == 7 and sc[0].accentCue is None  # "key" is not in the line, so no cue
+
+
+def test_to_props_carries_the_look_and_captions():
+    p = _retention_project(_narrs())
+    p.look = "cobalt"
+    synthetic_captions(p)
+    props = p.to_props()
+    assert props["look"] == "cobalt" and props["captions"] and {"w", "s", "e"} <= set(props["captions"][0])
+    p.look, p.captions = None, None
+    assert "look" not in p.to_props() and "captions" not in p.to_props()
+
+
+def test_scenes_must_stay_short_enough_to_keep_the_screen_moving():
+    long_line = "This is a very long line that keeps going and going so the screen would sit still for far too long indeed."
+    assert any("split it across two scenes" in x for x in retention_problems(_retention_project(_narrs(n1=long_line))))
+
+
+def test_every_look_is_blue():
+    import colorsys
+
+    ts = LOOKS_TS.read_text(encoding="utf-8")
+    for name in LOOKS:
+        row = re.search(rf"^  {name}: \{{ name: '{name}', accent: '(#\w+)', accent2: '(#\w+)', background: '(#\w+)'", ts, re.M)
+        assert row, name
+        for hex_ in row.groups():
+            r, g, b = (int(hex_[i:i + 2], 16) / 255 for i in (1, 3, 5))
+            h, sat, val = colorsys.rgb_to_hsv(r, g, b)
+            # the blue family: hue between cyan (170 deg) and indigo (255 deg), or a near-neutral blue-tinted white / black
+            assert (170 / 360 <= h <= 255 / 360) or sat < 0.2 or val < 0.1, (name, hex_, round(h * 360), round(sat, 2), round(val, 2))

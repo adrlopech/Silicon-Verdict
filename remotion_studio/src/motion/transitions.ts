@@ -50,8 +50,8 @@ export const EXIT: Record<TransitionName, Styler> = {
 };
 
 /** Deterministic pick that never repeats the previous transition and cycles through the whole set. */
-export const pickTransition = (index: number, explicit?: string): TransitionName => {
+export const pickTransition = (index: number, explicit?: string, pool: TransitionName[] = TRANSITIONS): TransitionName => {
   if (explicit && (explicit as TransitionName) in ENTER) return explicit as TransitionName;
-  const base = Math.floor(random(`tr${index}`) * TRANSITIONS.length);
-  return TRANSITIONS[(base + index * 5) % TRANSITIONS.length];
+  const base = Math.floor(random(`tr${index}`) * pool.length);
+  return pool[(base + index * 5) % pool.length]; // the look decides which transitions it uses
 };

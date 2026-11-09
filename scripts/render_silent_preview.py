@@ -19,8 +19,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 
 from services.motion_generator import WORDS_PER_SECOND, MotionProject, assign_cursors, sanitize_cursors  # noqa: E402
+from services.looks import choose_look  # noqa: E402
 from services.series import apply_series  # noqa: E402
-from services.motion_pipeline import FPS, MIN_VIDEO_SECONDS, VOICE_LEAD, add_sound, music_bed, qa_motion, render_motion, scene_audio_info  # noqa: E402
+from services.motion_pipeline import FPS, MIN_VIDEO_SECONDS, VOICE_LEAD, add_sound, music_bed, qa_motion, render_motion, scene_audio_info, synthetic_captions  # noqa: E402
 
 
 def time_scenes(project: MotionProject) -> None:
@@ -36,15 +37,22 @@ def time_scenes(project: MotionProject) -> None:
             project.scenes[i].durationInFrames += per
 
 
-def render_one(path: Path, out_dir: Path) -> Path:
+def render_one(path: Path, out_dir: Path, look: str = "") -> Path:
     data = json.loads(path.read_text(encoding="utf-8"))
     name = data.pop("name", path.stem)
+    if look:
+        name = f"{name}_{look}"
     data.pop("estimated_seconds", None)
     project = MotionProject.model_validate(data)
+    if look:
+        project.look = look
     sanitize_cursors(project.scenes, project.format)
     assign_cursors(project.scenes, project.format)
     apply_series(project, number=1)  # the title and the first-frame kicker as they will look in production (number 1 in the preview)
     time_scenes(project)
+    if not project.look:
+        project.look = look or choose_look(project.format, project.topic, recent=[])
+    synthetic_captions(project)
     out_dir.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="silent_preview_") as tmp:
         raw = render_motion(project.to_props(), Path(tmp) / "raw.mp4")
@@ -62,9 +70,10 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("scripts", nargs="+", help="MotionProject JSON files (e.g. from docs/generated_scripts/bank/<type>/)")
     ap.add_argument("--out", default=str(BASE_DIR / "output" / "previews"), help="output folder")
+    ap.add_argument("--look", default="", help="force a look (obsidian, ocean, indigo, cobalt, glass, paper, ice, blueprint); by default the format's affinity picks one")
     args = ap.parse_args()
     for s in args.scripts:
-        render_one(Path(s), Path(args.out))
+        render_one(Path(s), Path(args.out), args.look)
 
 
 if __name__ == "__main__":

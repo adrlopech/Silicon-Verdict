@@ -244,10 +244,17 @@ class MotionSceneModel(BaseModel):
     toggle: Optional[str] = Field(default=None, description="With cursor=toggle: the switch of the Control Center panel the cursor flips: airplane, wifi, bluetooth or airdrop")
     cursor: Optional[str] = Field(default=None, description="The pointer acts in this scene ONLY when the action means something: select (drags across the key phrase of a bigText / textWithAccent scene), drag (progressBar: pulls the bar to its value; tier: carries the new chip into its row), click (codeBlock or list: presses the setting or the step), toggle (first scene only, only for a video about a phone/computer setting: opens a Control Center panel and flips a switch). Empty = no pointer in this scene")
     preset: Optional[str] = Field(default=None, description="ui scenes only: the drawn interface (display, taskmgr, bios, terminal, gpupanel, gamemenu, frametime, speedtest, wifilist, router, keycaps, filemgr, diskbar, battery, tabmem, speclabel, leaderboard, partpicker, dimm, permissions); its data goes in items, value, accentText, leftValue, rightValue, unit and code as the UI PRESETS rules say")
+    accentCue: Optional[float] = Field(default=None, description="Set by the pipeline from the voice timing, never by the model: seconds after the scene starts at which the narrator says the accent phrase")
     cursorCue: Optional[float] = Field(default=None, description="Set by the pipeline from the voice timing, never by the model: seconds after the scene starts at which the narrator says the phrase the pointer acts on")
     icons: Optional[List[str]] = Field(default=None, description="1-3 thematic objects floating around the text, chosen from: chip gpu ram battery bolt wifi globe cloud server disk lock key shield thermometer flame fan gauge clock code brain bulb dollar skull warning controller monitor phone camera wave planet rocket atom magnet droplet snow heart search check cross gear star net arrow. Pick what the scene is ABOUT; leave empty to let the renderer choose from the words")
     narration: str = Field(default="", description="What the narrator SAYS during this scene: one or two natural spoken sentences, 8-16 words, that explain the idea on screen")
     durationInFrames: int = Field(..., description="Minimum scene length in frames at 30 fps (60-150); the pipeline stretches it to fit the narration")
+
+
+class CaptionWord(BaseModel):
+    w: str = Field(..., description="Set by the pipeline: the spoken word")
+    s: int = Field(..., description="Set by the pipeline: first frame of the word in the whole video")
+    e: int = Field(..., description="Set by the pipeline: last frame")
 
 
 class MotionProject(BaseModel):
@@ -262,6 +269,8 @@ class MotionProject(BaseModel):
     kind: str = Field(default="curiosity", description="Set by the pipeline: curiosity | game")
     format: Optional[str] = Field(default=None, description="Set by the pipeline: myth | tier | whatif | easter | evolution | versus | hardware | simple | fix | decode (None = the classic explainer)")
     game: Optional[str] = Field(default=None, description="Set by the pipeline for game videos")
+    look: Optional[str] = Field(default=None, description="Set by the pipeline: the visual look of the video (services/looks.py)")
+    captions: Optional[List[CaptionWord]] = Field(default=None, description="Set by the pipeline from the voice timing: the words of the caption strip")
     fact_checked: bool = Field(default=True, description="Set by the pipeline; False when no model could run the fact-check")
     gemini_input_tokens: int = Field(default=0)
     gemini_output_tokens: int = Field(default=0)
@@ -272,6 +281,8 @@ class MotionProject(BaseModel):
             "title": self.screen_title,
             "theme": {"accent": self.accent, "background": "#05070C", "text": "#FFFFFF"},
             "scenes": [s.model_dump(exclude_none=True) for s in self.scenes],
+            **({"look": self.look} if self.look else {}),
+            **({"captions": [c.model_dump() for c in self.captions]} if self.captions else {}),
         }
 
     @property
@@ -332,6 +343,7 @@ RETENTION RULES (they decide whether people keep watching; the validator checks 
 - OPEN LOOP. In scene 2, 3, 4 or 5 the narration promises something that comes later ("And the last reason is the one nobody checks.", "Stay to the end, the last step matters most.",
   "But the real catch comes in a moment."). Pay it off in the last third, before the outro, with a scene that clearly delivers it. Never promise something the video does not deliver.
 - PATTERN BREAK. Never more than two headline scenes (bigText / textWithAccent) in a row: break the rhythm with a counter, list, codeBlock, progressBar, curve, flash or footage scene at least every third scene.
+- PACE. No scene narration is longer than 16 words (about 6 seconds): when a thought needs more, split it across two scenes so something on screen changes at least every 5 seconds.
 - VOTE. The outro narration ends with a TWO-OPTION question the viewer can answer in one word ("Would you buy it, or skip it?", "Team DDR4 or team DDR5?") and `pinned_comment` repeats the SAME choice
   as "A or B? Reply with one word." (at most 120 characters). Never an open question such as "What do you think?"."""
 
@@ -602,6 +614,7 @@ OPEN_LOOP = re.compile(
     r"gets (?:worse|weirder|stranger|better)|the (?:last|final|third|second|next) (?:one|reason|part|step|round|rule|trick)|you will not believe|that is not even|that is not the)\b", re.I)
 HEADLINE = ("bigText", "textWithAccent")
 HOOK_MAX_WORDS = 16  # the prompt asks for 14; two more words of tolerance
+SCENE_MAX_WORDS = 17  # about 6.5 s of speech: beyond that the screen sits still for too long (the audit found 6 s on average)
 
 
 def retention_problems(p: MotionProject) -> List[str]:
@@ -621,6 +634,10 @@ def retention_problems(p: MotionProject) -> List[str]:
         out.append("the outro narration must end with a two-option vote (\"A or B?\"), not an open question")
     if not (re.search(r"\bor\b", p.pinned_comment) and "?" in p.pinned_comment) or len(p.pinned_comment) > 120:
         out.append("pinned_comment must be the same two-option vote (\"A or B? Reply with one word.\"), at most 120 characters")
+    cap = 24 if any(s.type in ("tier", "versus") for s in p.scenes) else SCENE_MAX_WORDS  # scenes of the table formats carry two figures, so they may be wordier
+    long_ones = [i for i, s in enumerate(p.scenes, 1) if len(s.narration.split()) > cap]
+    if long_ones:
+        out.append(f"scene {long_ones[0]} narration is longer than {cap} words: a visual change at least every 5 seconds, so split it across two scenes")
     run = 0
     for i, s in enumerate(p.scenes, 1):
         run = run + 1 if s.type in HEADLINE else 0

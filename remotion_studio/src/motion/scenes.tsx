@@ -138,7 +138,7 @@ export const ProgressBar: React.FC<P> = ({ scene }) => {
       <Accent text={scene.accentText} size={150} delay={10} />
       <div style={{ position: 'relative', width: 860, marginTop: 24 }}>
         <div data-cursor="bar" style={{ width: '100%', height: 22, borderRadius: 11, background: light ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
-          <div style={{ width: `${target * p}%`, height: '100%', borderRadius: 11, background: `linear-gradient(90deg, ${BRAND_BLUE}, ${theme.accent})`, boxShadow: `0 0 28px ${theme.accent}` }} />
+          <div style={{ width: `${target * p}%`, height: '100%', borderRadius: 11, background: `linear-gradient(90deg, ${theme.accent2 ?? BRAND_BLUE}, ${theme.accent})`, boxShadow: `0 0 28px ${theme.accent}` }} />
         </div>
         {scene.cursor === 'drag' && (
           // the knob the pointer grabs: it sits at the end of the fill, so pulling it is what makes the bar grow

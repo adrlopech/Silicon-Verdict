@@ -107,7 +107,7 @@ export const Versus: React.FC<P> = ({ scene }) => {
   const text = light ? '#0A1220' : theme.text;
   const col = (label: string | undefined, v: number, side: 'left' | 'right') => {
     const isWin = winner === side;
-    const color = side === 'left' ? theme.accent : BRAND_BLUE;
+    const color = side === 'left' ? theme.accent : theme.accent2 ?? BRAND_BLUE;
     const h = Math.max(10, (v / max) * barMax * p);
     const glow = isWin ? crown : 0;
     return (
@@ -200,7 +200,7 @@ export const Timeline: React.FC<P> = ({ scene }) => {
             <div key={i} style={{ position: 'absolute', left: 0, top: i * rowH, width: 900, height: 56, display: 'flex', alignItems: 'center', opacity: Math.min(1, s * 1.5), transform: `translateX(${(1 - s) * 60}px)` }}>
               <div style={{ width: 230, textAlign: 'right', fontFamily: MONO, fontWeight: 600, fontSize: fit(52, year.length, 220, 0.62, 30), color: latest ? theme.accent : light ? 'rgba(10,18,32,0.55)' : 'rgba(255,255,255,0.55)' }}>{year}</div>
               <div style={{ width: 46, display: 'flex', justifyContent: 'center' }}>
-                <div style={{ width: latest ? 30 : 20, height: latest ? 30 : 20, borderRadius: '50%', background: latest ? theme.accent : BRAND_BLUE, boxShadow: latest ? `0 0 30px ${theme.accent}` : 'none', border: '4px solid #05070C', marginLeft: 0 }} />
+                <div style={{ width: latest ? 30 : 20, height: latest ? 30 : 20, borderRadius: '50%', background: latest ? theme.accent : theme.accent2 ?? BRAND_BLUE, boxShadow: latest ? `0 0 30px ${theme.accent}` : 'none', border: '4px solid #05070C', marginLeft: 0 }} />
               </div>
               <div style={{ marginLeft: 26, flex: 1, fontFamily: SANS, fontWeight: 800, fontSize: fit(46, label.length, 560, 0.55, 26), lineHeight: 1.05, color: latest ? text : light ? 'rgba(10,18,32,0.7)' : 'rgba(255,255,255,0.72)', textAlign: 'left' }}>{label}</div>
             </div>

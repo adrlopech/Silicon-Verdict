@@ -30,6 +30,7 @@ export interface MotionScene {
   toggle?: ToggleKey; // with cursor 'toggle': which switch of the Control Center panel the cursor flips (airplane mode switches the radios off)
   cursor?: CursorAction; // the pointer acts in this scene only when the action means something: select (highlights the key phrase as it is spoken), drag (pulls a progress bar, drops the new tier chip), click (presses a step or a setting: code and list scenes), toggle (flips a Control Center switch)
   preset?: string; // ui scenes: which drawn interface (display, taskmgr, bios, terminal, gpupanel, gamemenu, frametime, speedtest, wifilist, router, keycaps, filemgr, diskbar, battery, tabmem, speclabel, leaderboard, partpicker, dimm, permissions); its data lives in text / items / value / accentText / leftValue / rightValue / code
+  accentCue?: number; // seconds after the scene starts at which the narrator says the accent phrase: it pulses then (set by the pipeline from the voice timing)
   cursorCue?: number; // seconds after the scene starts at which the narrator says the phrase the pointer acts on (set by the pipeline from the voice timing; the pointer arrives then)
   transition?: string; // how this scene enters (see transitions.ts); varied automatically when empty
   narration?: string; // spoken line (used by the pipeline for the voice; not drawn)
@@ -38,12 +39,21 @@ export interface MotionScene {
 
 export interface MotionTheme {
   accent: string;
+  accent2?: string; // the second colour of the look (glows, gradients, secondary bars); the channel blue when empty
   background: string;
   text: string;
 }
 
+export interface CaptionWord {
+  w: string; // the spoken word
+  s: number; // first frame of the word in the whole video
+  e: number; // last frame
+}
+
 export interface MotionGraphicProps {
   title: string;
+  look?: string; // the visual look of the whole video (see looks.ts); obsidian when empty
+  captions?: CaptionWord[]; // word timing of the narration for the caption strip (set by the pipeline)
   scenes: MotionScene[];
   theme: MotionTheme;
 }

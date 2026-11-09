@@ -170,7 +170,7 @@ const Bolts: React.FC<{ accent: string; light: boolean }> = ({ accent, light }) 
 /** Rising embers / falling snow / falling drops / falling coins: the same particle engine with a different direction and shape. */
 const Particles: React.FC<{ kind: 'embers' | 'snow' | 'drops' | 'coins'; accent: string; light: boolean }> = ({ kind, accent, light }) => {
   const frame = useCurrentFrame();
-  const col = light ? '#0A1220' : kind === 'embers' ? '#FFB347' : kind === 'coins' ? '#FFD166' : accent;
+  const col = light ? '#0A1220' : kind === 'embers' ? '#7FB6FF' : kind === 'coins' ? '#9BD3FF' : accent; // every effect stays in the blue family
   const n = kind === 'coins' ? 9 : 18;
   const up = kind === 'embers';
   return (

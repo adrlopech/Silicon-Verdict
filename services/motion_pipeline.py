@@ -84,6 +84,52 @@ def cursor_cues(project: Any, words: list, counts: list, cuts: list) -> None:
         scene.cursorCue = round(max(0.0, cue - cuts[k]), 2)
 
 
+def _caption_tokens(scene: Any, normalised: str, count: int) -> list:
+    """The words to show for a scene: the script's own text when it has as many words as the voice aligned, otherwise the (phonetically normalised) text the voice read."""
+    own = _tokens(scene.narration)
+    return own if len(own) == count else _tokens(normalised)[:count]
+
+
+def build_captions(project: Any, words: list, texts: list, counts: list, cuts: list) -> None:
+    """Sets project.captions (every spoken word with its first and last frame in the whole video) and scene.accentCue (when the narrator says the accent phrase), from the voice timing.
+    Run after the scene lengths are final: a word's frame is its scene's start plus its offset inside the scene's voice slice."""
+    from services.motion_generator import CaptionWord
+    out, pos, start = [], 0, 0
+    for k, scene in enumerate(project.scenes):
+        toks = _caption_tokens(scene, texts[k], counts[k])
+        sw = words[pos:pos + counts[k]]
+        pos += counts[k]
+        for tok, w in zip(toks, sw):
+            s_ = start + round((w["start"] - cuts[k]) * FPS)
+            out.append(CaptionWord(w=tok, s=max(0, s_), e=max(s_ + 1, start + round((w["end"] - cuts[k]) * FPS))))
+        if scene.accentText and sw:
+            first = next((_norm_word(x) for x in scene.accentText.split() if _norm_word(x)), "")
+            hit = next((w for t, w in zip(toks, sw) if first and _norm_word(t) == first), None)
+            if hit:
+                scene.accentCue = round(max(0.0, hit["start"] - cuts[k]), 2)
+        start += scene.durationInFrames
+    project.captions = out
+
+
+def synthetic_captions(project: Any) -> None:
+    """The same, without a voice (silent previews): the words are spread over each scene at a natural pace, so the captions and the accent pulse can be judged visually."""
+    from services.motion_generator import CaptionWord, WORDS_PER_SECOND
+    out, start = [], 0
+    for scene in project.scenes:
+        toks = _tokens(scene.narration)
+        t0 = start + round(VOICE_LEAD * FPS)
+        step = FPS / WORDS_PER_SECOND
+        for i, tok in enumerate(toks):
+            out.append(CaptionWord(w=tok, s=int(t0 + i * step), e=int(t0 + (i + 1) * step) - 1))
+        if scene.accentText and toks:
+            first = next((_norm_word(x) for x in scene.accentText.split() if _norm_word(x)), "")
+            idx = next((i for i, t in enumerate(toks) if first and _norm_word(t) == first), None)
+            if idx is not None:
+                scene.accentCue = round((VOICE_LEAD * FPS + idx * step) / FPS, 2)
+        start += scene.durationInFrames
+    project.captions = out
+
+
 def narrate_scenes(project: Any, work_dir: Path):
     """Narrates the whole script in ONE continuous ElevenLabs take (fluid intonation, no cuts mid-sentence) and slices it per scene at the natural pause between two words.
     Returns ([(scene_index, mp3, seconds)], continuous). With continuous=True each scene lasts exactly as long as its slice and the slices play back to back;
@@ -150,6 +196,7 @@ def narrate_scenes(project: Any, work_dir: Path):
         for k in ends:
             scenes[k].durationInFrames += per
         logger.info("Narrated video was %.1f s: %d sentence ends held %.2f s longer to pass %.0f s.", (project.total_frames - per * len(ends)) / FPS, len(ends), per / FPS, MIN_VIDEO_SECONDS)
+    build_captions(project, words, texts, counts, cuts)
     logger.info("Narration ready (continuous take): %d slices, %.1f s of speech, video %.1f s", len(clips), total, project.total_frames / FPS)
     return clips, True
 
@@ -443,6 +490,10 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
     from services.motion_generator import assign_cursors, sanitize_cursors
     sanitize_cursors(project.scenes, project.format)  # scripts written by hand (the banks) predate the rules: no tab, no hover, only pointer moments that mean something
     assign_cursors(project.scenes, project.format)
+    from services.looks import choose_look
+    if not project.look:
+        project.look = choose_look(project.format, project.topic)  # a whole visual identity per video, never one of the last three used
+    logger.info("Look: %s", project.look)
     from services.series import apply_series, joined_hashtag
     label = apply_series(project)  # "Fix It Now #7": the title, the first frame and a series hashtag repeat from video to video
     if label:
@@ -511,7 +562,7 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
                 yt_id = f"local_{run_id}"
         try:
             record_short_history(weekday_index=datetime.now().weekday(), theme_key="motion_graphics", game_title=project.screen_title, voice_id_used="none", topic=project.topic,
-                                 title=project.title, video_id=yt_id, category=("MOTION GRAPHICS " + project.format.upper()) if project.format else "MOTION GRAPHICS", tone="kinetic_typography", preset="remotion_motion")
+                                 title=project.title, video_id=yt_id, category=("MOTION GRAPHICS " + project.format.upper()) if project.format else "MOTION GRAPHICS", tone="kinetic_typography", preset=f"remotion_motion:{project.look or 'obsidian'}")
         except Exception as exc:
             logger.warning("History not recorded: %s", exc)
         logger.info("Motion Graphics video ready in %.0fs: %s", time.time() - t0, out["tiktok"])

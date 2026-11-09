@@ -1,11 +1,13 @@
 import React from 'react';
 import { AbsoluteFill, interpolate, random, useCurrentFrame } from 'remotion';
 import { EASE_OUT, clamp, useTheme } from './primitives';
+import { ParticleStyle } from './looks';
 import { BRAND_BLUE } from './types';
 
-/** Rising dust + a few bigger glowing orbs, parallaxed by depth. Global, deterministic, runs under every scene. */
-export const Particles: React.FC<{ accent: string; light: boolean }> = ({ accent, light }) => {
+/** Rising dust + a few bigger glowing orbs, parallaxed by depth. Global, deterministic, runs under every scene. The style comes from the look. */
+export const Particles: React.FC<{ accent: string; accent2?: string; light: boolean; style?: ParticleStyle }> = ({ accent, accent2 = BRAND_BLUE, light, style = 'dots' }) => {
   const frame = useCurrentFrame();
+  if (style === 'none') return null;
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
       {Array.from({ length: 46 }).map((_, i) => {
@@ -13,9 +15,9 @@ export const Particles: React.FC<{ accent: string; light: boolean }> = ({ accent
         const speed = 0.5 + depth * 1.6;
         const y = 1920 - (((frame * speed + random(`y${i}`) * 2200) % 2200) - 140);
         const x = random(`x${i}`) * 1080 + Math.sin(frame / (40 + i) + i) * 26 * depth;
-        const size = (i % 9 === 0 ? 16 : 3.5) * depth;
-        const c = i % 4 === 0 ? BRAND_BLUE : accent;
-        return <div key={i} style={{ position: 'absolute', left: x, top: y, width: size, height: size, borderRadius: '50%', background: c, opacity: (light ? 0.18 : 0.32) * Math.min(1, depth), boxShadow: light ? 'none' : `0 0 ${size * 3}px ${c}`, filter: size > 12 ? 'blur(2px)' : 'none' }} />;
+        const size = (i % 9 === 0 ? 16 : 3.5) * depth * (style === 'squares' ? 1.5 : 1);
+        const c = i % 4 === 0 ? accent2 : accent;
+        return <div key={i} style={{ position: 'absolute', left: x, top: y, width: size, height: size, borderRadius: style === 'squares' ? 2 : '50%', transform: style === 'squares' ? `rotate(${frame * 0.8 + i * 40}deg)` : undefined, background: c, opacity: (light ? 0.18 : 0.32) * Math.min(1, depth), boxShadow: `0 0 ${size * 2.4}px ${c}` }} />;
       })}
     </AbsoluteFill>
   );
