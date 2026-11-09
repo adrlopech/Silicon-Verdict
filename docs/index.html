@@ -27,10 +27,10 @@
   <link rel="stylesheet" href="portal.css">
   <link rel="stylesheet" href="looks.css">
   <link rel="stylesheet" href="fixes.css">
-  <link rel="stylesheet" href="neon.css">
+  <link rel="stylesheet" href="premium.css">
   <script src="looks.js"></script>
   <script src="fixes.js" defer></script>
-  <script src="neon.js" defer></script>
+  <script src="premium.js" defer></script>
 </head>
 <body class="pt">
   <a class="skip" href="#about">Skip to content</a>
@@ -63,10 +63,47 @@
           <a href="#pipeline" class="btn btn-p"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Explore the pipeline</a>
           <a href="https://www.youtube.com/@SiliconVerdictHQ" target="_blank" rel="noopener" class="btn btn-s"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M7 3v18M17 3v18M2 8h5M2 16h5M17 8h5M17 16h5"/></svg>Watch the channel</a>
         </div>
+        <div class="onplat"><span>Publishes to</span><img class="ic" src="assets/icons/youtube.svg" alt="YouTube" width="22" height="22"><strong>YouTube Shorts</strong><img class="ic" src="assets/icons/tiktok.svg" alt="TikTok" width="22" height="22"><strong>TikTok</strong></div>
         <div class="scrollhint"><div class="mouse"></div>scroll to explore</div>
       </div>
-      <div class="phone-wrap">
-        <div style="position:relative">
+      <div class="phone-wrap stagewrap">
+        <div class="stage">
+          <div class="app-frame" role="img" aria-label="The studio's queue for tomorrow: four videos with their format, publish time and status">
+            <div class="af-bar"><i></i><i></i><i></i><span>Silicon Verdict · Studio</span><em>Tomorrow</em></div>
+            <div class="af-body">
+              <div class="af-head"><b>Batch of four</b><span>Picked from channel analytics</span></div>
+              <div class="af-row"><span class="af-fmt">Hardware</span><span class="af-t">The 3nm chip trap, explained</span><span class="af-time">13:00</span><span class="af-st ok">Scheduled</span></div>
+              <div class="af-row"><span class="af-fmt">Evolution</span><span class="af-t">70 years of storage in 60 seconds</span><span class="af-time">16:00</span><span class="af-st ok">Scheduled</span></div>
+              <div class="af-row"><span class="af-fmt">Versus</span><span class="af-t">RTX 4090 against RTX 4080</span><span class="af-time">19:00</span><span class="af-st">Rendering</span></div>
+              <div class="af-row"><span class="af-fmt">Tier list</span><span class="af-t">Refresh rates ranked by smoothness</span><span class="af-time">22:00</span><span class="af-st">Queued</span></div>
+              <div class="af-prog"><div><i style="width:62%"></i></div><span>Render 62%</span></div>
+              <div class="af-foot"><span><img class="ic" src="assets/icons/youtube.svg" alt="YouTube" width="18" height="18"> YouTube</span><span><img class="ic" src="assets/icons/tiktok.svg" alt="TikTok" width="18" height="18"> TikTok</span></div>
+            </div>
+          </div>
+          </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="blk tight container">
+    <div class="statrow">
+      <div class="stat2 rv"><b data-count="6">0</b><span>content series</span></div>
+      <div class="stat2 rv d1"><b data-count="9">0</b><span>Motion Graphics formats</span></div>
+      <div class="stat2 rv d2"><b data-count="108">0</b><span>games in the roster</span></div>
+      <div class="stat2 rv d3"><b data-count="14">0</b><span>scene types</span></div>
+      <div class="stat2 rv"><b data-count="18">0</b><span>scene effects</span></div>
+      <div class="stat2 rv d1"><b data-count="30">0</b><span>frames per second</span></div>
+      <div class="stat2 rv d2"><b>62–90<small style="font-size:1.1rem"> s</small></b><span>video length (monetisable)</span></div>
+      <div class="stat2 rv d3"><b>0</b><span>user data collected</span></div>
+    </div>
+  </section>
+
+  <!-- OUTPUT -->
+  <section id="output" data-look="ocean" class="blk container">
+    <div class="head c rv"><div class="eyebrow">The output</div><h2 class="h2">Vertical video that respects the platform</h2><p class="sub">Every frame keeps clear of the platform interface: the top 12% and the bottom 20% stay free of text.</p></div>
+    <div class="phone-wrap rv">
+      <div style="position:relative">
           <div class="phone">
             <div class="screen">
               <div class="notch"></div>
@@ -84,22 +121,7 @@
           <div class="floatchip fc2">ElevenLabs voice</div>
           <div class="floatchip fc3">Remotion render</div>
         </div>
-        <button id="sztoggle" class="tab" style="margin-top:22px">Hide safe zones</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- STATS -->
-  <section class="blk tight container">
-    <div class="statrow">
-      <div class="stat2 rv"><b data-count="6">0</b><span>content series</span></div>
-      <div class="stat2 rv d1"><b data-count="9">0</b><span>Motion Graphics formats</span></div>
-      <div class="stat2 rv d2"><b data-count="108">0</b><span>games in the roster</span></div>
-      <div class="stat2 rv d3"><b data-count="14">0</b><span>scene types</span></div>
-      <div class="stat2 rv"><b data-count="18">0</b><span>scene effects</span></div>
-      <div class="stat2 rv d1"><b data-count="30">0</b><span>frames per second</span></div>
-      <div class="stat2 rv d2"><b>62–90<small style="font-size:1.1rem"> s</small></b><span>video length (monetisable)</span></div>
-      <div class="stat2 rv d3"><b>0</b><span>user data collected</span></div>
+      <button id="sztoggle" class="tab" style="margin-top:22px">Hide safe zones</button>
     </div>
   </section>
 
@@ -268,8 +290,7 @@
   <!-- STACK -->
   <section id="stack" data-look="indigo" class="blk container">
     <div class="head c rv"><div class="eyebrow">Technology</div><h2 class="h2">Built with</h2></div>
-    <div class="marq"><div><span>Python<em>pipeline</em></span><span>Remotion<em>render</em></span><span>React<em>compositions</em></span><span>TypeScript<em>engine</em></span><span>Gemini<em>script</em></span><span>ElevenLabs<em>voice</em></span><span>ffmpeg<em>QA</em></span><span>SQLite<em>history</em></span><span>Node.js<em>render CLI</em></span><span>Groq<em>fallback</em></span></div></div>
-    <div class="marq rev"><div><span>YouTube Data API v3<em>publish</em></span><span>TikTok Content Posting API v2<em>export</em></span><span>Steam<em>footage</em></span><span>Wikipedia<em>dossiers</em></span><span>Cloudflare Workers AI<em>fallback</em></span><span>H.264<em>1080×1920</em></span><span>Docker<em>deploy</em></span><span>Google Fonts<em>type</em></span></div></div>
+    <div class="logos rv"><div class="logo"><span class="lg"><img src="assets/icons/python.svg" alt="Python" width="34" height="34" loading="lazy"></span><b>Python</b><span>Pipeline</span></div><div class="logo"><span class="lg"><img src="assets/icons/react.svg" alt="React" width="34" height="34" loading="lazy"></span><b>React</b><span>Compositions</span></div><div class="logo"><span class="lg"><img src="assets/icons/typescript.svg" alt="TypeScript" width="34" height="34" loading="lazy"></span><b>TypeScript</b><span>Engine</span></div><div class="logo"><span class="lg"><img src="assets/icons/nodejs.svg" alt="Node.js" width="34" height="34" loading="lazy"></span><b>Node.js</b><span>Render</span></div><div class="logo"><span class="lg"><img src="assets/icons/sqlite.svg" alt="SQLite" width="34" height="34" loading="lazy"></span><b>SQLite</b><span>Story bank</span></div><div class="logo"><span class="lg"><img src="assets/icons/gemini.svg" alt="Gemini" width="34" height="34" loading="lazy"></span><b>Gemini</b><span>Scripts</span></div><div class="logo"><span class="lg"><img src="assets/icons/groq.svg" alt="Groq" width="34" height="34" loading="lazy"></span><b>Groq</b><span>Fallback</span></div><div class="logo"><span class="lg"><img src="assets/icons/cloudflare.svg" alt="Cloudflare" width="34" height="34" loading="lazy"></span><b>Cloudflare</b><span>Fallback</span></div><div class="logo"><span class="lg"><img src="assets/icons/elevenlabs.svg" alt="ElevenLabs" width="34" height="34" loading="lazy"></span><b>ElevenLabs</b><span>Voice</span></div><div class="logo"><span class="lg"><img src="assets/icons/youtube.svg" alt="YouTube" width="34" height="34" loading="lazy"></span><b>YouTube</b><span>Publish</span></div><div class="logo"><span class="lg"><img src="assets/icons/tiktok.svg" alt="TikTok" width="34" height="34" loading="lazy"></span><b>TikTok</b><span>Export</span></div><div class="logo"><span class="lg"><img src="assets/icons/steam.svg" alt="Steam" width="34" height="34" loading="lazy"></span><b>Steam</b><span>Game footage</span></div></div>
   </section>
 
   <!-- BRAND -->

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-look="obsidian" style="--bg: rgb(8,11,20); --bgc: 8,11,20; --ac: 112,214,240; --ac2: 63,140,245; --cardc: 16,25,44; --cyan: rgb(112,214,240); --green: rgb(112,214,240); --blue: rgb(63,140,245); --blue2: rgb(106,165,247); --teal: rgb(88,177,242); --card: rgba(16,25,44,.55); --card-2: rgba(30,39,57,.62); --line-c: rgba(112,214,240,.22); --o1: rgb(63,140,245); --o2: rgb(112,214,240); --o3: rgb(88,177,242);"><head>
+<html lang="en" data-look="obsidian" style="--bg: rgb(8,11,20); --bgc: 8,11,20; --ac: 111,214,240; --ac2: 63,140,245; --cardc: 16,25,44; --cyan: rgb(111,214,240); --green: rgb(111,214,240); --blue: rgb(63,140,245); --blue2: rgb(105,165,247); --teal: rgb(87,177,243); --card: rgba(16,25,44,.55); --card-2: rgba(30,39,57,.62); --line-c: rgba(111,214,240,.22); --o1: rgb(63,140,245); --o2: rgb(111,214,240); --o3: rgb(87,177,243);"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="tiktok-developers-site-verification" content="n8OqT5tqWbauLtFIfnNpcM0yxXqejDYc">
@@ -26,8 +26,10 @@
   <link rel="stylesheet" href="portal.css">
   <link rel="stylesheet" href="looks.css">
   <link rel="stylesheet" href="fixes.css">
+  <link rel="stylesheet" href="premium.css">
   <script src="looks.js"></script>
   <script src="fixes.js" defer=""></script>
+  <script src="premium.js" defer=""></script>
 </head>
 <body class="pt">
   <a class="skip" href="#about">Skip to content</a>
@@ -60,10 +62,24 @@
           <a href="#pipeline" class="btn btn-p"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>Explore the pipeline</a>
           <a href="https://www.youtube.com/@SiliconVerdictHQ" target="_blank" rel="noopener" class="btn btn-s"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"></rect><path d="M7 3v18M17 3v18M2 8h5M2 16h5M17 8h5M17 16h5"></path></svg>Watch the channel</a>
         </div>
+        <div class="onplat"><span>Publishes to</span><img class="ic" src="assets/icons/youtube.svg" alt="YouTube" width="22" height="22"><strong>YouTube Shorts</strong><img class="ic" src="assets/icons/tiktok.svg" alt="TikTok" width="22" height="22"><strong>TikTok</strong></div>
         <div class="scrollhint"><div class="mouse"></div>scroll to explore</div>
       </div>
-      <div class="phone-wrap">
-        <div style="position:relative">
+      <div class="phone-wrap stagewrap">
+        <div class="stage">
+          <div class="app-frame" role="img" aria-label="The studio's queue for tomorrow: four videos with their format, publish time and status">
+            <div class="af-bar"><i></i><i></i><i></i><span>Silicon Verdict · Studio</span><em>Tomorrow</em></div>
+            <div class="af-body">
+              <div class="af-head"><b>Batch of four</b><span>Picked from channel analytics</span></div>
+              <div class="af-row"><span class="af-fmt">Hardware</span><span class="af-t">The 3nm chip trap, explained</span><span class="af-time">13:00</span><span class="af-st ok">Scheduled</span></div>
+              <div class="af-row"><span class="af-fmt">Evolution</span><span class="af-t">70 years of storage in 60 seconds</span><span class="af-time">16:00</span><span class="af-st ok">Scheduled</span></div>
+              <div class="af-row"><span class="af-fmt">Versus</span><span class="af-t">RTX 4090 against RTX 4080</span><span class="af-time">19:00</span><span class="af-st">Rendering</span></div>
+              <div class="af-row"><span class="af-fmt">Tier list</span><span class="af-t">Refresh rates ranked by smoothness</span><span class="af-time">22:00</span><span class="af-st">Queued</span></div>
+              <div class="af-prog"><div><i style="width:62%"></i></div><span>Render 62%</span></div>
+              <div class="af-foot"><span><img class="ic" src="assets/icons/youtube.svg" alt="YouTube" width="18" height="18"> YouTube</span><span><img class="ic" src="assets/icons/tiktok.svg" alt="TikTok" width="18" height="18"> TikTok</span></div>
+            </div>
+          </div>
+          <div class="stage-phone"><div style="position:relative">
           <div class="phone">
             <div class="screen">
               <div class="notch"></div>
@@ -81,6 +97,8 @@
           <div class="floatchip fc2">ElevenLabs voice</div>
           <div class="floatchip fc3">Remotion render</div>
         </div>
+        </div>
+        </div>
         <button id="sztoggle" class="tab" style="margin-top:22px">Hide safe zones</button>
       </div>
     </div>
@@ -89,14 +107,14 @@
   <!-- STATS -->
   <section class="blk tight container">
     <div class="statrow">
-      <div class="stat2 rv in"><b data-count="6">6</b><span>content series</span></div>
-      <div class="stat2 rv d1 in"><b data-count="9">9</b><span>Motion Graphics formats</span></div>
-      <div class="stat2 rv d2 in"><b data-count="108">108</b><span>games in the roster</span></div>
-      <div class="stat2 rv d3 in"><b data-count="14">14</b><span>scene types</span></div>
-      <div class="stat2 rv in"><b data-count="18">18</b><span>scene effects</span></div>
-      <div class="stat2 rv d1 in"><b data-count="30">30</b><span>frames per second</span></div>
-      <div class="stat2 rv d2 in"><b>62–90<small style="font-size:1.1rem"> s</small></b><span>video length (monetisable)</span></div>
-      <div class="stat2 rv d3 in"><b>0</b><span>user data collected</span></div>
+      <div class="stat2 rv in"><span class="tile sm" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-layers.svg)" aria-hidden="true"></span></span><b data-count="6">6</b><span>content series</span></div>
+      <div class="stat2 rv d1 in"><span class="tile sm" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-film.svg)" aria-hidden="true"></span></span><b data-count="9">9</b><span>Motion Graphics formats</span></div>
+      <div class="stat2 rv d2 in"><span class="tile sm" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-clapperboard.svg)" aria-hidden="true"></span></span><b data-count="108">108</b><span>games in the roster</span></div>
+      <div class="stat2 rv d3 in"><span class="tile sm" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-sparkles.svg)" aria-hidden="true"></span></span><b data-count="14">14</b><span>scene types</span></div>
+      <div class="stat2 rv in"><span class="tile sm" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-zap.svg)" aria-hidden="true"></span></span><b data-count="18">18</b><span>scene effects</span></div>
+      <div class="stat2 rv d1 in"><span class="tile sm" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-gauge.svg)" aria-hidden="true"></span></span><b data-count="30">30</b><span>frames per second</span></div>
+      <div class="stat2 rv d2 in"><span class="tile sm" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-chart-column.svg)" aria-hidden="true"></span></span><b>62–90<small style="font-size:1.1rem"> s</small></b><span>video length (monetisable)</span></div>
+      <div class="stat2 rv d3 in"><span class="tile sm" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-shield-check.svg)" aria-hidden="true"></span></span><b>0</b><span>user data collected</span></div>
     </div>
   </section>
 
@@ -132,7 +150,7 @@
 
   <!-- PIPELINE -->
   <section id="pipeline" data-look="indigo" class="blk container">
-    <div class="head c rv in"><div class="eyebrow">How a video is made</div><h2 class="h2">Seven stages from idea to upload</h2><p class="sub">Scroll through the life of a video, from the first idea to the published Short.</p></div>
+    <div class="head c rv in"><span class="tile lg" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-workflow.svg)" aria-hidden="true"></span></span><div class="eyebrow">How a video is made</div><h2 class="h2">Seven stages from idea to upload</h2><p class="sub">Scroll through the life of a video, from the first idea to the published Short.</p></div>
     <div class="vis rv in" role="img" aria-label="Diagram"><svg viewBox="0 0 760 120" xmlns="http://www.w3.org/2000/svg"><line class="ln" x1="50" y1="52" x2="710" y2="52"></line><circle class="nd" cx="50" cy="52" r="20"></circle><text class="tx" x="50" y="57" text-anchor="middle">1</text><text class="lb" x="50" y="100" text-anchor="middle">Topic</text><circle class="nd" cx="160" cy="52" r="20"></circle><text class="tx" x="160" y="57" text-anchor="middle">2</text><text class="lb" x="160" y="100" text-anchor="middle">Script</text><circle class="nd" cx="270" cy="52" r="20"></circle><text class="tx" x="270" y="57" text-anchor="middle">3</text><text class="lb" x="270" y="100" text-anchor="middle">Fact-check</text><circle class="nd" cx="380" cy="52" r="20"></circle><text class="tx" x="380" y="57" text-anchor="middle">4</text><text class="lb" x="380" y="100" text-anchor="middle">Voice</text><circle class="nd" cx="490" cy="52" r="20"></circle><text class="tx" x="490" y="57" text-anchor="middle">5</text><text class="lb" x="490" y="100" text-anchor="middle">Render</text><circle class="nd" cx="600" cy="52" r="20"></circle><text class="tx" x="600" y="57" text-anchor="middle">6</text><text class="lb" x="600" y="100" text-anchor="middle">QA gate</text><circle class="nd" cx="710" cy="52" r="20"></circle><text class="tx" x="710" y="57" text-anchor="middle">7</text><text class="lb" x="710" y="100" text-anchor="middle">Upload</text></svg></div>
     <div class="flow rv in"><span class="k">topic</span><i>→</i><span>Gemini script</span><i>→</i><span>fact-check</span><i>→</i><span>ElevenLabs voice</span><i>→</i><span>Remotion render</span><i>→</i><span>QA gate</span><i>→</i><span class="k">YouTube / TikTok</span></div>
     <div class="tl">
@@ -149,9 +167,9 @@
 
   <!-- SERIES -->
   <section id="series" data-look="cobalt" class="blk container">
-    <div class="head c rv in"><div class="eyebrow">Content</div><h2 class="h2">One engine behind every series</h2><p class="sub">Motion Graphics is the main series; hardware, everyday tech and gaming are formats of the same engine.</p></div>
+    <div class="head c rv in"><span class="tile lg" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-layers.svg)" aria-hidden="true"></span></span><div class="eyebrow">Content</div><h2 class="h2">One engine behind every series</h2><p class="sub">Motion Graphics is the main series; hardware, everyday tech and gaming are formats of the same engine.</p></div>
     <div class="series">
-      <div class="card main rv in"><div class="n">01</div><span class="badge">Main series</span><h3>Motion Graphics</h3><p>Narrated kinetic-typography explainers of 62-90 s: big words, one accent phrase, counters, code, bars, cards and an outro. Always vertical, in English, in one of eight blue looks. Two kinds: tech <em>curiosities</em> and <em>games</em> (an engineering fact told over real footage).</p><div class="cmd"><code>main.py --series motion --export-only</code></div></div>
+      <div class="card main rv in"><span class="tile " aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-film.svg)" aria-hidden="true"></span></span><div class="n">01</div><span class="badge">Main series</span><h3>Motion Graphics</h3><p>Narrated kinetic-typography explainers of 62-90 s: big words, one accent phrase, counters, code, bars, cards and an outro. Always vertical, in English, in one of eight blue looks. Two kinds: tech <em>curiosities</em> and <em>games</em> (an engineering fact told over real footage).</p><div class="cmd"><code>main.py --series motion --export-only</code></div></div>
       <div class="card rv d1 in"><div class="n">02</div><div class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"></path></svg></div><h3>Hardware Deep Dive</h3><p>Silicon, memory, storage, networking and engineering explained with mechanism and real figures. The mouse cursor only appears as an accent.</p><div class="cmd"><code>--motion-format hardware</code></div></div>
       <div class="card rv d2 in"><div class="n">03</div><div class="ico"><svg viewBox="0 0 24 24"><path d="M5 3l14 7-6 2-2 6z"></path></svg></div><h3>Everyday Tech</h3><p>Small everyday tech mysteries hosted by the <strong>mouse cursor</strong>, a character that uses the screen like a person: it selects the key phrase as the narrator says it, pulls progress bars, carries chips into a tier list and presses settings, only when that means something.</p><div class="cmd"><code>--motion-format simple</code></div></div>
       <div class="card rv in"><div class="n">04</div><div class="ico"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="12" rx="5"></rect><path d="M7 11v4M5 13h4M16 12h.01M18 14h.01"></path></svg></div><h3>Gaming</h3><p>A Motion game video. Banked game scripts go first, told over screenshots of the game and credited in the description; then source-grounded videos with real footage; a hardware video when neither is possible.</p><div class="cmd"><code>main.py --category 2</code></div></div>
@@ -161,7 +179,7 @@
 
   <!-- FORMATS -->
   <section id="formats" data-look="glass" class="blk container">
-    <div class="head c rv in"><div class="eyebrow">Motion Graphics</div><h2 class="h2">Eleven content formats</h2><p class="sub">Each format has its own scene types, prompt rules and validators. The same fact-check pass applies to every one.</p></div>
+    <div class="head c rv in"><span class="tile lg" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-film.svg)" aria-hidden="true"></span></span><div class="eyebrow">Motion Graphics</div><h2 class="h2">Eleven content formats</h2><p class="sub">Each format has its own scene types, prompt rules and validators. The same fact-check pass applies to every one.</p></div>
     <div class="rv z in">
       <div class="tabs">
         <button class="tab on" data-t="f1">Classic</button><button class="tab" data-t="f2">Myth</button><button class="tab" data-t="f3">Tier list</button><button class="tab" data-t="f4">What if</button><button class="tab" data-t="f5">Evolution</button><button class="tab" data-t="f6">Versus</button><button class="tab" data-t="f7">Easter egg</button><button class="tab" data-t="f8">Hardware</button><button class="tab" data-t="f9">Simple</button><button class="tab" data-t="f10">Fix it now</button><button class="tab" data-t="f11">Decoded</button>
@@ -204,7 +222,7 @@
         </div>
       </div>
     </div>
-    <div class="head c rv in" style="margin:90px 0 0"><div class="eyebrow">Ambient effects</div><h3 class="subhead">Effects picked from what the narration names</h3><p class="sub">The big fly-bys appear once per video and no effect repeats within three scenes.</p></div>
+    <div class="head c rv in" style="margin:90px 0 0"><span class="tile lg" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-mouse-pointer-2.svg)" aria-hidden="true"></span></span><div class="eyebrow">Ambient effects</div><h3 class="subhead">Effects picked from what the narration names</h3><p class="sub">The big fly-bys appear once per video and no effect repeats within three scenes.</p></div>
     <div class="fx rv in">
       <div><b>✈️</b>plane</div><div><b>🚀</b>rocket</div><div><b>🛰️</b>satellite</div><div><b>📡</b>waves</div><div><b>⚡</b>bolts</div><div><b>🔥</b>embers</div>
       <div><b>❄️</b>snow</div><div><b>💧</b>drops</div><div><b>📦</b>packets</div><div><b>🪙</b>coins</div><div><b>🎚️</b>equalizer</div><div><b>📶</b>signal bars</div>
@@ -214,21 +232,21 @@
 
   <!-- LOOKS AND RETENTION -->
   <section id="looks" data-look="blueprint" class="blk container">
-    <div class="head c rv in"><div class="eyebrow">Looks and retention</div><h2 class="h2">No two videos look the same</h2><p class="sub">Every video gets one of eight blue looks, and this page wears all of them: the colours change as you scroll. Six retention devices are enforced on every script.</p></div>
+    <div class="head c rv in"><span class="tile lg" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-palette.svg)" aria-hidden="true"></span></span><div class="eyebrow">Looks and retention</div><h2 class="h2">No two videos look the same</h2><p class="sub">Every video gets one of eight blue looks, and this page wears all of them: the colours change as you scroll. Six retention devices are enforced on every script.</p></div>
     <div class="vis rv in" role="img" aria-label="Diagram"><svg viewBox="0 0 760 120" xmlns="http://www.w3.org/2000/svg"><circle cx="70" cy="60" r="38" fill="#080B14" stroke="rgba(255,255,255,.35)"></circle><circle cx="158" cy="60" r="38" fill="#0E4A8A" stroke="rgba(255,255,255,.35)"></circle><circle cx="246" cy="60" r="38" fill="#4C55F0" stroke="rgba(255,255,255,.35)"></circle><circle cx="334" cy="60" r="38" fill="#1E5BD8" stroke="rgba(255,255,255,.35)"></circle><circle cx="422" cy="60" r="38" fill="#8ACDFF" stroke="rgba(255,255,255,.35)"></circle><circle cx="510" cy="60" r="38" fill="#EDF3FF" stroke="rgba(255,255,255,.35)"></circle><circle cx="598" cy="60" r="38" fill="#DCEBFF" stroke="rgba(255,255,255,.35)"></circle><circle cx="686" cy="60" r="38" fill="#0B2D6E" stroke="rgba(255,255,255,.35)"></circle></svg></div>
     <div class="series looks">
-      <div class="card rv in"><div class="n">01</div><span class="tag">Eight looks</span><h3>A new blue every time</h3><p>Own palette, background, typeface, camera, transitions, HUD and captions. The next look never repeats the last three.</p><div class="dots8"><i style="background:#0B1F3A"></i><i style="background:#0E4A8A"></i><i style="background:#2B3A9E"></i><i style="background:#1E5BD8"></i><i style="background:#7DB9FF"></i><i style="background:#E6F1FF"></i><i style="background:#A8D4FF"></i><i style="background:#0A3B7A"></i></div></div>
-      <div class="card rv d1 in"><div class="n">02</div><span class="tag">Cold open</span><h3>The claim first</h3><p>Scene 1 is the claim in 14 words or fewer, never a greeting, and one of scenes 2-5 promises a payoff the last third delivers.</p><div class="key">≤ 14 words · open loop</div></div>
-      <div class="card rv d2 in"><div class="n">03</div><span class="tag">Vote</span><h3>A vote in one word</h3><p>The outro and the pinned comment ask the same "A or B?" question, so a comment takes one word to leave.</p><div class="key">"A or B?" · pinned</div></div>
-      <div class="card rv in"><div class="n">04</div><span class="tag">Pace</span><h3>The screen keeps moving</h3><p>No narration beyond 17 words per scene and never three headlines in a row: a framed card breaks the run.</p><div class="key">≤ 17 words · 60 s+</div></div>
-      <div class="card rv d1 in"><div class="n">05</div><span class="tag">Captions</span><h3>Read it, hear it</h3><p>Word-by-word captions from the voice timing, an accent that pulses as it is spoken, callouts and a re-hook at the middle.</p><div class="key">word by word · re-hook</div></div>
-      <div class="card rv d2 in"><div class="n">06</div><span class="tag">Real numbers</span><h3>Analytics pick the next four</h3><p>YouTube Analytics feeds a retention report, and the genera command schedules four videos for tomorrow on both platforms.</p><div class="key">report_retention · genera</div></div>
+      <div class="card rv in"><span class="tile " aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-palette.svg)" aria-hidden="true"></span></span><div class="n">01</div><span class="tag">Eight looks</span><h3>A new blue every time</h3><p>Own palette, background, typeface, camera, transitions, HUD and captions. The next look never repeats the last three.</p><div class="dots8"><i style="background:#0B1F3A"></i><i style="background:#0E4A8A"></i><i style="background:#2B3A9E"></i><i style="background:#1E5BD8"></i><i style="background:#7DB9FF"></i><i style="background:#E6F1FF"></i><i style="background:#A8D4FF"></i><i style="background:#0A3B7A"></i></div></div>
+      <div class="card rv d1 in"><span class="tile " aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-zap.svg)" aria-hidden="true"></span></span><div class="n">02</div><span class="tag">Cold open</span><h3>The claim first</h3><p>Scene 1 is the claim in 14 words or fewer, never a greeting, and one of scenes 2-5 promises a payoff the last third delivers.</p><div class="key">≤ 14 words · open loop</div></div>
+      <div class="card rv d2 in"><span class="tile " aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-vote.svg)" aria-hidden="true"></span></span><div class="n">03</div><span class="tag">Vote</span><h3>A vote in one word</h3><p>The outro and the pinned comment ask the same "A or B?" question, so a comment takes one word to leave.</p><div class="key">"A or B?" · pinned</div></div>
+      <div class="card rv in"><span class="tile " aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-gauge.svg)" aria-hidden="true"></span></span><div class="n">04</div><span class="tag">Pace</span><h3>The screen keeps moving</h3><p>No narration beyond 17 words per scene and never three headlines in a row: a framed card breaks the run.</p><div class="key">≤ 17 words · 60 s+</div></div>
+      <div class="card rv d1 in"><span class="tile " aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-captions.svg)" aria-hidden="true"></span></span><div class="n">05</div><span class="tag">Captions</span><h3>Read it, hear it</h3><p>Word-by-word captions from the voice timing, an accent that pulses as it is spoken, callouts and a re-hook at the middle.</p><div class="key">word by word · re-hook</div></div>
+      <div class="card rv d2 in"><span class="tile " aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-chart-column.svg)" aria-hidden="true"></span></span><div class="n">06</div><span class="tag">Real numbers</span><h3>Analytics pick the next four</h3><p>YouTube Analytics feeds a retention report, and the genera command schedules four videos for tomorrow on both platforms.</p><div class="key">report_retention · genera</div></div>
     </div>
   </section>
 
   <!-- GAMES -->
   <section id="games" data-look="ocean" class="blk container">
-    <div class="head c rv in"><div class="eyebrow">Game videos</div><h2 class="h2">Game videos built on real footage</h2><p class="sub">Game videos show an engineering fact over official footage, inside the channel look: blue/cyan grade, scan line, corner brackets and a game tag.</p></div>
+    <div class="head c rv in"><span class="tile lg" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-clapperboard.svg)" aria-hidden="true"></span></span><div class="eyebrow">Game videos</div><h2 class="h2">Game videos built on real footage</h2><p class="sub">Game videos show an engineering fact over official footage, inside the channel look: blue/cyan grade, scan line, corner brackets and a game tag.</p></div>
     <div class="vis rv in" role="img" aria-label="Diagram"><svg viewBox="0 0 760 110" xmlns="http://www.w3.org/2000/svg"><rect class="fr" x="20" y="12" width="126" height="86" rx="10"></rect><path class="pl" d="M70 40 l26 15 -26 15z"></path><rect class="fr" x="166" y="12" width="126" height="86" rx="10"></rect><path class="pl" d="M216 40 l26 15 -26 15z"></path><rect class="fr" x="312" y="12" width="126" height="86" rx="10"></rect><path class="pl" d="M362 40 l26 15 -26 15z"></path><rect class="fr" x="458" y="12" width="126" height="86" rx="10"></rect><path class="pl" d="M508 40 l26 15 -26 15z"></path><rect class="fr" x="604" y="12" width="126" height="86" rx="10"></rect><path class="pl" d="M654 40 l26 15 -26 15z"></path></svg></div>
     <div class="gates">
       <div class="gate rv l in"><h3><span class="ico"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"></rect><path d="M7 3v18M17 3v18M2 8h5M2 16h5M17 8h5M17 16h5"></path></svg></span>Footage rules</h3><ul><li>Official <strong>Steam screenshots</strong> and clips cut from <strong>official trailers</strong>.</li><li>A vision model describes every item once, so a footage scene shows what its narration mentions.</li><li>Each item is used in <strong>one video only</strong>, then deleted. Its key goes to a ledger, so it is never downloaded again.</li><li>A game stays blacklisted for <strong>14 days</strong> after it appears.</li><li>A game with fewer than 6 unused items is skipped until more are fetched. Near-black shots are never used.</li></ul></div>
@@ -239,7 +257,7 @@
 
   <!-- QUALITY -->
   <section id="gates" data-look="glass" class="blk container">
-    <div class="head c rv in"><div class="eyebrow">Quality</div><h2 class="h2">Two gates before anything goes public</h2></div>
+    <div class="head c rv in"><span class="tile lg" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-shield-check.svg)" aria-hidden="true"></span></span><div class="eyebrow">Quality</div><h2 class="h2">Two gates before anything goes public</h2></div>
     <div class="vis rv in" role="img" aria-label="Diagram"><svg viewBox="0 0 760 110" xmlns="http://www.w3.org/2000/svg"><rect class="fr" x="40" y="14" width="190" height="80" rx="12"></rect><text class="lb" x="135" y="62" text-anchor="middle">Fact-check gate</text><path class="ar" d="M236 54h110"></path><rect class="fr" x="350" y="14" width="190" height="80" rx="12"></rect><text class="lb" x="445" y="62" text-anchor="middle">QA gate</text><path class="ar" d="M546 54h110"></path><circle class="nd" cx="690" cy="54" r="26"></circle><path class="ck" d="M678 54l9 9 17-18"></path></svg></div>
     <div class="gates">
       <div class="gate rv l in"><h3><span class="ico"><svg viewBox="0 0 24 24"><path d="M9 3a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 3 5h1V3z"></path><path d="M15 3a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-3 5h-1V3z"></path></svg></span>Fact-check gate</h3><ul><li>A second pass looks for false technical claims and wrong figures.</li><li>Catches a metaphor that changes midway and misuse of "but there is a catch".</li><li>Rewrites flagged scenes and re-checks them; unfixable scripts are discarded.</li><li>Runs on the strongest reviewer, retried once if its window is full.</li><li>If it is unavailable, a panel of the other reviewers answers and their issues are merged (stricter than any single one).</li></ul></div>
@@ -250,7 +268,7 @@
 
   <!-- LLM -->
   <section id="llm" data-look="obsidian" class="blk container">
-    <div class="head c rv in"><div class="eyebrow">Resilience</div><h2 class="h2">One LLM client, automatic fallbacks</h2><p class="sub">Every call goes through <code>services/gemini_client.py</code>. If a provider runs out of quota, the same request is answered by the next one.</p></div>
+    <div class="head c rv in"><span class="tile lg" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-cpu.svg)" aria-hidden="true"></span></span><div class="eyebrow">Resilience</div><h2 class="h2">One LLM client, automatic fallbacks</h2><p class="sub">Every call goes through <code>services/gemini_client.py</code>. If a provider runs out of quota, the same request is answered by the next one.</p></div>
     <div class="vis rv in" role="img" aria-label="Diagram"><svg viewBox="0 0 760 110" xmlns="http://www.w3.org/2000/svg"><rect class="fr" x="30" y="14" width="190" height="80" rx="12"></rect><text class="lb" x="125" y="62" text-anchor="middle">Gemini</text><path class="ar" d="M226 54h100"></path><rect class="fr" x="332" y="14" width="190" height="80" rx="12"></rect><text class="lb" x="427" y="62" text-anchor="middle">Groq</text><path class="ar" d="M528 54h100"></path><rect class="fr" x="534" y="14" width="196" height="80" rx="12" style="display:none"></rect><text class="lb" x="690" y="62" text-anchor="middle">Cloudflare</text></svg></div>
     <div class="chain rv z in">
       <div class="lk first"><b>Gemini</b><span>model chain · quota-aware cooldowns persisted in data/gemini_state.json</span></div>
@@ -265,13 +283,12 @@
   <!-- STACK -->
   <section id="stack" data-look="indigo" class="blk container">
     <div class="head c rv in"><div class="eyebrow">Technology</div><h2 class="h2">Built with</h2></div>
-    <div class="marq"><div><span>Python<em>pipeline</em></span><span>Remotion<em>render</em></span><span>React<em>compositions</em></span><span>TypeScript<em>engine</em></span><span>Gemini<em>script</em></span><span>ElevenLabs<em>voice</em></span><span>ffmpeg<em>QA</em></span><span>SQLite<em>history</em></span><span>Node.js<em>render CLI</em></span><span>Groq<em>fallback</em></span></div></div>
-    <div class="marq rev"><div><span>YouTube Data API v3<em>publish</em></span><span>TikTok Content Posting API v2<em>export</em></span><span>Steam<em>footage</em></span><span>Wikipedia<em>dossiers</em></span><span>Cloudflare Workers AI<em>fallback</em></span><span>H.264<em>1080×1920</em></span><span>Docker<em>deploy</em></span><span>Google Fonts<em>type</em></span></div></div>
+    <div class="logos rv in"><div class="logo"><span class="lg"><img src="assets/icons/python.svg" alt="Python" width="34" height="34" loading="lazy"></span><b>Python</b><span>Pipeline</span></div><div class="logo"><span class="lg"><img src="assets/icons/react.svg" alt="React" width="34" height="34" loading="lazy"></span><b>React</b><span>Compositions</span></div><div class="logo"><span class="lg"><img src="assets/icons/typescript.svg" alt="TypeScript" width="34" height="34" loading="lazy"></span><b>TypeScript</b><span>Engine</span></div><div class="logo"><span class="lg"><img src="assets/icons/nodejs.svg" alt="Node.js" width="34" height="34" loading="lazy"></span><b>Node.js</b><span>Render</span></div><div class="logo"><span class="lg"><img src="assets/icons/sqlite.svg" alt="SQLite" width="34" height="34" loading="lazy"></span><b>SQLite</b><span>Story bank</span></div><div class="logo"><span class="lg"><img src="assets/icons/gemini.svg" alt="Gemini" width="34" height="34" loading="lazy"></span><b>Gemini</b><span>Scripts</span></div><div class="logo"><span class="lg"><img src="assets/icons/groq.svg" alt="Groq" width="34" height="34" loading="lazy"></span><b>Groq</b><span>Fallback</span></div><div class="logo"><span class="lg"><img src="assets/icons/cloudflare.svg" alt="Cloudflare" width="34" height="34" loading="lazy"></span><b>Cloudflare</b><span>Fallback</span></div><div class="logo"><span class="lg"><img src="assets/icons/elevenlabs.svg" alt="ElevenLabs" width="34" height="34" loading="lazy"></span><b>ElevenLabs</b><span>Voice</span></div><div class="logo"><span class="lg"><img src="assets/icons/youtube.svg" alt="YouTube" width="34" height="34" loading="lazy"></span><b>YouTube</b><span>Publish</span></div><div class="logo"><span class="lg"><img src="assets/icons/tiktok.svg" alt="TikTok" width="34" height="34" loading="lazy"></span><b>TikTok</b><span>Export</span></div><div class="logo"><span class="lg"><img src="assets/icons/steam.svg" alt="Steam" width="34" height="34" loading="lazy"></span><b>Steam</b><span>Game footage</span></div></div>
   </section>
 
   <!-- BRAND -->
   <section id="brand" data-look="cobalt" class="blk container">
-    <div class="head c rv in"><div class="eyebrow">Brand look</div><h2 class="h2">The channel's eight blues</h2><p class="sub">Every video wears one of eight blue looks and the generator can never leave the blue family. Every text auto-fits: a long word, headline, list item, code line or number shrinks instead of leaving the frame.</p></div>
+    <div class="head c rv in"><span class="tile lg" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-sparkles.svg)" aria-hidden="true"></span></span><div class="eyebrow">Brand look</div><h2 class="h2">The channel's eight blues</h2><p class="sub">Every video wears one of eight blue looks and the generator can never leave the blue family. Every text auto-fits: a long word, headline, list item, code line or number shrinks instead of leaving the frame.</p></div>
     <div class="lockup rv in">
       <div class="lk-mark"><img src="logo.svg" alt="Silicon Verdict SV monogram" width="220" height="220"></div>
       <div class="lk-text">
@@ -291,7 +308,7 @@
       <div class="sw2 rv d3 in"><i style="background:#F8FAFC"></i><div><b>Paper</b><code>#F8FAFC</code><span>Text &amp; one light scene</span></div></div>
     </div>
     <div class="statrow rv in" style="margin-top:30px;grid-template-columns:repeat(4,1fr)">
-      <div class="stat2"><b>9:16</b><span>always vertical</span></div><div class="stat2"><b>12%</b><span>top kept free</span></div><div class="stat2"><b>20%</b><span>bottom kept free</span></div><div class="stat2"><b>30</b><span>fps · H.264</span></div>
+      <div class="stat2"><span class="tile sm" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-layers.svg)" aria-hidden="true"></span></span><b>9:16</b><span>always vertical</span></div><div class="stat2"><span class="tile sm" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-film.svg)" aria-hidden="true"></span></span><b>12%</b><span>top kept free</span></div><div class="stat2"><span class="tile sm" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-clapperboard.svg)" aria-hidden="true"></span></span><b>20%</b><span>bottom kept free</span></div><div class="stat2"><span class="tile sm" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-sparkles.svg)" aria-hidden="true"></span></span><b>30</b><span>fps · H.264</span></div>
     </div>
   </section>
 
@@ -318,7 +335,7 @@
 
   <!-- QUICK START -->
   <section id="start" data-look="glass" class="blk container">
-    <div class="head c rv in"><div class="eyebrow">Run it</div><h2 class="h2">Everyday commands</h2></div>
+    <div class="head c rv in"><span class="tile lg" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-terminal.svg)" aria-hidden="true"></span></span><div class="eyebrow">Run it</div><h2 class="h2">Everyday commands</h2></div>
     <div class="term rv in">
       <div class="bar"><i style="background:#FF5F57"></i><i style="background:#FEBC2E"></i><i style="background:#28C840"></i><span>zsh — silicon-verdict</span><button class="cp">Copy</button></div>
 <pre><span class="c"># setup</span>
@@ -361,7 +378,7 @@ cd remotion_studio &amp;&amp; npx remotion studio</pre>
 
   <!-- COMPLIANCE -->
   <section id="compliance" data-look="obsidian" class="blk container">
-    <div class="head c rv in"><div class="eyebrow">Privacy &amp; platform compliance</div><h2 class="h2">Built to respect your data</h2><p class="sub">Silicon Verdict follows the TikTok Developer Terms of Service, the TikTok Partner Policies and the Google API Services User Data Policy.</p></div>
+    <div class="head c rv in"><span class="tile lg" aria-hidden="true"><span class="ui" style="--i:url(assets/icons/ui-lock.svg)" aria-hidden="true"></span></span><div class="eyebrow">Privacy &amp; platform compliance</div><h2 class="h2">Built to respect your data</h2><p class="sub">Silicon Verdict follows the TikTok Developer Terms of Service, the TikTok Partner Policies and the Google API Services User Data Policy.</p></div>
     <div class="comp">
       <div class="card rv in"><div class="ico"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg></div><h3>No user data collected</h3><p>No personal data, IP addresses or browsing behaviour of visitors or viewers is collected, tracked, sold or profiled.</p></div>
       <div class="card rv d1 in"><div class="ico"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></div><h3>No tracking</h3><p>The web portal uses no tracking pixels, advertising trackers or fingerprinting.</p></div>

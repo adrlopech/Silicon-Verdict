@@ -23,6 +23,30 @@
    "decision": "allow",
    "reason": "no build is active here",
    "stopHookActive": false
+  },
+  {
+   "at": "2026-11-09T23:14:25.990Z",
+   "mode": "hook",
+   "host": "claude",
+   "decision": "allow",
+   "reason": "no build is active here",
+   "stopHookActive": false
+  },
+  {
+   "at": "2026-11-09T23:17:55.270Z",
+   "mode": "hook",
+   "host": "claude",
+   "decision": "allow",
+   "reason": "no build is active here",
+   "stopHookActive": false
+  },
+  {
+   "at": "2026-11-09T23:18:01.343Z",
+   "mode": "hook",
+   "host": "claude",
+   "decision": "allow",
+   "reason": "no build is active here",
+   "stopHookActive": false
   }
  ]
 }
