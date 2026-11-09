@@ -20,6 +20,7 @@ temp/
 /tmp/yt_automation/
 *.mp4
 *.mp3
+!assets/audio/*.mp3
 *.png
 *.jpg
 logs/

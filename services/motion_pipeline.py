@@ -198,8 +198,48 @@ RISER_TYPES = ("counter", "versus", "verdict", "timeline")  # data reveals: a ri
 MAX_RISERS = 4
 
 
-def sound_cues(scene_starts: list, kinds: Optional[list]) -> list:
-    """Sound-design cues as (file, start seconds, kind): a soft impact on the first frame and on flash scenes, a riser before each data reveal (at most MAX_RISERS, spread out)."""
+# Music beds by format (assets/audio, made by scripts/make_motion_sfx.py). Each format has two; a hash of the topic picks one, so the channel does not sound the same every time.
+MUSIC_BY_FORMAT = {
+    None: ("motion_bed.wav", "bed_chill.mp3"), "hardware": ("motion_bed.wav", "bed_minimal.mp3"), "evolution": ("bed_epic.mp3", "motion_bed.wav"), "decode": ("bed_minimal.mp3", "bed_chill.mp3"),
+    "versus": ("bed_drive.mp3", "bed_epic.mp3"), "myth": ("bed_dark.mp3", "bed_minimal.mp3"), "tier": ("bed_drive.mp3", "bed_bright.mp3"), "whatif": ("bed_dark.mp3", "bed_epic.mp3"),
+    "fix": ("bed_bright.mp3", "bed_chill.mp3"), "simple": ("bed_chill.mp3", "bed_bright.mp3"), "easter": ("bed_epic.mp3", "bed_dark.mp3"),
+}
+WHOOSHES = ("sfx_whoosh.wav", "sfx_whoosh_soft.wav", "sfx_swish.wav", "sfx_slide.wav")  # scene changes rotate through these
+
+
+def music_bed(fmt: Optional[str], topic: str = "") -> str:
+    """File name of the music bed for a format; the topic picks between the format's two."""
+    import hashlib
+    options = MUSIC_BY_FORMAT.get(fmt, MUSIC_BY_FORMAT[None])
+    return options[int(hashlib.sha256((topic or "").lower().encode()).hexdigest(), 16) % len(options)]
+
+
+def pointer_moment(scene_type: str, cursor: Optional[str], dur: int, cue: Optional[float]) -> float:
+    """Seconds after the scene starts at which the pointer does its thing (presses, grabs, starts selecting): the same timing the Remotion cursor uses."""
+    from math import floor
+    if scene_type == "ui":
+        frames = max(28, min(dur - 70, round(cue * FPS) - 2)) if cue is not None else max(28, min(46, round(dur * 0.3)))
+    elif scene_type == "progressBar":
+        frames = 14
+    elif scene_type == "tier":
+        frames = 46  # TIER_DROP: the chip lands in its row
+    else:
+        arrive = max(16, min(dur - 44, round(cue * FPS) - 2)) if cue is not None else min(34, round(dur * 0.34))
+        frames = arrive + (5 if cursor in ("click", "toggle") else 0)
+    return floor(frames) / FPS
+
+
+def scene_audio_info(scenes: list) -> list:
+    """What the sound design needs to know about each scene (see sound_cues)."""
+    return [{"cursor": s.cursor, "dur": s.durationInFrames, "cue": getattr(s, "cursorCue", None), "verdict": getattr(s, "verdict", None)} for s in scenes]
+
+
+CUE_VOLUME = {"first": (0.35, 0.5), "flash": (0.5, 0.7), "riser": (0.26, 0.45), "click": (0.3, 0.5), "select": (0.26, 0.45), "grab": (0.28, 0.45), "verdict": (0.28, 0.45), "outro": (0.3, 0.5), "tick": (0.12, 0.22), "pop": (0.24, 0.4)}
+
+
+def sound_cues(scene_starts: list, kinds: Optional[list], info: Optional[list] = None) -> list:
+    """Sound-design cues as (file, start seconds, kind): a soft impact on the first frame and on flash scenes, a riser before each data reveal (at most MAX_RISERS, spread out) and,
+    when `info` is given (scene_audio_info), the sounds of what happens on screen: the pointer's click / swipe / grab, a tier chip landing, a verdict stamp, counter ticks and the outro chime."""
     cues = []
     if not kinds:
         return cues
@@ -209,10 +249,25 @@ def sound_cues(scene_starts: list, kinds: Optional[list]) -> list:
         reveals = [reveals[round(j * (len(reveals) - 1) / (MAX_RISERS - 1))] for j in range(MAX_RISERS)]
     cues += [("sfx_riser.wav", max(0.0, scene_starts[i] / FPS - 0.95), "riser") for i in reveals]
     cues += [("sfx_hit.wav", scene_starts[i] / FPS, "flash") for i, k in enumerate(kinds) if k == "flash"]
+    if info:
+        for i, (kind, sc) in enumerate(zip(kinds, info)):
+            at = scene_starts[i] / FPS
+            act = sc.get("cursor")
+            if act:
+                when = at + pointer_moment(kind, act, sc["dur"], sc.get("cue"))
+                cues.append({"click": ("sfx_click.wav", when, "click"), "toggle": ("sfx_click.wav", when, "click"), "select": ("sfx_swish.wav", when, "select"), "drag": ("sfx_pop.wav", when, "grab")}[act])
+            elif kind == "tier":
+                cues.append(("sfx_pop.wav", at + 0.55, "pop"))
+            if kind == "verdict":
+                cues.append({"myth": ("sfx_error.wav", at + 0.5, "verdict"), "fact": ("sfx_chime.wav", at + 0.5, "verdict")}.get(sc.get("verdict") or "", ("sfx_ding.wav", at + 0.5, "verdict")))
+            elif kind == "counter":
+                cues += [("sfx_tick.wav", at + 0.3 + k * 0.17, "tick") for k in range(5)]
+            elif kind == "outro":
+                cues.append(("sfx_chime.wav", at + 0.12, "outro"))
     return cues
 
 
-def add_sound(raw: Path, out: Path, scene_starts: list, voice_clips: Optional[list] = None, lead: float = VOICE_LEAD, kinds: Optional[list] = None) -> Path:
+def add_sound(raw: Path, out: Path, scene_starts: list, voice_clips: Optional[list] = None, lead: float = VOICE_LEAD, kinds: Optional[list] = None, music_file: Optional[str] = None, info: Optional[list] = None) -> Path:
     """Muxes a quiet ambient bed, a soft whoosh on every scene start and the narration (both effects are the project's own assets). The loudness is normalised in TWO passes
     (measure, then apply one fixed gain): a single dynamic pass pumps the volume and the voice seems to dip or cut at scene changes."""
     import json as _json
@@ -221,7 +276,9 @@ def add_sound(raw: Path, out: Path, scene_starts: list, voice_clips: Optional[li
     audio = settings.BASE_DIR / "assets" / "audio"
     ins = ["-i", str(raw), "-stream_loop", "-1", "-i", str(audio / "schematic_ambient.wav")]
     voiced = bool(voice_clips)
-    music = audio / "motion_bed.wav"
+    music = audio / (music_file or "motion_bed.wav")
+    if not music.is_file():
+        music = audio / "motion_bed.wav"
     parts = [f"[1:a]volume={(0.09 if music.is_file() else 0.12) if voiced else 0.22},afade=t=in:d=1.2[bed]"]
     labels = ["[bed]"]
     n = 2
@@ -230,18 +287,19 @@ def add_sound(raw: Path, out: Path, scene_starts: list, voice_clips: Optional[li
         parts.append(f"[{n}:a]volume={0.07 if voiced else 0.16},afade=t=in:d=1.5[music]")
         labels.append("[music]")
         n += 1
-    for start in scene_starts:
-        ins += ["-i", str(audio / "sfx_whoosh.wav")]
+    for i_, start in enumerate(scene_starts):
+        whoosh = WHOOSHES[i_ % len(WHOOSHES)]
+        ins += ["-i", str(audio / (whoosh if (audio / whoosh).is_file() else "sfx_whoosh.wav"))]
         ms = int(start / FPS * 1000)
         parts.append(f"[{n}:a]adelay={ms}|{ms},volume={0.3 if voiced else 0.55}[w{n}]")
         labels.append(f"[w{n}]")
         n += 1
-    for fname, at, cue in sound_cues(scene_starts, kinds):  # pattern breaks you can hear: an impact on the cold open and on flashes, a riser into each data reveal
+    for fname, at, cue in sound_cues(scene_starts, kinds, info):  # pattern breaks you can hear (an impact on the cold open and on flashes, a riser into each data reveal) and what happens on screen
         if not (audio / fname).is_file():
             continue
         ins += ["-i", str(audio / fname)]
         ms = int(at * 1000)
-        vol = {"first": 0.35, "flash": 0.5, "riser": 0.26}[cue] if voiced else {"first": 0.5, "flash": 0.7, "riser": 0.45}[cue]
+        vol = CUE_VOLUME[cue][0 if voiced else 1]
         parts.append(f"[{n}:a]adelay={ms}|{ms},volume={vol}[c{n}]")
         labels.append(f"[c{n}]")
         n += 1
@@ -413,7 +471,8 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
         for sc in project.scenes:
             starts.append(acc)
             acc += sc.durationInFrames
-        video = add_sound(raw, work / "motion_master.mp4", starts, clips, lead=0.0 if continuous else VOICE_LEAD, kinds=[sc.type for sc in project.scenes])
+        video = add_sound(raw, work / "motion_master.mp4", starts, clips, lead=0.0 if continuous else VOICE_LEAD, kinds=[sc.type for sc in project.scenes],
+                         music_file=music_bed(project.format, project.topic), info=scene_audio_info(project.scenes))
 
         fails = qa_motion(video)
         if fails:

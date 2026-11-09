@@ -352,3 +352,54 @@ def test_the_preset_decides_the_pointer_action():
     sc = [_ui("gamemenu", items=["Shadows|90>40", "Textures|80>80"], value=1, leftValue=60, rightValue=90, cursor="click")]
     sanitize_cursors(sc, None)
     assert sc[0].cursor == "drag"
+
+
+# ---- more music and effects ----
+from services.motion_pipeline import MUSIC_BY_FORMAT, WHOOSHES, music_bed, pointer_moment, scene_audio_info  # noqa: E402
+
+AUDIO = Path(__file__).resolve().parent.parent / "assets" / "audio"
+
+
+def test_every_music_bed_and_effect_exists():
+    beds = {f for opts in MUSIC_BY_FORMAT.values() for f in opts}
+    assert len(beds) >= 7 and all((AUDIO / f).is_file() for f in beds)
+    assert all((AUDIO / f).is_file() for f in WHOOSHES)
+    for cue in ("sfx_click", "sfx_pop", "sfx_tick", "sfx_swish", "sfx_chime", "sfx_error", "sfx_ding", "sfx_boom", "sfx_glitch", "sfx_type", "sfx_sparkle"):
+        assert (AUDIO / f"{cue}.wav").is_file(), cue
+
+
+def test_music_depends_on_the_format_and_is_stable_per_topic():
+    assert music_bed("fix", "A topic") == music_bed("fix", "A topic")
+    assert music_bed("fix", "x") in MUSIC_BY_FORMAT["fix"] and music_bed("whatif", "x") in MUSIC_BY_FORMAT["whatif"]
+    assert {music_bed("fix", f"topic {i}") for i in range(12)} == set(MUSIC_BY_FORMAT["fix"])  # both beds get used
+    assert music_bed("unknown", "x") in MUSIC_BY_FORMAT[None]
+
+
+def test_the_pointer_sounds_follow_what_it_does():
+    kinds = ["bigText", "textWithAccent", "ui", "verdict", "counter", "outro"]
+    starts = [0, 100, 200, 400, 500, 700]
+    info = [{"cursor": None, "dur": 100}, {"cursor": "select", "dur": 100, "cue": None}, {"cursor": "click", "dur": 200, "cue": 2.0}, {"cursor": None, "dur": 100, "verdict": "myth"},
+            {"cursor": None, "dur": 200}, {"cursor": None, "dur": 100}]
+    cues = sound_cues(starts, kinds, info)
+    names = [c[0] for c in cues]
+    assert "sfx_swish.wav" in names and "sfx_click.wav" in names and "sfx_error.wav" in names and names.count("sfx_tick.wav") == 5 and "sfx_chime.wav" in names
+    click = next(c for c in cues if c[0] == "sfx_click.wav")
+    assert click[1] == 200 / 30 + pointer_moment("ui", "click", 200, 2.0) and pointer_moment("ui", "click", 200, 2.0) == (60 - 2) / 30
+    assert sound_cues(starts, kinds)[0] == ("sfx_hit.wav", 0.05, "first") and len(sound_cues(starts, kinds)) < len(cues)
+
+
+def test_the_mix_has_music_effects_and_voice_without_clipping(tmp_path):
+    import subprocess
+
+    from services.motion_pipeline import add_sound
+    from services.voice import get_ffmpeg_bin
+
+    ff = get_ffmpeg_bin()
+    raw = tmp_path / "raw.mp4"
+    subprocess.run([ff, "-y", "-f", "lavfi", "-i", "color=c=black:s=320x568:d=6:r=30", "-pix_fmt", "yuv420p", str(raw)], check=True, capture_output=True)
+    voice = tmp_path / "v.mp3"
+    subprocess.run([ff, "-y", "-f", "lavfi", "-i", "sine=frequency=220:duration=2", str(voice)], check=True, capture_output=True)
+    sc = [SimpleNamespace(cursor=c, durationInFrames=90, cursorCue=None, verdict=v) for c, v in ((None, None), ("select", None))]
+    out = add_sound(raw, tmp_path / "out.mp4", [0, 90], [(0, voice, 2.0)], lead=0.0, kinds=["bigText", "textWithAccent"], music_file="bed_chill.mp3", info=scene_audio_info(sc))
+    log = subprocess.run([ff, "-hide_banner", "-i", str(out), "-af", "volumedetect", "-f", "null", "-"], capture_output=True, text=True).stderr
+    assert "Audio:" in log and float(log.split("max_volume:")[1].split("dB")[0]) < -0.5

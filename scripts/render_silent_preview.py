@@ -20,7 +20,7 @@ sys.path.insert(0, str(BASE_DIR))
 
 from services.motion_generator import WORDS_PER_SECOND, MotionProject, assign_cursors, sanitize_cursors  # noqa: E402
 from services.series import apply_series  # noqa: E402
-from services.motion_pipeline import FPS, MIN_VIDEO_SECONDS, VOICE_LEAD, add_sound, qa_motion, render_motion  # noqa: E402
+from services.motion_pipeline import FPS, MIN_VIDEO_SECONDS, VOICE_LEAD, add_sound, music_bed, qa_motion, render_motion, scene_audio_info  # noqa: E402
 
 
 def time_scenes(project: MotionProject) -> None:
@@ -52,7 +52,7 @@ def render_one(path: Path, out_dir: Path) -> Path:
         for sc in project.scenes:
             starts.append(acc)
             acc += sc.durationInFrames
-        final = add_sound(raw, out_dir / f"{name}_silent.mp4", starts, None, kinds=[sc.type for sc in project.scenes])
+        final = add_sound(raw, out_dir / f"{name}_silent.mp4", starts, None, kinds=[sc.type for sc in project.scenes], music_file=music_bed(project.format, project.topic), info=scene_audio_info(project.scenes))
     problems = qa_motion(final)
     print(f"{final}  ({project.total_frames / FPS:.1f} s){'  QA: ' + '; '.join(problems) if problems else '  QA ok'}")
     return final
