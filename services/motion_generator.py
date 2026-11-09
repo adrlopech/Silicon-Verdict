@@ -81,6 +81,9 @@ def cursor_from_pose(pose: Optional[str], scene_type: str, index: int, total: in
 SceneType = Literal["bigText", "textWithAccent", "counter", "list", "codeBlock", "progressBar", "outro", "curve", "flash", "footage", "tier", "versus", "verdict", "timeline"]
 FORMATS = ("myth", "tier", "whatif", "easter", "evolution", "versus", "hardware", "simple", "fix", "decode")   # content formats on top of the two kinds (curiosity / game); "easter" is always a game video; "hardware" and "simple" are the old Hardware / Everyday-with-mascot categories, now told in the Motion style; "fix" and "decode" come from the Nov 2026 niche research (notes/niche_research_2026-11.md)
 TIER_LETTERS = ("S", "A", "B", "C", "D", "F")
+# How often `--motion-format any` picks each topic. Our three TikTok breakouts (800+ views) were the number-driven formats (what-if, versus, evolution) and the niche research
+# found "fix it now" and "decoded" to be the biggest unserved clusters; tier lists and myths stalled at the first test wave (notes/content_style_study_2026-11.md).
+FORMAT_WEIGHTS = {"whatif": 3, "versus": 3, "evolution": 3, "fix": 3, "decode": 3, "hardware": 2, "simple": 1, "myth": 1, "tier": 1, "easter": 1, "classic": 1, "curiosity": 1, "game": 1}
 
 
 class MotionSceneModel(BaseModel):
@@ -171,7 +174,7 @@ LANGUAGE: everything (scene text, narration, title, description, tags, comment) 
 FACTS: only TRUE, verifiable statements; figures must be real and approximate (about / roughly) - never invent numbers.
 
 STORY (11 to 19 scenes, aim for 13+, each 60-150 frames at 30 fps):
-1. First scene: a hook (bigText or textWithAccent) that creates curiosity.
+1. First scene: a COLD OPEN hook (bigText or textWithAccent), see the RETENTION RULES at the end.
 2. Then build the idea step by step, ONE idea per scene, using a variety of scene types:
    - bigText: 1-4 words, huge. textWithAccent: a short white line (max 7 words) + accentText (1-3 words, the emotional/key word).
    - counter: caption text + accentText, value = a REAL final number > 0, optional unit.
@@ -188,6 +191,14 @@ select (drags across the headline like selecting text: one key phrase), hover (r
 On-screen effects appear automatically when the narration names them, each only once or rarely: plane/rocket/satellite fly-bys, signal waves and bars, lightning, embers, snow, drops, data packets, coins, equalizer, notification banners, a filling battery, a clock, a padlock, a magnifier, binary rain. Set `fx` only to force one.
 Metadata: title <= 80 characters + 2-3 hashtags (#siliconverdict first), description 2 sentences, 6-8 tags, pinned_comment = a debate question.
 screen_title <= 24 characters. accent = always #00F0FF (channel electric cyan)."""
+
+RETENTION_RULES = """
+RETENTION RULES (they decide whether people keep watching; the validator checks them):
+- COLD OPEN. Scene 1 is the claim that breaks a belief, or the most surprising number, said in at most 14 words with NO context before it. Never open with a greeting, "today", "in this video",
+  "did you know", "have you ever wondered", "let's" or a definition. Example: "Your three nanometer chip has no three nanometer part inside." When a figure or a contrast makes the claim stronger, show it in scene 1 or 2.
+- OPEN LOOP. In scene 2, 3, 4 or 5 the narration promises something that comes later ("And the last reason is the one nobody checks.", "Stay to the end, the last step matters most.",
+  "But the real catch comes in a moment."). Pay it off in the last third, before the outro, with a scene that clearly delivers it. Never promise something the video does not deliver.
+- PATTERN BREAK. Never more than two headline scenes (bigText / textWithAccent) in a row: break the rhythm with a counter, list, codeBlock, progressBar, curve, flash or footage scene at least every third scene."""
 
 GAME_RULES = """
 GAME VIDEO. This video is about the game {game}: tell ONE true engineering fact about it (engine behaviour, physics, streaming, rendering trick,
@@ -439,6 +450,36 @@ def _format_problems(p: MotionProject, fmt: Optional[str]) -> List[str]:
     return out
 
 
+BAD_OPENER = re.compile(r"^\W*(so\b|welcome|hey\b|hi\b|hello|today|in this video|did you know|have you ever|do you know|let'?s|ever wonder)", re.I)
+OPEN_LOOP = re.compile(
+    r"\b(wait for|stay (?:to|till|until|for|with)|by the end|until the end|in a moment|in a second|before we (?:finish|end)|later on|catch|twist|nobody|no one|most people|secret|"
+    r"gets (?:worse|weirder|stranger|better)|the (?:last|final|third|second|next) (?:one|reason|part|step|round|rule|trick)|you will not believe|that is not even|that is not the)\b", re.I)
+HEADLINE = ("bigText", "textWithAccent")
+HOOK_MAX_WORDS = 16  # the prompt asks for 14; two more words of tolerance
+
+
+def retention_problems(p: MotionProject) -> List[str]:
+    """Style checks from the Nov 2026 content study (notes/content_style_study_2026-11.md): a cold open, an open loop early on and a visual break at least every third scene.
+    Only generated scripts are held to these; the hand-written banks are measured with `scripts/lint_retention.py`."""
+    out: List[str] = []
+    if not p.scenes:
+        return out
+    hook = p.scenes[0].narration.strip()
+    if BAD_OPENER.search(hook):
+        out.append("scene 1 must be a cold open: the claim itself, never a greeting, \"so\", \"today\", \"in this video\", \"did you know\" or \"have you ever wondered\"")
+    if len(hook.split()) > HOOK_MAX_WORDS:
+        out.append(f"scene 1 narration has {len(hook.split())} words: the cold open is at most 14 words, the claim and nothing else")
+    if not any(OPEN_LOOP.search(s.narration) for s in p.scenes[1:5]):
+        out.append("scenes 2-5 need an open loop: one narration line that promises a later payoff (for example \"And the last step is the one most people skip.\" or \"Stay to the end, the catch comes last.\")")
+    run = 0
+    for i, s in enumerate(p.scenes, 1):
+        run = run + 1 if s.type in HEADLINE else 0
+        if run > 2:
+            out.append(f"scenes {i - 2}-{i} are three headline scenes in a row: break the rhythm with a counter, list, codeBlock, progressBar, curve or flash scene")
+            break
+    return out
+
+
 def _said(value: float, narration: str) -> bool:
     """True when `value` appears in the narration as digits or as a spoken number (loose: any digit within 6 % or any number word)."""
     text = narration.lower().replace(",", "")
@@ -448,13 +489,16 @@ def _said(value: float, narration: str) -> bool:
     return any(w in _NUM_WORDS for w in re.findall(r"[a-z]+", text)) or bool(re.search(r"\b(?:eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen)\b", text))
 
 
-def make_validator(catalog: Optional[Dict[str, dict]] = None, facts: Optional[str] = None, fmt: Optional[str] = None):
-    """Validator for generate_structured. `catalog` (media id -> entry) and `facts` (source dossier) are given for game videos; `fmt` is the content format."""
+def make_validator(catalog: Optional[Dict[str, dict]] = None, facts: Optional[str] = None, fmt: Optional[str] = None, retention: bool = False):
+    """Validator for generate_structured. `catalog` (media id -> entry) and `facts` (source dossier) are given for game videos; `fmt` is the content format;
+    `retention` adds the cold-open / open-loop / pattern-break style checks (on for generated scripts, off for the hand-written banks)."""
     known = figures_in(facts) if facts else None
     norm_facts = _norm(facts) if facts else None
     def validate_project(p: MotionProject) -> List[str]:
         _repair(p)
         out: List[str] = _format_problems(p, fmt)
+        if retention:
+            out += retention_problems(p)
         n = len(p.scenes)
         compact = fmt in ("tier", "versus")  # these formats are built from a fixed run of format scenes, so they have fewer, wordier scenes
         if not (8 if compact else 10) <= n <= 21:
@@ -657,7 +701,7 @@ def generate_motion_project(topic: Optional[str] = None, avoid_topics: Optional[
         raise ValueError(f"unknown format {fmt!r}: use one of {FORMATS}")
     if fmt == "easter" and kind != "game":
         raise ValueError("the easter (hidden detail) format needs a game video")
-    system = SYSTEM_PROMPT
+    system = SYSTEM_PROMPT + RETENTION_RULES
     if kind == "game":
         lines = "\n".join(f"  * id={k} [{e['kind']}] {e['caption']}" for k, e in (catalog or {}).items())
         system += (GAME_RULES.format(game=game, catalog=lines, facts=facts) if facts else GAME_RESTRICTIVE.format(game=game, catalog=lines))
@@ -678,10 +722,10 @@ def generate_motion_project(topic: Optional[str] = None, avoid_topics: Optional[
     feedback = ""
     for attempt in range(1, attempts + 1):
         project, tokens, model = generate_structured(prompt=base + feedback + "Return a JSON object matching the schema.", system_instruction=system, schema=MotionProject,
-                                                     temperature=0.8, validate=make_validator(catalog if kind == "game" else None, facts, fmt), max_output_tokens=12000, max_passes=3)
+                                                     temperature=0.8, validate=make_validator(catalog if kind == "game" else None, facts, fmt, retention=True), max_output_tokens=12000, max_passes=3)
         project.kind, project.game, project.format = kind, (game if kind == "game" else None), fmt
         project.gemini_input_tokens, project.gemini_output_tokens = tokens
-        validator = make_validator(catalog if kind == "game" else None, facts, fmt)
+        validator = make_validator(catalog if kind == "game" else None, facts, fmt, retention=True)
         problems: List[_Issue] = []
         try:
             for rnd in range(1, 4):  # the reviewer both flags and fixes narration: apply its fixes and look again before giving up on the script

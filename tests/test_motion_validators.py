@@ -76,3 +76,59 @@ def test_fix_format_needs_the_cursor_twice():
 def test_decode_format_needs_a_select_cursor():
     assert any("select" in p for p in make_validator(None, None, "decode")(_project("decode", {4: "drag"})))
     assert make_validator(None, None, "decode")(_project("decode", {0: "select", 4: "drag"})) == []
+
+
+# ---- retention rules (content style study, Nov 2026) ----
+from services.motion_generator import FORMAT_WEIGHTS, retention_problems  # noqa: E402
+
+_COLD = "Your three nanometer chip has no three nanometer part inside."
+_LOOP = "And the last step is the one most people skip."
+
+
+def _retention_project(narrations, types=None):
+    types = types or ["bigText", "counter", "textWithAccent", "list", "bigText", "codeBlock", "outro"]
+    scenes = []
+    for t, narr in zip(types, narrations):
+        extra = {"value": 5} if t == "counter" else {"items": ["A one", "B two"]} if t == "list" else {"code": ["a = 1", "b = 2"]} if t == "codeBlock" else {}
+        scenes.append(MotionSceneModel(type=t, text="Short line", narration=narr, durationInFrames=90, **extra))
+    return MotionProject(topic="t", screen_title="Test", title="A test title #siliconverdict #tech", description="One. Two.", tags=["a"] * 6, pinned_comment="Why?", scenes=scenes)
+
+
+def _narrs(**override):
+    base = [_COLD, "Five of them stack up, and that changes the picture quite a lot.", _LOOP, "Each step adds a little more to the pile of evidence here.",
+            "Together they explain why the number on the box is misleading.", "Here is the label broken down into its parts for you.", "Follow for more."]
+    for k, v in override.items():
+        base[int(k[1:])] = v
+    return base
+
+
+def test_retention_passes_a_cold_open_with_a_loop_and_breaks():
+    assert retention_problems(_retention_project(_narrs())) == []
+
+
+def test_retention_rejects_a_greeting_hook():
+    assert any("cold open" in p for p in retention_problems(_retention_project(_narrs(n0="So today we look at why your chip name is misleading."))))
+
+
+def test_retention_rejects_a_long_hook():
+    long_hook = "Your chip is called three nanometer but nothing inside it measures three nanometers and that surprises almost every single person."
+    assert any("words" in p for p in retention_problems(_retention_project(_narrs(n0=long_hook))))
+
+
+def test_retention_needs_an_open_loop():
+    assert any("open loop" in p for p in retention_problems(_retention_project(_narrs(n2="Each step adds a little more to the pile of evidence here."))))
+
+
+def test_retention_rejects_three_headlines_in_a_row():
+    types = ["bigText", "textWithAccent", "bigText", "list", "counter", "codeBlock", "outro"]
+    assert any("headline" in p for p in retention_problems(_retention_project(_narrs(), types)))
+
+
+def test_retention_is_off_by_default_and_on_when_asked():
+    greeting = _retention_project(_narrs(n0="So today we look at why your chip name is misleading."))
+    assert not any("cold open" in p for p in make_validator(None, None, None)(greeting))
+    assert any("cold open" in p for p in make_validator(None, None, None, retention=True)(greeting))
+
+
+def test_number_formats_are_weighted_above_the_stalled_ones():
+    assert min(FORMAT_WEIGHTS[f] for f in ("whatif", "versus", "evolution", "fix", "decode")) > max(FORMAT_WEIGHTS[f] for f in ("myth", "tier"))

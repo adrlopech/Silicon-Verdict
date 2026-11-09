@@ -155,13 +155,16 @@ The motion series also speaks fixed formats (hardware and simple are the old cat
 .venv/bin/python main.py --series motion --motion-format easter --export-only     # a game's hidden detail (needs a game with unused footage and a source dossier)
 .venv/bin/python main.py --series motion --motion-format hardware --export-only   # silicon / engineering deep dive, cursor as an accent
 .venv/bin/python main.py --series motion --motion-format simple --export-only     # everyday tech mystery hosted by the cursor
-.venv/bin/python main.py --series motion --motion-format any                      # a random one
+.venv/bin/python main.py --series motion --motion-format fix --export-only      # a symptom fixed with one exact setting, the cursor does the clicks
+.venv/bin/python main.py --series motion --motion-format decode --export-only   # what a product name or spec label really means
+.venv/bin/python main.py --series motion --motion-format any                      # a weighted random one (what-if, versus, evolution, fix and decode come up most)
 ```
 
 New scene types (`remotion_studio/src/motion/formats.tsx`): `tier` (`items`: `"S|label"`, every scene repeats the board and adds one item), `versus` (`left`, `right`, `leftValue`,
 `rightValue`, `unit`, optional `winner` for lower-is-better metrics), `verdict` (`verdict`: myth | fact | partly, `accentText` = the one-line truth) and `timeline` (`items`: `"year|label"`).
 A demo of all four: `remotion_studio/src/motion/sample_formats.json`. `easter` is always a game video; the others are curiosities.
 
+* **Retention style.** Every generated script follows three rules that the validator enforces (`retention_problems()` in `services/motion_generator.py`): a **cold open** (scene 1 is the claim or the surprising number in 14 words or fewer, never a greeting or a definition), an **open loop** (one of scenes 2-5 promises a payoff that the last third delivers) and a **visual break** at least every third scene (never three headline scenes in a row). The rules come from a content-style study of our own TikTok numbers and short-form retention research; `scripts/lint_retention.py` measures the hand-written banks against them.
 * **Length: 62-84 s.** YouTube monetisation needs more than 60 s, so the script has 13-19 scenes and about 150-190 narrated words, every scene lasts as long as its narration
   and the pipeline holds scenes a little longer if the voice still comes to less than 62 s. The QA gate rejects anything outside 61-92 s.
 * **Two kinds, one engine.** *Curiosity*: a tech/hardware/coding idea told with words, counters, code, bars and curves. *Game*: the script is written against the

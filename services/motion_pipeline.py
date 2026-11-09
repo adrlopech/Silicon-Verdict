@@ -268,7 +268,9 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
             options = [o for o in options if o[0] != "game" and o[1] != "easter"]
         last = _last_motion_choice()
         pool = [o for o in options if o != last] or options
-        kind, fmt = random.choice(pool)
+        from services.motion_generator import FORMAT_WEIGHTS
+        weight = lambda o: FORMAT_WEIGHTS.get(o[1] if o[1] != "auto" else {"auto": "classic"}.get(o[0], o[0]), 1)  # ("auto","auto") is the classic explainer; kinds weigh as themselves
+        kind, fmt = random.choices(pool, weights=[weight(o) for o in pool])[0]
         logger.info("Automatic Motion Graphics topic: kind=%s format=%s", kind, fmt)
     if fmt not in ("auto",) + tuple(FORMATS):
         raise ValueError(f"unknown format {fmt!r}: use auto, any or one of {FORMATS}")
