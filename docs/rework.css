@@ -124,3 +124,11 @@ small, .tagline { opacity: 1; }
 @media (max-width: 520px) { .faqx-t { grid-template-columns: 1fr; } }
 
 .logos .lg.wide { width: 96px; } .logos .lg.wide .mono { width: 70px; height: 24px; }
+
+/* closing banner: darker ground, "verdict." in its own blue */
+.cta { background:
+  radial-gradient(900px 420px at 15% 0%, rgba(var(--ac), .22), transparent 60%),
+  radial-gradient(800px 460px at 100% 100%, rgba(var(--ac2), .4), transparent 60%),
+  linear-gradient(135deg, color-mix(in srgb, rgb(var(--ac2)) 38%, #06112E), color-mix(in srgb, rgb(var(--ac2)) 16%, #040B22)); border-color: rgba(var(--wh), .14); }
+.cta h2 .grad { color: #5EC8FF; -webkit-text-fill-color: #5EC8FF; text-decoration-color: rgba(94, 200, 255, .55); }
+.cta p { color: rgba(255, 255, 255, .8); }
