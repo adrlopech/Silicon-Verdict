@@ -292,3 +292,63 @@ def test_select_cue_is_the_moment_the_key_word_is_spoken():
     cursor_cues(project, words, [3, 6], [0.0, 2.8])
     assert sc[1].cursorCue == round(3.0 + 3 * 0.4 - 2.8, 2)  # "key" is the 4th word of the second scene
     assert sc[0].cursorCue is None
+
+
+# ---- ui presets: 20 drawn interfaces the pointer uses ----
+import json  # noqa: E402
+from pathlib import Path  # noqa: E402
+
+from services.motion_generator import MAX_UI_SCENES, UI_FORMATS_OFF, UI_PRESETS, _ui_problems, ui_rules  # noqa: E402
+
+SAMPLE_UI = Path(__file__).resolve().parent.parent / "remotion_studio" / "src" / "motion" / "sample_ui.json"
+
+
+def _ui(preset, **kw):
+    base = dict(type="ui", preset=preset, text="Short headline", narration=_NARR, durationInFrames=150)
+    base.update(kw)
+    return MotionSceneModel(**base)
+
+
+def _bare(*scenes):
+    return SimpleNamespace(scenes=list(scenes))
+
+
+def test_there_are_twenty_presets_and_the_prompt_lists_them_all():
+    assert len(UI_PRESETS) == 20
+    rules = ui_rules()
+    assert all(name in rules for name in UI_PRESETS) and all(spec["action"] in ("select", "drag", "click") for spec in UI_PRESETS.values())
+
+
+def test_the_sample_has_one_valid_scene_per_preset():
+    scenes = [MotionSceneModel(**x) for x in json.loads(SAMPLE_UI.read_text(encoding="utf-8"))["scenes"]]
+    assert {s.preset for s in scenes} == set(UI_PRESETS)
+    for s in scenes:
+        problems = [p for p in _ui_problems(_bare(s), None) if "mentioned in that scene" not in p]  # the sample's narration is a placeholder
+        assert problems == [], (s.preset, problems)
+
+
+def test_ui_scene_checks():
+    ok = _ui("display", items=["60 Hz", "144 Hz"], value=2)
+    assert _ui_problems(_bare(ok), None) == []
+    assert any("preset" in p for p in _ui_problems(_bare(_ui("nope")), None))
+    assert any("value" in p for p in _ui_problems(_bare(_ui("display", items=["60 Hz", "144 Hz"], value=5)), None))
+    assert any("accentText" in p for p in _ui_problems(_bare(_ui("bios", items=["A|1", "B|2", "C|3"], value=1)), None))
+    assert any("two different slots" in p for p in _ui_problems(_bare(_ui("dimm", items=["A1", "A2", "B1", "B2"], leftValue=2, rightValue=2)), None))
+    assert any("add up to 100" in p for p in _ui_problems(_bare(_ui("diskbar", items=["Games|50", "Apps|20", "Free|10"], value=30, leftValue=1, rightValue=2)), None))
+    assert any("unit" in p for p in _ui_problems(_bare(_ui("partpicker", items=["Board|B650", "CPU|empty"], value=2, accentText="Chip", leftValue=0)), None))
+
+
+def test_ui_scenes_are_limited_and_spaced():
+    d = _ui("display", items=["60 Hz", "144 Hz"], value=2)
+    assert any("at most" in p for p in _ui_problems(_bare(d, d, d), None))
+    assert any("between them" in p for p in _ui_problems(_bare(d, d), None))
+    assert any("no ui scenes" in p for p in _ui_problems(_bare(d), "tier")) and "tier" in UI_FORMATS_OFF and MAX_UI_SCENES == 2
+
+
+def test_the_preset_decides_the_pointer_action():
+    sc = [_ui("display", items=["60 Hz", "144 Hz"], value=2, cursor="hover"), _ui("nope", cursor="click")]
+    sanitize_cursors(sc, None)
+    assert sc[0].cursor == "click" and sc[1].cursor is None
+    sc = [_ui("gamemenu", items=["Shadows|90>40", "Textures|80>80"], value=1, leftValue=60, rightValue=90, cursor="click")]
+    sanitize_cursors(sc, None)
+    assert sc[0].cursor == "drag"

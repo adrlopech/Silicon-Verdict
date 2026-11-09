@@ -33,9 +33,105 @@ TOGGLE_KEYS = ("airplane", "wifi", "bluetooth", "airdrop")
 FX_NAMES = ("plane", "rocket", "satellite", "waves", "bolts", "embers", "snow", "drops", "packets", "coins", "equalizer", "signalbars", "notifications", "batteryfill", "clock", "padlock", "magnify", "bits")
 
 
+# The 20 drawn interfaces of the `ui` scene. n = how many rows (items, or code lines for the terminal), value = what `value` means, need = the other fields that must be set, action = what the pointer does.
+UI_PRESETS: Dict[str, dict] = {
+    "display": {"action": "click", "n": (2, 5), "value": "index", "need": (), "doc": 'items = the refresh-rate options ("60 Hz", "120 Hz", "144 Hz"), value = the option the pointer picks (1-based)'},
+    "taskmgr": {"action": "click", "n": (3, 5), "value": "index", "need": (), "doc": 'items = processes "Name|percent of CPU", value = the process the pointer ends (1-based)'},
+    "bios": {"action": "click", "n": (3, 6), "value": "index", "need": ("accentText",), "doc": 'items = options "Option|Value", value = the option changed, accentText = its new value'},
+    "terminal": {"action": "select", "n": (3, 8), "value": "index", "need": ("code",), "doc": 'code = the lines (a "$ " line is a command, the others are its output), value = the line the pointer selects (1-based)'},
+    "gpupanel": {"action": "click", "n": (2, 4), "value": "index", "need": (), "doc": 'items = switches "Name|on" or "Name|off", value = the switch the pointer flips; the frame-time graph then calms down'},
+    "gamemenu": {"action": "drag", "n": (2, 4), "value": "index", "need": ("leftValue", "rightValue"), "doc": 'items = sliders "Name|from>to" (0-100), value = the slider the pointer drags, leftValue / rightValue = the FPS before / after'},
+    "frametime": {"action": "select", "n": (0, 0), "value": "number", "need": ("leftValue",), "doc": "no items; value = the height of the stutter spike in ms, leftValue = the usual frame time in ms; the pointer selects the spike"},
+    "speedtest": {"action": "drag", "n": (0, 3), "value": "number", "need": ("unit",), "doc": 'value = the result, unit = Mbps or ms, items (optional) = other readings "Ping|12 ms"; the pointer drags the needle up to the result'},
+    "wifilist": {"action": "click", "n": (2, 4), "value": "index", "need": (), "doc": 'items = networks "Name|band|bars" (bars 1-4), value = the network the pointer presses'},
+    "router": {"action": "click", "n": (2, 4), "value": "index", "need": ("accentText",), "doc": 'items = settings "Field|current value", value = the field edited, accentText = its new value'},
+    "keycaps": {"action": "click", "n": (2, 4), "value": None, "need": ("accentText",), "doc": 'items = the keys of a shortcut in order ("Win", "Shift", "S"), accentText = what it does'},
+    "filemgr": {"action": "drag", "n": (3, 5), "value": "folder", "need": (), "doc": 'items = the file first, then 2-4 folders "Name|note"; value = the folder (1-based among the folders) the file is dropped on'},
+    "diskbar": {"action": "drag", "n": (3, 5), "value": "number", "need": ("leftValue", "rightValue"), "doc": 'items = segments "Name|percent" adding up to 100, the LAST one is the free space; value = the free percent afterwards, leftValue / rightValue = write speed before / after in MB/s'},
+    "battery": {"action": "drag", "n": (1, 1), "value": "number", "need": (), "doc": 'items = ["Charge limit|100>80"] (the slider the pointer drags), value = the battery health in percent'},
+    "tabmem": {"action": "click", "n": (3, 5), "value": "index", "need": (), "doc": 'items = browser tabs "Name|MB", value = the heavy tab the pointer closes'},
+    "speclabel": {"action": "select", "n": (3, 5), "value": "index", "need": (), "doc": 'text = the label, items = its parts "token|what it means" in order, value = the part the pointer selects'},
+    "leaderboard": {"action": "drag", "n": (3, 6), "value": "index", "need": (), "doc": 'items = rows "Name|score" in their TRUE order (best first), value = the row that starts misplaced at the bottom and that the pointer drags up to its place'},
+    "partpicker": {"action": "drag", "n": (2, 4), "value": "index", "need": ("accentText", "leftValue"), "doc": 'items = slots "Slot|Part" with one "Slot|empty", value = the empty slot, accentText = the part dropped there, leftValue = 1 if it fits or 0 if not, unit = why it does not fit'},
+    "dimm": {"action": "click", "n": (4, 4), "value": None, "need": ("leftValue", "rightValue"), "doc": 'items = the four slot names ("A1", "A2", "B1", "B2"), leftValue / rightValue = the two slots (1-4) the sticks go into, accentText (optional) = the badge that lights up'},
+    "permissions": {"action": "click", "n": (2, 4), "value": "index", "need": (), "doc": 'items = switches "Name|on" (Microphone, Camera, Location), value = the one the pointer turns off'},
+}
+UI_FORMATS_OFF = ("tier", "versus", "myth", "evolution")  # these formats are built from a fixed run of their own scenes
+MAX_UI_SCENES = 2
+
+
+def _ui_problems(p: "MotionProject", fmt: Optional[str]) -> List[str]:
+    out: List[str] = []
+    uis = [(i, s) for i, s in enumerate(p.scenes, 1) if s.type == "ui"]
+    for s in p.scenes:
+        if s.type != "ui":
+            s.preset = None
+    if not uis:
+        return out
+    if fmt in UI_FORMATS_OFF:
+        out.append(f"{fmt} videos are built from their own scenes: no ui scenes")
+    if len(uis) > MAX_UI_SCENES:
+        out.append(f"at most {MAX_UI_SCENES} ui scenes per video")
+    if any(b[0] - a[0] < 2 for a, b in zip(uis, uis[1:])):
+        out.append("two ui scenes must have at least one other scene between them")
+    for i, s in uis:
+        spec = UI_PRESETS.get((s.preset or "").strip().lower())
+        if not spec:
+            out.append(f"scene {i}: a ui scene needs `preset`, one of {', '.join(UI_PRESETS)}")
+            continue
+        s.preset = (s.preset or "").strip().lower()
+        name = s.preset
+        rows_ = [it.split("|") for it in (s.items or [])]
+        n = len(s.code or []) if name == "terminal" else len(s.items or [])
+        lo, hi = spec["n"]
+        if not lo <= n <= hi:
+            out.append(f"scene {i}: the {name} preset needs {lo}-{hi} {'code lines' if name == 'terminal' else 'items'}, got {n}")
+        v = s.value
+        top = n - 1 if spec["value"] == "folder" else n
+        if spec["value"] in ("index", "folder") and (v is None or not 1 <= round(v) <= max(1, top)):
+            out.append(f"scene {i}: {name} needs `value` = a 1-based position between 1 and {max(1, top)}")
+        if spec["value"] == "number" and (v is None or v <= 0):
+            out.append(f"scene {i}: {name} needs a positive `value`")
+        for field in spec["need"]:
+            got = getattr(s, field)
+            if got is None or (isinstance(got, (str, list)) and not got):
+                out.append(f"scene {i}: {name} needs `{field}`")
+        if name == "taskmgr" and any(len(r) < 2 or not re.search(r"\d", r[1]) for r in rows_):
+            out.append(f"scene {i}: taskmgr items look like \"Browser|62\"")
+        if name in ("bios", "router", "tabmem", "leaderboard", "speclabel", "filemgr") and name != "filemgr" and any(len(r) < 2 or not r[1].strip() for r in rows_):
+            out.append(f"scene {i}: {name} items look like \"Name|value\"")
+        if name in ("tabmem", "leaderboard") and any(len(r) < 2 or not re.search(r"\d", r[1]) for r in rows_):
+            out.append(f"scene {i}: {name} items need a number after the bar")
+        if name == "gamemenu" and any(len(r) < 2 or not re.fullmatch(r"\s*\d+\s*>\s*\d+\s*", r[1]) for r in rows_):
+            out.append(f"scene {i}: gamemenu items look like \"Shadows|90>40\"")
+        if name == "battery" and not (rows_ and len(rows_[0]) > 1 and re.fullmatch(r"\s*\d+\s*>\s*\d+\s*", rows_[0][1])):
+            out.append(f"scene {i}: battery's item looks like \"Charge limit|100>80\"")
+        if name == "wifilist" and any(len(r) < 3 or not re.fullmatch(r"\s*[1-4]\s*", r[2]) for r in rows_):
+            out.append(f"scene {i}: wifilist items look like \"Home|5 GHz|4\" (bars 1-4)")
+        if name == "diskbar" and (len(rows_) < 3 or any(len(r) < 2 or not re.search(r"\d", r[1]) for r in rows_) or abs(sum(float(re.search(r"[\d.]+", r[1]).group()) for r in rows_ if len(r) > 1 and re.search(r"\d", r[1])) - 100) > 1.5):
+            out.append(f"scene {i}: diskbar segments \"Name|percent\" must add up to 100")
+        if name == "diskbar" and v is not None and rows_ and len(rows_[-1]) > 1 and re.search(r"\d", rows_[-1][1]) and v <= float(re.search(r"[\d.]+", rows_[-1][1]).group()):
+            out.append(f"scene {i}: diskbar's `value` (free percent afterwards) must be bigger than the free percent shown")
+        if name == "partpicker":
+            empties = [k for k, r in enumerate(rows_, 1) if len(r) > 1 and r[1].strip().lower() == "empty"]
+            if len(empties) != 1 or (v is not None and round(v) != empties[0]):
+                out.append(f"scene {i}: partpicker needs exactly one \"Slot|empty\" row and `value` = its position")
+            if s.leftValue is not None and s.leftValue <= 0 and not (s.unit or "").strip():
+                out.append(f"scene {i}: partpicker with leftValue 0 needs `unit` = why the part does not fit")
+        if name == "dimm":
+            a, b = s.leftValue, s.rightValue
+            if a is None or b is None or not (1 <= round(a) <= 4 and 1 <= round(b) <= 4) or round(a) == round(b):
+                out.append(f"scene {i}: dimm needs two different slots (1-4) in leftValue and rightValue")
+        if name == "speclabel" and not s.text.strip():
+            out.append(f"scene {i}: speclabel needs `text` = the label")
+        if name in ("speedtest", "frametime") and s.value is not None and s.value > 0 and not _spoken(s):
+            out.append(f"scene {i}: the number {s.value:g} must be mentioned in that scene's narration")
+    return out
+
+
 # Where each action makes sense (the pointer never decorates): select highlights the key phrase of a headline, drag pulls a progress bar or carries the new tier chip into its row,
 # click presses a step or a setting (code and list scenes), toggle flips a Control Center switch (only as the video starts).
-CURSOR_SCENES = {"select": ("bigText", "textWithAccent"), "drag": ("progressBar", "tier"), "click": ("codeBlock", "list"), "toggle": ("bigText", "textWithAccent")}
+CURSOR_SCENES = {"select": ("bigText", "textWithAccent", "ui"), "drag": ("progressBar", "tier", "ui"), "click": ("codeBlock", "list", "ui"), "toggle": ("bigText", "textWithAccent")}
 CURSOR_GAP = 2  # at least two scenes between two pointer scenes
 
 
@@ -48,7 +144,7 @@ def limit_cursor(scenes, fmt: Optional[str]) -> None:
     """Keeps the most useful pointer moments up to a small budget (4 in the fix-it format, 3 elsewhere), never closer than CURSOR_GAP scenes: things it moves first, then the phrase it selects."""
     budget = 4 if fmt == "fix" else 3
     prio = _cursor_priority(fmt)
-    candidates = sorted((i for i, sc in enumerate(scenes) if sc.cursor), key=lambda i: (prio.get(scenes[i].cursor, 9), i))
+    candidates = sorted((i for i, sc in enumerate(scenes) if sc.cursor), key=lambda i: (0 if scenes[i].type == "ui" else 1, prio.get(scenes[i].cursor, 9), i))  # a drawn interface exists to be used: its pointer moment comes first
     keep: list = []
     for i in candidates:
         if len(keep) < budget and all(abs(i - j) >= CURSOR_GAP for j in keep):
@@ -62,6 +158,10 @@ def sanitize_cursors(scenes, fmt: Optional[str]) -> None:
     """Drops every pointer action that would mean nothing (an older script's tab, hover, busy or idle; a click on a headline; a drag on a list) and enforces the budget and spacing."""
     for i, sc in enumerate(scenes):
         act = (sc.cursor or "").strip().lower()
+        if sc.type == "ui":
+            spec = UI_PRESETS.get((sc.preset or "").strip().lower())
+            sc.cursor, sc.toggle = (spec["action"] if spec else None), None  # the drawn interface decides what the pointer does in it
+            continue
         if act == "click" and sc.type in CURSOR_SCENES["select"]:
             act = "select"  # pressing a headline means nothing; highlighting its key phrase does
         if act not in CURSOR_ACTIONS or sc.type not in CURSOR_SCENES[act] or (act == "toggle" and i != 0):
@@ -110,7 +210,7 @@ def cursor_from_pose(pose: Optional[str], scene_type: str, index: int, total: in
     return "select" if scene_type == "textWithAccent" and pose == "point" else None
 
 
-SceneType = Literal["bigText", "textWithAccent", "counter", "list", "codeBlock", "progressBar", "outro", "curve", "flash", "footage", "tier", "versus", "verdict", "timeline"]
+SceneType = Literal["bigText", "textWithAccent", "counter", "list", "codeBlock", "progressBar", "outro", "curve", "flash", "footage", "tier", "versus", "verdict", "timeline", "ui"]
 FORMATS = ("myth", "tier", "whatif", "easter", "evolution", "versus", "hardware", "simple", "fix", "decode")   # content formats on top of the two kinds (curiosity / game); "easter" is always a game video; "hardware" and "simple" are the old Hardware / Everyday-with-mascot categories, now told in the Motion style; "fix" and "decode" come from the Nov 2026 niche research (notes/niche_research_2026-11.md)
 TIER_LETTERS = ("S", "A", "B", "C", "D", "F")
 # How often `--motion-format any` picks each topic. Our three TikTok breakouts (800+ views) were the number-driven formats (what-if, versus, evolution) and the niche research
@@ -143,6 +243,7 @@ class MotionSceneModel(BaseModel):
     fx: Optional[str] = Field(default=None, description="An animated element that illustrates the line (plane, rocket, satellite, waves, bolts, embers, snow, drops, packets, coins, equalizer). Optional: it is picked automatically from the scene's words when empty")
     toggle: Optional[str] = Field(default=None, description="With cursor=toggle: the switch of the Control Center panel the cursor flips: airplane, wifi, bluetooth or airdrop")
     cursor: Optional[str] = Field(default=None, description="The pointer acts in this scene ONLY when the action means something: select (drags across the key phrase of a bigText / textWithAccent scene), drag (progressBar: pulls the bar to its value; tier: carries the new chip into its row), click (codeBlock or list: presses the setting or the step), toggle (first scene only, only for a video about a phone/computer setting: opens a Control Center panel and flips a switch). Empty = no pointer in this scene")
+    preset: Optional[str] = Field(default=None, description="ui scenes only: the drawn interface (display, taskmgr, bios, terminal, gpupanel, gamemenu, frametime, speedtest, wifilist, router, keycaps, filemgr, diskbar, battery, tabmem, speclabel, leaderboard, partpicker, dimm, permissions); its data goes in items, value, accentText, leftValue, rightValue, unit and code as the UI PRESETS rules say")
     cursorCue: Optional[float] = Field(default=None, description="Set by the pipeline from the voice timing, never by the model: seconds after the scene starts at which the narrator says the phrase the pointer acts on")
     icons: Optional[List[str]] = Field(default=None, description="1-3 thematic objects floating around the text, chosen from: chip gpu ram battery bolt wifi globe cloud server disk lock key shield thermometer flame fan gauge clock code brain bulb dollar skull warning controller monitor phone camera wave planet rocket atom magnet droplet snow heart search check cross gear star net arrow. Pick what the scene is ABOUT; leave empty to let the renderer choose from the words")
     narration: str = Field(default="", description="What the narrator SAYS during this scene: one or two natural spoken sentences, 8-16 words, that explain the idea on screen")
@@ -233,6 +334,17 @@ RETENTION RULES (they decide whether people keep watching; the validator checks 
 - PATTERN BREAK. Never more than two headline scenes (bigText / textWithAccent) in a row: break the rhythm with a counter, list, codeBlock, progressBar, curve, flash or footage scene at least every third scene.
 - VOTE. The outro narration ends with a TWO-OPTION question the viewer can answer in one word ("Would you buy it, or skip it?", "Team DDR4 or team DDR5?") and `pinned_comment` repeats the SAME choice
   as "A or B? Reply with one word." (at most 120 characters). Never an open question such as "What do you think?"."""
+
+def ui_rules() -> str:
+    """Prompt block for the `ui` scene: the catalogue of drawn interfaces and how each one takes its data."""
+    lines = "\n".join(f"  * {name}: {spec['doc']}" for name, spec in UI_PRESETS.items())
+    return f"""
+UI SCENES (optional, at most {MAX_UI_SCENES} per video, never two in a row, never in tier / versus / myth / evolution videos): a scene of type `ui` shows a DRAWN INTERFACE that the mouse pointer uses, so the viewer SEES the change instead of hearing about it
+(a refresh-rate menu, a task manager, a slider that costs FPS...). Use one when the topic is a setting, a panel, a shortcut or a measurable change; skip it otherwise. Set `preset` to one of the names below and fill the fields it names;
+`text` is a short headline (at most 7 words) shown above the interface; the narration says what the pointer does and says every figure shown. The pointer's action is chosen by the preset, leave `cursor` empty.
+{lines}
+Facts in a ui scene (menu names, values, figures) follow the same rule as everywhere else: only real, generic, well documented things; no vendor logos, no invented figures."""
+
 
 GAME_RULES = """
 GAME VIDEO. This video is about the game {game}: tell ONE true engineering fact about it (engine behaviour, physics, streaming, rendering trick,
@@ -351,7 +463,7 @@ def _repair(p: MotionProject) -> None:
     for s in p.scenes:
         s.durationInFrames = max(60, min(150, int(s.durationInFrames)))
         if s.items:
-            s.items = s.items[:{"tier": 10, "timeline": 5}.get(s.type, 4)]
+            s.items = s.items[:{"tier": 10, "timeline": 5, "ui": 6}.get(s.type, 4)]
         if s.code:
             s.code = [ln[:38] for ln in s.code[:8]]
         if s.value is not None and s.type == "progressBar":
@@ -535,6 +647,7 @@ def make_validator(catalog: Optional[Dict[str, dict]] = None, facts: Optional[st
     def validate_project(p: MotionProject) -> List[str]:
         _repair(p)
         out: List[str] = _format_problems(p, fmt)
+        out += _ui_problems(p, fmt)
         if retention:
             out += retention_problems(p)
         n = len(p.scenes)
@@ -591,7 +704,7 @@ def make_validator(catalog: Optional[Dict[str, dict]] = None, facts: Optional[st
                 out.append(f"scene {i}: text longer than {limit} words")
             if s.type == "footage" and (len(s.text.split()) > 7 or not s.mediaId):
                 out.append(f"scene {i}: footage needs a mediaId and a callout of at most 6 words")
-            if s.accentText and len(s.accentText.split()) > (6 if s.type == "verdict" else 3):
+            if s.accentText and len(s.accentText.split()) > (6 if s.type in ("verdict", "ui") else 3):
                 out.append(f"scene {i}: accentText longer than 3 words")
             if s.type == "counter" and (s.value is None or s.value <= 0):
                 out.append(f"scene {i}: counter needs a positive value")
@@ -721,6 +834,8 @@ def generate_motion_project(topic: Optional[str] = None, avoid_topics: Optional[
     if fmt == "easter" and kind != "game":
         raise ValueError("the easter (hidden detail) format needs a game video")
     system = SYSTEM_PROMPT + RETENTION_RULES
+    if fmt not in UI_FORMATS_OFF and kind != "game":
+        system += ui_rules()
     if kind == "game":
         lines = "\n".join(f"  * id={k} [{e['kind']}] {e['caption']}" for k, e in (catalog or {}).items())
         system += (GAME_RULES.format(game=game, catalog=lines, facts=facts) if facts else GAME_RESTRICTIVE.format(game=game, catalog=lines))

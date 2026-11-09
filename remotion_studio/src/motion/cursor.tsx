@@ -3,7 +3,7 @@ import { delayRender, continueRender, interpolate, useCurrentFrame } from 'remot
 import { EASE_IO, EASE_OUT, clamp } from './primitives';
 import { ICONS } from './props';
 import { SANS } from './fonts';
-import { CursorAction, FPS, HEIGHT, MotionScene, SAFE_BOTTOM, TIER_DROP, TIER_GRAB, ToggleKey, WIDTH } from './types';
+import { CursorAction, FPS, HEIGHT, MotionScene, SAFE_BOTTOM, TIER_DROP, TIER_GRAB, ToggleKey, WIDTH, uiAct } from './types';
 
 /**
  * The channel's character is a mouse pointer. It only appears when it DOES something that means something, never as decoration and never to introduce the topic:
@@ -16,8 +16,8 @@ import { CursorAction, FPS, HEIGHT, MotionScene, SAFE_BOTTOM, TIER_DROP, TIER_GR
 const KNOWN: CursorAction[] = ['click', 'select', 'drag', 'toggle'];
 
 type Box = { x: number; y: number; w: number; h: number };
-type Targets = Partial<Record<'text' | 'accent' | 'item' | 'number' | 'code' | 'bar' | 'fill' | 'newitem', Box[]>>;
-const KINDS = ['text', 'accent', 'item', 'number', 'code', 'bar', 'fill', 'newitem'] as const;
+type Targets = Partial<Record<'text' | 'accent' | 'item' | 'number' | 'code' | 'bar' | 'fill' | 'newitem' | 'target', Box[]>>;
+const KINDS = ['text', 'accent', 'item', 'number', 'code', 'bar', 'fill', 'newitem', 'target'] as const;
 
 /** Rects (in 1080x1920 composition pixels) of the tagged elements of one scene. */
 const measure = (sceneIndex: number): Targets | null => {
@@ -210,7 +210,31 @@ export const CursorLayer: React.FC<Props> = ({ scenes, starts, current, accent }
     return { x: mix(from.x, rest.x, back), y: mix(from.y, rest.y, back) };
   };
 
-  if (action === 'toggle') {
+  if (scene.type === 'ui') {
+    // a drawn interface (preset): the element the pointer acts on is tagged data-cursor="target" and measured live; the preset animates the change between grab and done
+    const { grab, done } = uiAct(scene);
+    const box = pick(['target']);
+    if (box) {
+      const mid = { x: box.x + box.w * 0.5, y: box.y + box.h * 0.5 };
+      if (action === 'select') {
+        const sel = ease(f, grab, grab + 24);
+        const edge = { x: box.x + box.w, y: mid.y };
+        tip = f < grab ? reach({ x: box.x - 6, y: mid.y }, grab) : f < done + 14 ? { x: box.x + box.w * sel, y: mid.y } : leave(edge, done + 14);
+        selection = { x: box.x - 6, y: box.y - 4, w: Math.max(0, (box.w + 12) * sel), h: box.h + 8 };
+        press = f >= grab && f < grab + 26 ? 1 : 0;
+      } else if (action === 'drag') {
+        if (f < grab) tip = reach(mid, grab);
+        else if (f < done + 4) {
+          tip = mid;
+          press = 1;
+        } else tip = leave(mid, done + 10);
+      } else {
+        tip = f < grab ? reach(mid, grab) : f < done + 10 ? mid : leave(mid, done + 10);
+        press = interpolate(f, [grab - 3, grab, grab + 7], [0, 1, 0], clamp);
+        ripple = f >= grab ? (f - grab) / 24 : -1;
+      }
+    } else shown = false;
+  } else if (action === 'toggle') {
     const which: ToggleKey = scene.toggle ?? 'airplane';
     const to = tileCenter(which);
     tip = travel({ x: to.x, y: to.y });

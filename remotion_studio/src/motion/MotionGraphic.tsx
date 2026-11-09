@@ -6,6 +6,7 @@ import { Grid, Impact, Particles } from './fx';
 import { PropField, pickIcons } from './props';
 import { BigText, CodeBlock, Counter, Curve, Flash, Footage, ListScene, Outro, ProgressBar, TextWithAccent } from './scenes';
 import { Tier, Timeline, Verdict, Versus } from './formats';
+import { UiScene } from './ui';
 import { CursorLayer } from './cursor';
 import { Ambient, sceneFx } from './ambient';
 import { HEIGHT, MotionGraphicProps, MotionScene, OVERLAP, SceneFx, WIDTH, defaultTheme } from './types';
@@ -25,6 +26,7 @@ const SCENES: Record<MotionScene['type'], React.FC<{ scene: MotionScene }>> = {
   versus: Versus,
   verdict: Verdict,
   timeline: Timeline,
+  ui: UiScene,
 };
 
 /** One scene wrapper: it enters with its own transition (varied per scene), drifts under a slow camera move, lands with an impact ring and thematic objects,

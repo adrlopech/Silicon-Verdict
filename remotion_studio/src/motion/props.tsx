@@ -95,7 +95,7 @@ const RULES: [RegExp, string[]][] = [
 ];
 
 const TYPE_FALLBACK: Partial<Record<MotionScene['type'], string[]>> = { counter: ['gauge'], progressBar: ['battery'], curve: ['arrow'], codeBlock: ['code'], outro: ['star', 'bolt'] };
-const NO_PROPS = new Set(['footage', 'flash', 'tier', 'timeline', 'versus', 'verdict', 'codeBlock']);
+const NO_PROPS = new Set(['footage', 'flash', 'tier', 'timeline', 'versus', 'verdict', 'codeBlock', 'ui']); // a drawn interface fills the scene: no floating icon tiles
 
 export const pickIcons = (scene: MotionScene, prev: string[] = []): string[] => {
   const explicit = (scene.icons ?? []).filter((n) => ICONS[n]);

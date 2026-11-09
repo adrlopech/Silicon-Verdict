@@ -1,5 +1,5 @@
 /** Data contract of the MotionGraphic composition. Everything shown on screen comes from these props (no text lives in the code). */
-export type SceneType = 'bigText' | 'textWithAccent' | 'counter' | 'list' | 'codeBlock' | 'progressBar' | 'outro' | 'curve' | 'flash' | 'footage' | 'tier' | 'versus' | 'verdict' | 'timeline';
+export type SceneType = 'bigText' | 'textWithAccent' | 'counter' | 'list' | 'codeBlock' | 'progressBar' | 'outro' | 'curve' | 'flash' | 'footage' | 'tier' | 'versus' | 'verdict' | 'timeline' | 'ui';
 
 export type SceneFx = 'plane' | 'rocket' | 'satellite' | 'waves' | 'bolts' | 'embers' | 'snow' | 'drops' | 'packets' | 'coins' | 'equalizer' | 'signalbars' | 'notifications' | 'batteryfill' | 'clock' | 'padlock' | 'magnify' | 'bits';
 export type ToggleKey = 'airplane' | 'wifi' | 'bluetooth' | 'airdrop';
@@ -29,6 +29,7 @@ export interface MotionScene {
   fx?: SceneFx; // an animated element related to what the scene says (a plane flying across, signal waves, lightning...); picked from the scene's words when empty
   toggle?: ToggleKey; // with cursor 'toggle': which switch of the Control Center panel the cursor flips (airplane mode switches the radios off)
   cursor?: CursorAction; // the pointer acts in this scene only when the action means something: select (highlights the key phrase as it is spoken), drag (pulls a progress bar, drops the new tier chip), click (presses a step or a setting: code and list scenes), toggle (flips a Control Center switch)
+  preset?: string; // ui scenes: which drawn interface (display, taskmgr, bios, terminal, gpupanel, gamemenu, frametime, speedtest, wifilist, router, keycaps, filemgr, diskbar, battery, tabmem, speclabel, leaderboard, partpicker, dimm, permissions); its data lives in text / items / value / accentText / leftValue / rightValue / code
   cursorCue?: number; // seconds after the scene starts at which the narrator says the phrase the pointer acts on (set by the pipeline from the voice timing; the pointer arrives then)
   transition?: string; // how this scene enters (see transitions.ts); varied automatically when empty
   narration?: string; // spoken line (used by the pipeline for the voice; not drawn)
@@ -63,3 +64,12 @@ export const OVERLAP = 12; // frames a scene stays under the next one while they
 export const BRAND_CYAN = '#00F0FF';
 export const BRAND_BLUE = '#007AFF';
 export const defaultTheme: MotionTheme = { accent: BRAND_CYAN, background: '#05070C', text: '#FFFFFF' };
+
+/** Timing of the one thing a `ui` scene does (the pointer grabs / presses at `grab`, the change is complete at `done`). Shared by the preset, which animates the change,
+ *  and by the pointer, which reaches its target by `grab` (when the narrator says it, if the voice timing is known). */
+export const uiAct = (scene: MotionScene): { grab: number; done: number } => {
+  const dur = scene.durationInFrames;
+  const cue = scene.cursorCue != null ? Math.round(scene.cursorCue * FPS) : null;
+  const grab = cue != null ? Math.max(28, Math.min(dur - 70, cue - 2)) : Math.max(28, Math.min(46, Math.round(dur * 0.3)));
+  return { grab, done: grab + 32 };
+};

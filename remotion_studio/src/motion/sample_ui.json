@@ -1,0 +1,324 @@
+{
+ "title": "UI presets",
+ "theme": {
+  "accent": "#00F0FF",
+  "background": "#05070C",
+  "text": "#FFFFFF"
+ },
+ "scenes": [
+  {
+   "type": "ui",
+   "text": "Fix a 60 Hz screen",
+   "value": 4.0,
+   "items": [
+    "60 Hz",
+    "75 Hz",
+    "120 Hz",
+    "144 Hz"
+   ],
+   "light": false,
+   "cursor": "click",
+   "preset": "display",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "ui",
+   "text": "Find the CPU hog",
+   "value": 1.0,
+   "items": [
+    "Browser|42",
+    "Video editor|31",
+    "Game launcher|12",
+    "Updater|8"
+   ],
+   "light": false,
+   "cursor": "click",
+   "preset": "taskmgr",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "ui",
+   "text": "Turn on XMP",
+   "accentText": "XMP Profile 1",
+   "value": 1.0,
+   "items": [
+    "Memory profile|Disabled",
+    "Fast boot|Enabled",
+    "Boot order|SSD first"
+   ],
+   "light": false,
+   "cursor": "click",
+   "preset": "bios",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "ui",
+   "text": "Check your SSD space",
+   "value": 3.0,
+   "code": [
+    "$ df -h /",
+    "Filesystem  Size  Used Avail",
+    "/dev/disk1   500G  480G   20G",
+    "$ echo done"
+   ],
+   "light": false,
+   "cursor": "select",
+   "preset": "terminal",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "ui",
+   "text": "Cap the frame rate",
+   "value": 2.0,
+   "items": [
+    "Vertical sync|off",
+    "Frame rate cap|off",
+    "Low latency|on"
+   ],
+   "light": false,
+   "cursor": "click",
+   "preset": "gpupanel",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "ui",
+   "text": "Shadows cost the most",
+   "value": 1.0,
+   "items": [
+    "Shadows|90>40",
+    "Textures|80>80",
+    "Upscaling|50>50"
+   ],
+   "leftValue": 62.0,
+   "rightValue": 88.0,
+   "light": false,
+   "cursor": "drag",
+   "preset": "gamemenu",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "ui",
+   "text": "Spot the stutter",
+   "value": 48.0,
+   "leftValue": 7.0,
+   "light": false,
+   "cursor": "select",
+   "preset": "frametime",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "ui",
+   "text": "Your real speed",
+   "value": 480.0,
+   "unit": "Mbps",
+   "items": [
+    "Ping|14 ms",
+    "Jitter|3 ms"
+   ],
+   "light": false,
+   "cursor": "drag",
+   "preset": "speedtest",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "ui",
+   "text": "Pick the 5 GHz network",
+   "value": 2.0,
+   "items": [
+    "Home-2.4G|2.4 GHz|2",
+    "Home-5G|5 GHz|4",
+    "Guest|2.4 GHz|1"
+   ],
+   "light": false,
+   "cursor": "click",
+   "preset": "wifilist",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "ui",
+   "text": "Change the channel",
+   "accentText": "11",
+   "value": 1.0,
+   "items": [
+    "Channel|6",
+    "Width|20 MHz",
+    "DNS|Auto"
+   ],
+   "light": false,
+   "cursor": "click",
+   "preset": "router",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "ui",
+   "text": "Screenshot shortcut",
+   "accentText": "Snipping tool opens",
+   "items": [
+    "Win",
+    "Shift",
+    "S"
+   ],
+   "light": false,
+   "cursor": "click",
+   "preset": "keycaps",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "ui",
+   "text": "Move the big files",
+   "value": 2.0,
+   "items": [
+    "old_installers.zip",
+    "Downloads|312 files",
+    "Archive|48 files",
+    "Trash|3 files"
+   ],
+   "light": false,
+   "cursor": "drag",
+   "preset": "filemgr",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "ui",
+   "text": "Free up the drive",
+   "value": 34.0,
+   "items": [
+    "Games|52",
+    "Apps|22",
+    "System|12",
+    "Free|14"
+   ],
+   "leftValue": 380.0,
+   "rightValue": 1900.0,
+   "light": false,
+   "cursor": "drag",
+   "preset": "diskbar",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "ui",
+   "text": "Cap the charge",
+   "value": 91.0,
+   "items": [
+    "Charge limit|100>80"
+   ],
+   "light": false,
+   "cursor": "drag",
+   "preset": "battery",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "ui",
+   "text": "Close the heavy tab",
+   "value": 1.0,
+   "items": [
+    "Video site|1450",
+    "Web mail|420",
+    "Docs|260",
+    "News|180"
+   ],
+   "light": false,
+   "cursor": "click",
+   "preset": "tabmem",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "ui",
+   "text": "RTX 5070 Ti",
+   "value": 4.0,
+   "items": [
+    "RTX|brand",
+    "50|generation",
+    "70|tier",
+    "Ti|faster variant"
+   ],
+   "light": false,
+   "cursor": "select",
+   "preset": "speclabel",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "ui",
+   "text": "Rank by real speed",
+   "value": 2.0,
+   "items": [
+    "Chip A|132",
+    "Chip B|118",
+    "Chip C|104",
+    "Chip D|91"
+   ],
+   "light": false,
+   "cursor": "drag",
+   "preset": "leaderboard",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "ui",
+   "text": "Will it fit?",
+   "accentText": "Intel Core i5",
+   "value": 3.0,
+   "unit": "Socket mismatch",
+   "items": [
+    "Motherboard|B650 (AM5)",
+    "Memory|DDR5 32 GB",
+    "CPU|empty"
+   ],
+   "leftValue": 0.0,
+   "light": false,
+   "cursor": "drag",
+   "preset": "partpicker",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "ui",
+   "text": "Use the right slots",
+   "accentText": "Dual channel",
+   "items": [
+    "A1",
+    "A2",
+    "B1",
+    "B2"
+   ],
+   "leftValue": 2.0,
+   "rightValue": 4.0,
+   "light": false,
+   "cursor": "click",
+   "preset": "dimm",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "ui",
+   "text": "Turn off the mic",
+   "value": 1.0,
+   "items": [
+    "Microphone|on",
+    "Camera|on",
+    "Location|on"
+   ],
+   "light": false,
+   "cursor": "click",
+   "preset": "permissions",
+   "narration": "Number five hundred, then ten.",
+   "durationInFrames": 170
+  }
+ ]
+}

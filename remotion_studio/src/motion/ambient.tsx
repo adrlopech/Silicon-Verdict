@@ -51,6 +51,7 @@ export const sceneFx = (scenes: MotionScene[]): (SceneFx | null)[] => {
   scenes.forEach((s, i) => {
     const recent = out.slice(Math.max(0, i - 3), i);
     const explicit = !!s.fx;
+    if (s.type === 'ui') { out.push(null); return; } // a drawn interface fills the scene: no fly-bys or icons over it
     const pick = fxCandidates(s).find((fx) => explicit || (!recent.includes(fx) && !(ONCE.has(fx) && used.has(fx))));
     out.push(pick ?? null);
     if (pick) used.add(pick);
