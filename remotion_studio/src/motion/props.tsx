@@ -76,7 +76,7 @@ const RULES: [RegExp, string[]][] = [
   [/\b(idea|trick|clever|secret|hidden|clue|discover\w*|find|found|search\w*)\b/i, ['search', 'bulb']],
   [/\b(money|costs?|prices?|cheap\w*|expensive|dollars?|billions?|millions?|pay\w*)\b/i, ['dollar']],
   [/\b(dead|death|die|dies|crash\w*|fail\w*|kill\w*|wear\w*|broke\w*|corrupt\w*)\b/i, ['skull', 'warning']],
-  [/\b(games?|gaming|players?|consoles?|playing|levels?|bosses|speedrun\w*|skyrim|doom|zelda|minecraft)\b/i, ['controller']],
+  [/\b(games?|gaming|players?|consoles?|playing|levels?|bosses|speedrun\w*|skyrim|doom|zelda)\b/i, ['controller']],
   [/\b(screens?|display\w*|monitors?|pixels?|refresh|hz|oled|resolution|4k)\b/i, ['monitor']],
   [/\b(phones?|mobile|iphone|android|smartphone)\b/i, ['phone']],
   [/\b(camera\w*|photo\w*|lens\w*|sensors?|image\w*)\b/i, ['camera']],

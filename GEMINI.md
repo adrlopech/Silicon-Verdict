@@ -80,10 +80,9 @@ Selecciona el enfoque temático para este vídeo (60-120s):
 2. **Gaming & Optimización** (Estilo Liquid Glass: Rendimiento en juegos, presets competitivos, frametimes y 1% lows).
 3. **Tech Curiosities & Storytelling** (Estilo Infográfico 2D: Paradojas de ingeniería, cables submarinos, satélites, física de chips).
 4. **Automático (IA)** (La IA elige la categoría óptima basándose en la rotación de `data/history.db` y las analíticas de retención).
-5. **Curiosidades en Minecraft** (Concepto técnico explicado dentro de Minecraft, ~64s, guion nuevo de Gemini).
-6. **Motion Graphics** (Tipografía cinética con voz, 62-84s para monetizar, vertical 1080x1920, siempre en inglés. Al elegirla se pregunta el subgrupo: explainer clásico, curiosidades, juegos, Mito o Realidad, Tier List, ¿Y si…?, Evolución, Versus, Detalle oculto o Automático).
+5. **Motion Graphics** (Tipografía cinética con voz, 62-84s para monetizar, vertical 1080x1920, siempre en inglés. Al elegirla se pregunta el subgrupo: explainer clásico, curiosidades, juegos, Mito o Realidad, Tier List, ¿Y si…?, Evolución, Versus, Detalle oculto o Automático).
 
-👉 Responde únicamente con el número deseado: **[1, 2, 3, 4, 5 o 6]**
+👉 Responde únicamente con el número deseado: **[1, 2, 3, 4 o 5]**
 ---
 
 2. **Paso 2: Procesamiento de la Selección y Ejecución**
@@ -104,10 +103,7 @@ Selecciona el enfoque temático para este vídeo (60-120s):
      * Asigna `category = "auto"`.
      * Ejecuta: `.venv/bin/python main.py --category 4 --privacy public`
      * Consulta `data/history.db` y los pesos de `data/category_weights.json` seleccionando automáticamente la categoría con mayor descanso de rotación.
-   - **Si responde `5`**:
-     * Ejecuta: `.venv/bin/python main.py --series minecraft --privacy public`
-     * Pipeline `services/mc_pipeline.py`: siempre guion nuevo de Gemini (sin fallback); si Gemini no está disponible, el proceso se detiene.
-   - **Si responde `6`** (Motion Graphics): **no ejecuta todavía**. Responde con este segundo menú y espera:
+   - **Si responde `5`** (Motion Graphics): **no ejecuta todavía**. Responde con este segundo menú y espera:
 
 ---
 🎞️ **Motion Graphics — Subgrupo**

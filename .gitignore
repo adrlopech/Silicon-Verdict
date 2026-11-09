@@ -44,18 +44,11 @@ data/history.db
 data/history.db.bak-*
 docs/generated_scripts/
 
-# Minecraft assets extracted from the local game install (not redistributable)
-remotion_studio/public/mc/
-remotion_studio/public/mc_raw/
-remotion_studio/public/mc_packs/
-remotion_studio/public/mc_assets/
-remotion_studio/public/mc_sounds/
 data/test_weekly_rotation.db
 data/gemini_state.json
 .remotion/
 assets/games/manifest.json
 data/game_facts/
-assets/audio/mc_bed.wav
 
 # Web portal assets
 !docs/og-image.png

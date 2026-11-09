@@ -59,8 +59,6 @@ class Settings(BaseSettings):
     LOCAL_TTS_URL: str = "http://127.0.0.1:3900"  # VoiceStudio backend (ASR for word timestamps)
     MLX_TTS_URL: str = "http://127.0.0.1:3901"
 
-    # Minecraft series: on-screen language (en default / es)
-    MC_LANGUAGE: str = "en"
 
     # Media APIs (Pixabay preferred, Pexels optional fallback)
     PIXABAY_API_KEY: str = ""

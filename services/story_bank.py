@@ -1,19 +1,18 @@
 """Bank of pre-generated, validated scripts stored in data/history.db.
 
 Refilled off-peak by scripts/refill_story_bank.py; consumed when Gemini is unavailable at publish time.
-Series: 'minecraft' -> McStory, 'motion' -> MotionProject (filled by hand, never auto-refilled).
+Series: 'motion' -> MotionProject (filled by hand, never auto-refilled).
 """
 import json
 import logging
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
-from core.schemas import McStory
 from services.history import get_db_connection, init_db
 
 logger = logging.getLogger(__name__)
 
-MODELS = {"minecraft": McStory}
+MODELS: Dict[str, Any] = {}  # extra series (the tests register fakes); 'motion' is resolved lazily in _model()
 
 
 _POPPED: Dict[int, int] = {}  # id(story) -> bank row it came from, so a failed render can give it back

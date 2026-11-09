@@ -2,11 +2,10 @@
 """Fills the story bank (data/history.db) with validated scripts so publishing never depends on a Gemini spike.
 
 Run it off-peak (e.g. nightly via cron/launchd):
-  python scripts/refill_story_bank.py                          # top up Minecraft and the hardware / simple Motion formats to 8 ready scripts each
+  python scripts/refill_story_bank.py                          # top up the hardware / simple Motion formats to 8 ready scripts each
   python scripts/refill_story_bank.py --series simple --target 12
   python scripts/refill_story_bank.py --series motion --format myth --target 10
-  python scripts/refill_story_bank.py --series minecraft --target 20
-Series: minecraft, motion (needs --format), hardware / simple (= motion with that format), all.
+Series: motion (needs --format), hardware / simple (= motion with that format), all.
 """
 import argparse
 import logging
@@ -41,25 +40,9 @@ def refill_motion(fmt: str, target: int) -> int:
     return added
 
 
-def refill_minecraft(target: int) -> int:
-    from services.mc_story_generator import generate_story_live
-    added = 0
-    while count_ready("minecraft") < target:
-        avoid = topics_in_bank("minecraft") + get_recently_used_topics_safe()
-        try:
-            story = generate_story_live(avoid_topics=avoid)
-        except GeminiUnavailable as exc:
-            log.warning("Stopping: Gemini unavailable (%s)", str(exc)[:120])
-            break
-        add_story("minecraft", story)
-        added += 1
-        log.info("Banked minecraft script: %s (%d ready)", story.topic, count_ready("minecraft"))
-    return added
-
-
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--series", choices=["hardware", "simple", "motion", "minecraft", "all"], default="all")
+    ap.add_argument("--series", choices=["hardware", "simple", "motion", "all"], default="all")
     ap.add_argument("--format", default=None, help="With --series motion: auto, hardware, simple, myth, tier, whatif, evolution or versus")
     ap.add_argument("--target", type=int, default=8, help="Ready scripts to keep per series / format")
     args = ap.parse_args()
@@ -73,9 +56,7 @@ def main() -> None:
         total += refill_motion(args.format, args.target)
     elif args.series == "all":
         total += refill_motion("hardware", args.target) + refill_motion("simple", args.target)
-    if args.series in ("minecraft", "all"):
-        total += refill_minecraft(args.target)
-    log.info("Done: %d new scripts banked. Ready: hardware=%d, simple=%d, minecraft=%d", total, count_ready("motion", "hardware"), count_ready("motion", "simple"), count_ready("minecraft"))
+    log.info("Done: %d new scripts banked. Ready: hardware=%d, simple=%d", total, count_ready("motion", "hardware"), count_ready("motion", "simple"))
 
 
 if __name__ == "__main__":

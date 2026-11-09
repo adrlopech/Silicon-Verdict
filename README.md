@@ -32,7 +32,6 @@ It is a single-owner automation suite: no public accounts, no multi-tenant servi
 | 3 | **Everyday Tech** | A Motion format (`--motion-format simple`, or `--series simple` / `--category 3`): small everyday tech mysteries hosted by the **mouse cursor**, a character that uses the screen like a person: it selects the key phrase as the narrator says it, pulls progress bars, carries chips into a tier list and presses settings, only when that means something |
 | 4 | **Gaming** | `--category 2`: a Motion *game* video. Banked game scripts go first, told over screenshots of their game (`assets/games/<game>/`, credited in the description); then the source-grounded videos with real footage; a hardware video when neither is possible |
 | 5 | **Automatic** | The AI picks the category with the longest rest, using `data/history.db` and retention analytics |
-| 6 | **Minecraft explainers** | A computing concept acted out inside Minecraft (~64 s), narrated, always from a brand-new Gemini script |
 
 The pointer is a resource of the whole Motion engine, used only when it does something that means something (no browser tab to introduce the topic, no hovering, no loading ring, no waiting). Any scene can carry `cursor`: `select` (drags across the key phrase of a headline while the narrator says it: the pipeline sets `cursorCue` from the voice timing), `drag` (a progress bar: it grabs the knob and pulls the bar to its value; a tier list: it carries the new chip from the tray into its row), `click` (presses the setting or the step in a code or list scene) and, as the video starts, `toggle` (a macOS-style Control Center panel, e.g. flipping Airplane Mode and watching Wi-Fi and Bluetooth switch off). At most 3 pointer scenes per video (4 in a fix video), never closer than two scenes. The pointer acts on what is really on screen (`remotion_studio/src/motion/cursor.tsx` measures the tagged elements of the scene every frame); older scripts are cleaned by `sanitize_cursors` / `assign_cursors` in `services/motion_generator.py`. Scenes also get **effects** picked from what the narration names (`ambient.tsx`: a plane crossing the screen, signal waves and bars, lightning, embers, snow, packets, coins, an equalizer, notification banners, a filling battery, a clock, a padlock, a magnifier, binary rain); the big fly-bys appear once per video and no effect repeats within three scenes. The narration is ONE continuous ElevenLabs take sliced per scene at the pause between two words (no cuts mid-sentence), mixed with a two-pass loudness normalisation.
 
@@ -45,16 +44,14 @@ topic ─► Gemini script ─► fact-check gate ─► ElevenLabs voice ─►
 ```
 
 * **Scripts**: structured output from Gemini through a resilient client (model chain, quota-aware cooldowns, validators). If no Gemini model is available,
-  the same request is answered automatically by the configured fallback providers (Groq today; adding another OpenAI-compatible API is one line). The *minecraft*
-  series draws from a **story bank**: below 30 ready scripts, a batch of 20 new ones is generated; an empty bank pauses production. The *motion* series draws its curiosity videos (every format, including hardware and simple) from a `motion` bank in the same table before asking the LLM, matching the requested format; it is filled with `scripts/refill_story_bank.py --series hardware|simple|motion --format ...` (never automatically). Scripts written for the old categories are moved into this model by `scripts/migrate_legacy_bank.py`.
-* **Voice**: ElevenLabs with word-level timestamps; natural mode (no time-stretching). Minecraft videos synthesize one line per scene in parallel and
-  place each at its scene's start frame. When ElevenLabs fails (no credits, network) the same three voices are served by a **local clone** (VoxCPM2 8-bit
+  the same request is answered automatically by the configured fallback providers (Groq today; adding another OpenAI-compatible API is one line). The *motion*
+  series draws its curiosity videos (every format, including hardware and simple) from a `motion` bank in the same table before asking the LLM, matching the requested format; it is filled with `scripts/refill_story_bank.py --series hardware|simple|motion --format ...` (never automatically). Scripts written for the old categories are moved into this model by `scripts/migrate_legacy_bank.py`.
+* **Voice**: ElevenLabs with word-level timestamps; natural mode (no time-stretching): one continuous take sliced per scene at the pause between two words. When ElevenLabs fails (no credits, network) the same three voices are served by a **local clone** (VoxCPM2 8-bit
   on MLX through VoiceStudio, Apache-2.0 weights, free, timestamps from local ASR; see [Local voice backup](#local-voice-backup)). A robotic system voice is never published.
-* **Visuals**: Remotion compositions (`MotionGraphic` with the cursor-character layer, `McStory`) at 1080×1920 / 30 fps with safe-zone-aware layouts, kinetic typography, a
-  mouse-cursor character that clicks, selects, drags and opens tabs on the scenes themselves, game footage integrated into the brand look, and a Minecraft director that turns a script into animation, camera and sound.
-* **Fact-check gate (Minecraft)**: a second Gemini pass looks for false technical claims, wrong figures, a metaphor that changes midway and misuse of
-  "but there is a catch"; it rewrites faulty lines and re-checks. Scripts that cannot be fixed are discarded.
-* **QA gate (Minecraft)**: duration, 1080×1920, 48 kHz audio, peak level, dead air, word count and subtitle length are verified with ffmpeg.
+* **Visuals**: Remotion compositions (`MotionGraphic` with the pointer layer and the drawn UI presets) at 1080×1920 / 30 fps with safe-zone-aware layouts, kinetic typography, a
+  mouse pointer that selects, drags and presses things only when that means something, game footage integrated into the brand look, and original music and sound effects.
+* **Fact-check gate**: a second pass looks for false technical claims and wrong figures (and, for game videos, quotes that are not in the source dossier); it rewrites faulty lines and re-checks. Scripts that cannot be fixed are discarded.
+* **QA gate**: duration, 1080×1920, H.264, audio present and not clipping are verified with ffmpeg.
   Anything that fails stays local and is **not** uploaded.
 * **Resilient LLM layer**: one client (`services/gemini_client.py`) for every call: Gemini first (quota-aware cooldowns persisted in `data/gemini_state.json`), then Groq and Cloudflare Workers AI as automatic fallbacks, with batch generation for the script banks.
 * **Output layout**: one folder per video named after its title, files named by creation date-time, cover and metadata `.txt` included.
@@ -88,51 +85,18 @@ python3 scripts/caption_game_media.py     # vision-model description of every it
 python3 scripts/build_game_facts.py       # Wikipedia + Steam source dossier per game (paced, cached)
 ```
 
-Minecraft videos also need the game assets extracted once (see `docs/minecraft_assets.md`) and the original background music generated once:
-
-```bash
-python3 scripts/extract_minecraft_assets.py   # textures, sounds, skins (also converts the extra skins in assets/skins/)
-python3 scripts/make_mc_music.py              # writes assets/audio/mc_bed.wav (without it the old ambient bed is used)
-```
-
 ### Everyday commands
 
 ```bash
 .venv/bin/python main.py help                              # command reference
 .venv/bin/python main.py --category 1                      # hardware | 2 gaming | 3 curiosities | 4 auto (all told as Motion videos)
 .venv/bin/python main.py --series simple                   # everyday tech hosted by the cursor; --series hardware for the deep dive
-.venv/bin/python main.py --series minecraft                # Minecraft explainer
-.venv/bin/python main.py --series minecraft --export-only  # render without uploading
 .venv/bin/python scripts/upload_existing.py "<video.mp4>"  # upload an already rendered video
 .venv/bin/python scripts/refill_story_bank.py              # top up the story bank
 .venv/bin/python scripts/cleanup.py                        # wipe generated output (also run by the "limpieza" chat command)
 ```
 
 `GEMINI.md` documents the chat triggers (`genera`, `corregir`, `limpieza`, `help`).
-
-## Minecraft explainers (series 5)
-
-A computing concept acted out in a small Minecraft village, ~64 s, vertical, narrated, always from a brand-new Gemini script. Gemini writes an `McStory`
-(`core/schemas.py`); the director (`remotion_studio/src/mc/director.ts`) compiles it into layout, choreography, camera, props and sounds. Full reference: `docs/minecraft_video_kit.md`.
-
-```bash
-.venv/bin/python main.py --series minecraft --topic "what a CPU cache is" --export-only
-.venv/bin/python scripts/test_mc_director.py            # director tests (incl. "the camera keeps the hero in frame")
-node scripts/mc_compile.mjs script.json                 # compile a script and print errors, warnings, quality notes and camera framing
-```
-
-* **Stations** (the world the script is built from): `sign`, `mine`, `chest`, `pond`, `door`, `ladder`, `pen`, plus **`stall`** (village market stall with a shopkeeper, optional counter items,
-  per-beat `stock` that pops new items in with sparkles and `tag` value plaques with the old value struck through) and **`library`** (a wall of bookshelves, always full of books).
-  Village houses are added in the background automatically. Every station must be used by an action: unused stations are rejected, so nothing in the video is decorative.
-* **Actions with a purpose**: besides walking, mining, opening and swimming there are `give` and `fetch` (take an item from one station and hand it over at another: it flies in an arc),
-  `show`, `search`, `read`, `take_book` / `put_book`, `point`, `pace`, `cheer`. A beat the script leaves empty gets an action chosen from the meaning of its line and from what exists in the world;
-  long gaps are filled with reading, a short walk or looking around, so the hero is never frozen.
-* **Cast**: extra characters with `cast.skin`: nine vanilla player skins, six character skins from NameMC (`assets/skins/namemc/`, see its `SOURCES.md`) and eight villager professions.
-* **Look**: `time: day | dusk | night` (night adds torches with warm light that also reaches the actors), chunked subtitles of 2-3 words that follow the narration word by word
-  (ElevenLabs timestamps), a giant pixel-font concept title, held items drawn at their real size.
-* **Camera**: planned from the real animation tracks; whenever the hero moves, the shot follows him, so he never leaves the frame (`low` is an extra low-angle close-up).
-* **Audio**: game sounds + narration + an original music loop (`scripts/make_mc_music.py`) that ducks under the voice. The call to action is voiced once.
-* **Assets are not in git**: textures, sounds and skins are generated or downloaded locally (`remotion_studio/public/` and `*.png` are ignored). The NameMC skins are creations of their authors: check their terms before using them in monetised videos.
 
 ## Motion Graphics (the main series)
 
@@ -205,7 +169,6 @@ A demo of all four: `remotion_studio/src/motion/sample_formats.json`. `easter` i
 .venv/bin/pip install -r requirements-dev.txt
 .venv/bin/python -m pytest                      # unit tests (tests/): validators, story bank, game registry, subtitles, output layout, DB connections
 .venv/bin/ruff check .                          # lint (config in pyproject.toml)
-.venv/bin/python scripts/test_mc_director.py    # Minecraft director tests
 cd remotion_studio && npx tsc --noEmit -p .     # type-check the Remotion project
 python3 docs/check_portal.py                    # web portal: every local link and anchor exists
 ```
@@ -219,16 +182,15 @@ GitHub Actions (`.github/workflows/ci.yml`) runs lint + tests, the TypeScript ch
 | `main.py` | Pipeline entry point and CLI |
 | `core/` | Schemas, topic engine, content pillars |
 | `services/` | Script generation, Gemini client, story bank, voice, Remotion renderers, QA, YouTube / TikTok, cleanup, output layout |
-| `services/mc_*.py` | Minecraft series: story generator, director bridge, voice, renderer, review/QA gate, pipeline |
 | `services/motion_*.py` | Motion Graphics: script generator (validation, evidence quotes, fact-check panel), pipeline (voice, render, sound, QA, upload) |
 | `services/game_*.py` | Game media and facts: footage manifest, captions, one-use consumption, 14-day blacklist (`game_registry`), source dossiers (`game_facts`) |
 | `services/gemini_client.py` | The single LLM entry point: Gemini + Groq + Cloudflare fallbacks, cooldowns, batching, image input |
 | `engine/` | Chart and legacy rendering engine |
-| `remotion_studio/` | Remotion project (React): compositions (`MotionGraphic`, Minecraft kit) |
-| `scripts/` | Maintenance (cleanup, bank refill, footage fetch/caption, facts), `render_motion.mjs`, Minecraft assets / music / director tests, authentication, scheduler, analytics |
-| `docs/` | Web portal (GitHub Pages), Terms, Privacy, design notes (Minecraft kit and assets) |
+| `remotion_studio/` | Remotion project (React): composition `MotionGraphic` and its scenes, pointer and UI presets |
+| `scripts/` | Maintenance (cleanup, bank refill, footage fetch/caption, facts), `render_motion.mjs`, sound-design generator, authentication, scheduler, analytics |
+| `docs/` | Web portal (GitHub Pages), Terms, Privacy, |
 | `tests/` | pytest suite |
-| `assets/` | Fonts, audio beds and effects, B-roll manifest, `skins/` (extra Minecraft skins with their sources) |
+| `assets/` | Fonts, audio beds and effects, B-roll manifest |
 | `data/` | History database, quality rules, `game_facts/` and `gemini_state.json` caches (private data is git-ignored) |
 
 ## Privacy & platform compliance
@@ -245,7 +207,7 @@ Full documents: [Terms of Service](https://adrlopech.github.io/Silicon-Verdict/t
 ## Trademark & fair use notice
 
 Product names, logos, hardware architectures and game titles mentioned in the content (including AMD, NVIDIA, Intel, Ryzen, GeForce,
-Cyberpunk 2077, Starfield, Baldur's Gate 3, Steam and Minecraft) belong to their respective owners. Their appearance implies no affiliation,
+Cyberpunk 2077, Starfield, Baldur's Gate 3, Steam) belong to their respective owners. Their appearance implies no affiliation,
 sponsorship or endorsement. Analysis and commentary are produced independently for educational and informational purposes under nominative fair use;
 game screenshots and trailer clips come from official Steam store pages and are credited in each video description.
 

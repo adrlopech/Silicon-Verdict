@@ -196,16 +196,6 @@ section.blk.tight{padding-top:70px;padding-bottom:70px}
 .chain .ar::before{content:"";display:block;width:100%;height:2px;background:repeating-linear-gradient(90deg,var(--cyan) 0 6px,transparent 6px 12px);animation:dash 1s linear infinite}
 @keyframes dash{to{background-position:12px 0}}
 
-/* minecraft */
-.mc{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px}
-.mc div{padding:22px 16px;border-radius:18px;text-align:center;background:var(--card);border:1px solid var(--line);transition:.3s}
-.mc div:hover{border-color:rgba(52,211,153,.45);transform:translateY(-4px)}
-.mc b{display:block;font-family:var(--mono);color:var(--green);margin-bottom:6px}
-.mc span{font-size:.82rem;color:var(--muted)}
-.blocks{display:flex;gap:6px;justify-content:center;margin:0 0 30px;flex-wrap:wrap}
-.blocks i{width:34px;height:34px;image-rendering:pixelated;border-radius:3px;box-shadow:inset -4px -4px rgba(0,0,0,.28),inset 4px 4px rgba(255,255,255,.18);animation:hop 2.4s infinite}
-@keyframes hop{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-12px)}}
-
 /* marquee */
 .marq{overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);margin-bottom:14px}
 .marq div{display:flex;gap:14px;width:max-content;animation:marq 40s linear infinite}

@@ -23,7 +23,7 @@ BANK = BASE_DIR / "docs" / "generated_scripts" / "bank"
 def main() -> int:
     args = [a for a in sys.argv[1:] if not a.startswith("-")]
     verbose = "-v" in sys.argv
-    kinds = args or sorted(p.name for p in BANK.iterdir() if p.is_dir() and p.name not in ("src", "minecraft"))
+    kinds = args or sorted(p.name for p in BANK.iterdir() if p.is_dir() and p.name != "src")
     for kind in kinds:
         total, failing, reasons = 0, 0, Counter()
         for f in sorted((BANK / kind).glob("*.json")):

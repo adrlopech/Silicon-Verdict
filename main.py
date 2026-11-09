@@ -274,14 +274,6 @@ def run_master_video_pipeline(
         export_only = True
     logger.info("=== Master video pipeline: series=%s category=%s export_only=%s ===", series or "auto", category, export_only)
 
-    if series == "minecraft":
-        from services.mc_pipeline import run_minecraft_pipeline
-        try:
-            return run_minecraft_pipeline(topic=topic, export_only=export_only, dry_run=dry_run, privacy=privacy, prefer_bank=prefer_bank)
-        except Exception as exc:
-            logger.critical("Minecraft pipeline failed: %s", exc, exc_info=True)
-            sys.exit(1)
-
     # Motion is the main style: the old Hardware / Everyday / Gaming categories are told as Motion videos (Everyday is hosted by the mouse-cursor character)
     from services.motion_pipeline import run_motion_pipeline
     kind, fmt = motion_route(series, category)
@@ -446,9 +438,9 @@ def parse_args():
     parser.add_argument(
         "--series",
         type=str,
-        choices=["hardware", "simple", "minecraft", "motion"],
+        choices=["hardware", "simple", "motion"],
         default=None,
-        help="Series: motion (the main one: kinetic-typography Motion Graphics, 62-90 s, English only; curiosities, six content formats and games with real footage), hardware and simple (the old categories, now Motion formats: --series hardware == --series motion --motion-format hardware; simple is hosted by the cursor), minecraft (concept explained inside Minecraft, ~64 s, always a new Gemini script).",
+        help="Series: motion (the main one: kinetic-typography Motion Graphics, 62-90 s, English only; curiosities, six content formats and games with real footage), hardware and simple (the old categories, now Motion formats: --series hardware == --series motion --motion-format hardware; simple is hosted by the cursor)",
     )
     parser.add_argument(
         "--motion-kind",
@@ -541,15 +533,6 @@ if __name__ == "__main__":
             run_motion_pipeline(topic=chosen_topic, export_only=args.export_only or args.benchmark, dry_run=args.dry_run, privacy=args.privacy, kind=args.motion_kind, fmt=args.motion_format)
         except Exception as exc:
             logger.error("Motion Graphics pipeline failed: %s", exc)
-            sys.exit(1)
-        sys.exit(0)
-    if args.series == "minecraft":
-        from services.mc_pipeline import run_minecraft_pipeline
-        from services.mc_story_generator import McScriptUnavailable
-        try:
-            run_minecraft_pipeline(topic=chosen_topic, export_only=args.export_only or args.benchmark, dry_run=args.dry_run, privacy=args.privacy, prefer_bank=not args.no_bank)
-        except McScriptUnavailable as exc:  # every Minecraft video needs a new Gemini script; there is no fallback
-            logger.error("%s", exc)
             sys.exit(1)
         sys.exit(0)
     if not chosen_topic and Path(args.topics_file).is_file() and resolved_category != "tech_curiosities":

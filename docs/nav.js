@@ -23,7 +23,7 @@
   var items = [
     { g: 'Sections', t: 'Overview', h: H + '#top', k: 'home hero start intro', i: 'home' },
     { g: 'Sections', t: 'Pipeline', h: H + '#pipeline', k: 'steps how it works gemini elevenlabs local voice backup remotion qa', i: 'layers' },
-    { g: 'Sections', t: 'Series', h: H + '#series', k: 'content motion graphics minecraft', i: 'film' },
+    { g: 'Sections', t: 'Series', h: H + '#series', k: 'content motion graphics series', i: 'film' },
     { g: 'Sections', t: 'Formats', h: H + '#formats', k: 'myth tier versus evolution easter', i: 'grid' },
     { g: 'Sections', t: 'Games', h: H + '#games', k: 'roster steam game curiosities', i: 'pad' },
     { g: 'Sections', t: 'Brand look', h: H + '#brand', k: 'logo colors palette typography identity', i: 'palette' },

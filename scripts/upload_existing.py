@@ -35,7 +35,7 @@ def main() -> None:
         sys.exit(f"Missing video or metadata: {video} / {meta}")
 
     text = meta.read_text(encoding="utf-8")
-    title = read_section(text, "SUGGESTED TITLE") or read_section(text, "TITLE")  # Minecraft metadata uses [TITLE]/[HASHTAGS]
+    title = read_section(text, "SUGGESTED TITLE") or read_section(text, "TITLE")  # the Motion metadata uses [TITLE]/[HASHTAGS]
     description = read_section(text, "DESCRIPTION")
     hashtags = (read_section(text, "TECHNICAL HASHTAGS") or read_section(text, "HASHTAGS")).split()
     if not title:

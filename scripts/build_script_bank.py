@@ -3,7 +3,6 @@
 
 Source files (compact JSON Lines, one script per line): docs/generated_scripts/bank/src/<type>.jsonl
   types: classic, myth, tier, whatif, evolution, versus, fix, decode  -> Motion Graphics (MotionProject, validated with services.motion_generator.make_validator)
-         minecraft                                        -> McStory (validated with services.mc_story_generator._problems)
 Output: docs/generated_scripts/bank/<type>/<type>_NNN.json  (exactly what scripts/render_motion_json.py takes for Motion types)
 
 Usage: python scripts/build_script_bank.py [type ...]      (no args = every type found in src/)
@@ -107,70 +106,21 @@ def build_motion(kind, s):
     return proj, problems
 
 
-def expand_mc(s):
-    """Compact Minecraft source -> McStory dict.
-    {"topic","id","screen","cta","title","desc","tags","pc","time","stations":[...],"cast":[...],"inv":{...},
-     "beats":[[text, hl|null, [[act, target|null, {extra}], ...], {beat extras: shot, focus, stock, tag, stall, seconds}], ...]}"""
-    beats = []
-    for b in s["beats"]:
-        text, hl, acts = b[0], b[1], b[2]
-        extra = b[3] if len(b) > 3 else {}
-        actions = []
-        for a in acts:
-            d = {"act": a[0]}
-            if len(a) > 1 and a[1]:
-                d["target"] = a[1]
-            if len(a) > 2:
-                d.update(a[2])
-            actions.append(d)
-        beat = {"text": text, "actions": actions}
-        if hl:
-            beat["hl"] = hl
-        beat.update(extra)
-        beats.append(beat)
-    out = {"topic": s["topic"], "category_name": "MINECRAFT EXPLAINER", "header_banner": s["screen"], "title": s["title"], "description": s["desc"],
-           "tags": s["tags"], "pinned_comment": s["pc"], "script_id": s["id"], "screen_title": s["screen"], "cta": s["cta"], "seconds": 64.0,
-           "time": s.get("time", "day"), "stations": s["stations"], "cast": s.get("cast", []), "beats": beats}
-    if s.get("inv"):
-        out["inventory"] = s["inv"]
-    return out
-
-
-def build_minecraft(s):
-    from core.schemas import McStory
-    import services.mc_story_generator as g
-    story = McStory.model_validate(expand_mc(s) if isinstance(s["beats"][0], list) else s)
-    from services.mc_director import compile_script
-    for attempt in range(1, 6):  # beats whose walk is too long for their subtitle get a minimum on-screen time until the director stops warning
-        rep = compile_script(story.to_script())
-        if not any("top speed" in w for w in rep["warnings"]):
-            break
-        for st_ in story.stations:  # bring the stations closer first: long walks squeezed into one subtitle look like x2 playback
-            if st_.type != "sign":
-                st_.gap = max(3.0, (st_.gap if st_.gap is not None else 8.0) - 2.0)
-        for b in story.beats:
-            if any(a.act in ("go", "fetch", "sprint", "search") for a in b.actions):
-                b.seconds = max(b.seconds or 0, 2.8 + 0.6 * attempt)
-    problems = g._problems(story)
-    return story, problems
-
-
 def import_bank():
     """Adds every built script in bank/<type>/ to the story bank in data/history.db (skips topics already there)."""
     import glob
     from services.motion_generator import MotionProject
-    from core.schemas import McStory
     from services.story_bank import add_story, count_ready, topics_in_bank
     added = 0
-    for kind in ("classic", "myth", "tier", "versus", "whatif", "evolution", "fix", "decode", "minecraft"):
-        series = "minecraft" if kind == "minecraft" else "motion"
+    for kind in ("classic", "myth", "tier", "versus", "whatif", "evolution", "fix", "decode"):
+        series = "motion"
         have = {t.strip().lower() for t in topics_in_bank(series)}
         n = 0
         for f in sorted(glob.glob(str(OUT / kind / "*.json"))):
             data = json.loads(Path(f).read_text(encoding="utf-8"))
             data.pop("name", None)
             data.pop("estimated_seconds", None)
-            obj = (McStory if series == "minecraft" else MotionProject).model_validate(data)
+            obj = MotionProject.model_validate(data)
             if obj.topic.strip().lower() in have:
                 continue
             add_story(series, obj, model="handwritten")
@@ -178,7 +128,7 @@ def import_bank():
             n += 1
         print(f"{kind}: {n} added to the '{series}' bank")
         added += n
-    print(f"added {added}; ready now: minecraft={count_ready('minecraft')} motion={count_ready('motion')}")
+    print(f"added {added}; ready now: motion={count_ready('motion')}")
 
 
 def main():
@@ -206,7 +156,7 @@ def main():
                 total_bad += 1
                 continue
             try:
-                obj, problems = build_minecraft(s) if kind == "minecraft" else build_motion(kind, s)
+                obj, problems = build_motion(kind, s)
             except Exception as exc:
                 print(f"[{kind} #{n}] {s.get('topic')}: BUILD ERROR {str(exc)[:300]}")
                 total_bad += 1
@@ -222,10 +172,9 @@ def main():
                 total_bad += 1
                 continue
             name = f"{kind}_{ok + 1:03d}"
-            data = obj.model_dump(exclude_none=True) if kind != "minecraft" else obj.model_dump()
+            data = obj.model_dump(exclude_none=True)
             data["name"] = name
-            if kind != "minecraft":
-                data["estimated_seconds"] = round(estimated_seconds(obj))
+            data["estimated_seconds"] = round(estimated_seconds(obj))
             (outdir / f"{name}.json").write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
             ok += 1
         print(f"{kind}: {ok} valid scripts written to {outdir.relative_to(BASE)}")

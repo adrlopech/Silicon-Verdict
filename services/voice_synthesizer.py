@@ -25,7 +25,7 @@ from services.voice import get_ffmpeg_bin
 logger = logging.getLogger(__name__)
 
 
-FALLBACK_COUNT = 0  # how many times the robotic local voice replaced ElevenLabs (the Minecraft pipeline refuses to publish those)
+FALLBACK_COUNT = 0  # how many times the robotic local voice replaced ElevenLabs (the Motion pipeline refuses to publish those)
 
 
 def align_characters_to_words(
