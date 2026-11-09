@@ -1,0 +1,146 @@
+/* Auros style reference (abyssal terminal, medium-weight type, tracked labels, tonal surfaces, no shadows) wearing OUR colours:
+   the Silicon Verdict blues and the logo/name stay as they are. Loaded last; every colour is still a token that looks.js blends. */
+:root {
+  --font: "Matter", "Inter", "DM Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+  --pale: color-mix(in srgb, rgb(var(--ac)) 28%, #ffffff);          /* the "lavender phosphor": large figures and emphasis only */
+  --deep: color-mix(in srgb, var(--bg) 62%, #000000);               /* recessed surface (footer, wells) */
+  --kelp: rgb(var(--cardc));                                       /* raised surface (cards) */
+  --silver: color-mix(in srgb, var(--muted) 70%, var(--text));     /* body copy: never pure white */
+  --hair: rgba(255, 255, 255, .1);
+  --r-card: 16px; --r-small: 6px;
+  --cta: linear-gradient(90deg, rgb(var(--ac2)) 0%, color-mix(in srgb, rgb(var(--ac)) 70%, #ffffff) 100%);
+}
+html[data-look="paper"] { --hair: rgba(20, 50, 110, .14); }
+
+/* no elevation by shadow: depth comes from the surface stack */
+*, *::before, *::after { box-shadow: none !important; text-shadow: none !important; }
+
+/* type: one face, medium weight, tight tracking on display sizes */
+body { font-family: var(--font); font-weight: 400; line-height: 1.5; color: var(--silver); }
+h1, h2, h3, h4, .h2, .sec-title h2, .brand span { font-weight: 500; }
+.brand span { font-weight: 600; }  /* the wordmark stays exactly as it was */
+h1, .hero2 h1 { font-size: clamp(2.6rem, 7.4vw, 6rem); line-height: 1; letter-spacing: -.045em; font-weight: 500; color: #fff; }
+.h2, .sec-title h2 { font-size: clamp(2.1rem, 4.6vw, 3.8rem); line-height: 1.02; letter-spacing: -.04em; color: #fff; }
+h3 { letter-spacing: -.02em; line-height: 1.2; color: #fff; }
+.grad { font-family: inherit; font-style: normal; font-weight: 500; background: none; -webkit-text-fill-color: currentColor; color: var(--pale); padding: 0; }
+strong, b { font-weight: 500; color: var(--text); }
+p, .sub, .lead, .checks p, .card p { font-weight: 400; color: var(--silver); }
+.sub { max-width: 620px; margin-left: auto; margin-right: auto; font-size: 1.05rem; }
+.head.c, .sec-title { text-align: center; }
+
+/* uppercase tracked labels */
+.eyebrow, .pill, .tag, .badge, .chip, .tab, .cl .when, .toc h4, .stat2 span, .stat span, .step small, .node em {
+  font-family: var(--font); text-transform: uppercase; letter-spacing: .12em; font-size: .72rem; font-weight: 500;
+}
+.eyebrow { color: var(--silver); opacity: 1; margin-bottom: 18px; }
+.eyebrow::before, .eyebrow::after { display: none; }
+.pill { background: none; border: 0; padding: 0; color: var(--silver); border-radius: 0; }
+.pill .dot { background: var(--pale); }
+.tag, .badge, .chip, .tab { border-radius: var(--r-small); background: var(--kelp); border: 0; color: var(--text); padding: 7px 12px; }
+.tab.on { background: var(--pale); color: #04101c; }
+code { font-family: var(--mono); border-radius: var(--r-small); background: rgba(var(--ac), .1); border: 0; color: var(--pale); }
+
+/* surfaces: abyss canvas, kelp cards (16px), deep wells; no borders, no shadows */
+.card, .stat, .gate, .comp > *, .cl, .faq details, .panel, .checks div, .sw2, .toc, .tree, .term, .step .body, .fx div, .tl .card {
+  border-radius: var(--r-card); background: var(--kelp); border: 0; backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+.card { padding: 36px; }
+.card:hover, .stat:hover { transform: none; background: color-mix(in srgb, var(--kelp) 82%, rgb(var(--ac))); }
+.card::before { display: none; }
+.series .n { color: rgba(255, 255, 255, .06); font-family: var(--font); font-weight: 500; }
+.series .main { background: var(--kelp); }
+.series .main::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--cta); }
+.checks div { background: var(--kelp); padding: 22px 24px; }
+.tree, .term { background: var(--deep); }
+.mini, .phone .screen { border-radius: var(--r-card); }
+.phone { border-radius: 38px; }
+.node span { border-radius: 12px; background: var(--kelp); border: 0; }
+.sw2 { overflow: hidden; }
+
+/* buttons: 6px, uppercase; the one chromatic gesture is the pill with our gradient */
+.btn, .cta-pill, .cmdk, .lookbtn, .totop { border-radius: var(--r-small); }
+.btn { font-family: var(--font); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 500; padding: 18px 26px; border: 0; }
+.btn-p, .cta-pill { background: var(--cta); color: #06111f; border: 0; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
+.btn-p:hover, .cta-pill:hover { filter: brightness(1.08); transform: none; }
+.btn-s { background: var(--kelp); color: #fff; }
+.btn-s:hover { background: color-mix(in srgb, var(--kelp) 80%, rgb(var(--ac))); transform: none; }
+.btn svg, .cta-pill svg { stroke: currentColor; }
+.cta-pill { font-size: .72rem; padding: 12px 18px; }
+.cmdk { background: var(--kelp); border: 0; }
+.totop { background: var(--kelp); border: 0; }
+
+/* navigation: transparent full-width bar, ~80px, centred tracked links */
+header.pill-wrap { height: 80px; padding: 0; align-items: center; background: linear-gradient(rgba(var(--bgc), .94), rgba(var(--bgc), 0)); }
+nav.navpill { width: 100%; max-width: 1440px; height: 80px; margin: 0 auto; padding: 0 32px; border-radius: 0; border: 0; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; justify-content: space-between; gap: 24px; }
+nav.navpill .pill-links { margin: 0 auto; }
+.pill-links { gap: 8px; }
+.pill-links a { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--silver); border-radius: var(--r-small); }
+.pill-links a:hover, .pill-links a.on, .pill-links a[aria-current] { color: #fff; background: transparent; }
+#progress { height: 2px; background: var(--cta); }
+
+/* hero: a centred stack over the particle sphere, full viewport */
+#top { position: relative; }
+.sphere { position: absolute; left: 50%; top: 0; transform: translateX(-50%); width: min(1440px, 100vw); height: 100%; pointer-events: none; opacity: .9; z-index: 0; }
+.hero2 { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: calc(100vh - 80px); padding: 40px 0 90px; grid-template-columns: none; }
+.hero2 > div { max-width: 920px; }
+.hero2 h1 { margin: 22px 0 26px; }
+.hero2 .lead { max-width: 600px; margin: 0 auto; font-size: 1.1rem; color: var(--silver); }
+.hero2 .btns { justify-content: center; margin-top: 40px; }
+.scrollhint { justify-content: center; color: var(--dim); text-transform: uppercase; letter-spacing: .12em; font-size: .68rem; }
+
+/* statistics: big numbers in the pale tint, labels in tracked caps */
+.statrow { gap: 56px 24px; grid-template-columns: repeat(4, 1fr); }
+.stat2 { background: none; border: 0; padding: 0; text-align: left; border-top: 1px solid var(--hair); padding-top: 22px; border-radius: 0; }
+.stat2 b, .stat strong { display: block; font-family: var(--font); font-weight: 500; font-size: clamp(2.6rem, 5.4vw, 5.2rem); line-height: 1; letter-spacing: -.045em; color: var(--pale); background: none; -webkit-text-fill-color: currentColor; }
+.stat2 b small { font-size: .35em; letter-spacing: 0; }
+.stat2 span { display: block; margin-top: 14px; color: var(--text); letter-spacing: .1em; }
+
+/* rhythm: spacious, narrow text columns */
+section.blk { padding-top: 120px; padding-bottom: 40px; }
+section.blk.tight { padding-top: 40px; padding-bottom: 40px; }
+.container { max-width: 1440px; padding: 0 32px; }
+.split { gap: 80px; }
+.split .sub { margin-left: 0; margin-right: 0; }
+.head.c { margin-bottom: 64px; }
+.series, .lookgrid { gap: 24px; }
+.step, .tl .step { border-radius: var(--r-card); }
+.tl-line { background: var(--hair); }
+.faq summary { font-weight: 500; letter-spacing: -.01em; color: #fff; }
+
+/* recessed footer well */
+footer { background: var(--deep); border-top: 0; padding: 120px 0 56px; backdrop-filter: none; }
+footer a { color: var(--silver); text-transform: uppercase; letter-spacing: .1em; font-size: .72rem; }
+
+/* legal pages: same language */
+.hero { padding: 120px 0 56px; }
+.hero-icon { border-radius: var(--r-card); background: var(--kelp); border: 0; width: 72px; height: 72px; }
+.hero-icon svg { stroke: var(--pale); }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 4.6rem); }
+.hero h1 em, .hero h1 .grad { font-style: normal; color: var(--pale); }
+.toc a { border-radius: var(--r-small); }
+.toc a.on { background: rgba(var(--ac), .12); border-left-color: var(--pale); color: #fff; }
+main section h2 { font-weight: 500; letter-spacing: -.03em; }
+
+@media (max-width: 920px) {
+  nav.navpill { padding: 0 16px; height: 68px; } header.pill-wrap { height: 68px; }
+  .statrow { grid-template-columns: repeat(2, 1fr); }
+  section.blk { padding-top: 80px; }
+  .container { padding: 0 20px; }
+  .split { gap: 48px; }
+  .card { padding: 28px; }
+}
+
+/* the rest of the shape vocabulary: 16px cards, 6px everything small */
+.notice, .sec, .step .box, .ledger, .lockup, .panel, .gate, .cl, .mini, .cur-stage, .chain .lk { border-radius: var(--r-card); border: 0; background: var(--kelp); }
+.pl, .series.looks .tag, .chain .lk, .cmd, .cmd code, .act, .pills span { border-radius: var(--r-small); }
+.pl { background: rgba(var(--ac), .1); border: 0; color: var(--pale); text-transform: none; letter-spacing: .02em; }
+.cmd { background: var(--deep); border: 0; }
+.sec { padding: 36px; margin-bottom: 20px; }
+.notice { padding: 28px 32px; }
+.chain .lk { padding: 10px 14px; }
+.step .box { padding: 28px 32px; }
+.tier b, .stamp { border-radius: var(--r-small); }
+header.pill-wrap { background: linear-gradient(rgba(var(--bgc), .97) 58%, rgba(var(--bgc), 0)); }
+.notice { border: 0 !important; background: var(--deep) !important; }
+.sec { border: 0 !important; }
+@media (max-width: 560px) { .navpill .brand span { display: inline; font-size: .92rem; } nav.navpill { gap: 8px; } .cta-pill { padding: 10px 12px; } }
