@@ -4,7 +4,7 @@ import { Background, Hud, ThemeCtx, clamp } from './primitives';
 import { ENTER, EXIT, pickTransition } from './transitions';
 import { Grid, Impact, Particles } from './fx';
 import { PropField, pickIcons } from './props';
-import { BigText, CodeBlock, Counter, Curve, Flash, Footage, ListScene, Outro, ProgressBar, TextWithAccent } from './scenes';
+import { BigText, Card, CodeBlock, Counter, Curve, Flash, Footage, ListScene, Outro, ProgressBar, TextWithAccent } from './scenes';
 import { Tier, Timeline, Verdict, Versus } from './formats';
 import { UiScene } from './ui';
 import { CursorLayer } from './cursor';
@@ -31,6 +31,7 @@ const SCENES: Record<MotionScene['type'], React.FC<{ scene: MotionScene }>> = {
   verdict: Verdict,
   timeline: Timeline,
   ui: UiScene,
+  card: Card,
 };
 
 /** One scene wrapper: it enters with its own transition (varied per scene), drifts under a slow camera move, lands with an impact ring and thematic objects,

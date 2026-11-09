@@ -1,5 +1,5 @@
 /** Data contract of the MotionGraphic composition. Everything shown on screen comes from these props (no text lives in the code). */
-export type SceneType = 'bigText' | 'textWithAccent' | 'counter' | 'list' | 'codeBlock' | 'progressBar' | 'outro' | 'curve' | 'flash' | 'footage' | 'tier' | 'versus' | 'verdict' | 'timeline' | 'ui';
+export type SceneType = 'bigText' | 'textWithAccent' | 'counter' | 'list' | 'codeBlock' | 'progressBar' | 'outro' | 'curve' | 'flash' | 'footage' | 'tier' | 'versus' | 'verdict' | 'timeline' | 'ui' | 'card';
 
 export type SceneFx = 'plane' | 'rocket' | 'satellite' | 'waves' | 'bolts' | 'embers' | 'snow' | 'drops' | 'packets' | 'coins' | 'equalizer' | 'signalbars' | 'notifications' | 'batteryfill' | 'clock' | 'padlock' | 'magnify' | 'bits';
 export type ToggleKey = 'airplane' | 'wifi' | 'bluetooth' | 'airdrop';

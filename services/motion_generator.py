@@ -131,7 +131,7 @@ def _ui_problems(p: "MotionProject", fmt: Optional[str]) -> List[str]:
 
 # Where each action makes sense (the pointer never decorates): select highlights the key phrase of a headline, drag pulls a progress bar or carries the new tier chip into its row,
 # click presses a step or a setting (code and list scenes), toggle flips a Control Center switch (only as the video starts).
-CURSOR_SCENES = {"select": ("bigText", "textWithAccent", "ui"), "drag": ("progressBar", "tier", "ui"), "click": ("codeBlock", "list", "ui"), "toggle": ("bigText", "textWithAccent")}
+CURSOR_SCENES = {"select": ("bigText", "textWithAccent", "card", "ui"), "drag": ("progressBar", "tier", "ui"), "click": ("codeBlock", "list", "ui"), "toggle": ("bigText", "textWithAccent")}
 CURSOR_GAP = 2  # at least two scenes between two pointer scenes
 
 
@@ -210,7 +210,7 @@ def cursor_from_pose(pose: Optional[str], scene_type: str, index: int, total: in
     return "select" if scene_type == "textWithAccent" and pose == "point" else None
 
 
-SceneType = Literal["bigText", "textWithAccent", "counter", "list", "codeBlock", "progressBar", "outro", "curve", "flash", "footage", "tier", "versus", "verdict", "timeline", "ui"]
+SceneType = Literal["bigText", "textWithAccent", "counter", "list", "codeBlock", "progressBar", "outro", "curve", "flash", "footage", "tier", "versus", "verdict", "timeline", "ui", "card"]
 FORMATS = ("myth", "tier", "whatif", "easter", "evolution", "versus", "hardware", "simple", "fix", "decode")   # content formats on top of the two kinds (curiosity / game); "easter" is always a game video; "hardware" and "simple" are the old Hardware / Everyday-with-mascot categories, now told in the Motion style; "fix" and "decode" come from the Nov 2026 niche research (notes/niche_research_2026-11.md)
 TIER_LETTERS = ("S", "A", "B", "C", "D", "F")
 # How often `--motion-format any` picks each topic. Our three TikTok breakouts (800+ views) were the number-driven formats (what-if, versus, evolution) and the niche research
@@ -323,7 +323,7 @@ FACTS: only TRUE, verifiable statements; figures must be real and approximate (a
 STORY (11 to 19 scenes, aim for 13+, each 60-150 frames at 30 fps):
 1. First scene: a COLD OPEN hook (bigText or textWithAccent), see the RETENTION RULES at the end.
 2. Then build the idea step by step, ONE idea per scene, using a variety of scene types:
-   - bigText: 1-4 words, huge. textWithAccent: a short white line (max 7 words) + accentText (1-3 words, the emotional/key word).
+   - bigText: 1-4 words, huge. textWithAccent: a short white line (max 7 words) + accentText (1-3 words, the emotional/key word). card: the same fields as textWithAccent inside a framed glass card with a quote mark: use it for a key claim or the takeaway, it breaks a run of plain headlines.
    - counter: caption text + accentText, value = a REAL final number > 0, optional unit.
    - list: heading text + 2-4 short items. codeBlock: 2-8 real, short code/shell lines + headline text. progressBar: caption + value 0-100 + unit.
    - curve: caption about acceleration / easing / growth. flash: ONE word on a full accent-coloured screen (use at most once, as a rhythm break).
@@ -344,7 +344,7 @@ RETENTION RULES (they decide whether people keep watching; the validator checks 
   "did you know", "have you ever wondered", "let's" or a definition. Example: "Your three nanometer chip has no three nanometer part inside." When a figure or a contrast makes the claim stronger, show it in scene 1 or 2.
 - OPEN LOOP. In scene 2, 3, 4 or 5 the narration promises something that comes later ("And the last reason is the one nobody checks.", "Stay to the end, the last step matters most.",
   "But the real catch comes in a moment."). Pay it off in the last third, before the outro, with a scene that clearly delivers it. Never promise something the video does not deliver.
-- PATTERN BREAK. Never more than two headline scenes (bigText / textWithAccent) in a row: break the rhythm with a counter, list, codeBlock, progressBar, curve, flash or footage scene at least every third scene.
+- PATTERN BREAK. Never more than two headline scenes (bigText / textWithAccent) in a row: break the rhythm with a card, counter, list, codeBlock, progressBar, curve, flash or footage scene at least every third scene.
 - PACE. No scene narration is longer than 16 words (about 6 seconds): when a thought needs more, split it across two scenes so something on screen changes at least every 5 seconds. The video must still last MORE than 60 seconds (monetisation), so keep the whole script at 150-190 words: use more scenes of 8-16 words, never fewer words.
 - VOTE. The outro narration ends with a TWO-OPTION question the viewer can answer in one word ("Would you buy it, or skip it?", "Team DDR4 or team DDR5?") and `pinned_comment` repeats the SAME choice
   as "A or B? Reply with one word." (at most 120 characters). Never an open question such as "What do you think?"."""
@@ -644,7 +644,7 @@ def retention_problems(p: MotionProject) -> List[str]:
     for i, s in enumerate(p.scenes, 1):
         run = run + 1 if s.type in HEADLINE else 0
         if run > 2:
-            out.append(f"scenes {i - 2}-{i} are three headline scenes in a row: break the rhythm with a counter, list, codeBlock, progressBar, curve or flash scene")
+            out.append(f"scenes {i - 2}-{i} are three headline scenes in a row: break the rhythm with a card, counter, list, codeBlock, progressBar, curve or flash scene")
             break
     return out
 

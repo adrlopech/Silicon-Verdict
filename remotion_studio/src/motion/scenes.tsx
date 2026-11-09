@@ -1,6 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, Img, Loop, OffthreadVideo, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { Accent, Burst, EASE_IO, EASE_OUT, Kicker, SafeBox, Words, clamp, fit, useTheme } from './primitives';
+import { useLook } from './looks';
 import { MONO, SANS } from './fonts';
 import { BRAND_BLUE, MotionScene, SAFE_BOTTOM, SAFE_TOP } from './types';
 
@@ -21,6 +22,34 @@ export const TextWithAccent: React.FC<P> = ({ scene }) => (
     <Accent text={scene.accentText} size={scene.text.split(' ').length > 3 ? 150 : 176} delay={12} />
   </SafeBox>
 );
+
+/** A framed statement: the same fields as TextWithAccent (text + accentText), drawn inside a glass card with a quote mark and an accent bar. A visual change from the plain headlines for a key claim or the takeaway. */
+export const Card: React.FC<P> = ({ scene }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const { theme, light } = useTheme();
+  const look = useLook();
+  const pop = spring({ frame: frame - 3, fps, config: { damping: 15, stiffness: 140, mass: 0.8 } });
+  const bar = interpolate(frame, [10, 34], [0, 1], { ...clamp, easing: EASE_OUT });
+  const left = look.align === 'left';
+  return (
+    <SafeBox gap={30}>
+      <Kicker text={scene.kicker} />
+      <div style={{ position: 'relative', width: 936, padding: left ? '68px 56px 68px 76px' : '84px 56px 68px', borderRadius: 46, background: light ? 'rgba(255,255,255,0.86)' : 'rgba(10,22,48,0.62)', border: `2px solid ${theme.accent}55`, boxShadow: `0 40px 100px rgba(0,0,0,0.35), 0 0 60px ${theme.accent}22, inset 0 1px 0 rgba(255,255,255,0.12)`, opacity: Math.min(1, pop * 1.4), transform: `translateY(${(1 - Math.min(1, pop)) * 60}px) scale(${0.94 + 0.06 * Math.min(1, pop)})` }}>
+        {left ? (
+          <div style={{ position: 'absolute', left: 0, top: 44, bottom: 44, width: 10, borderRadius: 5, background: `linear-gradient(180deg, ${theme.accent}, ${theme.accent2 ?? theme.accent})`, transform: `scaleY(${bar})`, transformOrigin: '50% 0%' }} />
+        ) : (
+          <div style={{ position: 'absolute', left: '50%', top: -6, transform: 'translateX(-50%)', fontFamily: 'Georgia, serif', fontSize: 190, lineHeight: 1, color: theme.accent, textShadow: `0 0 40px ${theme.accent}88`, opacity: bar }}>&ldquo;</div>
+        )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, alignItems: left ? 'flex-start' : 'center' }}>
+          <Words text={scene.text} size={scene.text.split(' ').length > 3 ? 92 : 108} />
+          <Accent text={scene.accentText} size={scene.text.split(' ').length > 3 ? 120 : 138} delay={12} />
+        </div>
+        {!left && <div style={{ margin: '30px auto 0', width: 180 * bar, height: 6, borderRadius: 3, background: `linear-gradient(90deg, transparent, ${theme.accent}, transparent)` }} />}
+      </div>
+    </SafeBox>
+  );
+};
 
 export const Counter: React.FC<P> = ({ scene }) => {
   const frame = useCurrentFrame();

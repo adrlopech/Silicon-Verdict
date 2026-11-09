@@ -573,3 +573,45 @@ def test_retention_reads_the_curve_at_a_point_of_the_video():
 
     curve = [1.0 - i / 100 for i in range(101)]
     assert retention_at(curve, 0.2) == curve[20] and retention_at(curve, 0.8) == curve[80] and retention_at([], 0.5) is None
+
+
+# ---- the banked scripts follow the current style rules ----
+def _scene(kind, narration, **kw):
+    return {"type": kind, "text": "t", "kicker": "k", "narration": narration, "durationInFrames": 150, **kw}
+
+
+def test_modernize_adds_an_open_loop_a_vote_and_breaks_a_headline_run():
+    from scripts.update_bank_scripts import modernize
+
+    data = {"topic": "x", "format": "classic", "pinned_comment": "Thoughts?", "scenes": [
+        _scene("bigText", "Chargers get warm, and that is physics."), _scene("bigText", "The outlet sends alternating current."), _scene("textWithAccent", "A circuit converts it to direct current."),
+        _scene("counter", "Roughly ten percent is wasted."), _scene("list", "That waste becomes heat."), _scene("outro", "Is your charger warm? Tell me below.")]}
+    changed = modernize(data, {})
+    assert {"open loop", "vote", "card"} <= set(changed)
+    assert [s["type"] for s in data["scenes"][:3]] == ["bigText", "card", "textWithAccent"]
+    assert " or " in data["scenes"][-1]["narration"] and " or " in data["pinned_comment"]
+    assert modernize(data, {}) == []  # a second run changes nothing
+
+
+def test_modernize_keeps_versus_contenders_in_the_vote_and_the_loop_inside_the_pace_limit():
+    from scripts.update_bank_scripts import modernize
+
+    long_round = "Round one, graphics power. The PS5 delivers about 10.3 teraflops, while the Series X reaches about 12.2, so Microsoft wins this round."
+    data = {"topic": "y", "format": "versus", "pinned_comment": "Who wins?", "scenes": [
+        _scene("bigText", "Two consoles, four rounds."), _scene("versus", long_round, left="PS5", right="Series X", leftValue=1, rightValue=2), _scene("versus", "Round two, speed.", left="PS5", right="Series X", leftValue=1, rightValue=2),
+        _scene("verdict", "Series X wins."), _scene("verdict", "Close."), _scene("outro", "Who wins?")]}
+    modernize(data, {})
+    assert "Team PS5 or team Series X?" in data["scenes"][-1]["narration"]
+    assert all(len(s["narration"].split()) <= 24 for s in data["scenes"])
+
+
+def test_every_banked_script_passes_the_retention_rules():
+    import glob
+
+    from scripts.update_bank_scripts import BANK, failing
+
+    files = sorted(glob.glob(str(BANK / "*" / "*.json")))
+    if not files:
+        return  # the bank is git-ignored: nothing to check on a fresh clone
+    bad = [(Path(f).stem, failing(json.loads(Path(f).read_text(encoding="utf-8")))[0][:60]) for f in files if failing(json.loads(Path(f).read_text(encoding="utf-8")))]
+    assert not bad, bad[:5]
