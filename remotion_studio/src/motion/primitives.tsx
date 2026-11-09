@@ -202,7 +202,7 @@ export const Words: React.FC<{ text: string; size: number; delay?: number; stagg
   const { theme, light } = useTheme();
   const words = (upper ? text.toUpperCase() : text).split(/\s+/).filter(Boolean);
   const longest = Math.max(1, ...words.map((w) => w.length));
-  size = fit(size, longest, 900, upper ? 0.74 : 0.64, 36); // a long word must never overflow the 1080 px frame
+  size = fit(size * look.scale, longest, 900, upper ? 0.74 : 0.64, 36); // a long word must never overflow the 1080 px frame
   const lines = Math.ceil(words.join(' ').length / Math.max(6, Math.floor(900 / (size * 0.5))));
   if (lines > 3) size = Math.max(36, Math.floor(size * 0.82)); // very long lines shrink instead of growing taller than the safe area
   return (
@@ -231,7 +231,7 @@ export const Accent: React.FC<{ text?: string; size: number; delay?: number }> =
   if (!text) return null;
   const cue = scene?.accentCue != null ? Math.round(scene.accentCue * fps) : null;
   const pulse = cue != null ? interpolate(frame, [cue, cue + 5, cue + 16], [0, 1, 0], clamp) : 0; // the accent phrase pops as the narrator says it
-  size = fit(size, text.length, 900, 0.5, 44);
+  size = fit(size * look.scale, text.length, 900, 0.5, 44);
   const raw = spring({ frame: frame - delay, fps, config: { damping: 10, stiffness: 130, mass: 0.9 } });
   const s = Math.min(1, raw);
   return (

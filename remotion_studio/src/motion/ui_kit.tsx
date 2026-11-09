@@ -13,9 +13,9 @@ import { MotionScene, uiAct } from './types';
 
 export const INK = '#E8EEF8';
 export const MUTED = 'rgba(232,238,248,0.52)';
-export const GOOD = '#35E08A';
-export const BAD = '#FF5D6C';
-export const WARN = '#FFD166';
+export const GOOD = '#5CE1FF'; // status colours stay in the blue family: the icon (tick / cross) and the words carry the meaning
+export const BAD = '#8EA2FF';
+export const WARN = '#B8D4FF';
 export const WIN_W = 940;
 
 export const parts = (row: string): string[] => row.split('|').map((x) => x.trim());

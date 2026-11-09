@@ -13,6 +13,7 @@ export type HudStyle = 'mono' | 'story' | 'brackets' | 'ticks';
 export type CameraStyle = 'drift' | 'push' | 'orbit' | 'handheld' | 'still';
 export type CaptionStyle = 'pill' | 'plain' | 'underline' | 'mono';
 export type ParticleStyle = 'dots' | 'squares' | 'none';
+export type DecorStyle = 'none' | 'number' | 'ring' | 'dimension';
 
 export interface Look {
   name: string;
@@ -31,33 +32,35 @@ export interface Look {
   camera: CameraStyle;
   transitions: TransitionName[];
   captions: CaptionStyle;
+  scale: number; // headline size multiplier: bolder looks set the type bigger so the frame is filled
+  decor: DecorStyle; // a design element that fills the empty lower part of text scenes
 }
 
 export const LOOKS: Record<string, Look> = {
   // deep black-blue with an electric cyan glow: the original channel look
   obsidian: { name: 'obsidian', accent: '#00F0FF', accent2: '#007AFF', background: '#05070C', text: '#FFFFFF', light: false, bg: 'glow', floorGrid: true, particles: 'dots', hud: 'mono', align: 'center', upper: false, sans: SANS, camera: 'drift',
-    transitions: ['pushLeft', 'zoomThrough', 'iris', 'glitch', 'pushUp', 'blinds', 'whip', 'flip', 'wipe', 'zoomOut', 'diagonal', 'spin', 'fade'], captions: 'pill' },
+    transitions: ['pushLeft', 'zoomThrough', 'iris', 'glitch', 'pushUp', 'blinds', 'whip', 'flip', 'wipe', 'zoomOut', 'diagonal', 'spin', 'fade'], captions: 'pill', scale: 1.0, decor: 'none' },
   // sky blue over a moving aurora of navy and royal blue
   ocean: { name: 'ocean', accent: '#4DC3FF', accent2: '#0A4DFF', background: '#030B1F', text: '#FFFFFF', light: false, bg: 'aurora', floorGrid: false, particles: 'dots', hud: 'story', align: 'center', upper: false, sans: SPACE, camera: 'push',
-    transitions: ['zoomThrough', 'pushUp', 'fade', 'iris', 'zoomOut'], captions: 'plain' },
+    transitions: ['zoomThrough', 'pushUp', 'fade', 'iris', 'zoomOut'], captions: 'plain', scale: 1.04, decor: 'none' },
   // periwinkle and indigo: the bluest end of violet, nothing purple
   indigo: { name: 'indigo', accent: '#8FA8FF', accent2: '#3B3FF0', background: '#060921', text: '#FFFFFF', light: false, bg: 'aurora', floorGrid: false, particles: 'squares', hud: 'ticks', align: 'left', upper: false, sans: SORA, camera: 'orbit',
-    transitions: ['whip', 'flip', 'spin', 'diagonal', 'pushLeft'], captions: 'underline' },
+    transitions: ['whip', 'flip', 'spin', 'diagonal', 'pushLeft'], captions: 'underline', scale: 1.1, decor: 'ring' },
   // modern and bold: a saturated cobalt gradient mesh with soft light blobs and film grain, big rounded type
   cobalt: { name: 'cobalt', accent: '#9BE8FF', accent2: '#4C8DFF', background: '#061552', text: '#FFFFFF', light: false, bg: 'mesh', floorGrid: false, particles: 'squares', hud: 'brackets', align: 'left', upper: false, sans: OUTFIT, camera: 'handheld',
-    transitions: ['whip', 'diagonal', 'zoomThrough', 'pushLeft', 'blinds'], captions: 'pill' },
+    transitions: ['whip', 'diagonal', 'zoomThrough', 'pushLeft', 'blinds'], captions: 'pill', scale: 1.2, decor: 'number' },
   // modern and calm: frosted glass spheres drifting over midnight blue
   glass: { name: 'glass', accent: '#7CC8FF', accent2: '#4A6BFF', background: '#040A1C', text: '#FFFFFF', light: false, bg: 'orbs', floorGrid: false, particles: 'dots', hud: 'story', align: 'center', upper: false, sans: JAKARTA, camera: 'drift',
-    transitions: ['fade', 'zoomOut', 'iris', 'pushUp', 'zoomThrough'], captions: 'plain' },
+    transitions: ['fade', 'zoomOut', 'iris', 'pushUp', 'zoomThrough'], captions: 'plain', scale: 1.06, decor: 'none' },
   // a light look: blue ink on a pale blue sheet
   paper: { name: 'paper', accent: '#0A5CFF', accent2: '#00B3FF', background: '#EAF2FF', text: '#0A1220', light: true, bg: 'dots', floorGrid: false, particles: 'none', hud: 'story', align: 'left', upper: false, sans: MANROPE, camera: 'still',
-    transitions: ['fade', 'pushLeft', 'wipe', 'zoomOut', 'pushUp'], captions: 'pill' },
+    transitions: ['fade', 'pushLeft', 'wipe', 'zoomOut', 'pushUp'], captions: 'pill', scale: 1.12, decor: 'number' },
   // blue-tinted monochrome: icy white on deep blue-black
   ice: { name: 'ice', accent: '#E4F1FF', accent2: '#7FA6D6', background: '#050B16', text: '#F2F8FF', light: false, bg: 'mono', floorGrid: false, particles: 'none', hud: 'mono', align: 'center', upper: false, sans: SANS, camera: 'still',
-    transitions: ['fade', 'wipe', 'pushLeft', 'iris'], captions: 'plain' },
+    transitions: ['fade', 'wipe', 'pushLeft', 'iris'], captions: 'plain', scale: 1.0, decor: 'none' },
   // a technical drawing: white lines on blueprint blue
   blueprint: { name: 'blueprint', accent: '#A6DCFF', accent2: '#2F6BFF', background: '#0A2A66', text: '#FFFFFF', light: false, bg: 'blueprint', floorGrid: false, particles: 'none', hud: 'ticks', align: 'left', upper: true, sans: SPACE, camera: 'drift',
-    transitions: ['wipe', 'blinds', 'pushLeft', 'diagonal', 'fade'], captions: 'mono' },
+    transitions: ['wipe', 'blinds', 'pushLeft', 'diagonal', 'fade'], captions: 'mono', scale: 1.06, decor: 'dimension' },
 };
 
 export const LOOK_NAMES = Object.keys(LOOKS);
@@ -71,5 +74,5 @@ export const SceneCtx = createContext<{ scene: MotionScene | null; captionSpace:
 export const useSceneCtx = () => useContext(SceneCtx);
 
 /** Scenes that are built to fill the frame: no caption strip over them. */
-export const NO_CAPTION = new Set(['tier', 'versus', 'timeline', 'verdict', 'ui', 'footage', 'flash', 'codeBlock']);
+export const NO_CAPTION = new Set(['tier', 'ui', 'footage', 'flash']);
 export const CAPTION_SPACE = 170;

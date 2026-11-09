@@ -30,6 +30,8 @@ export interface MotionScene {
   toggle?: ToggleKey; // with cursor 'toggle': which switch of the Control Center panel the cursor flips (airplane mode switches the radios off)
   cursor?: CursorAction; // the pointer acts in this scene only when the action means something: select (highlights the key phrase as it is spoken), drag (pulls a progress bar, drops the new tier chip), click (presses a step or a setting: code and list scenes), toggle (flips a Control Center switch)
   preset?: string; // ui scenes: which drawn interface (display, taskmgr, bios, terminal, gpupanel, gamemenu, frametime, speedtest, wifilist, router, keycaps, filemgr, diskbar, battery, tabmem, speclabel, leaderboard, partpicker, dimm, permissions); its data lives in text / items / value / accentText / leftValue / rightValue / code
+  callout?: string; // a short tag (a figure or a key term) that pops up mid-scene, set by the pipeline from the narration
+  calloutCue?: number; // seconds after the scene starts at which the narrator says it
   accentCue?: number; // seconds after the scene starts at which the narrator says the accent phrase: it pulses then (set by the pipeline from the voice timing)
   cursorCue?: number; // seconds after the scene starts at which the narrator says the phrase the pointer acts on (set by the pipeline from the voice timing; the pointer arrives then)
   transition?: string; // how this scene enters (see transitions.ts); varied automatically when empty

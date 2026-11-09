@@ -84,6 +84,26 @@ def cursor_cues(project: Any, words: list, counts: list, cuts: list) -> None:
         scene.cursorCue = round(max(0.0, cue - cuts[k]), 2)
 
 
+CALLOUT_UNITS = {"hz", "ghz", "mhz", "gb", "mb", "tb", "ms", "ns", "fps", "w", "v", "nm", "gbps", "mbps", "%", "x", "mm", "c", "k"}
+CALLOUT_MIN_WORDS = 11  # a scene this long (about 4.5 s of speech) gets a second visual beat
+CALLOUT_SKIP = {"flash", "tier", "ui", "footage", "outro", "counter", "progressBar"}
+
+
+def pick_callout(tokens: list) -> Optional[tuple]:
+    """(text, token index) of the most salient term in the SECOND half of a scene's words: a figure (with its unit), else an acronym or capitalised term. None when nothing stands out (a plain long word is not worth a tag)."""
+    half = len(tokens) // 2
+    clean = lambda t: re.sub(r"^[^\w%$#+]+|[^\w%$#+]+$", "", t)  # noqa: E731
+    cands = [(i, clean(t)) for i, t in enumerate(tokens) if i >= half and clean(t)]
+    for i, w in cands:
+        if re.search(r"\d", w):
+            nxt = clean(tokens[i + 1]) if i + 1 < len(tokens) else ""
+            return (f"{w} {nxt}" if nxt.lower() in CALLOUT_UNITS else w, i)
+    for i, w in cands:
+        if i > 0 and (w.isupper() and len(w) > 1 or (w[0].isupper() and len(w) > 2 and not tokens[i - 1].endswith((".", "!", "?")))):
+            return (w, i)
+    return None
+
+
 def _caption_tokens(scene: Any, normalised: str, count: int) -> list:
     """The words to show for a scene: the script's own text when it has as many words as the voice aligned, otherwise the (phonetically normalised) text the voice read."""
     own = _tokens(scene.narration)
@@ -107,6 +127,10 @@ def build_captions(project: Any, words: list, texts: list, counts: list, cuts: l
             hit = next((w for t, w in zip(toks, sw) if first and _norm_word(t) == first), None)
             if hit:
                 scene.accentCue = round(max(0.0, hit["start"] - cuts[k]), 2)
+        if scene.type not in CALLOUT_SKIP and len(toks) >= CALLOUT_MIN_WORDS and sw:
+            found = pick_callout(toks)
+            if found and found[1] < len(sw):
+                scene.callout, scene.calloutCue = found[0], round(max(0.0, sw[found[1]]["start"] - cuts[k]), 2)
         start += scene.durationInFrames
     project.captions = out
 
@@ -126,6 +150,10 @@ def synthetic_captions(project: Any) -> None:
             idx = next((i for i, t in enumerate(toks) if first and _norm_word(t) == first), None)
             if idx is not None:
                 scene.accentCue = round((VOICE_LEAD * FPS + idx * step) / FPS, 2)
+        if scene.type not in CALLOUT_SKIP and len(toks) >= CALLOUT_MIN_WORDS:
+            found = pick_callout(toks)
+            if found:
+                scene.callout, scene.calloutCue = found[0], round((VOICE_LEAD * FPS + found[1] * step) / FPS, 2)
         start += scene.durationInFrames
     project.captions = out
 
@@ -278,10 +306,20 @@ def pointer_moment(scene_type: str, cursor: Optional[str], dur: int, cue: Option
 
 def scene_audio_info(scenes: list) -> list:
     """What the sound design needs to know about each scene (see sound_cues)."""
-    return [{"cursor": s.cursor, "dur": s.durationInFrames, "cue": getattr(s, "cursorCue", None), "verdict": getattr(s, "verdict", None)} for s in scenes]
+    return [{"cursor": s.cursor, "dur": s.durationInFrames, "cue": getattr(s, "cursorCue", None), "verdict": getattr(s, "verdict", None),
+             "callout_at": getattr(s, "calloutCue", None) if getattr(s, "callout", None) else None} for s in scenes]
 
 
-CUE_VOLUME = {"first": (0.35, 0.5), "flash": (0.5, 0.7), "riser": (0.26, 0.45), "click": (0.3, 0.5), "select": (0.26, 0.45), "grab": (0.28, 0.45), "verdict": (0.28, 0.45), "outro": (0.3, 0.5), "tick": (0.12, 0.22), "pop": (0.24, 0.4)}
+CUE_VOLUME = {"rehook": (0.34, 0.55), "first": (0.35, 0.5), "flash": (0.5, 0.7), "riser": (0.26, 0.45), "click": (0.3, 0.5), "select": (0.26, 0.45), "grab": (0.28, 0.45), "verdict": (0.28, 0.45), "outro": (0.3, 0.5), "tick": (0.12, 0.22), "pop": (0.24, 0.4)}
+
+
+def rehook_index(scene_starts: list, durations: list) -> int:
+    """The scene whose start is closest to the middle of the video (never the first two or the last two), which gets the re-hook jolt; -1 for short videos. Same rule as MotionGraphic.tsx rehookIndex."""
+    n = len(scene_starts)
+    if n < 8:
+        return -1
+    total = scene_starts[-1] + durations[-1]
+    return min(range(2, n - 2), key=lambda i: abs(scene_starts[i] - total / 2))
 
 
 def sound_cues(scene_starts: list, kinds: Optional[list], info: Optional[list] = None) -> list:
@@ -297,6 +335,10 @@ def sound_cues(scene_starts: list, kinds: Optional[list], info: Optional[list] =
     cues += [("sfx_riser.wav", max(0.0, scene_starts[i] / FPS - 0.95), "riser") for i in reveals]
     cues += [("sfx_hit.wav", scene_starts[i] / FPS, "flash") for i, k in enumerate(kinds) if k == "flash"]
     if info:
+        mid = rehook_index(scene_starts, [x["dur"] for x in info])
+        if mid >= 0:
+            cues.append(("sfx_boom.wav", scene_starts[mid] / FPS, "rehook"))
+            cues.append(("sfx_riser.wav", max(0.0, scene_starts[mid] / FPS - 0.95), "riser"))
         for i, (kind, sc) in enumerate(zip(kinds, info)):
             at = scene_starts[i] / FPS
             act = sc.get("cursor")
@@ -305,6 +347,8 @@ def sound_cues(scene_starts: list, kinds: Optional[list], info: Optional[list] =
                 cues.append({"click": ("sfx_click.wav", when, "click"), "toggle": ("sfx_click.wav", when, "click"), "select": ("sfx_swish.wav", when, "select"), "drag": ("sfx_pop.wav", when, "grab")}[act])
             elif kind == "tier":
                 cues.append(("sfx_pop.wav", at + 0.55, "pop"))
+            if sc.get("callout_at") is not None:
+                cues.append(("sfx_pop.wav", at + sc["callout_at"], "pop"))
             if kind == "verdict":
                 cues.append({"myth": ("sfx_error.wav", at + 0.5, "verdict"), "fact": ("sfx_chime.wav", at + 0.5, "verdict")}.get(sc.get("verdict") or "", ("sfx_ding.wav", at + 0.5, "verdict")))
             elif kind == "counter":
@@ -369,10 +413,29 @@ def add_sound(raw: Path, out: Path, scene_starts: list, voice_clips: Optional[li
             norm = f"{target}:measured_I={m['input_i']}:measured_TP={m['input_tp']}:measured_LRA={m['input_lra']}:measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true"
     except Exception as exc:  # noqa: BLE001
         logger.warning("Loudness measurement failed (%s): single pass normalisation.", exc)
-    subprocess.run([ff, "-y", "-i", str(raw), "-i", str(mix), "-map", "0:v", "-map", "1:a", "-filter:a", norm + ",alimiter=limit=0.78:level=disabled", "-t", f"{dur:.2f}",
-                    "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2", "-movflags", "+faststart", str(out)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    trim = 0.0  # dB taken off the mix when the encoded file still peaks too high (many cues landing together can push the AAC encode past the limiter)
+    for _attempt in range(3):
+        gain = f",volume=-{trim:.1f}dB" if trim else ""
+        subprocess.run([ff, "-y", "-i", str(raw), "-i", str(mix), "-map", "0:v", "-map", "1:a", "-filter:a", norm + gain + ",alimiter=limit=0.78:level=disabled", "-t", f"{dur:.2f}",
+                        "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2", "-movflags", "+faststart", str(out)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        peak = _peak_db(out)
+        if peak is None or peak <= PEAK_CEILING_DB:
+            break
+        trim += (peak - PEAK_CEILING_DB) + 0.6
+        logger.info("Audio peak %.1f dB is above %.1f dB: encoding again %.1f dB quieter.", peak, PEAK_CEILING_DB, trim)
     mix.unlink(missing_ok=True)
     return out
+
+
+PEAK_CEILING_DB = -1.2  # the QA gate refuses anything above -0.5 dB; this leaves room for the encoder
+
+
+def _peak_db(path: Path) -> Optional[float]:
+    """Highest sample level of the encoded file, in dB (None if it cannot be read)."""
+    from services.voice import get_ffmpeg_bin
+    log = subprocess.run([get_ffmpeg_bin(), "-hide_banner", "-i", str(path), "-af", "volumedetect", "-f", "null", "-"], capture_output=True, text=True).stderr
+    m = re.search(r"max_volume: (-?[\d.]+) dB", log)
+    return float(m[1]) if m else None
 
 
 def _duration(path: Path) -> float:

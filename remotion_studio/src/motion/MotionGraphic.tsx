@@ -9,6 +9,7 @@ import { Tier, Timeline, Verdict, Versus } from './formats';
 import { UiScene } from './ui';
 import { CursorLayer } from './cursor';
 import { Captions, captionSpaceFor, chunkCaptions } from './captions';
+import { Callout, Decor, Shock } from './decor';
 import { LookCtx, SceneCtx, lookFor } from './looks';
 import { Ambient, sceneFx } from './ambient';
 import { HEIGHT, MotionGraphicProps, MotionScene, OVERLAP, SceneFx, WIDTH, defaultTheme } from './types';
@@ -34,10 +35,11 @@ const SCENES: Record<MotionScene['type'], React.FC<{ scene: MotionScene }>> = {
 
 /** One scene wrapper: it enters with its own transition (varied per scene), drifts under a slow camera move, lands with an impact ring and thematic objects,
  *  and leaves with the matching exit while the next scene enters on top. */
-const SceneShell: React.FC<{ scene: MotionScene; index: number; icons: string[]; fx: SceneFx | null; next?: MotionScene; last: boolean; children: React.ReactNode }> = ({ scene, index, icons, fx, next, last, children }) => {
+const SceneShell: React.FC<{ scene: MotionScene; index: number; total: number; rehook: boolean; icons: string[]; fx: SceneFx | null; next?: MotionScene; last: boolean; children: React.ReactNode }> = ({ scene, index, total, rehook, icons, fx, next, last, children }) => {
   const frame = useCurrentFrame();
   const look = useLook();
-  const name = index === 0 ? 'zoomThrough' : pickTransition(index, scene.transition, look.transitions);
+  const hard = look.transitions.find((t) => t === 'whip' || t === 'glitch' || t === 'zoomThrough') ?? look.transitions[0];
+  const name = index === 0 ? 'zoomThrough' : rehook ? hard : pickTransition(index, scene.transition, look.transitions);
   const exitName = pickTransition(index + 1, next?.transition, look.transitions); // the exit always matches the NEXT scene's entrance
   const pin = interpolate(frame, [0, OVERLAP], [0, 1], clamp);
   const pout = interpolate(frame, [scene.durationInFrames, scene.durationInFrames + OVERLAP], [0, 1], clamp);
@@ -46,6 +48,8 @@ const SceneShell: React.FC<{ scene: MotionScene; index: number; icons: string[];
   const prog = frame / Math.max(1, scene.durationInFrames);
   const dir = index % 2 === 0 ? 1 : -1;
   const shake = (k: number) => Math.sin(frame * 0.9 + index * 3 + k) * 3.2 + Math.sin(frame * 2.3 + k * 5) * 1.6; // handheld: a small, constant tremor
+  const calloutAt = scene.callout && scene.calloutCue != null ? Math.round(scene.calloutCue * 30) : null;
+  const punch = calloutAt != null ? interpolate(frame, [calloutAt, calloutAt + 3, calloutAt + 12], [0, 1, 0], clamp) : 0; // a small zoom punch as the tag lands
   const cam = {
     drift: `scale(${1 + 0.07 * prog}) translate(${dir * (prog - 0.5) * 36}px, ${(0.5 - prog) * 22}px) rotate(${dir * (prog - 0.5) * 0.8}deg)`,
     push: `scale(${1 + 0.12 * prog})`,
@@ -53,14 +57,41 @@ const SceneShell: React.FC<{ scene: MotionScene; index: number; icons: string[];
     handheld: `scale(1.025) translate(${shake(1)}px, ${shake(2)}px) rotate(${shake(3) * 0.06}deg)`,
     still: 'none',
   }[look.camera];
+  const camPunch = punch > 0.001 ? `${cam === 'none' ? '' : cam} scale(${1 + 0.035 * punch})` : cam;
   return (
     <AbsoluteFill style={style} data-scene={index}>
-      <AbsoluteFill style={{ transform: cam }}>
+      <AbsoluteFill style={{ transform: camPunch }}>
         <Ambient fx={fx} />
+        <Decor scene={scene} index={index} total={total} />
         <PropField icons={icons} index={index} />
         <AbsoluteFill style={scene.cursor === 'toggle' ? { transform: 'translateY(-200px)' } : undefined}>{children}</AbsoluteFill>
       </AbsoluteFill>
       <Impact seed={index} />
+      {rehook && <Shock />}
+      <Callout scene={scene} />
+    </AbsoluteFill>
+  );
+};
+
+/** The scene whose start is closest to the middle of the video (never the first two or the last two): it gets the re-hook jolt. -1 for short videos. Same rule as services/motion_pipeline.py rehook_index. */
+export const rehookIndex = (starts: number[], durations: number[]): number => {
+  const n = starts.length;
+  if (n < 8) return -1;
+  const total = starts[n - 1] + durations[n - 1];
+  let best = -1;
+  for (let i = 2; i <= n - 3; i++) if (best < 0 || Math.abs(starts[i] - total / 2) < Math.abs(starts[best] - total / 2)) best = i;
+  return best;
+};
+
+/** The last moments of the video fade to the hook headline, so the loop that restarts the video feels continuous (a viewer who stays for the replay counts twice). */
+const LoopTease: React.FC<{ text: string; total: number }> = ({ text, total }) => {
+  const frame = useCurrentFrame();
+  const look = lookFor(useLook().name);
+  const p = interpolate(frame, [total - 26, total - 4], [0, 1], clamp);
+  if (p <= 0.001) return null;
+  return (
+    <AbsoluteFill style={{ opacity: p, background: `radial-gradient(ellipse 80% 60% at 50% 50%, ${look.background}F2 0%, ${look.background}CC 100%)`, alignItems: 'center', justifyContent: 'center', padding: 80 }}>
+      <div style={{ fontFamily: look.sans, fontWeight: 900, fontSize: 118, lineHeight: 1.04, textAlign: 'center', color: look.text, textTransform: look.upper ? 'uppercase' : 'none', letterSpacing: -3, transform: `scale(${0.94 + 0.06 * p})` }}>{text}</div>
     </AbsoluteFill>
   );
 };
@@ -89,6 +120,7 @@ export const MotionGraphic: React.FC<MotionGraphicProps> = ({ scenes, theme = de
   const light = isLight(scenes[current]);
   const flash = scenes[current].type === 'flash';
   const segments = scenes.map((sc, i) => ({ start: starts[i], len: sc.durationInFrames }));
+  const rehookAt = rehookIndex(starts, scenes.map((sc) => sc.durationInFrames));
   return (
     <LookCtx.Provider value={look}>
       <ThemeCtx.Provider value={{ theme: th, light }}>
@@ -103,7 +135,7 @@ export const MotionGraphic: React.FC<MotionGraphicProps> = ({ scenes, theme = de
               <Sequence key={i} from={starts[i]} durationInFrames={scene.durationInFrames + (last ? 0 : OVERLAP)} layout="none">
                 <ThemeCtx.Provider value={{ theme: th, light: isLight(scene) }}>
                   <SceneCtx.Provider value={{ scene, captionSpace: captionSpaceFor(scene, chunks.length > 0) }}>
-                    <SceneShell scene={scene} index={i} icons={sceneIcons[i]} fx={fxs[i]} next={scenes[i + 1]} last={last}>
+                    <SceneShell scene={scene} index={i} total={scenes.length} rehook={i === rehookAt} icons={sceneIcons[i]} fx={fxs[i]} next={scenes[i + 1]} last={last}>
                       <C scene={scene} />
                     </SceneShell>
                   </SceneCtx.Provider>
@@ -112,6 +144,7 @@ export const MotionGraphic: React.FC<MotionGraphicProps> = ({ scenes, theme = de
             );
           })}
           {!flash && <Captions chunks={chunks} scene={scenes[current]} />}
+          <LoopTease text={scenes[0].text} total={start} />
           {!flash && <CursorLayer scenes={scenes} starts={starts} current={current} accent={th.accent} />}
           {!flash && <Hud index={current} total={scenes.length} label={title} segments={segments} />}
         </AbsoluteFill>

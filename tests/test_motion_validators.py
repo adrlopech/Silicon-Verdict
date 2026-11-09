@@ -493,3 +493,59 @@ def test_every_look_is_blue():
             h, sat, val = colorsys.rgb_to_hsv(r, g, b)
             # the blue family: hue between cyan (170 deg) and indigo (255 deg), or a near-neutral blue-tinted white / black
             assert (170 / 360 <= h <= 255 / 360) or sat < 0.2 or val < 0.1, (name, hex_, round(h * 360), round(sat, 2), round(val, 2))
+
+
+# ---- callouts, the re-hook and the 60-second floor (audit follow-up) ----
+from services.motion_pipeline import MIN_VIDEO_SECONDS, pick_callout, rehook_index  # noqa: E402
+
+
+def test_callouts_pick_figures_acronyms_and_skip_plain_words():
+    assert pick_callout("And the first two digits name the generation, so fifty is newer than forty on 144 Hz panels".split())[0] == "144 Hz"
+    assert pick_callout("Inside it a small circuit talks to the RTX card over the bus every single time".split())[0] == "RTX"
+    assert pick_callout("it simply keeps going and going without ever stopping for anyone at all today".split()) is None
+
+
+def test_the_rehook_scene_is_near_the_middle_and_short_videos_have_none():
+    starts = [i * 100 for i in range(12)]
+    assert rehook_index(starts, [100] * 12) == 6
+    assert rehook_index([0, 100, 200, 300], [100] * 4) == -1
+    assert 2 <= rehook_index(starts, [100] * 12) <= 9
+
+
+def test_sound_gets_a_boom_at_the_rehook_scene():
+    kinds = ["bigText"] * 12
+    starts = [i * 100 for i in range(12)]
+    info = [{"cursor": None, "dur": 100} for _ in range(12)]
+    cues = sound_cues(starts, kinds, info)
+    assert ("sfx_boom.wav", 600 / 30, "rehook") in cues
+
+
+def test_scenes_of_17_words_still_reach_the_monetisation_floor():
+    # 13 scenes x 12-17 words keeps the narration between 150 and 190 words: more than 60 seconds at the natural pace
+    words = 13 * 14
+    assert 150 <= words <= 190 and words / 2.5 + 13 * 0.3 > MIN_VIDEO_SECONDS - 1
+
+
+def test_the_functional_colours_are_blue_too():
+    ts = (Path(__file__).resolve().parent.parent / "remotion_studio" / "src" / "motion")
+    tier = re.search(r"TIER_COLORS[^=]*= (\{[^}]*\})", (ts / "formats.tsx").read_text(encoding="utf-8")).group(1)
+    for hex_ in re.findall(r"#[0-9A-Fa-f]{6}", tier) + re.findall(r"(?:myth|fact|partly): \{ label: '[A-Z ]+', color: '(#\w+)'", (ts / "formats.tsx").read_text(encoding="utf-8")):
+        r, g, b = (int(hex_[i:i + 2], 16) for i in (1, 3, 5))
+        assert b >= max(r, g) - 8 or (g >= r and b >= r), hex_  # blue-dominant: no red, yellow, orange or green
+
+
+def test_a_busy_mix_is_brought_under_the_peak_limit(tmp_path):
+    import subprocess
+
+    from services.motion_pipeline import PEAK_CEILING_DB, _peak_db, add_sound
+    from services.voice import get_ffmpeg_bin
+
+    ff = get_ffmpeg_bin()
+    raw = tmp_path / "raw.mp4"
+    subprocess.run([ff, "-y", "-f", "lavfi", "-i", "color=c=black:s=320x568:d=14:r=30", "-pix_fmt", "yuv420p", str(raw)], check=True, capture_output=True)
+    n = 12
+    starts = [i * 35 for i in range(n)]  # a cue on almost every beat: the loudest case
+    kinds = ["verdict", "counter", "flash", "versus", "counter", "verdict", "ui", "counter", "flash", "versus", "verdict", "outro"]
+    info = [{"cursor": "click" if k == "ui" else None, "dur": 35, "cue": None, "verdict": "myth", "callout_at": 0.2} for k in kinds]
+    out = add_sound(raw, tmp_path / "out.mp4", starts, None, kinds=kinds, music_file="bed_drive.mp3", info=info)  # unvoiced: effects at their loudest
+    assert _peak_db(out) <= PEAK_CEILING_DB + 0.3

@@ -59,3 +59,4 @@ notes/
 
 # Reference clips of the ElevenLabs voices for the local backup voice (regenerate: scripts/make_voice_refs.py)
 assets/voice_refs/*.mp3
+data/token_backups/

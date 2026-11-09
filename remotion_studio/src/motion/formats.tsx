@@ -15,7 +15,7 @@ const splitPipe = (it: string): [string, string] => {
 /* ───────────── TIER LIST ───────────── */
 
 const TIERS = ['S', 'A', 'B', 'C', 'D', 'F'];
-const TIER_COLORS: Record<string, string> = { S: '#00F0FF', A: '#35A8FF', B: '#8A8CFF', C: '#FFD166', D: '#FF9F43', F: '#FF5D6C' };
+const TIER_COLORS: Record<string, string> = { S: '#7DF9FF', A: '#4DC3FF', B: '#3D93FF', C: '#4E6FF2', D: '#5B55E6', F: '#7A5CE0' };
 
 /**
  * The board fills up over several consecutive tier scenes: every scene repeats the items already placed and adds ONE more at the end
@@ -138,9 +138,9 @@ export const Versus: React.FC<P> = ({ scene }) => {
 /* ───────────── MYTH vs FACT VERDICT ───────────── */
 
 const VERDICTS = {
-  myth: { label: 'MYTH', color: '#FF5D6C' },
+  myth: { label: 'MYTH', color: '#7C8CFF' },
   fact: { label: 'FACT', color: '#00F0FF' },
-  partly: { label: 'PARTLY TRUE', color: '#FFD166' },
+  partly: { label: 'PARTLY TRUE', color: '#9CCBFF' },
 } as const;
 
 /** A claim on screen, then a stamp slams down: MYTH / FACT / PARTLY TRUE. The accent text is the one-line correction. */
