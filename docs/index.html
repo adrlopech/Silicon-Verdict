@@ -145,7 +145,7 @@
     <div class="series">
       <div class="card main rv"><div class="n">01</div><span class="badge">Main series</span><h3>Motion Graphics</h3><p>Narrated kinetic-typography explainers of 62-90 s: big words, one accent word in electric cyan, counters, code, bars and an outro. Always vertical, in English, in the channel palette. Two kinds: tech <em>curiosities</em> and <em>games</em> (an engineering fact told over real footage).</p><div class="cmd"><code>main.py --series motion --export-only</code></div></div>
       <div class="card rv d1"><div class="n">02</div><div class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg></div><h3>Hardware Deep Dive</h3><p>Silicon, memory, storage, networking and engineering explained with mechanism and real figures. The mouse cursor only appears as an accent.</p><div class="cmd"><code>--motion-format hardware</code></div></div>
-      <div class="card rv d2"><div class="n">03</div><div class="ico"><svg viewBox="0 0 24 24"><path d="M5 3l14 7-6 2-2 6z"/></svg></div><h3>Everyday Tech</h3><p>Small everyday tech mysteries hosted by the <strong>mouse cursor</strong>, a character that uses the screen like a person: it clicks, selects text, drags list items, opens browser tabs and shows a loading ring.</p><div class="cmd"><code>--motion-format simple</code></div></div>
+      <div class="card rv d2"><div class="n">03</div><div class="ico"><svg viewBox="0 0 24 24"><path d="M5 3l14 7-6 2-2 6z"/></svg></div><h3>Everyday Tech</h3><p>Small everyday tech mysteries hosted by the <strong>mouse cursor</strong>, a character that uses the screen like a person: it selects the key phrase as the narrator says it, pulls progress bars, carries chips into a tier list and presses settings, only when that means something.</p><div class="cmd"><code>--motion-format simple</code></div></div>
       <div class="card rv"><div class="n">04</div><div class="ico"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="12" rx="5"/><path d="M7 11v4M5 13h4M16 12h.01M18 14h.01"/></svg></div><h3>Gaming</h3><p>A Motion game video. Banked game scripts go first, told over screenshots of the game and credited in the description; then source-grounded videos with real footage; a hardware video when neither is possible.</p><div class="cmd"><code>main.py --category 2</code></div></div>
       <div class="card rv d1"><div class="n">05</div><div class="ico"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-15 6.700L3 16M3 12a9 9 0 0 1 15-6.700L21 8M21 3v5h-5M3 21v-5h5"/></svg></div><h3>Automatic</h3><p>The AI picks the category with the longest rest, using the history database and retention analytics, so the channel never repeats itself.</p><div class="cmd"><code>main.py --category 4</code></div></div>
       <div class="card rv d2"><div class="n">06</div><div class="ico"><svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></div><h3>Minecraft explainers</h3><p>A computing concept acted out inside Minecraft (~64 s), narrated, always from a brand-new Gemini script and compiled by a director into animation, camera and sound.</p><div class="cmd"><code>main.py --series minecraft</code></div></div>
@@ -179,10 +179,10 @@
       <div class="rv l">
         <div class="eyebrow">Signature element</div>
         <h2 class="h2">A cursor that acts like a person</h2>
-        <p class="sub">The mouse cursor is a character of the whole Motion engine, used only when it does something. Any scene can carry a <code>cursor</code> action, and the cursor acts on what is really on screen: it measures the tagged elements of the scene.</p>
-        <div class="actions"><span class="act">click</span><span class="act">hover</span><span class="act">select</span><span class="act">drag</span><span class="act">busy</span><span class="act">tab</span><span class="act">toggle</span></div>
+        <p class="sub">The mouse pointer is a character of the whole Motion engine, used only when it does something that means something: no browser tab to introduce the topic, no hovering, no waiting. Any scene can carry a <code>cursor</code> action, and the pointer acts on what is really on screen: it measures the tagged elements of the scene.</p>
+        <div class="actions"><span class="act">select</span><span class="act">drag</span><span class="act">click</span><span class="act">toggle</span></div>
         <div class="checks" style="margin-top:22px">
-          <div><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><p>The first scene may open a <strong>browser tab</strong> or a macOS-style <strong>Control Center</strong> panel with toggles.</p></div>
+          <div><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><p><strong>Select</strong> highlights the key phrase as it is spoken, <strong>drag</strong> pulls a progress bar or carries a chip into its tier, <strong>click</strong> presses a setting.</p></div>
           <div><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><p>Flip Airplane Mode and watch Wi-Fi and Bluetooth switch off, exactly like the real thing. <em>(Watch the demo.)</em></p></div>
         </div>
       </div>
@@ -193,7 +193,7 @@
           <div class="tgl wifi"><div class="ti"><svg viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 20h.01M2 9a15 15 0 0 1 20 0"/></svg></div><span>Wi-Fi</span><div class="sw"></div></div>
           <div class="tgl bt"><div class="ti"><svg viewBox="0 0 24 24"><path d="M7 7l10 10-5 5V2l5 5L7 17"/></svg></div><span>Bluetooth</span><div class="sw"></div></div>
           <div class="ripple"></div>
-          <div class="cur"><svg viewBox="0 0 24 24"><path d="M4 2l16 9-7 2-3 7z" fill="#fff" stroke="#05070C" stroke-width="1.500" stroke-linejoin="round"/></svg></div>
+          <div class="cur"><svg viewBox="0 0 24 24"><path d="M2.6 1.6L2.6 17.2L6.5 13.9L9.8 22.2L12.2 21.2L9 13.2L14.2 13.1Z" fill="#fff" stroke="#05070C" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
         </div>
       </div>
     </div>

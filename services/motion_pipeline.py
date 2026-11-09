@@ -60,6 +60,30 @@ def _tokens(text: str) -> list:
     return [t for t in text.split() if _TOKEN.sub("", t).strip()]
 
 
+def _norm_word(w: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", w.lower())
+
+
+def cursor_cues(project: Any, words: list, counts: list, cuts: list) -> None:
+    """Sets scene.cursorCue (seconds after the scene starts) from the voice timing: for a select, the moment the narrator says the first word of the key phrase (the accent, or the label of a
+    one-word scene); for the other actions, about a third into the scene's speech. The pointer then arrives as the phrase is spoken instead of at a fixed moment."""
+    pos = 0
+    for k, scene in enumerate(project.scenes):
+        scene_words = words[pos:pos + counts[k]]
+        pos += counts[k]
+        if not scene.cursor or not scene_words:
+            continue
+        begin = scene_words[0]["start"]
+        cue = begin + (scene_words[-1]["end"] - begin) * 0.35
+        if scene.cursor == "select":
+            phrase = scene.text if scene.type == "bigText" else (scene.accentText or scene.text)
+            first = next((_norm_word(w) for w in phrase.split() if _norm_word(w)), "")
+            hit = next((w for w in scene_words if first and _norm_word(w["word"]) == first), None)
+            if hit:
+                cue = hit["start"]
+        scene.cursorCue = round(max(0.0, cue - cuts[k]), 2)
+
+
 def narrate_scenes(project: Any, work_dir: Path):
     """Narrates the whole script in ONE continuous ElevenLabs take (fluid intonation, no cuts mid-sentence) and slices it per scene at the natural pause between two words.
     Returns ([(scene_index, mp3, seconds)], continuous). With continuous=True each scene lasts exactly as long as its slice and the slices play back to back;
@@ -112,6 +136,7 @@ def narrate_scenes(project: Any, work_dir: Path):
         subprocess.run([get_ffmpeg_bin(), "-y", "-ss", f"{start:.3f}", "-t", f"{dur:.3f}", "-i", str(full_path), "-af", af, "-c:a", "libmp3lame", "-b:a", "192k", str(out)],
                        check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         clips.append((k, out, dur))
+    cursor_cues(project, words, counts, cuts)
     for k, _p, dur in clips:
         scenes[k].durationInFrames = max(scenes[k].durationInFrames, math.ceil(dur * FPS))
     if project.total_frames > settings.MAX_VIDEO_SECONDS * FPS:
@@ -357,6 +382,9 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
         project = generate_motion_project(topic, avoid_topics=get_recently_used_topics_safe(), kind="game" if game else "curiosity", game=game, catalog=catalog, facts=facts, fmt=format_name)
     logger.info("Motion Graphics (%s%s%s): '%s' (%d scenes)", project.kind, f", {game}" if game else "", f", format {format_name}" if format_name else "", project.title, len(project.scenes))
 
+    from services.motion_generator import assign_cursors, sanitize_cursors
+    sanitize_cursors(project.scenes, project.format)  # scripts written by hand (the banks) predate the rules: no tab, no hover, only pointer moments that mean something
+    assign_cursors(project.scenes, project.format)
     from services.series import apply_series, joined_hashtag
     label = apply_series(project)  # "Fix It Now #7": the title, the first frame and a series hashtag repeat from video to video
     if label:

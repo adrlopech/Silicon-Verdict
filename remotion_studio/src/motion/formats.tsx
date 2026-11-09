@@ -1,8 +1,8 @@
 import React from 'react';
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
-import { Accent, EASE_OUT, Kicker, SafeBox, Words, clamp, fit, useTheme } from './primitives';
+import { Accent, EASE_IO, EASE_OUT, Kicker, SafeBox, Words, clamp, fit, useTheme } from './primitives';
 import { MONO, SANS } from './fonts';
-import { BRAND_BLUE, MotionScene } from './types';
+import { BRAND_BLUE, MotionScene, TIER_DROP, TIER_GRAB } from './types';
 
 /** Scenes of the content formats: tier list, versus, myth-vs-fact verdict and timeline. Same data-only contract as the rest of the engine. */
 type P = { scene: MotionScene };
@@ -30,7 +30,9 @@ export const Tier: React.FC<P> = ({ scene }) => {
     return { tier: TIERS.includes(t.toUpperCase()) ? t.toUpperCase() : 'C', label };
   });
   const newest = entries.length - 1;
-  const pop = spring({ frame: frame - 16, fps, config: { damping: 11, stiffness: 150 } });
+  const drag = scene.cursor === 'drag'; // the pointer carries the new chip from the tray (below the board) into its row
+  const pop = drag ? spring({ frame: frame - TIER_DROP, fps, config: { damping: 12, stiffness: 190 } }) : spring({ frame: frame - 16, fps, config: { damping: 11, stiffness: 150 } });
+  const carry = drag ? interpolate(frame, [TIER_GRAB, TIER_DROP], [0, 1], { ...clamp, easing: EASE_IO }) : 1; // 0 = in the tray, 1 = in its row
   const rowH = 104;
   return (
     <SafeBox gap={30}>
@@ -41,16 +43,20 @@ export const Tier: React.FC<P> = ({ scene }) => {
         {TIERS.map((t) => {
           const color = TIER_COLORS[t];
           return (
-            <div key={t} style={{ display: 'flex', alignItems: 'stretch', minHeight: rowH, borderRadius: 20, overflow: 'hidden', background: light ? 'rgba(10,18,32,0.07)' : 'rgba(255,255,255,0.06)', border: `1px solid ${color}33` }}>
-              <div style={{ width: rowH, flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', background: color, fontFamily: SANS, fontWeight: 900, fontSize: 68, color: '#05070C' }}>{t}</div>
+            <div key={t} style={{ display: 'flex', alignItems: 'stretch', minHeight: rowH, borderRadius: 20, overflow: drag ? 'visible' : 'hidden', background: light ? 'rgba(10,18,32,0.07)' : 'rgba(255,255,255,0.06)', border: `1px solid ${color}33` }}>
+              <div style={{ width: rowH, flex: '0 0 auto', borderRadius: '20px 0 0 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: color, fontFamily: SANS, fontWeight: 900, fontSize: 68, color: '#05070C' }}>{t}</div>
               <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', alignContent: 'center', gap: 10, padding: '10px 16px' }}>
                 {entries.map((e, i) => {
                   if (e.tier !== t) return null;
                   const isNew = i === newest;
                   const s = isNew ? pop : 1;
+                  const rowIndex = TIERS.indexOf(t);
+                  const trayDy = (TIERS.length - rowIndex) * (rowH + 10) + 70; // from below the board up to its row
+                  const flying = isNew && drag;
                   return (
                     <div
                       key={i}
+                      data-cursor={isNew ? 'newitem' : undefined}
                       style={{
                         padding: '10px 20px',
                         borderRadius: 14,
@@ -60,9 +66,13 @@ export const Tier: React.FC<P> = ({ scene }) => {
                         whiteSpace: 'nowrap',
                         color: isNew ? '#05070C' : light ? '#0A1220' : theme.text,
                         background: isNew ? color : light ? 'rgba(10,18,32,0.1)' : 'rgba(255,255,255,0.12)',
-                        boxShadow: isNew ? `0 0 34px ${color}aa` : 'none',
-                        opacity: Math.min(1, s * 1.4),
-                        transform: `scale(${0.4 + 0.6 * s}) translateY(${(1 - s) * -60}px)`,
+                        boxShadow: flying ? `0 18px 40px rgba(0,0,0,0.5), 0 0 34px ${color}aa` : isNew ? `0 0 34px ${color}aa` : 'none',
+                        opacity: flying ? Math.min(1, frame / 6) : Math.min(1, s * 1.4),
+                        transform: flying
+                          ? `translate(${(1 - carry) * 190}px, ${(1 - carry) * trayDy}px) rotate(${(1 - carry) * -3}deg) scale(${1.06 - 0.06 * carry + 0.1 * Math.max(0, s - 1)})`
+                          : `scale(${0.4 + 0.6 * s}) translateY(${(1 - s) * -60}px)`,
+                        position: flying ? 'relative' : undefined,
+                        zIndex: flying ? 5 : undefined,
                       }}
                     >
                       {e.label}

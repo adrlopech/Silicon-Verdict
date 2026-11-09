@@ -28,54 +28,86 @@ from config.settings import settings as _settings
 MIN_SECONDS, MAX_SECONDS = 62.0, _settings.MAX_VIDEO_SECONDS   # final video: > 60 s for monetisation, never more than the 3-minute ceiling (the script itself aims for 65-80 s)
 MIN_FRAMES, MAX_FRAMES = int(MIN_SECONDS * FPS), int(MAX_SECONDS * FPS)
 WORDS_PER_SECOND = 2.5                  # natural narration pace used to estimate the final length
-CURSOR_ACTIONS = ("hover", "click", "select", "drag", "tab", "toggle", "busy")
+CURSOR_ACTIONS = ("click", "select", "drag", "toggle")  # the pointer only does things that mean something: no browser tab to introduce the topic, no hovering, no loading ring, no waiting
 TOGGLE_KEYS = ("airplane", "wifi", "bluetooth", "airdrop")
 FX_NAMES = ("plane", "rocket", "satellite", "waves", "bolts", "embers", "snow", "drops", "packets", "coins", "equalizer", "signalbars", "notifications", "batteryfill", "clock", "padlock", "magnify", "bits")
 
 
+# Where each action makes sense (the pointer never decorates): select highlights the key phrase of a headline, drag pulls a progress bar or carries the new tier chip into its row,
+# click presses a step or a setting (code and list scenes), toggle flips a Control Center switch (only as the video starts).
+CURSOR_SCENES = {"select": ("bigText", "textWithAccent"), "drag": ("progressBar", "tier"), "click": ("codeBlock", "list"), "toggle": ("bigText", "textWithAccent")}
+CURSOR_GAP = 2  # at least two scenes between two pointer scenes
+
+
+def _cursor_priority(fmt: Optional[str]) -> dict:
+    order = ("toggle", "click", "drag", "select") if fmt == "fix" else ("toggle", "select", "drag", "click") if fmt == "decode" else ("toggle", "drag", "select", "click")
+    return {a: n for n, a in enumerate(order)}
+
+
 def limit_cursor(scenes, fmt: Optional[str]) -> None:
-    """The cursor only appears when it DOES something: the tab that opens the video, a drag on a list or code, a click on the reveal, a selection of the key phrase, a hover on a number.
-    Keeps the most useful moments up to a small budget (4 in the everyday and fix-it formats, 3 elsewhere) and drops the decorative ones (waiting, loading, repeated clicks)."""
-    budget = 4 if fmt in ("simple", "fix") else 3
-    n = len(scenes)
-    want = {"tab": [], "toggle": [], "drag": [], "click": [], "select": [], "hover": []}
-    for i, sc in enumerate(scenes):
-        if sc.cursor in want:
-            want[sc.cursor].append(i)
+    """Keeps the most useful pointer moments up to a small budget (4 in the fix-it format, 3 elsewhere), never closer than CURSOR_GAP scenes: things it moves first, then the phrase it selects."""
+    budget = 4 if fmt == "fix" else 3
+    prio = _cursor_priority(fmt)
+    candidates = sorted((i for i, sc in enumerate(scenes) if sc.cursor), key=lambda i: (prio.get(scenes[i].cursor, 9), i))
     keep: list = []
-    keep += (want["toggle"] or want["tab"])[:1]
-    keep += want["drag"][:2]
-    target = (2 * n) // 3  # the reveal sits in the last third
-    keep += sorted(want["click"], key=lambda i: abs(i - target))[:1]
-    keep += sorted(want["select"], key=lambda i: abs(i - n // 3))[:1]
-    keep += [i for i in want["hover"] if scenes[i].type in ("counter", "progressBar")][:1]
-    keep = sorted(set(keep[:budget]))
-    if fmt == "simple" and len(keep) < 3:  # the everyday format is hosted by the cursor: give it a few more purposeful things to do
-        for i, sc in enumerate(scenes):
-            if len(keep) >= 3:
-                break
-            if i in keep or sc.type in ("flash", "footage", "outro") or any(abs(i - j) <= 2 for j in keep):
-                continue
-            act = {"counter": "hover", "progressBar": "drag", "list": "drag", "codeBlock": "drag", "textWithAccent": "select", "bigText": "click"}.get(sc.type)
-            if act:
-                sc.cursor = act
-                keep.append(i)
+    for i in candidates:
+        if len(keep) < budget and all(abs(i - j) >= CURSOR_GAP for j in keep):
+            keep.append(i)
     for i, sc in enumerate(scenes):
         if i not in keep:
-            sc.cursor = None
+            sc.cursor, sc.toggle = None, None
+
+
+def sanitize_cursors(scenes, fmt: Optional[str]) -> None:
+    """Drops every pointer action that would mean nothing (an older script's tab, hover, busy or idle; a click on a headline; a drag on a list) and enforces the budget and spacing."""
+    for i, sc in enumerate(scenes):
+        act = (sc.cursor or "").strip().lower()
+        if act == "click" and sc.type in CURSOR_SCENES["select"]:
+            act = "select"  # pressing a headline means nothing; highlighting its key phrase does
+        if act not in CURSOR_ACTIONS or sc.type not in CURSOR_SCENES[act] or (act == "toggle" and i != 0):
+            act = ""
+        sc.cursor = act or None
+        tg = (sc.toggle or "").strip().lower()
+        sc.toggle = (tg if tg in TOGGLE_KEYS else "airplane") if act == "toggle" else None
+    limit_cursor(scenes, fmt)
+
+
+def assign_cursors(scenes, fmt: Optional[str]) -> None:
+    """For hand-written scripts that predate the rules: after sanitize_cursors, adds the pointer moments the format needs (decode: a select on the label, fix: clicks on the setting and the steps,
+    tier: the chips it carries, any progress bar: the knob it pulls) and, when still short, selects the key phrase of one headline pair."""
+    def free(i: int) -> bool:
+        return all(abs(i - j) >= CURSOR_GAP for j, sc in enumerate(scenes) if sc.cursor and j != i)
+
+    def put(i: int, act: str) -> None:
+        if not scenes[i].cursor and scenes[i].type in CURSOR_SCENES[act] and free(i):
+            scenes[i].cursor = act
+    if fmt == "decode" and scenes:
+        scenes[0].cursor = "select"
+    for i, sc in enumerate(scenes):
+        if sc.type == "progressBar":
+            put(i, "drag")
+        elif sc.type == "tier" and fmt == "tier" and i % 2 == 1:
+            put(i, "drag")
+        elif sc.type in ("codeBlock", "list") and fmt in ("fix", "decode") and sum(1 for x in scenes if x.cursor == "click") < (2 if fmt == "fix" else 1):
+            put(i, "click")
+    if sum(1 for sc in scenes if sc.cursor) < 2 and fmt not in ("tier",):
+        for i, sc in enumerate(scenes):
+            if i > 0 and sc.type == "textWithAccent" and sc.accentText:
+                put(i, "select")
+                if sum(1 for x in scenes if x.cursor) >= 2:
+                    break
+    limit_cursor(scenes, fmt)
 
 
 def cursor_from_pose(pose: Optional[str], scene_type: str, index: int, total: int) -> Optional[str]:
-    """Which cursor action fits a scene that used to carry a mascot pose (used when old scripts are moved to the cursor character)."""
-    if not pose or scene_type in ("flash", "footage", "outro"):
+    """Which pointer action fits a scene that used to carry a mascot pose (used when old scripts are moved to the pointer)."""
+    if not pose or scene_type in ("flash", "footage", "outro") or index == 0:
         return None
-    if index == 0:
-        return "tab"  # the video opens a new browser tab
-    if scene_type in ("list", "codeBlock", "progressBar", "tier"):
+    if scene_type in ("progressBar", "tier"):
         return "drag"
-    if scene_type in ("counter", "versus", "curve", "timeline"):
-        return "hover"
-    return {"surprised": "click", "cheer": "click", "point": "select"}.get(pose)
+    if scene_type in ("codeBlock", "list"):
+        return "click"
+    return "select" if scene_type == "textWithAccent" and pose == "point" else None
 
 
 SceneType = Literal["bigText", "textWithAccent", "counter", "list", "codeBlock", "progressBar", "outro", "curve", "flash", "footage", "tier", "versus", "verdict", "timeline"]
@@ -110,7 +142,8 @@ class MotionSceneModel(BaseModel):
     evidence: Optional[str] = Field(default=None, description="GAME videos only: a VERBATIM quote (6-30 words) copied from the SOURCE TEXT that supports this scene's claim about the game; empty if the scene makes no claim about the game")
     fx: Optional[str] = Field(default=None, description="An animated element that illustrates the line (plane, rocket, satellite, waves, bolts, embers, snow, drops, packets, coins, equalizer). Optional: it is picked automatically from the scene's words when empty")
     toggle: Optional[str] = Field(default=None, description="With cursor=toggle: the switch of the Control Center panel the cursor flips: airplane, wifi, bluetooth or airdrop")
-    cursor: Optional[str] = Field(default=None, description="The mouse-cursor character acts in this scene: click (presses the key text), hover (rests on it), select (drags across the headline like selecting text), drag (grabs a list item, code panel or bar), tab (opens a browser tab: only on the first scene), toggle (opens a macOS Control Center panel and flips a switch: only on the first scene, only for videos about a phone/computer setting), busy (loading ring), Empty = no cursor in this scene")
+    cursor: Optional[str] = Field(default=None, description="The pointer acts in this scene ONLY when the action means something: select (drags across the key phrase of a bigText / textWithAccent scene), drag (progressBar: pulls the bar to its value; tier: carries the new chip into its row), click (codeBlock or list: presses the setting or the step), toggle (first scene only, only for a video about a phone/computer setting: opens a Control Center panel and flips a switch). Empty = no pointer in this scene")
+    cursorCue: Optional[float] = Field(default=None, description="Set by the pipeline from the voice timing, never by the model: seconds after the scene starts at which the narrator says the phrase the pointer acts on")
     icons: Optional[List[str]] = Field(default=None, description="1-3 thematic objects floating around the text, chosen from: chip gpu ram battery bolt wifi globe cloud server disk lock key shield thermometer flame fan gauge clock code brain bulb dollar skull warning controller monitor phone camera wave planet rocket atom magnet droplet snow heart search check cross gear star net arrow. Pick what the scene is ABOUT; leave empty to let the renderer choose from the words")
     narration: str = Field(default="", description="What the narrator SAYS during this scene: one or two natural spoken sentences, 8-16 words, that explain the idea on screen")
     durationInFrames: int = Field(..., description="Minimum scene length in frames at 30 fps (60-150); the pipeline stretches it to fit the narration")
@@ -185,10 +218,9 @@ Every scene except footage/flash/tier/timeline/versus/verdict floats 1-3 eye-cat
 (e.g. a scene on heat: thermometer, flame, fan; on speed: gauge, bolt). Always fill `icons` for scenes about a concrete thing.
 Rules: never repeat the same scene type back to back (footage scenes may follow each other); at most one scene with light=true; on-screen text is short and
 readable in 2 seconds; no emojis.
-CURSOR (optional, use it SPARINGLY): the channel's character is a MOUSE CURSOR that uses the screen like a person uses a web page. It appears only when it does something that helps the line; never as decoration, never waiting.
-Set `cursor` on a scene only for: tab (opens a new browser tab: ONLY the first scene, as the video opens), toggle (ONLY the first scene and ONLY when the whole video is about a phone or computer setting such as airplane mode: opens a macOS-style Control Center panel and flips the switch named in `toggle`: airplane, wifi, bluetooth or airdrop; it replaces `tab`), drag (grabs a list item, code panel or bar: list, codeBlock, progressBar scenes), click (presses the key text: THE reveal or payoff, once),
-select (drags across the headline like selecting text: one key phrase), hover (rests on a key number), busy (a loading ring: at most once, for a real "working it out" beat). Never on flash scenes. At most 4 scenes per video, usually 2 or 3.
-On-screen effects appear automatically when the narration names them, each only once or rarely: plane/rocket/satellite fly-bys, signal waves and bars, lightning, embers, snow, drops, data packets, coins, equalizer, notification banners, a filling battery, a clock, a padlock, a magnifier, binary rain. Set `fx` only to force one.
+CURSOR (optional, use it SPARINGLY): the channel's character is a mouse pointer. It appears only when it does something that MEANS something, never as decoration, never to introduce the topic (no browser tab, no hovering, no waiting, no loading ring).
+Set `cursor` on a scene only for: select (a bigText or textWithAccent scene: it drags across the key phrase, as if selecting it, while the narrator says it), drag (a progressBar scene: it pulls the bar to its value; a tier scene: it carries the new chip into its row), click (a codeBlock or list scene: it presses the setting or the step the narrator names),
+toggle (ONLY the first scene and ONLY when the whole video is about a phone or computer setting such as airplane mode: it opens a macOS-style Control Center panel and flips the switch named in `toggle`: airplane, wifi, bluetooth or airdrop). Never on flash scenes. At most 3 scenes per video (4 in a fix video), never in two scenes in a row.
 Metadata: title <= 80 characters + 2-3 hashtags (#siliconverdict first), description 2 sentences, 6-8 tags, pinned_comment = the two-option vote of the outro.
 screen_title <= 24 characters. accent = always #00F0FF (channel electric cyan)."""
 
@@ -272,17 +304,17 @@ FORMAT = VERSUS. Two contenders (two consoles, two technologies, two standards) 
 FORMAT = HARDWARE DEEP DIVE (the old Hardware category, now in the Motion style). ONE surprising, well documented fact about silicon, memory, storage, networking, displays, power or engineering infrastructure
 (cache and RAM latency, EUV lithography, why clocks stalled near 5 GHz, SSD wear, GPS and atomic clocks, fiber optics, thermal paste, power supplies, GPUs versus CPUs, ECC memory, data centers...).
 - Explain HOW it really works: the mechanism first, then the real approximate figures (counter, progressBar, codeBlock, curve scenes are the evidence); physics and engineering, never opinions or benchmarks you cannot be sure of.
-- Cursor: only as an accent, in 2 or 3 scenes: `tab` on the hook, plus `drag` on a list or code scene or `click` on the reveal (only where it helps).""",
+- Cursor: only as an accent, in 1 or 2 scenes and only where it means something: `drag` on a progressBar, `select` on the key phrase.""",
     "simple": FORMAT_COMMON + """
 FORMAT = EVERYDAY TECH MYSTERY (the old Everyday category, now in the Motion style, hosted by the mouse cursor). A small, relatable mystery almost everyone has lived but few can explain:
 USB plugs, Bluetooth and Wi-Fi quirks, batteries and charging, touchscreens, cameras, QR codes, GPS, headphones, microwaves, passwords, e-readers, smart homes, airplane mode...
 - Friendly, conversational, with an analogy and a twist ("But there is more."); the closing line loops back to the hook.
-- Cursor: the mouse cursor is the host, but it acts only when it helps the line: `tab` on the hook, `select` on one key phrase, `drag` on a list or code scene, `click` on the reveal, `hover` on a key number. 3 or 4 scenes in all, never idle, never decorative.""",
+- Cursor: the mouse pointer helps only when it means something: `select` on one key phrase, `drag` on a progressBar, `click` on a setting or a step. 2 or 3 scenes in all, never decorative.""",
     "fix": FORMAT_COMMON + """
 FORMAT = FIX IT NOW. A symptom almost everyone has felt (a slow PC, stutter, a washed-out monitor, high ping, loud fans, a battery that drains, a blurry screen) fixed with ONE concrete setting or habit.
 - Scene 1 (bigText or textWithAccent) is the symptom as the viewer feels it ("Your PC feels slow?"). Scene 2 gives the real cause in one line: what is actually happening.
 - Then the fix in 2 or 3 steps. Each step names the EXACT place: a `codeBlock` whose 2-6 lines are the menu path or the command ("Settings > System > Display"), and a `list` of the steps. At least one codeBlock and one list.
-- The mouse cursor is the hand that does the fix: `click`, `select` or `drag` on 2 to 4 scenes (the steps, the setting, the payoff). Never idle, never decorative.
+- The mouse pointer is the hand that does the fix: `click` on the codeBlock (the setting, the menu path) and on the list (the first step), `select` on the key phrase of the symptom or the payoff. 2 to 4 scenes, never decorative.
 - Say what usually improves, hedged ("often", "up to", "a few percent"); never promise a number you cannot back. Say "in Windows 11" when the menu differs by version.
 - SAFETY: only built-in Windows settings, BIOS options or physical habits. Never a third-party "optimizer", never a registry edit, never disable antivirus, updates or any security feature. If a step is risky (BIOS), tell the viewer to note the old value first.
 - Last scene before the outro is a textWithAccent recap ("Check this first"). The outro asks a question.""",
@@ -524,32 +556,13 @@ def make_validator(catalog: Optional[Dict[str, dict]] = None, facts: Optional[st
             out.append("at most one flash scene")
         if sum(1 for s in p.scenes if s.light) > 1:
             out.append("at most one light scene")
-        for sc_ in p.scenes:  # an unknown action or effect is simply dropped, the scene stays
-            act = (sc_.cursor or "").strip().lower()
-            sc_.cursor = act if act in CURSOR_ACTIONS and sc_.type not in ("flash", "footage") else None
-            if sc_.cursor == "drag" and sc_.type not in ("list", "codeBlock", "progressBar", "tier"):
-                sc_.cursor = "hover"
+        for sc_ in p.scenes:  # an unknown effect is simply dropped, the scene stays
             fx_ = (sc_.fx or "").strip().lower()
             sc_.fx = fx_ if fx_ in FX_NAMES else None
-        for sc_ in p.scenes:
-            tg = (sc_.toggle or "").strip().lower()
-            sc_.toggle = tg if tg in TOGGLE_KEYS else None
-            if sc_.cursor == "toggle" and not sc_.toggle:
-                sc_.toggle = "airplane"
-            if sc_.cursor != "toggle":
-                sc_.toggle = None
-        openers = [i for i, sc_ in enumerate(p.scenes) if sc_.cursor in ("tab", "toggle")]  # a tab or a settings panel opens only as the video starts
-        for i in openers:
-            if i != 0 or i != openers[0]:
-                p.scenes[i].cursor, p.scenes[i].toggle = "click", None
-        busy = [i for i, sc_ in enumerate(p.scenes) if sc_.cursor == "busy"]
-        for i in busy[1:]:
-            p.scenes[i].cursor = None
-        if sum(1 for sc_ in p.scenes if sc_.cursor) > 4:
-            limit_cursor(p.scenes, fmt)  # a generation that over-uses the cursor is trimmed to its most useful moments instead of being rejected
+        sanitize_cursors(p.scenes, fmt)  # actions that mean nothing (a tab, a hover, a click on a headline...) are dropped; the budget and spacing are enforced
         cursor_acts = [sc_.cursor for sc_ in p.scenes if sc_.cursor]
         if fmt == "fix" and len(cursor_acts) < 2:
-            out.append("fix format needs the cursor on at least 2 scenes (click, select or drag): it is the hand that does the fix")
+            out.append("fix format needs the pointer on at least 2 scenes (click on the codeBlock or the list, select on a headline pair): it is the hand that does the fix")
         if fmt == "decode" and "select" not in cursor_acts:
             out.append("decode format needs a `select` cursor on the scene that shows the label")
         used_media = [s.mediaId for s in p.scenes if s.type == "footage"]

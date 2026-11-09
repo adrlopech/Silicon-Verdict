@@ -2,25 +2,22 @@ import React, { useLayoutEffect, useRef, useState } from 'react';
 import { delayRender, continueRender, interpolate, useCurrentFrame } from 'remotion';
 import { EASE_IO, EASE_OUT, clamp } from './primitives';
 import { ICONS } from './props';
-import { MONO, SANS } from './fonts';
-import { CursorAction, HEIGHT, MotionScene, SAFE_BOTTOM, SAFE_TOP, ToggleKey, WIDTH } from './types';
+import { SANS } from './fonts';
+import { CursorAction, FPS, HEIGHT, MotionScene, SAFE_BOTTOM, TIER_DROP, TIER_GRAB, ToggleKey, WIDTH } from './types';
 
 /**
- * The channel's character is a mouse cursor. It lives on top of the scenes and USES them like a person would use a web page:
- *   click  - glides to the key text, presses (ripple) and the text answers with a pulse
- *   hover  - rests on the key text, which gets a focus outline
- *   select - drags across the headline like selecting text with the mouse
- *   drag   - grabs a list item / code panel / bar and drags it a little
- *   tab    - clicks "+" on a browser tab strip and a new tab opens (used to start a video)
- *   toggle - a macOS-style Control Center panel opens and the cursor flips a switch (Airplane Mode turns Wi-Fi and Bluetooth off)
- *   busy   - turns into a loading ring beside the text (a thinking beat)
- *   idle   - waits in a bottom corner
- * Targets are measured from the DOM (elements tagged data-cursor), so the cursor always lands on what is really on screen.
+ * The channel's character is a mouse pointer. It only appears when it DOES something that means something, never as decoration and never to introduce the topic:
+ *   select - drags across the key phrase like selecting text, arriving when the narrator says it (scene.cursorCue)
+ *   drag   - progress bar: grabs the knob at the end of the bar and pulls it to its value; tier list: carries the new chip into its row
+ *   click  - presses the setting or the step: the code panel of a fix, the first step of a list (ripple + a pulse on what it pressed)
+ *   toggle - a macOS-style Control Center panel opens and the pointer flips a switch (Airplane Mode turns Wi-Fi and Bluetooth off)
+ * Targets are measured from the DOM (elements tagged data-cursor), every frame, so the pointer always lands on what is really on screen.
  */
+const KNOWN: CursorAction[] = ['click', 'select', 'drag', 'toggle'];
 
 type Box = { x: number; y: number; w: number; h: number };
-type Targets = Partial<Record<'text' | 'accent' | 'item' | 'number' | 'code' | 'bar', Box[]>>;
-const KINDS = ['text', 'accent', 'item', 'number', 'code', 'bar'] as const;
+type Targets = Partial<Record<'text' | 'accent' | 'item' | 'number' | 'code' | 'bar' | 'fill' | 'newitem', Box[]>>;
+const KINDS = ['text', 'accent', 'item', 'number', 'code', 'bar', 'fill', 'newitem'] as const;
 
 /** Rects (in 1080x1920 composition pixels) of the tagged elements of one scene. */
 const measure = (sceneIndex: number): Targets | null => {
@@ -74,19 +71,12 @@ const Ripple: React.FC<{ x: number; y: number; t: number; accent: string }> = ({
       {[0, 0.28].map((d, i) => {
         const p = Math.max(0, Math.min(1, (t - d) / (1 - d)));
         if (p <= 0) return null;
-        const r = 18 + p * 110;
-        return <div key={i} style={{ position: 'absolute', left: x - r, top: y - r, width: r * 2, height: r * 2, borderRadius: r, border: `${5 - p * 3}px solid ${accent}`, opacity: (1 - p) * 0.9, boxShadow: `0 0 24px ${accent}88` }} />;
+        const r = 12 + p * 72;
+        return <div key={i} style={{ position: 'absolute', left: x - r, top: y - r, width: r * 2, height: r * 2, borderRadius: r, border: `${4 - p * 2.4}px solid ${accent}`, opacity: (1 - p) * 0.9, boxShadow: `0 0 24px ${accent}88` }} />;
       })}
     </>
   );
 };
-
-const Spinner: React.FC<{ x: number; y: number; frame: number; accent: string }> = ({ x, y, frame, accent }) => (
-  <svg width={110} height={110} viewBox="-55 -55 110 110" style={{ position: 'absolute', left: x - 22, top: y - 22, overflow: 'visible', filter: `drop-shadow(0 0 14px ${accent}CC)` }}>
-    <circle r={34} fill="rgba(5,7,12,0.65)" stroke="rgba(255,255,255,0.25)" strokeWidth={6} />
-    <circle r={34} fill="none" stroke={accent} strokeWidth={8} strokeLinecap="round" strokeDasharray="70 150" transform={`rotate(${frame * 14})`} />
-  </svg>
-);
 
 const Focus: React.FC<{ box: Box; t: number; accent: string; pulse?: number }> = ({ box, t, accent, pulse = 0 }) => {
   const pad = 22;
@@ -94,35 +84,6 @@ const Focus: React.FC<{ box: Box; t: number; accent: string; pulse?: number }> =
     <div style={{ position: 'absolute', left: box.x - pad, top: box.y - pad * 0.6, width: box.w + pad * 2, height: box.h + pad * 1.2, borderRadius: 22, border: `3px solid ${accent}`, background: `${accent}${pulse > 0 ? '22' : '12'}`, opacity: t, boxShadow: `0 0 ${30 + pulse * 40}px ${accent}66`, transform: `scale(${1 + pulse * 0.02})` }} />
   );
 };
-
-/** Browser-style tab strip; the cursor clicks "+" and a new tab opens with the video's title. */
-const TAB_W = 300;
-const tabGeometry = () => {
-  const left = (WIDTH - 900) / 2;
-  const top = SAFE_TOP + 96;
-  return { left, top, plusX: left + 24 + TAB_W + 62, plusY: top + 38 };
-};
-const TabStrip: React.FC<{ t: number; open: number; title: string; accent: string }> = ({ t, open, title, accent }) => {
-  const g = tabGeometry();
-  const tab = (label: string, active: boolean, w: number, k: number) => (
-    <div style={{ width: w * k, height: 62, borderRadius: '18px 18px 0 0', background: active ? 'rgba(18,34,64,0.95)' : 'rgba(255,255,255,0.07)', border: `1px solid ${active ? accent + '88' : 'rgba(255,255,255,0.12)'}`, borderBottom: 'none', display: 'flex', alignItems: 'center', gap: 12, padding: '0 18px', overflow: 'hidden', opacity: k, boxShadow: active ? `0 -6px 30px ${accent}33` : 'none', flexShrink: 0 }}>
-      <div style={{ width: 20, height: 20, borderRadius: 10, background: active ? accent : 'rgba(255,255,255,0.4)', flexShrink: 0 }} />
-      <span style={{ fontFamily: SANS, fontWeight: 700, fontSize: 24, color: active ? '#fff' : 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{label}</span>
-      <span style={{ marginLeft: 'auto', fontFamily: MONO, fontSize: 22, color: 'rgba(255,255,255,0.35)' }}>×</span>
-    </div>
-  );
-  return (
-    <div style={{ position: 'absolute', left: g.left, top: g.top, width: 900, height: 76, opacity: t, transform: `translateY(${(1 - t) * -20}px)` }}>
-      <div style={{ position: 'absolute', inset: 0, borderRadius: 24, background: 'rgba(8,14,28,0.78)', border: `1px solid ${accent}33`, backdropFilter: 'blur(6px)' }} />
-      <div style={{ position: 'absolute', left: 24, top: 14, display: 'flex', gap: 10, alignItems: 'flex-end' }}>
-        {tab('silicon verdict', open < 0.5, TAB_W, 1)}
-        {tab(title.toLowerCase(), true, TAB_W, interpolate(open, [0, 1], [0.001, 1], clamp))}
-        <div style={{ width: 56, height: 56, borderRadius: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: SANS, fontSize: 40, fontWeight: 600, color: accent, marginLeft: 6, background: open > 0 && open < 0.2 ? `${accent}33` : 'transparent' }}>+</div>
-      </div>
-    </div>
-  );
-};
-
 
 /** macOS-style Control Center: glass tiles for Wi-Fi, Bluetooth, AirDrop and Airplane Mode, and a brightness slider. The cursor flips one of the switches. */
 const CC = { left: 80, width: 920, top: HEIGHT - SAFE_BOTTOM - 410 - 10, height: 410, tileW: 204, tileH: 206, gap: 20, pad: 26 };
@@ -174,16 +135,17 @@ const ControlCenter: React.FC<{ t: number; f: number; clickAt: number; which: To
   );
 };
 
-type Props = { scenes: MotionScene[]; starts: number[]; current: number; accent: string; title: string };
+type Props = { scenes: MotionScene[]; starts: number[]; current: number; accent: string };
 
-export const CursorLayer: React.FC<Props> = ({ scenes, starts, current, accent, title }) => {
+export const CursorLayer: React.FC<Props> = ({ scenes, starts, current, accent }) => {
   const frame = useCurrentFrame();
   const scene = scenes[current];
-  const action: CursorAction | undefined = scene?.type === 'flash' ? undefined : scene?.cursor;
+  const raw = scene?.type === 'flash' ? undefined : scene?.cursor;
+  const action: CursorAction | undefined = raw && KNOWN.includes(raw) ? raw : undefined; // an action from an older script (tab, hover, busy, idle) is simply not shown
   const [targets, setTargets] = useState<Targets | null>(null);
   const pending = useRef<number | null>(null); // the open delayRender handle, if any
   const handledFrame = useRef(-1); // the last frame whose targets were measured
-  const needsTargets = !!action && action !== 'tab' && action !== 'idle' && action !== 'toggle';
+  const needsTargets = !!action && action !== 'toggle';
   // the targets are measured from the live DOM once per frame; the frame waits (delayRender) until the measurement has been applied
   if (needsTargets && handledFrame.current !== frame && pending.current === null) pending.current = delayRender('cursor targets');
   useLayoutEffect(() => {
@@ -204,9 +166,10 @@ export const CursorLayer: React.FC<Props> = ({ scenes, starts, current, accent, 
   const start = starts[current];
   const f = frame - start;
   const dur = scene.durationInFrames;
-  const bob = { x: Math.sin(frame / 14) * 6, y: Math.cos(frame / 11) * 7 };
 
-  const arrive = Math.min(34, Math.round(dur * 0.34)); // frame at which the cursor reaches its target
+  // the pointer reaches its target when the narrator says the phrase it acts on (cursorCue); without voice timing it arrives about a third into the scene
+  const cueF = scene.cursorCue != null ? Math.round(scene.cursorCue * FPS) : null;
+  const arrive = cueF != null && (action === 'select' || action === 'click') ? Math.max(16, Math.min(dur - 44, cueF - 2)) : Math.min(34, Math.round(dur * 0.34));
   const leaveAt = Math.max(arrive + 14, dur - 22);
   const fadeIn = interpolate(f, [0, 8], [0, 1], clamp);
   const fadeOut = interpolate(f, [dur - 4, dur + 6], [1, 0], clamp);
@@ -219,17 +182,14 @@ export const CursorLayer: React.FC<Props> = ({ scenes, starts, current, accent, 
     }
     return null;
   };
-  const centerShot = { x: WIDTH / 2, y: HEIGHT * 0.5 };
 
-  let tip = { x: rest.x, y: rest.y }; // where the cursor tip is
+  let tip = { x: rest.x, y: rest.y }; // where the pointer tip is
   let press = 0;
   let ripple = -1;
   let focus: { box: Box; t: number; pulse: number } | null = null;
   let selection: Box | null = null;
-  let ghost: { box: Box; label: string } | null = null;
-  let busy = false;
-  let tab: { t: number; open: number } | null = null;
   let panel: { t: number; clickAt: number; which: ToggleKey } | null = null;
+  let shown = true; // false when the scene has nothing the action could mean (the pointer stays away)
 
   const travel = (to: { x: number; y: number }) => {
     const out = ease(f, 6, arrive);
@@ -239,20 +199,18 @@ export const CursorLayer: React.FC<Props> = ({ scenes, starts, current, accent, 
     const arc = Math.sin(Math.PI * out) * 46 * (1 - back) + Math.sin(Math.PI * back) * 30;
     return { x: p.x + arc * (side > 0 ? -0.6 : 0.6), y: p.y - arc * 0.8 };
   };
+  /** Glide from the resting corner to a point that may itself be moving (a knob, a chip), arriving at frame `at`. */
+  const reach = (to: { x: number; y: number }, at: number) => {
+    const out = ease(f, 2, at);
+    const arc = Math.sin(Math.PI * out) * 40;
+    return { x: mix(rest.x, to.x, out) + arc * (side > 0 ? -0.6 : 0.6), y: mix(rest.y, to.y, out) - arc * 0.8 };
+  };
+  const leave = (from: { x: number; y: number }, at: number) => {
+    const back = ease(f, at, dur - 4);
+    return { x: mix(from.x, rest.x, back), y: mix(from.y, rest.y, back) };
+  };
 
-  if (action === 'idle') {
-    tip = { x: rest.x + bob.x, y: rest.y + bob.y };
-  } else if (action === 'tab') {
-    const g = tabGeometry();
-    const over = travel({ x: g.plusX, y: g.plusY });
-    tip = over;
-    const clickAt = arrive + 4;
-    const open = interpolate(f, [clickAt, clickAt + 12], [0, 1], { ...clamp, easing: EASE_OUT });
-    const strip = interpolate(f, [2, 12], [0, 1], clamp) * interpolate(f, [dur - 14, dur - 2], [1, 0], clamp);
-    tab = { t: strip, open };
-    press = interpolate(f, [clickAt - 3, clickAt, clickAt + 6], [0, 1, 0], clamp);
-    ripple = f >= clickAt ? (f - clickAt) / 22 : -1;
-  } else if (action === 'toggle') {
+  if (action === 'toggle') {
     const which: ToggleKey = scene.toggle ?? 'airplane';
     const to = tileCenter(which);
     tip = travel({ x: to.x, y: to.y });
@@ -261,7 +219,8 @@ export const CursorLayer: React.FC<Props> = ({ scenes, starts, current, accent, 
     press = interpolate(f, [clickAt - 3, clickAt, clickAt + 7], [0, 1, 0], clamp);
     ripple = f >= clickAt ? (f - clickAt) / 24 : -1;
   } else if (action === 'select') {
-    const box = pick(['text', 'number']);
+    // the key phrase: the accent of a headline pair, the label itself when the scene is one big word
+    const box = scene.type === 'bigText' ? pick(['text']) : pick(['accent', 'text']);
     if (box) {
       const y = box.y + box.h * 0.5;
       const sel = ease(f, arrive, arrive + 24);
@@ -270,68 +229,58 @@ export const CursorLayer: React.FC<Props> = ({ scenes, starts, current, accent, 
       } else if (f < leaveAt) {
         tip = { x: box.x + box.w * sel, y: y + Math.sin(frame / 9) * 3 };
       } else {
-        const back = ease(f, leaveAt, dur - 4);
-        tip = { x: mix(box.x + box.w, rest.x, back), y: mix(y, rest.y, back) };
+        tip = leave({ x: box.x + box.w, y }, leaveAt);
       }
       selection = { x: box.x - 6, y: box.y - 4, w: Math.max(0, (box.w + 12) * sel), h: box.h + 8 };
       press = f >= arrive && f < arrive + 26 ? 1 : 0;
-    } else {
-      tip = travel(centerShot);
-    }
-  } else if (action === 'drag') {
-    const src = pick(['item', 'code', 'bar', 'text']);
-    if (src) {
-      const items = targets?.item ?? [];
-      const step = items.length > 1 ? items[1].y - items[0].y : Math.min(90, src.h * 0.6 + 20);
-      const grabPt = { x: src.x + Math.min(src.w * 0.3, 140), y: src.y + src.h * 0.5 };
-      const dropPt = { x: grabPt.x + 40, y: grabPt.y + step * (items.length > 1 ? 1 : 0.8) };
-      const grab = arrive + 6;
-      const move = ease(f, grab, grab + 24);
-      const toGrab = travel(grabPt);
-      const base = f < grab ? toGrab : { x: mix(grabPt.x, dropPt.x, move), y: mix(grabPt.y, dropPt.y, move) };
-      const back = ease(f, leaveAt, dur - 4);
-      tip = f >= leaveAt ? { x: mix(dropPt.x, rest.x, back), y: mix(dropPt.y, rest.y, back) } : base;
-      press = f >= grab && f < grab + 30 ? 1 : 0;
-      if (f >= grab && f < leaveAt + 8) ghost = { box: { x: src.x + (tip.x - grabPt.x), y: src.y + (tip.y - grabPt.y), w: src.w, h: src.h }, label: '' };
-      focus = f < grab ? { box: src, t: ease(f, arrive - 6, arrive), pulse: 0 } : null;
-    } else {
-      tip = travel(centerShot);
-    }
-  } else {
-    // hover / click / busy: go to the key text (the accent, a number, or the headline)
-    const box = pick(['accent', 'number', 'text', 'bar', 'code']);
-    const aim = box ? { x: box.x + box.w * 0.66, y: box.y + box.h * 0.62 } : centerShot;
-    tip = travel(aim);
-    const settle = interpolate(f, [arrive, arrive + 8], [0, 1], clamp) * interpolate(f, [leaveAt - 6, leaveAt], [1, 0], clamp);
-    if (action === 'busy') {
-      busy = f >= arrive - 4 && f < leaveAt;
-      if (box) focus = { box, t: settle * 0.7, pulse: 0 };
-    } else if (action === 'hover') {
-      if (box) focus = { box, t: settle, pulse: 0 };
-    } else {
+    } else shown = false;
+  } else if (action === 'drag' && scene.type === 'progressBar') {
+    // grabs the knob at the end of the bar and pulls it: the fill grows as the pointer moves
+    const fill = pick(['fill']);
+    if (fill) {
+      const knob = { x: fill.x + fill.w, y: fill.y + fill.h * 0.5 };
+      const grab = 14;
+      const release = Math.max(grab + 24, dur - 26);
+      if (f < grab) tip = reach(knob, grab);
+      else if (f < release) {
+        tip = knob;
+        press = 1;
+      } else tip = leave(knob, release);
+    } else shown = false;
+  } else if (action === 'drag' && scene.type === 'tier') {
+    // carries the newest chip from the tray into its row (the scene moves the chip; the pointer holds it)
+    const chip = pick(['newitem']);
+    if (chip) {
+      const hold = { x: chip.x + Math.min(24, chip.w * 0.15), y: chip.y + chip.h * 0.62 };
+      if (f < TIER_GRAB) tip = reach(hold, TIER_GRAB);
+      else if (f < TIER_DROP + 4) {
+        tip = hold;
+        press = 1;
+      } else tip = leave(hold, Math.max(TIER_DROP + 12, dur - 40));
+    } else shown = false;
+  } else if (action === 'click') {
+    // presses the setting or the step: the code panel of a fix, the first step of a list
+    const box = scene.type === 'codeBlock' ? pick(['code']) : scene.type === 'list' ? pick(['item']) : null;
+    if (box) {
+      tip = travel({ x: box.x + Math.min(box.w * 0.35, 260), y: box.y + box.h * 0.5 });
+      const settle = interpolate(f, [arrive, arrive + 8], [0, 1], clamp) * interpolate(f, [leaveAt - 6, leaveAt], [1, 0], clamp);
       const clickAt = arrive + 5;
       press = interpolate(f, [clickAt - 3, clickAt, clickAt + 7], [0, 1, 0], clamp);
       ripple = f >= clickAt ? (f - clickAt) / 24 : -1;
       const pulse = interpolate(f, [clickAt, clickAt + 5, clickAt + 16], [0, 1, 0], clamp);
-      if (box) focus = { box, t: settle * 0.6 + pulse * 0.4, pulse };
-    }
-  }
+      focus = { box, t: settle * 0.6 + pulse * 0.4, pulse };
+    } else shown = false;
+  } else shown = false;
 
-  const moving = action !== 'idle' ? 1 : 0.8;
+  if (!shown && !panel) return null;
   return (
     <div style={{ position: 'absolute', inset: 0, zIndex: 20, pointerEvents: 'none' }}>
       {panel && <ControlCenter t={panel.t} f={f} clickAt={panel.clickAt} which={panel.which} />}
-      {tab && <TabStrip t={tab.t} open={tab.open} title={title || 'silicon verdict'} accent={accent} />}
       <div style={{ position: 'absolute', inset: 0, opacity }}>
         {focus && <Focus box={focus.box} t={focus.t} accent={accent} pulse={focus.pulse} />}
-        {selection && (
-          <>
-            <div style={{ position: 'absolute', left: selection.x, top: selection.y, width: selection.w, height: selection.h, background: `${accent}38`, borderRadius: 8, borderRight: `3px solid ${accent}` }} />
-          </>
-        )}
-        {ghost && <div style={{ position: 'absolute', left: ghost.box.x - 10, top: ghost.box.y - 6, width: ghost.box.w + 20, height: ghost.box.h + 12, borderRadius: 18, border: `3px dashed ${accent}`, background: `${accent}18`, boxShadow: `0 18px 40px rgba(0,0,0,0.45), 0 0 26px ${accent}55`, transform: 'rotate(-1.2deg)' }} />}
+        {selection && <div style={{ position: 'absolute', left: selection.x, top: selection.y, width: selection.w, height: selection.h, background: `${accent}38`, borderRadius: 8, borderRight: `3px solid ${accent}` }} />}
         <Ripple x={tip.x} y={tip.y} t={ripple} accent={accent} />
-        {busy ? <Spinner x={tip.x} y={tip.y} frame={frame} accent={accent} /> : <Arrow x={tip.x} y={tip.y} scale={moving} accent={accent} press={press} />}
+        {shown && <Arrow x={tip.x} y={tip.y} scale={1} accent={accent} press={press} />}
       </div>
     </div>
   );

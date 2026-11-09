@@ -3,7 +3,7 @@ export type SceneType = 'bigText' | 'textWithAccent' | 'counter' | 'list' | 'cod
 
 export type SceneFx = 'plane' | 'rocket' | 'satellite' | 'waves' | 'bolts' | 'embers' | 'snow' | 'drops' | 'packets' | 'coins' | 'equalizer' | 'signalbars' | 'notifications' | 'batteryfill' | 'clock' | 'padlock' | 'magnify' | 'bits';
 export type ToggleKey = 'airplane' | 'wifi' | 'bluetooth' | 'airdrop';
-export type CursorAction = 'idle' | 'hover' | 'click' | 'select' | 'drag' | 'tab' | 'toggle' | 'busy';
+export type CursorAction = 'click' | 'select' | 'drag' | 'toggle';
 
 export interface MotionScene {
   type: SceneType;
@@ -28,7 +28,8 @@ export interface MotionScene {
   icons?: string[]; // 1-4 thematic objects floating around the text (names from props.tsx ICONS); picked from the scene's words when empty
   fx?: SceneFx; // an animated element related to what the scene says (a plane flying across, signal waves, lightning...); picked from the scene's words when empty
   toggle?: ToggleKey; // with cursor 'toggle': which switch of the Control Center panel the cursor flips (airplane mode switches the radios off)
-  cursor?: CursorAction; // the mouse-cursor character acts in this scene: click / hover / select (text) / drag / tab (opens a browser tab) / busy (loading ring) / idle (waits in a corner)
+  cursor?: CursorAction; // the pointer acts in this scene only when the action means something: select (highlights the key phrase as it is spoken), drag (pulls a progress bar, drops the new tier chip), click (presses a step or a setting: code and list scenes), toggle (flips a Control Center switch)
+  cursorCue?: number; // seconds after the scene starts at which the narrator says the phrase the pointer acts on (set by the pipeline from the voice timing; the pointer arrives then)
   transition?: string; // how this scene enters (see transitions.ts); varied automatically when empty
   narration?: string; // spoken line (used by the pipeline for the voice; not drawn)
   durationInFrames: number;
@@ -47,6 +48,9 @@ export interface MotionGraphicProps {
 }
 
 export const FPS = 30;
+/** Frames of a tier scene at which the pointer grabs the new chip and drops it in its row (shared by the scene, which moves the chip, and the pointer, which holds it). */
+export const TIER_GRAB = 14;
+export const TIER_DROP = 46;
 export const WIDTH = 1080;
 export const HEIGHT = 1920;
 /** Shorts / TikTok overlay the app UI on the top ~12% and the bottom ~20%: nothing important may live there. */

@@ -58,7 +58,7 @@ def test_new_formats_are_registered():
 
 
 def test_fix_format_passes_with_steps_and_cursor():
-    assert make_validator(None, None, "fix")(_project("fix", {2: "select", 4: "drag", 7: "click"})) == []
+    assert make_validator(None, None, "fix")(_project("fix", {2: "click", 4: "click", 7: "click"})) == []
 
 
 def test_fix_format_needs_a_codeblock():
@@ -69,8 +69,8 @@ def test_fix_format_needs_a_codeblock():
 
 
 def test_fix_format_needs_the_cursor_twice():
-    problems = make_validator(None, None, "fix")(_project("fix", {2: "select"}))
-    assert any("cursor" in p for p in problems)
+    problems = make_validator(None, None, "fix")(_project("fix", {2: "click"}))
+    assert any("pointer" in p for p in problems)
 
 
 def test_decode_format_needs_a_select_cursor():
@@ -215,3 +215,80 @@ def test_narrator_rotates_by_format_and_can_be_turned_off(monkeypatch):
     assert voice("decode", "game") == liam
     monkeypatch.setattr(settings, "MOTION_VOICE_ROTATION", False)
     assert voice("decode") == liam
+
+
+# ---- the pointer only does things that mean something ----
+from services.motion_generator import CURSOR_ACTIONS, assign_cursors, sanitize_cursors  # noqa: E402
+from services.motion_pipeline import cursor_cues  # noqa: E402
+
+
+def _scenes(types, cursors):
+    out = []
+    for i, t in enumerate(types):
+        out.append(MotionSceneModel(type=t, text="Short line", accentText="Key word", narration=_NARR, durationInFrames=90, cursor=cursors.get(i),
+                                    **({"items": ["A one", "B two"]} if t == "list" else {"code": ["a = 1", "b = 2"]} if t == "codeBlock" else {"value": 5} if t == "counter" else {})))
+    return out
+
+
+def test_old_actions_are_gone():
+    assert set(CURSOR_ACTIONS) == {"click", "select", "drag", "toggle"}
+
+
+def test_tab_hover_busy_and_idle_are_dropped():
+    sc = _scenes(["bigText", "textWithAccent", "counter", "list", "bigText", "textWithAccent"], {0: "tab", 1: "hover", 2: "busy", 3: "idle"})
+    sanitize_cursors(sc, None)
+    assert [x.cursor for x in sc] == [None] * 6
+
+
+def test_actions_only_stay_where_they_mean_something():
+    sc = _scenes(["bigText", "list", "counter", "progressBar", "textWithAccent", "codeBlock", "tier"], {0: "select", 1: "drag", 2: "click", 3: "drag", 4: "click", 5: "click"})
+    sanitize_cursors(sc, None)
+    assert sc[0].cursor == "select"  # a headline's phrase can be selected
+    assert sc[1].cursor is None  # nothing to pull in a list
+    assert sc[2].cursor is None  # clicking a number means nothing
+    assert sc[3].cursor == "drag"  # the bar's knob
+    assert sc[4].cursor is None or sc[4].cursor == "select"  # a click on a headline becomes a selection (when the spacing allows it)
+    assert sc[5].cursor == "click"  # the setting in a code panel
+
+
+def test_pointer_scenes_keep_their_distance_and_budget():
+    sc = _scenes(["bigText"] * 1 + ["progressBar", "textWithAccent", "progressBar", "textWithAccent", "progressBar", "textWithAccent", "progressBar"], {i: "drag" if i % 2 else "select" for i in range(8)})
+    sanitize_cursors(sc, None)
+    idx = [i for i, x in enumerate(sc) if x.cursor]
+    assert len(idx) <= 3 and all(b - a >= 2 for a, b in zip(idx, idx[1:]))
+
+
+def test_a_toggle_is_only_for_the_first_scene():
+    sc = _scenes(["bigText", "textWithAccent"], {0: "toggle", 1: "toggle"})
+    sanitize_cursors(sc, None)
+    assert sc[0].cursor == "toggle" and sc[0].toggle == "airplane" and sc[1].cursor is None
+
+
+def test_assign_gives_decode_its_select_and_fix_its_clicks():
+    types = ["bigText", "textWithAccent", "codeBlock", "textWithAccent", "list", "bigText", "outro"]
+    sc = _scenes(types, {})
+    assign_cursors(sc, "decode")
+    assert sc[0].cursor == "select" and "click" in [x.cursor for x in sc]
+    sc = _scenes(types, {})
+    assign_cursors(sc, "fix")
+    assert [x.cursor for x in sc].count("click") == 2
+
+
+def test_assign_carries_tier_chips_and_pulls_bars():
+    sc = _scenes(["bigText", "tier", "tier", "tier", "tier", "textWithAccent", "outro"], {})
+    assign_cursors(sc, "tier")
+    assert {x.cursor for x in sc if x.cursor} == {"drag"}
+    sc = _scenes(["bigText", "textWithAccent", "progressBar", "list", "outro"], {})
+    assign_cursors(sc, None)
+    assert sc[2].cursor == "drag"
+
+
+def test_select_cue_is_the_moment_the_key_word_is_spoken():
+    sc = _scenes(["bigText", "textWithAccent"], {1: "select"})
+    sc[1].accentText = "Key word"
+    project = SimpleNamespace(scenes=sc)
+    words = [{"word": w, "start": 1.0 + i * 0.4, "end": 1.3 + i * 0.4} for i, w in enumerate("Your first line".split())] \
+        + [{"word": w, "start": 3.0 + i * 0.4, "end": 3.3 + i * 0.4} for i, w in enumerate("This is the key word here".split())]
+    cursor_cues(project, words, [3, 6], [0.0, 2.8])
+    assert sc[1].cursorCue == round(3.0 + 3 * 0.4 - 2.8, 2)  # "key" is the 4th word of the second scene
+    assert sc[0].cursorCue is None

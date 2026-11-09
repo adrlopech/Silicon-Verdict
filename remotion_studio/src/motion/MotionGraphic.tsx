@@ -89,7 +89,7 @@ export const MotionGraphic: React.FC<MotionGraphicProps> = ({ scenes, theme = de
             </Sequence>
           );
         })}
-        {!flash && <CursorLayer scenes={scenes} starts={starts} current={current} accent={th.accent} title={title} />}
+        {!flash && <CursorLayer scenes={scenes} starts={starts} current={current} accent={th.accent} />}
         {!flash && <Hud index={current} total={scenes.length} label={title} />}
       </AbsoluteFill>
     </ThemeCtx.Provider>
