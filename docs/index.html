@@ -192,7 +192,7 @@
           <div class="tgl wifi"><div class="ti"><svg viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 20h.01M2 9a15 15 0 0 1 20 0"/></svg></div><span>Wi-Fi</span><div class="sw"></div></div>
           <div class="tgl bt"><div class="ti"><svg viewBox="0 0 24 24"><path d="M7 7l10 10-5 5V2l5 5L7 17"/></svg></div><span>Bluetooth</span><div class="sw"></div></div>
           <div class="ripple"></div>
-          <div class="cur"><svg viewBox="0 0 24 24"><path d="M2.6 1.6L2.6 17.2L6.5 13.9L9.8 22.2L12.2 21.2L9 13.2L14.2 13.1Z" fill="#fff" stroke="#05070C" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+          <div class="cur"><svg viewBox="-3 -3 34 52" overflow="visible"><path d="M2.1 2.1 L2.1 34.1 L10.3 27.3 L17.3 45.1 L22.9 42.9 L16.3 25.7 L27.1 25.5 Z" fill="#05070C" stroke="#05070C" stroke-width="7.2" stroke-linejoin="round"/><path d="M2.1 2.1 L2.1 34.1 L10.3 27.3 L17.3 45.1 L22.9 42.9 L16.3 25.7 L27.1 25.5 Z" fill="#fff" stroke="#fff" stroke-width="4.2" stroke-linejoin="round"/></svg></div>
         </div>
       </div>
     </div>
@@ -206,14 +206,14 @@
 
   <!-- LOOKS AND RETENTION -->
   <section id="looks" class="blk container">
-    <div class="head c rv"><div class="eyebrow">Looks and retention</div><h2 class="h2">No two videos look the same</h2><p class="sub">Every video gets one of eight blue looks and a set of retention devices that the validator enforces on every script.</p></div>
-    <div class="series">
-      <div class="card main rv"><div class="n">01</div><span class="badge">Eight looks</span><h3>Obsidian, ocean, indigo, cobalt, glass, paper, ice, blueprint</h3><p>Each look has its own blue palette, background (glow, aurora, gradient mesh, glass spheres, dot matrix, blueprint grid), typeface, alignment, camera move, transitions, HUD and caption style. The next one is chosen from the format and never repeats the last three.</p><div class="cmd"><code>scripts/render_silent_preview.py --look cobalt</code></div></div>
-      <div class="card rv d1"><div class="n">02</div><h3>Cold open and open loop</h3><p>Scene 1 is the claim in 14 words or fewer, never a greeting. One of scenes 2-5 promises a payoff that the last third delivers.</p></div>
-      <div class="card rv d2"><div class="n">03</div><h3>Two-option vote</h3><p>The outro and the pinned comment ask the same "A or B?" question, so comments are one word long and easy to leave.</p></div>
-      <div class="card rv"><div class="n">04</div><h3>Pace</h3><p>No scene narration beyond 17 words and never three headline scenes in a row: a framed <code>card</code> scene breaks the run. Videos still run past 60 seconds.</p></div>
-      <div class="card rv d1"><div class="n">05</div><h3>Captions and callouts</h3><p>Word-by-word captions from the voice timing, an accent that pulses as it is spoken, callout tags with a zoom punch and a re-hook at the middle.</p></div>
-      <div class="card rv d2"><div class="n">06</div><h3>Real numbers</h3><p>YouTube Analytics feeds a retention report by format and look, and the <code>genera</code> command picks four videos from it and schedules them for tomorrow on YouTube and TikTok.</p><div class="cmd"><code>scripts/report_retention.py</code></div></div>
+    <div class="head c rv"><div class="eyebrow">Looks and retention</div><h2 class="h2">No two videos look the same</h2><p class="sub">Every video gets one of eight blue looks and six retention devices that the validator enforces on every script.</p></div>
+    <div class="series looks">
+      <div class="card rv"><div class="n">01</div><span class="tag">Eight looks</span><h3>A new blue every time</h3><p>Own palette, background, typeface, camera, transitions, HUD and captions. The next look never repeats the last three.</p><div class="dots8"><i style="background:#0B1F3A"></i><i style="background:#0E4A8A"></i><i style="background:#2B3A9E"></i><i style="background:#1E5BD8"></i><i style="background:#7DB9FF"></i><i style="background:#E6F1FF"></i><i style="background:#A8D4FF"></i><i style="background:#0A3B7A"></i></div></div>
+      <div class="card rv d1"><div class="n">02</div><span class="tag">Cold open</span><h3>The claim first</h3><p>Scene 1 is the claim in 14 words or fewer, never a greeting, and one of scenes 2-5 promises a payoff the last third delivers.</p><div class="key">≤ 14 words · open loop</div></div>
+      <div class="card rv d2"><div class="n">03</div><span class="tag">Vote</span><h3>Two options, one word</h3><p>The outro and the pinned comment ask the same "A or B?" question, so a comment takes one word to leave.</p><div class="key">"A or B?" · pinned</div></div>
+      <div class="card rv"><div class="n">04</div><span class="tag">Pace</span><h3>The screen keeps moving</h3><p>No narration beyond 17 words per scene and never three headlines in a row: a framed card breaks the run.</p><div class="key">≤ 17 words · 60 s+</div></div>
+      <div class="card rv d1"><div class="n">05</div><span class="tag">Captions</span><h3>Read it, hear it</h3><p>Word-by-word captions from the voice timing, an accent that pulses as it is spoken, callouts and a re-hook at the middle.</p><div class="key">word by word · re-hook</div></div>
+      <div class="card rv d2"><div class="n">06</div><span class="tag">Real numbers</span><h3>Analytics pick the next four</h3><p>YouTube Analytics feeds a retention report, and the genera command schedules four videos for tomorrow on both platforms.</p><div class="key">report_retention · genera</div></div>
     </div>
   </section>
 
