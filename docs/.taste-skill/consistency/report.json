@@ -1,0 +1,4295 @@
+{
+ "page": "/Users/Chego/Documents/Silicon Verdict/docs/index.html",
+ "url": "http://127.0.0.1:5200/index.html",
+ "at": "2026-11-09T23:04:02.800Z",
+ "out": "/Users/Chego/Documents/Silicon Verdict/docs/.taste-skill/consistency",
+ "widths": [
+  {
+   "width": 1440,
+   "height": 900,
+   "screens": 28,
+   "held": 0,
+   "errors": [],
+   "findings": [
+    {
+     "check": "nav-covers",
+     "sev": "FAIL",
+     "sel": "div#progress",
+     "text": "",
+     "msg": "sits on top of the text \"GAME VIDEOS\" while the page scrolls: part of the line shows beside it",
+     "stop": 13,
+     "fix": "make the fixed nav one opaque band across the whole screen, or let it scroll away with the page"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight > div.statrow > div.stat2.rv:nth-of-type(1)",
+     "text": "6 content series",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 1,
+     "crop": "1440-11-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight > div.statrow > div.stat2.rv:nth-of-type(2)",
+     "text": "9 Motion Graphics formats",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 1,
+     "crop": "1440-12-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight > div.statrow > div.stat2.rv:nth-of-type(3)",
+     "text": "108 games in the roster",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 1,
+     "crop": "1440-13-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight > div.statrow > div.stat2.rv:nth-of-type(4)",
+     "text": "14 scene types",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 1,
+     "crop": "1440-14-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight > div.statrow > div.stat2.rv:nth-of-type(5)",
+     "text": "18 scene effects",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 1,
+     "crop": "1440-15-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight > div.statrow > div.stat2.rv:nth-of-type(6)",
+     "text": "30 frames per second",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 1,
+     "crop": "1440-16-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight > div.statrow > div.stat2.rv:nth-of-type(7)",
+     "text": "62–90 s video length (monetisable)",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 1,
+     "crop": "1440-17-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight > div.statrow > div.stat2.rv:nth-of-type(8)",
+     "text": "0 user data collected",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 1,
+     "crop": "1440-18-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#about > div.split > div.rv.l",
+     "text": "WHAT IT IS A one-person studio that never sleeps",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 2,
+     "crop": "1440-22-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#about > div.split > div.rv.r",
+     "text": "Pause Gemini ElevenLabs Remotion QA gate Upload",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 2,
+     "crop": "1440-23-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#pipeline > div.head.c",
+     "text": "HOW A VIDEO IS MADE Seven stages from idea to up",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 3,
+     "crop": "1440-24-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#pipeline > div.vis.rv",
+     "text": "1 Topic 2 Script 3 Fact-check 4 Voice 5 Render 6",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 3,
+     "crop": "1440-25-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#pipeline > div.flow.rv",
+     "text": "topic → Gemini script → fact-check → ElevenLabs ",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 4,
+     "crop": "1440-27-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#series > div.head.c",
+     "text": "CONTENT One engine behind every series Motion Gr",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 7,
+     "crop": "1440-46-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#series > div.series > div.card.main",
+     "text": "01 MAIN SERIES Motion Graphics Narrated kinetic-",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 7,
+     "crop": "1440-47-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#series > div.series > div.card.rv:nth-of-type(2)",
+     "text": "02 Hardware Deep Dive Silicon, memory, storage, ",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 7,
+     "crop": "1440-48-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#series > div.series > div.card.rv:nth-of-type(3)",
+     "text": "03 Everyday Tech Small everyday tech mysteries h",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 7,
+     "crop": "1440-49-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#series > div.series > div.card.rv:nth-of-type(4)",
+     "text": "04 Gaming A Motion game video. Banked game scrip",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 8,
+     "crop": "1440-56-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#series > div.series > div.card.rv:nth-of-type(5)",
+     "text": "05 Automatic The AI picks the category with the ",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 8,
+     "crop": "1440-57-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#formats > div.head.c",
+     "text": "MOTION GRAPHICS Eleven content formats Each form",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 8,
+     "crop": "1440-58-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#formats > div.rv.z",
+     "text": "Classic Myth Tier list What if Evolution Versus ",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 9,
+     "crop": "1440-63-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#cursor > div.split > div.rv.l",
+     "text": "SIGNATURE ELEMENT A cursor that acts like a pers",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 10,
+     "crop": "1440-70-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#cursor > div.split > div.rv.r",
+     "text": "CONTROL CENTER Airplane Mode Wi-Fi Bluetooth",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 10,
+     "crop": "1440-71-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#cursor > div.head.c",
+     "text": "AMBIENT EFFECTS Effects picked from what the nar",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 10,
+     "crop": "1440-72-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#cursor > div.fx.rv",
+     "text": "✈️ plane 🚀 rocket 🛰️ satellite 📡 waves ⚡ bolt",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 11,
+     "crop": "1440-75-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#looks > div.head.c",
+     "text": "LOOKS AND RETENTION No two videos look the same ",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 11,
+     "crop": "1440-76-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#looks > div.vis.rv",
+     "text": "",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 11,
+     "crop": "1440-77-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#looks > div.series.looks > div.card.rv:nth-of-type(1)",
+     "text": "01 EIGHT LOOKS A new blue every time Own palette",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 12,
+     "crop": "1440-80-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#looks > div.series.looks > div.card.rv:nth-of-type(2)",
+     "text": "02 COLD OPEN The claim first Scene 1 is the clai",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 12,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#looks > div.series.looks > div.card.rv:nth-of-type(3)",
+     "text": "03 VOTE A vote in one word The outro and the pin",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 12,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#looks > div.series.looks > div.card.rv:nth-of-type(4)",
+     "text": "04 PACE The screen keeps moving No narration bey",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 12,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#looks > div.series.looks > div.card.rv:nth-of-type(5)",
+     "text": "05 CAPTIONS Read it, hear it Word-by-word captio",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 12,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#looks > div.series.looks > div.card.rv:nth-of-type(6)",
+     "text": "06 REAL NUMBERS Analytics pick the next four You",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 12,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#games > div.head.c",
+     "text": "GAME VIDEOS Game videos built on real footage Ga",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 13,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#games > div.vis.rv",
+     "text": "",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 13,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#games > div.gates > div.gate.rv:nth-of-type(1)",
+     "text": "Footage rules Official Steam screenshots and cli",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 13,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#games > div.gates > div.gate.rv:nth-of-type(2)",
+     "text": "Facts grounded in sources Each game has a source",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 13,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#games > div.ledger.rv",
+     "text": "108 games in the roster 65 from 2025 28 from 202",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 13,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#gates > div.head.c",
+     "text": "QUALITY Two gates before anything goes public",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 14,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#gates > div.vis.rv",
+     "text": "Fact-check gate QA gate",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 14,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#gates > div.gates > div.gate.rv:nth-of-type(1)",
+     "text": "Fact-check gate A second pass looks for false te",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 14,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#gates > div.gates > div.gate.rv:nth-of-type(2)",
+     "text": "QA gate (ffmpeg) Duration between 61 and 92 seco",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 14,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#llm > div.head.c",
+     "text": "RESILIENCE One LLM client, automatic fallbacks E",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 15,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#llm > div.vis.rv",
+     "text": "Gemini Groq Cloudflare",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 15,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#llm > div.chain.rv",
+     "text": "Gemini model chain · quota-aware cooldowns persi",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 16,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#llm > p.sub.rv",
+     "text": "Adding another OpenAI-compatible API is one line",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 16,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#stack > div.head.c",
+     "text": "TECHNOLOGY Built with",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 16,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#brand > div.head.c",
+     "text": "BRAND LOOK The channel's eight blues Every video",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 17,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#brand > div.lockup.rv",
+     "text": "SiliconVerdict HARD DATA / NO MARKETING FLUFF / ",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 18,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#brand > div.swatches > div.sw2.rv:nth-of-type(1)",
+     "text": "Obsidian #05070C Background",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 18,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#brand > div.swatches > div.sw2.rv:nth-of-type(2)",
+     "text": "Signal blue #007AFF Glow",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 18,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#brand > div.swatches > div.sw2.rv:nth-of-type(3)",
+     "text": "Electric cyan #00F0FF Accent",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 18,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#brand > div.swatches > div.sw2.rv:nth-of-type(4)",
+     "text": "Paper #F8FAFC Text & one light scene",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 18,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#brand > div.statrow.rv",
+     "text": "9:16 always vertical 12% top kept free 20% botto",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 18,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#map > div.head.c",
+     "text": "CODEBASE Repository map",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 19,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#map > div.tree.rv",
+     "text": "main.py Pipeline entry point and CLI core/ Schem",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 19,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#start > div.head.c",
+     "text": "RUN IT Everyday commands",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 20,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#start > div.term.rv",
+     "text": "zsh — silicon-verdict Copy # setup python3 -m ve",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 21,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.head.c",
+     "text": "PROGRESS What's new Milestones of the project, n",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 21,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(1)",
+     "text": "Nov 2026 A softer site that changes look as you ",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 22,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(2)",
+     "text": "Nov 2026 The genera command and real analytics Y",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 22,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(3)",
+     "text": "Nov 2026 Every banked script follows the retenti",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 22,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(4)",
+     "text": "Nov 2026 Eight looks, captions and a video audit",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 22,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(5)",
+     "text": "Nov 2026 Pointer, UI presets and sound design Th",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 22,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(6)",
+     "text": "Nov 2026 Local voice backup When ElevenLabs runs",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 23,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(7)",
+     "text": "Nov 2026 Web portal rebuilt Full scroll-driven w",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 23,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(8)",
+     "text": "Motion as the main series Cursor character & sce",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 23,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(9)",
+     "text": "Six content formats 93 current games Myth, tier,",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 23,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(10)",
+     "text": "Grounded game facts Quoted and verified Source d",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 23,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(11)",
+     "text": "Resilient LLM layer Gemini + Groq + Cloudflare O",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 24,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#faq > div.head.c",
+     "text": "FAQ Questions, answered",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 24,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#faq > div.faq > details.rv.in:nth-of-type(1)",
+     "text": "Is Silicon Verdict a public app or service?",
+     "msg": "starts \"transform\" (0.6 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 24,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#faq > div.faq > details.rv.in:nth-of-type(2)",
+     "text": "Does it collect data from viewers or visitors?",
+     "msg": "starts \"transform\" (0.6 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 24,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#faq > div.faq > details.rv.in:nth-of-type(3)",
+     "text": "Who writes the scripts, and how are facts checke",
+     "msg": "starts \"transform\" (0.6 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 24,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#faq > div.faq > details.rv.in:nth-of-type(4)",
+     "text": "Is the narration a real voice?",
+     "msg": "starts \"transform\" (0.6 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 24,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#faq > div.faq > details.rv.in:nth-of-type(5)",
+     "text": "What happens if a video fails quality checks?",
+     "msg": "starts \"transform\" (0.6 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 24,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#faq > div.faq > details.rv.in:nth-of-type(6)",
+     "text": "Where does the game footage come from?",
+     "msg": "starts \"transform\" (0.6 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 25,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#faq > div.faq > details.rv.in:nth-of-type(7)",
+     "text": "How do I revoke access or request deletion?",
+     "msg": "starts \"transform\" (0.6 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 25,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#compliance > div.head.c",
+     "text": "PRIVACY & PLATFORM COMPLIANCE Built to respect y",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 25,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#compliance > div.comp > div.card.rv:nth-of-type(1)",
+     "text": "No user data collected No personal data, IP addr",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 25,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#compliance > div.comp > div.card.rv:nth-of-type(2)",
+     "text": "No tracking The web portal uses no tracking pixe",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 25,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#compliance > div.comp > div.card.rv:nth-of-type(3)",
+     "text": "Local credentials API keys and OAuth tokens stay",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 25,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#compliance > div.comp > div.card.rv:nth-of-type(4)",
+     "text": "Limited API use The TikTok Content Posting API a",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 25,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#compliance > div.notice2.rv",
+     "text": "Trademark & fair use. Product names, logos, hard",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 26,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#compliance > div.btns.rv",
+     "text": "Terms of Service Privacy Policy",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 26,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "main > section.blk.container:nth-of-type(19) > div.cta.rv",
+     "text": "Follow the verdict. New vertical explainers on P",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 27,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight",
+     "text": "6 content series 9 Motion Graphics formats 108 g",
+     "msg": "no picture, effect or mock in this section; a feature section needs a visual",
+     "stop": 1,
+     "crop": "1440-19-no-visual.jpg",
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#pipeline",
+     "text": "Seven stages from idea to upload",
+     "msg": "pictures, effects and mocks cover 5% of this section; a feature section needs a visual (about 25% or more)",
+     "stop": 4,
+     "crop": "1440-28-no-visual.jpg",
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#series",
+     "text": "One engine behind every series",
+     "msg": "pictures, effects and mocks cover 14% of this section; a feature section needs a visual (about 25% or more)",
+     "stop": 7,
+     "crop": "1440-50-no-visual.jpg",
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#cursor",
+     "text": "A cursor that acts like a person",
+     "msg": "no picture, effect or mock in this section; a feature section needs a visual",
+     "stop": 10,
+     "crop": "1440-73-no-visual.jpg",
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#looks",
+     "text": "No two videos look the same",
+     "msg": "pictures, effects and mocks cover 4% of this section; a feature section needs a visual (about 25% or more)",
+     "stop": 12,
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#games",
+     "text": "Game videos built on real footage",
+     "msg": "pictures, effects and mocks cover 4% of this section; a feature section needs a visual (about 25% or more)",
+     "stop": 13,
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#gates",
+     "text": "Two gates before anything goes public",
+     "msg": "pictures, effects and mocks cover 5% of this section; a feature section needs a visual (about 25% or more)",
+     "stop": 14,
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#llm",
+     "text": "One LLM client, automatic fallbacks",
+     "msg": "pictures, effects and mocks cover 5% of this section; a feature section needs a visual (about 25% or more)",
+     "stop": 15,
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#stack",
+     "text": "Built with",
+     "msg": "no picture, effect or mock in this section; a feature section needs a visual",
+     "stop": 17,
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#map",
+     "text": "Repository map",
+     "msg": "no picture, effect or mock in this section; a feature section needs a visual",
+     "stop": 19,
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#start",
+     "text": "Everyday commands",
+     "msg": "no picture, effect or mock in this section; a feature section needs a visual",
+     "stop": 20,
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#changelog",
+     "text": "What's new",
+     "msg": "no picture, effect or mock in this section; a feature section needs a visual",
+     "stop": 22,
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#compliance",
+     "text": "Built to respect your data",
+     "msg": "no picture, effect or mock in this section; a feature section needs a visual",
+     "stop": 26,
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "card-visual",
+     "sev": "FAIL",
+     "sel": "section#cursor > div.fx.rv",
+     "text": "✈️ plane 🚀 rocket 🛰️ satellite 📡 waves ⚡ bolt",
+     "msg": "18 cards hold only text: no picture, icon, UI fragment or effect in any of them",
+     "stop": 11,
+     "crop": "1440-78-card-visual.jpg",
+     "fix": "give the cards a visual: an inset panel with a UI fragment, a photograph or real icons"
+    },
+    {
+     "check": "card-visual",
+     "sev": "FAIL",
+     "sel": "section#looks > div.series.looks",
+     "text": "01 EIGHT LOOKS A new blue every time Own palette",
+     "msg": "6 cards hold only text: no picture, icon, UI fragment or effect in any of them",
+     "stop": 12,
+     "fix": "give the cards a visual: an inset panel with a UI fragment, a photograph or real icons"
+    },
+    {
+     "check": "card-visual",
+     "sev": "FAIL",
+     "sel": "section#llm > div.chain.rv",
+     "text": "Gemini model chain · quota-aware cooldowns persi",
+     "msg": "3 cards hold only text: no picture, icon, UI fragment or effect in any of them",
+     "stop": 16,
+     "fix": "give the cards a visual: an inset panel with a UI fragment, a photograph or real icons"
+    },
+    {
+     "check": "card-visual",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist",
+     "text": "Nov 2026 A softer site that changes look as you ",
+     "msg": "11 cards hold only text: no picture, icon, UI fragment or effect in any of them",
+     "stop": 22,
+     "fix": "give the cards a visual: an inset panel with a UI fragment, a photograph or real icons"
+    },
+    {
+     "check": "button-styles",
+     "sev": "FAIL",
+     "sel": "(the page)",
+     "text": "",
+     "stop": 0,
+     "msg": "3 button styles on the page: round, fill gradient x4 (\"Watch\"); round, fill #10192c x6 (\"Watch the channel\"); round, fill #12245e x10 (\"Myth\")",
+     "crop": "1440-01-button-styles.jpg",
+     "fix": "one primary and one secondary button: one shape, one height per size, one label size"
+    },
+    {
+     "check": "button-styles",
+     "sev": "FAIL",
+     "sel": "div.hero2 > div:nth-of-type(1) > div.btns > a.btn.btn-p",
+     "text": "Explore the pipeline",
+     "stop": 0,
+     "msg": "one button style (round, fill gradient) in 2 heights: 39, 55px (\"Explore the pipeline\" 55px, \"Classic\" 39px)",
+     "crop": "1440-02-button-styles.jpg",
+     "fix": "one primary and one secondary button: one shape, one height per size, one label size"
+    },
+    {
+     "check": "button-styles",
+     "sev": "FAIL",
+     "sel": "div.hero2 > div:nth-of-type(1) > div.btns > a.btn.btn-s",
+     "text": "Watch the channel",
+     "stop": 0,
+     "msg": "one button style (round, fill #10192c) in 2 heights: 39, 55px (\"Watch the channel\" 55px, \"Hide safe zones\" 39px)",
+     "crop": "1440-03-button-styles.jpg",
+     "fix": "one primary and one secondary button: one shape, one height per size, one label size"
+    },
+    {
+     "check": "copy-headings",
+     "sev": "FAIL",
+     "sel": "section#pipeline > div.head.c > h2.h2",
+     "text": "Seven stages from idea to upload",
+     "msg": "\"Seven stages from idea to upload\" names no product, part, place or section (12 headings like it; at most one brand line per page) (and 11 more like it: \"One engine behind every \", \"Eleven content formats\", \"Classic\", \"A cursor that acts like \", ...)",
+     "stop": 3,
+     "crop": "1440-26-copy-headings.jpg",
+     "fix": "name the thing in every heading: the product, a part, the place or a section noun"
+    },
+    {
+     "check": "copy-actions",
+     "sev": "FAIL",
+     "sel": "button#sztoggle",
+     "text": "Hide safe zones",
+     "msg": "3 actions in the hero (\"Explore the pipeline\", \"Watch the channel\", \"Hide safe zones\"); at most 2",
+     "stop": 0,
+     "crop": "1440-04-copy-actions.jpg",
+     "fix": "few actions, one wording: at most 2 in the hero, the main action word for word in nav, hero and close"
+    },
+    {
+     "check": "heading-scale",
+     "sev": "FAIL",
+     "sel": "div#f1 > div:nth-of-type(1) > h3",
+     "text": "Classic",
+     "msg": "h3 headings in 2 sizes, 20px (\"Effects picked from what\") to 27.2px (x1.36)",
+     "stop": 9,
+     "crop": "1440-64-heading-scale.jpg",
+     "fix": "size headings by level: the h1 largest, one size per level, each level below the one above"
+    },
+    {
+     "check": "stagger",
+     "sev": "FAIL",
+     "sel": "section#top > div.hero2 > div.phone-wrap > div",
+     "text": "TOP 12% · PLATFORM UI VERDICT FACT BOTTOM 20% · ",
+     "msg": "3 rows start at 3 different left offsets (+0, +267, +12px)",
+     "stop": 0,
+     "crop": "1440-05-stagger.jpg",
+     "fix": "start every row of the list on one left edge"
+    },
+    {
+     "check": "off-grid",
+     "sev": "FAIL",
+     "sel": "section#pipeline > div.tl > div.step:nth-of-type(3) > div.box",
+     "text": "Write the script services/motion_generator.py · ",
+     "stop": 4,
+     "msg": "left edge at 350px, 10px off a common edge of its section at 340px (5 elements, like div.box); 1 more in this section off the grid too (div.box at 350px)",
+     "crop": "1440-29-off-grid.jpg",
+     "fix": "move it onto the page margin, or the column edge its section uses"
+    },
+    {
+     "check": "tilt",
+     "sev": "FAIL",
+     "sel": "div.hero2 > div.phone-wrap > div > div.phone",
+     "text": "TOP 12% · PLATFORM UI VERDICT FACT BOTTOM 20% · ",
+     "msg": "turned in 3D",
+     "stop": 0,
+     "crop": "1440-06-tilt.jpg",
+     "fix": "set it straight"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#pipeline > div.tl > div.step:nth-of-type(3) > div.pin",
+     "text": "02",
+     "stop": 4,
+     "msg": "a caption, label or muted line in #4e556b on #070c25 reads 2.62:1 (needs 4.5:1); 3 like it, like \"structured JSON\", \"story bank\"",
+     "crop": "1440-30-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "div.tl > div.step:nth-of-type(3) > div.box > span.tagline",
+     "text": "services/motion_generator.py · services/gemini_c",
+     "stop": 4,
+     "msg": "a caption, label or muted line in #3e4f78 on #070c25 reads 2.38:1 (needs 4.5:1); 3 like it, like \"13-19 scenes\", \"150-190 words\"",
+     "crop": "1440-31-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "div.tl > div.step:nth-of-type(3) > div.box > p",
+     "text": "Gemini returns structured JSON through a resilie",
+     "stop": 4,
+     "msg": "body text in #4e556b on #070c25 reads 2.62:1 (needs 7:1)",
+     "crop": "1440-32-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "div.step:nth-of-type(3) > div.box > div.pills > span.pl:nth-of-type(3)",
+     "text": "story bank",
+     "stop": 4,
+     "msg": "a caption, label or muted line in #3d455e on #070c25 reads 2.04:1 (needs 4.5:1); 3 like it, like \"language gate\", \"validators\"",
+     "crop": "1440-33-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#pipeline > div.tl > div.step:nth-of-type(6) > div.pin",
+     "text": "05",
+     "stop": 5,
+     "msg": "a caption, label or muted line in #4f556d on #080b27 reads 2.61:1 (needs 4.5:1)",
+     "crop": "1440-39-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "div.tl > div.step:nth-of-type(6) > div.box > span.tagline",
+     "text": "remotion_studio · scripts/render_motion.mjs",
+     "stop": 5,
+     "msg": "a caption, label or muted line in #434c79 on #080b27 reads 2.35:1 (needs 4.5:1); 2 like it, like \"MotionGraphic\"",
+     "crop": "1440-40-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#pipeline > div.tl > div.step:nth-of-type(8) > div.pin",
+     "text": "07",
+     "stop": 6,
+     "msg": "a caption, label or muted line in #505878 on #09113a reads 2.62:1 (needs 4.5:1)",
+     "crop": "1440-41-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "div.tl > div.step:nth-of-type(8) > div.box > span.tagline",
+     "text": "services/youtube.py · services/tiktok.py",
+     "stop": 6,
+     "msg": "a caption, label or muted line in #455781 on #090f34 reads 2.6:1 (needs 4.5:1); 4 like it, like \"output/tiktok/\", \"YouTube Data API v3\", \"TikTok Content Posting\"",
+     "crop": "1440-42-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "div.tl > div.step:nth-of-type(8) > div.box > p",
+     "text": "Published to YouTube Shorts through the YouTube ",
+     "stop": 6,
+     "msg": "body text in #505775 on #090f34 reads 2.62:1 (needs 7:1)",
+     "crop": "1440-43-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "div.step:nth-of-type(8) > div.box > p > strong",
+     "text": "YouTube Shorts",
+     "stop": 6,
+     "msg": "a caption, label or muted line in #505775 on #090f34 reads 2.62:1 (needs 4.5:1)",
+     "crop": "1440-44-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "div.step:nth-of-type(8) > div.box > div.pills > span.pl:nth-of-type(3)",
+     "text": "cover + metadata",
+     "stop": 6,
+     "msg": "a caption, label or muted line in #3f4767 on #090f34 reads 2.05:1 (needs 4.5:1)",
+     "crop": "1440-45-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#series > div.head.c > p.sub",
+     "text": "Motion Graphics is the main series; hardware, ev",
+     "stop": 7,
+     "msg": "body text in #96a3ba on #0a1750 reads 6.59:1 (needs 7:1); 3 like it, like \"Silicon, memory, stora\", \"Small everyday tech my\"",
+     "crop": "1440-51-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#series > div.series > div.card.rv:nth-of-type(2) > div.n",
+     "text": "02",
+     "stop": 7,
+     "msg": "a caption, label or muted line in #162359 on #0a1750 reads 1.13:1 (needs 3:1); 2 like it, like \"03\"",
+     "crop": "1440-52-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#series > div.series > div.card.rv:nth-of-type(4) > div.n",
+     "text": "04",
+     "stop": 8,
+     "msg": "a caption, label or muted line in #152254 on #09164b reads 1.13:1 (needs 3:1); 2 like it, like \"05\"",
+     "crop": "1440-59-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#series > div.series > div.card.rv:nth-of-type(4) > p",
+     "text": "A Motion game video. Banked game scripts go firs",
+     "stop": 8,
+     "msg": "body text in #96a3ba on #09164b reads 6.71:1 (needs 7:1); 2 like it, like \"The AI picks the categ\"",
+     "crop": "1440-60-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "div.split > div.rv.r > div.cur-stage > div.cc-title",
+     "text": "CONTROL CENTER",
+     "stop": 9,
+     "msg": "a caption, label or muted line in #6c7a92 on #070f2d reads 4.34:1 (needs 4.5:1)",
+     "crop": "1440-65-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#looks > div.head.c > p.sub",
+     "text": "Every video gets one of eight blue looks, and th",
+     "stop": 11,
+     "msg": "body text in #96a3ba on #081733 reads 6.98:1 (needs 7:1)",
+     "crop": "1440-79-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#looks > div.series.looks > div.card.rv:nth-of-type(1) > div.n",
+     "text": "01",
+     "stop": 12,
+     "msg": "a caption, label or muted line in #163062 on #0a255a reads 1.15:1 (needs 3:1); 6 like it, like \"02\", \"03\", \"04\"",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#looks > div.series.looks > div.card.rv:nth-of-type(1) > p",
+     "text": "Own palette, background, typeface, camera, trans",
+     "stop": 12,
+     "msg": "body text in #96a3ba on #0a255a reads 5.79:1 (needs 7:1); 6 like it, like \"Scene 1 is the claim i\", \"The outro and the pinn\", \"No narration beyond 17\"",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#games > div.head.c > p.sub",
+     "text": "Game videos show an engineering fact over offici",
+     "stop": 13,
+     "msg": "body text in #96a3ba on #071a41 reads 6.69:1 (needs 7:1)",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#start > div.term.rv > div.bar > span",
+     "text": "zsh — silicon-verdict",
+     "stop": 20,
+     "msg": "a caption, label or muted line in #6c7a92 on #0c1426 reads 4.23:1 (needs 4.5:1)",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#start > div.term.rv > pre > span.c:nth-of-type(2)",
+     "text": "# the main series: alternates curiosity / game, ",
+     "stop": 20,
+     "msg": "body text in #6c7a92 on #060a14 reads 4.56:1 (needs 7:1); 7 like it, like \"# pick a format\", \"# an engineering fact \", \"# four videos picked f\"",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "section-gaps",
+     "sev": "FAIL",
+     "sel": "section#top / main > section.blk.tight",
+     "text": "",
+     "stop": 1,
+     "msg": "404px between these sections, +112% against the median 191px",
+     "crop": "1440-20-section-gaps.jpg",
+     "fix": "use one gap between sections (all within 25% of each other)"
+    },
+    {
+     "check": "section-gaps",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight / section#about",
+     "text": "",
+     "stop": 28,
+     "msg": "408px between these sections, +114% against the median 191px",
+     "fix": "use one gap between sections (all within 25% of each other)"
+    },
+    {
+     "check": "section-gaps",
+     "sev": "FAIL",
+     "sel": "section#llm / section#stack",
+     "text": "",
+     "stop": 16,
+     "msg": "379px between these sections, +98% against the median 191px",
+     "fix": "use one gap between sections (all within 25% of each other)"
+    },
+    {
+     "check": "section-gaps",
+     "sev": "FAIL",
+     "sel": "section#stack / section#brand",
+     "text": "",
+     "stop": 17,
+     "msg": "332px between these sections, +74% against the median 191px",
+     "fix": "use one gap between sections (all within 25% of each other)"
+    },
+    {
+     "check": "section-gaps",
+     "sev": "FAIL",
+     "sel": "main > section.blk.container:nth-of-type(19) / footer",
+     "text": "",
+     "stop": 27,
+     "msg": "318px between these sections, +66% against the median 191px",
+     "fix": "use one gap between sections (all within 25% of each other)"
+    },
+    {
+     "check": "section-tile",
+     "sev": "FAIL",
+     "sel": "section#series",
+     "text": "One engine behind every series",
+     "shows": "section#formats",
+     "msg": "the section is 1094px tall (1.22 screens at 1440x900), not one screen or two: the screen one screen on from its top (scroll 6384px) shows 122px of it and 706px of the next section, its heading \"Eleven content formats\" on screen",
+     "stop": 29,
+     "fix": "set every section after the hero to one screen or two (height: calc(var(--h,1) * 100vh)) and fit its content above --padb"
+    },
+    {
+     "check": "section-tile",
+     "sev": "FAIL",
+     "sel": "section#formats",
+     "text": "Eleven content formats",
+     "shows": "section#cursor",
+     "msg": "the section is 946px tall (1.05 screens at 1440x900), not one screen or two: the screen one screen on from its top (scroll 7478px) shows none of it and 828px of the next section, its heading \"A cursor that acts like a pers\" on screen",
+     "stop": 9,
+     "crop": "1440-66-section-tile.jpg",
+     "fix": "set every section after the hero to one screen or two (height: calc(var(--h,1) * 100vh)) and fit its content above --padb"
+    },
+    {
+     "check": "section-tile",
+     "sev": "FAIL",
+     "sel": "section#looks",
+     "text": "No two videos look the same",
+     "shows": "section#games",
+     "msg": "the section is 1040px tall (1.16 screens at 1440x900), not one screen or two: the screen one screen on from its top (scroll 9694px) shows 68px of it and 760px of the next section, its heading \"Game videos built on real foot\" on screen",
+     "stop": 31,
+     "fix": "set every section after the hero to one screen or two (height: calc(var(--h,1) * 100vh)) and fit its content above --padb"
+    },
+    {
+     "check": "section-tile",
+     "sev": "FAIL",
+     "sel": "section#games",
+     "text": "Game videos built on real footage",
+     "shows": "section#gates",
+     "msg": "the section is 1028px tall (1.14 screens at 1440x900), not one screen or two: the screen one screen on from its top (scroll 10734px) shows 56px of it and 772px of the next section, its heading \"Two gates before anything goes\" on screen",
+     "stop": 32,
+     "fix": "set every section after the hero to one screen or two (height: calc(var(--h,1) * 100vh)) and fit its content above --padb"
+    },
+    {
+     "check": "section-tile",
+     "sev": "FAIL",
+     "sel": "section#brand",
+     "text": "The channel's eight blues",
+     "shows": "section#map",
+     "msg": "the section is 1095px tall (1.22 screens at 1440x900), not one screen or two: the screen one screen on from its top (scroll 14462px) shows 123px of it and 705px of the next section, its heading \"Repository map\" on screen",
+     "stop": 33,
+     "fix": "set every section after the hero to one screen or two (height: calc(var(--h,1) * 100vh)) and fit its content above --padb"
+    },
+    {
+     "check": "section-tile",
+     "sev": "FAIL",
+     "sel": "section#start",
+     "text": "Everyday commands",
+     "shows": "section#changelog",
+     "msg": "the section is 977px tall (1.09 screens at 1440x900), not one screen or two: the screen one screen on from its top (scroll 16457px) shows 5px of it and 823px of the next section, its heading \"What's new\" on screen (and 2 more like it: \"What's new\", \"Built to respect you\")",
+     "stop": 34,
+     "fix": "set every section after the hero to one screen or two (height: calc(var(--h,1) * 100vh)) and fit its content above --padb"
+    },
+    {
+     "check": "empty-area",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight",
+     "text": "6 content series 9 Motion Graphics forma",
+     "msg": "58% of the section is empty: 224px above its first content, 224px under its last (div.stat2.rv:nth-of-type(5)), in its 760px of rows (WARN over 35%, FAIL over 50%)",
+     "stop": 1,
+     "crop": "1440-21-empty-area.jpg",
+     "fix": "fill the section: a picture or a second column beside the words, or more of its own content; the section stays one or two screens tall (T-height)"
+    },
+    {
+     "check": "empty-area",
+     "sev": "FAIL",
+     "sel": "section#stack",
+     "text": "Built with",
+     "msg": "55% of the section is empty: 144px above its first content, 16px of empty rows between its content, 160px under its last (span:nth-of-type(5)), 15% beside content that covers under half the container, in its 776px of rows (WARN over 35%, FAIL over 50%)",
+     "stop": 17,
+     "fix": "fill the section: a picture or a second column beside the words, or more of its own content; the section stays one or two screens tall (T-height)"
+    },
+    {
+     "check": "empty-area",
+     "sev": "FAIL",
+     "sel": "section#faq",
+     "text": "Questions, answered",
+     "msg": "56% of the section is empty: 16px of empty rows between its content, 55% beside content that covers under half the container, in its 776px of rows (WARN over 35%, FAIL over 50%)",
+     "stop": 24,
+     "fix": "fill the section: a picture or a second column beside the words, or more of its own content; the section stays one or two screens tall (T-height)"
+    },
+    {
+     "check": "empty-area",
+     "sev": "FAIL",
+     "sel": "main > section.blk.container:nth-of-type(19)",
+     "text": "Follow the verdict.",
+     "msg": "54% of the section is empty: 224px above its first content, 240px under its last (div.cta.rv), in its 852px of rows (WARN over 35%, FAIL over 50%)",
+     "stop": 27,
+     "fix": "fill the section: a picture or a second column beside the words, or more of its own content; the section stays one or two screens tall (T-height)"
+    },
+    {
+     "check": "focus-visible",
+     "sev": "FAIL",
+     "sel": "nav.dots > a.on:nth-of-type(1)",
+     "text": "Top",
+     "stop": 35,
+     "msg": "Tab stop 2, a \"Top\": the focus lands on something you cannot see",
+     "fix": "keep the kit's ring (system.css :focus-visible, 2px in --action, there at once); a control that hides itself shows on focus"
+    },
+    {
+     "check": "focus-visible",
+     "sev": "FAIL",
+     "sel": "nav.dots > a:nth-of-type(2)",
+     "text": "Overview",
+     "stop": 36,
+     "msg": "Tab stop 3, a \"Overview\": the focus lands on something you cannot see",
+     "fix": "keep the kit's ring (system.css :focus-visible, 2px in --action, there at once); a control that hides itself shows on focus"
+    },
+    {
+     "check": "focus-visible",
+     "sev": "FAIL",
+     "sel": "nav.dots > a:nth-of-type(3)",
+     "text": "Pipeline",
+     "stop": 37,
+     "msg": "Tab stop 4, a \"Pipeline\": the focus lands on something you cannot see",
+     "fix": "keep the kit's ring (system.css :focus-visible, 2px in --action, there at once); a control that hides itself shows on focus"
+    },
+    {
+     "check": "focus-visible",
+     "sev": "FAIL",
+     "sel": "nav.dots > a:nth-of-type(4)",
+     "text": "Series",
+     "stop": 38,
+     "msg": "Tab stop 5, a \"Series\": the focus lands on something you cannot see",
+     "fix": "keep the kit's ring (system.css :focus-visible, 2px in --action, there at once); a control that hides itself shows on focus"
+    },
+    {
+     "check": "cut-text",
+     "sev": "WARN",
+     "sel": "section#cursor > div.head.c > h3.subhead",
+     "text": "Effects picked from what the narration names",
+     "msg": "sits across the edge of a panel behind it (and 3 more like it: \"TECHNOLOGY\", \"The channel's eight blue\", \"Milestones of the projec\")",
+     "stop": 10,
+     "crop": "1440-74-cut-text.jpg",
+     "fix": "give the text room: no overflow clipping a line, no line past its box"
+    },
+    {
+     "check": "no-visual",
+     "sev": "WARN",
+     "sel": "section#top",
+     "text": "From a topic to a published Short, fully automat",
+     "msg": "pictures, effects and mocks cover 24% of this section; a feature section needs a visual (about 25% or more)",
+     "stop": 0,
+     "crop": "1440-07-no-visual.jpg",
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "WARN",
+     "sel": "section#formats",
+     "text": "Eleven content formats",
+     "msg": "pictures, effects and mocks cover 17% of this section; a feature section needs a visual (about 25% or more)",
+     "stop": 9,
+     "crop": "1440-67-no-visual.jpg",
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "text-only",
+     "sev": "WARN",
+     "sel": "section#faq",
+     "text": "Questions, answered",
+     "msg": "the section is only text: no picture, icon, mock or effect in it",
+     "stop": 24,
+     "fix": "give the section a visual: a photograph that fits, the real icons, or a UI fragment on a ground"
+    },
+    {
+     "check": "cta",
+     "sev": "WARN",
+     "sel": "section#pipeline",
+     "text": "Seven stages from idea to upload",
+     "msg": "a section over 1.5 screens long with no link or button in it",
+     "stop": 4,
+     "crop": "1440-35-cta.jpg",
+     "fix": "add the action: a button in the hero, one on every priced item, one in the closing section"
+    },
+    {
+     "check": "cta",
+     "sev": "WARN",
+     "sel": "section#changelog",
+     "text": "What's new",
+     "msg": "a section over 1.5 screens long with no link or button in it",
+     "stop": 22,
+     "fix": "add the action: a button in the hero, one on every priced item, one in the closing section"
+    },
+    {
+     "check": "copy-headline",
+     "sev": "WARN",
+     "sel": "section#top > div.hero2 > div:nth-of-type(1) > h1",
+     "text": "From a topic to a published Short, fully automat",
+     "msg": "the h1 has 9 words (2 to 8 read at a glance)",
+     "stop": 0,
+     "crop": "1440-08-copy-headline.jpg",
+     "fix": "put the category noun in the h1 (and who it is for, or where), in 2 to 8 words"
+    },
+    {
+     "check": "copy-headings",
+     "sev": "WARN",
+     "sel": "div.tl > div.step:nth-of-type(2) > div.box > h3",
+     "text": "Pick the topic",
+     "msg": "the card title \"Pick the topic\" names no product, part, place or section (27 card titles like it) (and 26 more like it: \"Write the script\", \"Fact-check gate\", \"Narrate it\", \"Quality gate\", ...)",
+     "stop": 4,
+     "crop": "1440-36-copy-headings.jpg",
+     "fix": "name the thing in every heading: the product, a part, the place or a section noun"
+    },
+    {
+     "check": "copy-buttons",
+     "sev": "WARN",
+     "sel": "button#sztoggle",
+     "text": "Hide safe zones",
+     "msg": "\"Hide safe zones\" does not start with a verb (book, buy, try, start, get, see...) (and 15 more like it: \"Classic\", \"Myth\", \"Tier list\", \"What if\", ...)",
+     "stop": 0,
+     "crop": "1440-09-copy-buttons.jpg",
+     "fix": "label buttons with a verb and what the visitor gets (\"Book a room\", \"Start free trial\")"
+    },
+    {
+     "check": "copy-actions",
+     "sev": "WARN",
+     "sel": "(the page)",
+     "text": "",
+     "msg": "20 different button labels on the page (at most 10)",
+     "stop": null,
+     "fix": "few actions, one wording: at most 2 in the hero, the main action word for word in nav, hero and close"
+    },
+    {
+     "check": "copy-actions",
+     "sev": "WARN",
+     "sel": "header.pill-wrap > nav.navpill > a.cta-pill",
+     "text": "Watch",
+     "msg": "3 labels for one target /@SiliconVerdictHQ: \"Watch\", \"Watch the channel\", \"YouTube\"",
+     "stop": 0,
+     "crop": "1440-10-copy-actions.jpg",
+     "fix": "few actions, one wording: at most 2 in the hero, the main action word for word in nav, hero and close"
+    },
+    {
+     "check": "copy-actions",
+     "sev": "WARN",
+     "sel": "(the page)",
+     "text": "",
+     "msg": "the main action \"Explore the pipeline\" does not read word for word the same in the closing section",
+     "stop": null,
+     "fix": "few actions, one wording: at most 2 in the hero, the main action word for word in nav, hero and close"
+    },
+    {
+     "check": "heading-scale",
+     "sev": "WARN",
+     "sel": "div.lockup.rv > div.lk-text > div.lk-word > i",
+     "text": "Verdict",
+     "msg": "1 line of plain text set larger than the section headings (51.8px against h2 49.6px)",
+     "stop": 18,
+     "fix": "size headings by level: the h1 largest, one size per level, each level below the one above"
+    },
+    {
+     "check": "heading-scale",
+     "sev": "WARN",
+     "sel": "section#series > div.series > div.card.main > div.n",
+     "text": "01",
+     "msg": "figures in 4 sizes, 24, 32, 42, 48px (\"01\" at 24px, \"01\" at 48px)",
+     "fix": "set the page's figures (stats, measures, prices) in one or two sizes",
+     "stop": 7,
+     "crop": "1440-53-heading-scale.jpg"
+    },
+    {
+     "check": "stagger",
+     "sev": "WARN",
+     "sel": "section#pipeline > div.tl",
+     "text": "01 Pick the topic core/topic_engine.py · data/hi",
+     "msg": "7 rows start at 2 different left offsets (+0, +28, +28, +28, +28, +28, +28px)",
+     "stop": 4,
+     "crop": "1440-37-stagger.jpg",
+     "fix": "start every row of the list on one left edge"
+    },
+    {
+     "check": "off-grid",
+     "sev": "WARN",
+     "sel": "section#pipeline > div.tl > div.step:nth-of-type(3) > div.pin",
+     "text": "02",
+     "stop": 4,
+     "msg": "two common left edges of one section 10px apart: 280px (3 elements, like this one) and 270px (4)",
+     "crop": "1440-38-off-grid.jpg",
+     "fix": "move it onto the page margin, or the column edge its section uses"
+    },
+    {
+     "check": "col-edge",
+     "sev": "WARN",
+     "sel": "section#games > div.gates > div.gate.rv:nth-of-type(2)",
+     "text": "Facts grounded in sources Each game has a source",
+     "msg": "the second column starts at 4 places: 730px (section#games, section#gates), 748px (section#about, section#cursor), 797px (section#top), 899px (section#formats)",
+     "stop": 13,
+     "fix": "start the second column of every split on the same one or two grid columns"
+    },
+    {
+     "check": "contrast",
+     "sev": "WARN",
+     "sel": "section#series > div.series > div.card.main > div.n",
+     "text": "01",
+     "stop": 7,
+     "msg": "large text over a effect reads at 1.2:1 at its worst tenth (needs 3:1)",
+     "crop": "1440-54-contrast.jpg",
+     "fix": "put the text on a calm part of the picture, or on a solid panel"
+    },
+    {
+     "check": "body-size",
+     "sev": "WARN",
+     "sel": "section#start > div.term.rv > pre > span.c:nth-of-type(2)",
+     "text": "# the main series: alternates curiosity / game, ",
+     "stop": 20,
+     "msg": "59 of 70 paragraphs of running text are set under 16px (13.4, 13.8, 14.4, 14.7, 14.9, 15.2, 15.4px)",
+     "fix": "set running text at 16px or more"
+    },
+    {
+     "check": "section-gaps",
+     "sev": "WARN",
+     "sel": "section#series / section#formats",
+     "text": "",
+     "stop": 8,
+     "msg": "131px between these sections, -31% against the median 191px",
+     "crop": "1440-61-section-gaps.jpg",
+     "fix": "use one gap between sections (all within 25% of each other)"
+    },
+    {
+     "check": "section-gaps",
+     "sev": "WARN",
+     "sel": "section#formats / section#cursor",
+     "text": "",
+     "stop": 9,
+     "msg": "124px between these sections, -35% against the median 191px",
+     "crop": "1440-68-section-gaps.jpg",
+     "fix": "use one gap between sections (all within 25% of each other)"
+    },
+    {
+     "check": "section-gaps",
+     "sev": "WARN",
+     "sel": "section#looks / section#games",
+     "text": "",
+     "stop": 12,
+     "msg": "131px between these sections, -31% against the median 191px",
+     "fix": "use one gap between sections (all within 25% of each other)"
+    },
+    {
+     "check": "section-gaps",
+     "sev": "WARN",
+     "sel": "section#gates / section#llm",
+     "text": "",
+     "stop": 15,
+     "msg": "262px between these sections, +37% against the median 191px",
+     "fix": "use one gap between sections (all within 25% of each other)"
+    },
+    {
+     "check": "section-gaps",
+     "sev": "WARN",
+     "sel": "section#start / section#changelog",
+     "text": "",
+     "stop": 21,
+     "msg": "131px between these sections, -31% against the median 191px",
+     "fix": "use one gap between sections (all within 25% of each other)"
+    },
+    {
+     "check": "section-gaps",
+     "sev": "WARN",
+     "sel": "section#compliance / main > section.blk.container:nth-of-type(19)",
+     "text": "",
+     "stop": 26,
+     "msg": "302px between these sections, +58% against the median 191px",
+     "fix": "use one gap between sections (all within 25% of each other)"
+    },
+    {
+     "check": "photo-credit",
+     "sev": "WARN",
+     "sel": "(the page text)",
+     "text": "",
+     "stop": null,
+     "msg": "1 library source (wikipedia): the page credits wikipedia; confirm each shows the client's own product, place or people",
+     "fix": "confirm the library photograph shows the client's own product, place or people; otherwise replace it"
+    },
+    {
+     "check": "nav-family",
+     "sev": "WARN",
+     "sel": "header.pill-wrap",
+     "text": "",
+     "stop": 7,
+     "msg": "the nav changes form as the page scrolls: its fill changes from #121c54 to #132773",
+     "crop": "1440-55-nav-family.jpg",
+     "fix": "keep one nav on every screen: the same bar, fill, links and type"
+    },
+    {
+     "check": "fake-button",
+     "sev": "WARN",
+     "sel": "section#stack > div.marq:nth-of-type(2) > div > span:nth-of-type(1)",
+     "text": "Pythonpipeline",
+     "stop": 17,
+     "msg": "\"Pythonpipeline\" looks like a button (round, fill #121a51, the same look as the page's buttons) but is not a link or a button (17 like it)",
+     "fix": "make it a real link or button, or drop its button look"
+    },
+    {
+     "check": "stranded-action",
+     "sev": "WARN",
+     "sel": "section#formats > div.rv.z > div.tabs > button.tab:nth-of-type(11)",
+     "text": "Decoded",
+     "msg": "stands 308px across from the nearest text of its block (\"Classic\")",
+     "stop": 8,
+     "crop": "1440-62-stranded-action.jpg",
+     "fix": "put the button under or beside the text it belongs to"
+    },
+    {
+     "check": "stranded-action",
+     "sev": "WARN",
+     "sel": "section#compliance > div.btns.rv > a.btn.btn-s:nth-of-type(1)",
+     "text": "Terms of Service",
+     "msg": "stands 277px down from the nearest text of its block (\"No personal data, IP addresses\")",
+     "stop": 26,
+     "fix": "put the button under or beside the text it belongs to"
+    },
+    {
+     "check": "copy-length",
+     "sev": "WARN",
+     "sel": "section#faq",
+     "text": "Questions, answered",
+     "msg": "13 sections over 90 words a screen outside the UI mocks (\"Questions, answered\" 259, \"No two videos look the s\" 183, \"Game videos built on rea\" 183); 131 words a screen across the page (3112 words in 23.7 screens): a tech page says it in about 80 or fewer",
+     "fix": "cut every section to its heading, one line and the product UI: the UI says the rest; no second paragraph, no list of feature sentences",
+     "stop": 24
+    },
+    {
+     "check": "split-align",
+     "sev": "WARN",
+     "sel": "div#f1",
+     "text": "Classic",
+     "msg": "the picture beside \"Classic\" sits loose against a text column 136px taller: its top and bottom line up with nothing",
+     "fix": "set the picture's top on the heading's top (align-items: start), or let it run the column's full height",
+     "stop": 9,
+     "crop": "1440-69-split-align.jpg"
+    },
+    {
+     "check": "moment-none",
+     "sev": "WARN",
+     "sel": "(the page)",
+     "text": "",
+     "msg": "a software page (--type) deals no moment: every kind carries one, two on a long page (moments.md)",
+     "fix": "deal one (moments.mjs pick --page software) and mount it in its own section",
+     "stop": null
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "div.phone > div.screen > div.slide-area > div.slide:nth-of-type(1)",
+     "text": "Did you knowYour SSD forgetson purpose",
+     "msg": "with scripts switched off (a blocked or failed script) 10 lines stay hidden on the first screen, 1.5 s after load (opacity 0): \"Did you know\", \"forgets\", \"Counter3,200MB/s\": the page shows it only when a script reveals it",
+     "crop": "1440-nojs-01-hidden-content.jpg",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "section.blk.tight > div.statrow > div.stat2.rv:nth-of-type(1) > b",
+     "text": "0",
+     "msg": "with scripts switched off (a blocked or failed script) 17 lines stay hidden on screen 2, 1.5 s after load (opacity 0): \"content series\", \"0\", \"Motion Graphics form\": the page shows it only when a script reveals it",
+     "crop": "1440-nojs-02-hidden-content.jpg",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "section#about > div.split > div.rv.l > div.eyebrow",
+     "text": "What it is",
+     "msg": "with scripts switched off (a blocked or failed script) 15 lines stay hidden on screen 3, 1.5 s after load (opacity 0): \"A one-person studio \", \"Silicon Verdict is a\", \"Accuracy first. Ever\": the page shows it only when a script reveals it",
+     "crop": "1440-nojs-03-hidden-content.jpg",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "section#pipeline > div.head.c > div.eyebrow",
+     "text": "How a video is made",
+     "msg": "with scripts switched off (a blocked or failed script) 16 lines stay hidden on screen 4, 1.5 s after load (opacity 0): \"Seven stages from id\", \"Scroll through the l\", \"topic\": the page shows it only when a script reveals it",
+     "crop": "1440-nojs-04-hidden-content.jpg",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "section#series > div.head.c > div.eyebrow",
+     "text": "Content",
+     "msg": "with scripts switched off (a blocked or failed script) 21 lines stay hidden on screen 7, 1.5 s after load (opacity 0): \"One engine behind ev\", \"Motion Graphics is t\", \"01\": the page shows it only when a script reveals it",
+     "crop": "1440-nojs-05-hidden-content.jpg",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "section#series > div.series > div.card.rv:nth-of-type(4) > h3",
+     "text": "Gaming",
+     "msg": "with scripts switched off (a blocked or failed script) 27 lines stay hidden on screen 8, 1.5 s after load (opacity 0): \"A Motion game video.\", \"main.py --category 2\", \"Automatic\": the page shows it only when a script reveals it",
+     "crop": "1440-nojs-06-hidden-content.jpg",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "div#f1 > div.mini > div.q",
+     "text": "Your SSD forgetson purpose.",
+     "msg": "with scripts switched off (a blocked or failed script) 18 lines stay hidden on screen 9, 1.5 s after load (opacity 0): \"forgets\", \"Signature element\", \"A cursor that acts l\": the page shows it only when a script reveals it",
+     "crop": "1440-nojs-07-hidden-content.jpg",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "div.rv.l > div.checks > div:nth-of-type(2) > p",
+     "text": "Flip Airplane Mode and watch Wi-Fi and Bluetooth s",
+     "msg": "with scripts switched off (a blocked or failed script) 40 lines stay hidden on screen 10, 1.5 s after load (opacity 0): \"(Watch the demo.)\", \"Ambient effects\", \"Effects picked from \": the page shows it only when a script reveals it",
+     "crop": "1440-nojs-08-hidden-content.jpg",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "section#looks > div.head.c > p.sub",
+     "text": "Every video gets one of eight blue looks, and this",
+     "msg": "with scripts switched off (a blocked or failed script) 30 lines stay hidden on screen 11, 1.5 s after load (opacity 0): \"01\", \"Eight looks\", \"A new blue every tim\": the page shows it only when a script reveals it",
+     "crop": "1440-nojs-09-hidden-content.jpg",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "section#games > div.head.c > div.eyebrow",
+     "text": "Game videos",
+     "msg": "with scripts switched off (a blocked or failed script) 25 lines stay hidden on screen 12, 1.5 s after load (opacity 0): \"Game videos built on\", \"Game videos show an \", \"Footage rules\": the page shows it only when a script reveals it",
+     "crop": "1440-nojs-10-hidden-content.jpg",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "section#gates > div.head.c > div.eyebrow",
+     "text": "Quality",
+     "msg": "with scripts switched off (a blocked or failed script) 15 lines stay hidden on screen 13, 1.5 s after load (opacity 0): \"Two gates before any\", \"Fact-check gate\", \"A second pass looks \": the page shows it only when a script reveals it",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "section#llm > div.head.c > div.eyebrow",
+     "text": "Resilience",
+     "msg": "with scripts switched off (a blocked or failed script) 12 lines stay hidden on screen 14, 1.5 s after load (opacity 0): \"One LLM client, auto\", \"Every call goes thro\", \"services/gemini_clie\": the page shows it only when a script reveals it",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "section#stack > div.head.c > div.eyebrow",
+     "text": "Technology",
+     "msg": "with scripts switched off (a blocked or failed script) 2 lines stay hidden on screen 15, 1.5 s after load (opacity 0): \"Built with\": the page shows it only when a script reveals it",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "section#brand > div.head.c > div.eyebrow",
+     "text": "Brand look",
+     "msg": "with scripts switched off (a blocked or failed script) 13 lines stay hidden on screen 16, 1.5 s after load (opacity 0): \"The channel's eight \", \"Every video wears on\", \"the photograph logo.\": the page shows it only when a script reveals it",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "div.swatches > div.sw2.rv:nth-of-type(1) > div > code",
+     "text": "#05070C",
+     "msg": "with scripts switched off (a blocked or failed script) 36 lines stay hidden on screen 17, 1.5 s after load (opacity 0): \"Background\", \"#007AFF\", \"Glow\": the page shows it only when a script reveals it",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "section#map > div.tree.rv > div.r:nth-of-type(11) > span.p",
+     "text": "scripts/update_bank_scripts.py",
+     "msg": "with scripts switched off (a blocked or failed script) 19 lines stay hidden on screen 18, 1.5 s after load (opacity 0): \"Brings every banked \", \"assets/\", \"Fonts, audio beds an\": the page shows it only when a script reveals it",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "section#start > div.term.rv > pre > span.c:nth-of-type(8)",
+     "text": "# four videos picked from your analytics, schedule",
+     "msg": "with scripts switched off (a blocked or failed script) 16 lines stay hidden on screen 19, 1.5 s after load (opacity 0): \".venv/bin/python scr\", \"# drop --plan to ren\", \"# retention report, \": the page shows it only when a script reveals it",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(3) > span.when",
+     "text": "Nov 2026",
+     "msg": "with scripts switched off (a blocked or failed script) 15 lines stay hidden on screen 20, 1.5 s after load (opacity 0): \"Every banked script \", \"All unpublished scri\", \"Nov 2026\": the page shows it only when a script reveals it",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(8) > span.when",
+     "text": "Motion as the main series",
+     "msg": "with scripts switched off (a blocked or failed script) 15 lines stay hidden on screen 21, 1.5 s after load (opacity 0): \"Cursor character & s\", \"Motion Graphics beco\", \"Six content formats\": the page shows it only when a script reveals it",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "section#faq > div.faq > details.rv:nth-of-type(2) > summary",
+     "text": "Does it collect data from viewers or visitors?",
+     "msg": "with scripts switched off (a blocked or failed script) 9 lines stay hidden on screen 22, 1.5 s after load (opacity 0): \"Who writes the scrip\", \"Is the narration a r\", \"What happens if a vi\": the page shows it only when a script reveals it",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "section#compliance > div.comp > div.card.rv:nth-of-type(1) > h3",
+     "text": "No user data collected",
+     "msg": "with scripts switched off (a blocked or failed script) 11 lines stay hidden on screen 23, 1.5 s after load (opacity 0): \"No personal data, IP\", \"No tracking\", \"The web portal uses \": the page shows it only when a script reveals it",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "main > section.blk.container:nth-of-type(19) > div.cta.rv > h2",
+     "text": "Follow the verdict.",
+     "msg": "with scripts switched off (a blocked or failed script) 6 lines stay hidden on screen 24, 1.5 s after load (opacity 0): \"verdict.\", \"New vertical explain\", \"YouTube\": the page shows it only when a script reveals it",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hero-screen",
+     "sev": "FAIL",
+     "sel": "section#top",
+     "text": "Automated vertical-video studio From a t",
+     "msg": "the hero ends at 926px on a 900px screen, 26px below the fold: it ends at the fold, 1px either way (SR-1)",
+     "fix": "make the hero exactly one screen (height: 100svh, its content fitted inside), never taller or shorter",
+     "rule": "SR-1 T1",
+     "crop": "1440-rhythm-01-hero-screen.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#pipeline",
+     "text": "How a video is madeSeven stages from ide",
+     "msg": "the section is 2758px tall (3.1 screens), 958px over two screens (1800px): every section after the hero is one screen or two, 2px either way (SR-2)",
+     "fix": "set the section to one screen or two (height: calc(var(--h,1) * 100vh), --h 1 or 2) and cut or split its content to fit",
+     "rule": "SR-2 T-height",
+     "crop": "1440-rhythm-02-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "© 2026 Silicon Verdict. All rights reser",
+     "msg": "the section is 114px tall (0.1 screens), 786px short of one screen (900px): every section after the hero is one screen or two, 2px either way (SR-2)",
+     "fix": "set the section to one screen or two (height: calc(var(--h,1) * 100vh), --h 1 or 2) and cut or split its content to fit",
+     "rule": "SR-2 T-height"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#cursor",
+     "text": "Signature element A cursor that acts lik",
+     "msg": "the section is 1270px tall (1.4 screens), 370px over one screen (900px): every section after the hero is one screen or two, 2px either way (and 8 more like it: \"ProgressWhat's newMilest\", \"Brand lookThe channel's \", \"ContentOne engine behind\") (SR-2)",
+     "fix": "set the section to one screen or two (height: calc(var(--h,1) * 100vh), --h 1 or 2) and cut or split its content to fit",
+     "rule": "SR-2 T-height"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#faq",
+     "text": "FAQQuestions, answered Is Silicon Verdic",
+     "msg": "the section starts at 18557px, 343px above the screen grid (21 x 900px): sections start on whole screens (SR-2)",
+     "fix": "make every section above it exactly one or two screens tall, so this one starts on a whole screen",
+     "rule": "SR-2 T-grid"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#compliance",
+     "text": "Privacy & platform complianceBuilt to re",
+     "msg": "the section starts at 19457px, 343px above the screen grid (22 x 900px): sections start on whole screens (SR-2)",
+     "fix": "make every section above it exactly one or two screens tall, so this one starts on a whole screen",
+     "rule": "SR-2 T-grid"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#changelog",
+     "text": "ProgressWhat's newMilestones of the proj",
+     "msg": "the section starts at 16534px, 334px below the screen grid (18 x 900px): sections start on whole screens (and 17 more like it: \"Signature element A curs\", \"Follow the verdict. New \", \"© 2026 Silicon Verdict. \") (SR-2)",
+     "fix": "make every section above it exactly one or two screens tall, so this one starts on a whole screen",
+     "rule": "SR-2 T-grid"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#compliance",
+     "text": "Privacy & platform complianceBuilt to re",
+     "msg": "the section's content does not fit it: its lowest content ends 920px below its top, past 876px (the section less 72px of bottom padding) (SR-2)",
+     "fix": "fit the content above the section's bottom padding (--padb), or make it two screens (.g2) in two groups",
+     "rule": "SR-2 T-fit"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "© 2026 Silicon Verdict. All rights reser",
+     "msg": "the section's content does not fit it: its lowest content ends 77px below its top, past 42px (the section less 72px of bottom padding) (and 7 more like it: \"Signature element A curs\", \"ProgressWhat's newMilest\", \"Game videosGame videos b\") (SR-2)",
+     "fix": "fit the content above the section's bottom padding (--padb), or make it two screens (.g2) in two groups",
+     "rule": "SR-2 T-fit"
+    },
+    {
+     "check": "section-air",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight",
+     "text": "6content series 9Motion Graphics formats",
+     "msg": "the content fills 30.1% of the section's height (271 of 900px): 55% or more (40% WARN) (SR-3)",
+     "fix": "fill the section to 55%: more content, a picture or a background layer, or merge it into the section above as its last block",
+     "rule": "SR-3 T-fill",
+     "crop": "1440-rhythm-03-section-air.jpg"
+    },
+    {
+     "check": "section-air",
+     "sev": "FAIL",
+     "sel": "main > section.blk.container:nth-of-type(19)",
+     "text": "Follow the verdict. New vertical explain",
+     "msg": "the content fills 38.2% of the section's height (345 of 900px): 55% or more (40% WARN) (SR-3)",
+     "fix": "fill the section to 55%: more content, a picture or a background layer, or merge it into the section above as its last block",
+     "rule": "SR-3 T-fill"
+    },
+    {
+     "check": "section-air",
+     "sev": "WARN",
+     "sel": "section#stack",
+     "text": "TechnologyBuilt with PythonpipelineRemot",
+     "msg": "the content fills 46.2% of the section's height (417 of 900px): 55% or more (40% WARN) (SR-3)",
+     "fix": "fill the section to 55%: more content, a picture or a background layer, or merge it into the section above as its last block",
+     "rule": "SR-3 T-fill"
+    },
+    {
+     "check": "section-air",
+     "sev": "WARN",
+     "sel": "main > section.blk.tight / section#about",
+     "text": "",
+     "msg": "512px of air between the content of these two sections: 128-480px (64-600px WARN) (SR-3)",
+     "fix": "keep 128-480px of air between the content of neighbouring sections (112-420px on a phone): the sections' padding (--padt, --padb)",
+     "rule": "SR-3 T-gap"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "section#faq > div.head.c > h2.h2",
+     "text": "Questions, answered",
+     "msg": "the screen at scroll 18000px (stride 20) shows 343px of section 17 and the heading of section 17 whole and the content of 2 sections, over 24px each beside section 16: a screen shows one section (another may peek 8px, 24px WARN) (SR-4)",
+     "fix": "make each section exactly one screen or two, so a screen shows one section and no neighbour peeks",
+     "rule": "SR-4 T-views",
+     "crop": "1440-rhythm-04-one-section.jpg"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "section#compliance > div.head.c > h2.h2",
+     "text": "Built to respect your data",
+     "msg": "the screen at scroll 18900px (stride 21) shows 343px of section 18 and the heading of section 18 whole and the content of 2 sections, over 24px each beside section 17: a screen shows one section (another may peek 8px, 24px WARN) (SR-4)",
+     "fix": "make each section exactly one screen or two, so a screen shows one section and no neighbour peeks",
+     "rule": "SR-4 T-views"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "main > section.blk.container:nth-of-type(19)",
+     "text": "Follow the verdict. New vertical explain",
+     "msg": "the screen at scroll 19800px (stride 22) shows 294px of section 19 beside section 18: a screen shows one section (another may peek 8px, 24px WARN) (and 10 more like it: scroll 16200px, scroll 7200px, scroll 6300px) (SR-4)",
+     "fix": "make each section exactly one screen or two, so a screen shows one section and no neighbour peeks",
+     "rule": "SR-4 T-views"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "div#f1",
+     "text": "ClassicThe default format. A tech or har",
+     "msg": "a band: a box 96% of the section wide on a ground of its own that holds only text: the section's own ground is the band (SR-4)",
+     "fix": "put every block of <main> in a <section>, and give a band its own section instead of a ground inside one",
+     "rule": "SR-4 T-dom"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "section#map > div.tree.rv",
+     "text": "main.pyPipeline entry point and CLI core",
+     "msg": "a band: a box 96% of the section wide on a ground of its own that holds only text: the section's own ground is the band (SR-4)",
+     "fix": "put every block of <main> in a <section>, and give a band its own section instead of a ground inside one",
+     "rule": "SR-4 T-dom"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "section#start > div.term.rv",
+     "text": "zsh — silicon-verdictCopy # setup python",
+     "msg": "a band: a box 96% of the section wide on a ground of its own that holds only text: the section's own ground is the band (and 3 more like it: \"zsh — silicon-verdictCop\", \"Trademark & fair use. Pr\", \"Follow the verdict. New \") (SR-4)",
+     "fix": "put every block of <main> in a <section>, and give a band its own section instead of a ground inside one",
+     "rule": "SR-4 T-dom"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "header.pill-wrap",
+     "text": "SiliconVerdict PipelineSeriesGamesBrand ",
+     "msg": "the nav's content runs 181px from the left and 171px from the right (read from its outermost blocks: no .wrap): the page's container starts at 164px; 181 and 171px are not one margin; the margin is 64-120px at 1440px (one container, equal margins, 2px either way) (SR-6)",
+     "fix": "use one container on every section and the nav (.wrap): one margin left and right, 64-120px on a desktop, 16-24px on a phone",
+     "rule": "SR-6 T1-margins",
+     "crop": "1440-rhythm-05-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section#top",
+     "text": "Automated vertical-video studio From a t",
+     "msg": "the content of section 1 runs 164px from the left and 164px from the right (read from its outermost blocks: no .wrap): the margin is 64-120px at 1440px (one container, equal margins, 2px either way) (and 19 more like it: \"6content series 9Motion \", \"What it is A one-person \", \"How a video is madeSeven\") (SR-6)",
+     "fix": "use one container on every section and the nav (.wrap): one margin left and right, 64-120px on a desktop, 16-24px on a phone",
+     "rule": "SR-6 T1-margins"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "a.skip",
+     "text": "Skip to content",
+     "msg": "a <a> at the top of the page, outside header.nav, main, footer.closing and nav.actionbar (SR-6)",
+     "fix": "build the page as header.nav, a main of sections (each one in-flow .wrap plus background layers) and footer.closing",
+     "rule": "SR-6 T1-structure"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "div.bg",
+     "text": "",
+     "msg": "a <div> at the top of the page, outside header.nav, main, footer.closing and nav.actionbar (and 24 more like it: \"Sections\", \"Pause motion\", \"SiliconVerdict PipelineS\") (SR-6)",
+     "fix": "build the page as header.nav, a main of sections (each one in-flow .wrap plus background layers) and footer.closing",
+     "rule": "SR-6 T1-structure"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "div.split > div.rv.r > div.orbit > div.halo",
+     "text": "",
+     "msg": "a box runs 730-1294px, outside the container lines of section 3 at 164-1276px: full width is for background layers and grounds only (SR-6)",
+     "fix": "keep it inside the container lines (.wrap): full width is for background layers and grounds only",
+     "rule": "SR-6 T2-containment"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "div.clist > div.cl.rv:nth-of-type(1) > div > p",
+     "text": "The portal wears the same eight blue loo",
+     "msg": "11 text blocks start on a left line at x 547, 383px from the container's left: text starts on the container's left, or on one split line (x 637, 732, 827) (also \"YouTube Analytics is connected: \", \"All unpublished scripts now open\", \"Every video now gets its own loo\") (and 45 more like it: x 536, x 511, x 490) (SR-6)",
+     "fix": "start the text on the container's left, or on the one split line every split shares",
+     "rule": "SR-6 T3-left-lines"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section#pipeline > div.head.c > h2.h2",
+     "text": "Seven stages from idea to upload",
+     "msg": "\"Seven stages from idea to upload\" is set centred across 1112px, over half the 1112px container: text that wide is set left (and 27 more like it: \"One engine behind every \", \"Eleven content formats\", \"Effects picked from what\") (SR-6)",
+     "fix": "set the text left (text-align: start)",
+     "rule": "SR-6 T4-alignment"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section#pipeline > div.tl > div.step:nth-of-type(2) > div.box",
+     "text": "Pick the topiccore/topic_engine.py · dat",
+     "msg": "a box over half the container wide runs 350-1180px, not on the container's lines at 164-1276px (and 18 more like it: \"Write the scriptservices\", \"Fact-check gatesecond pa\", \"Narrate itservices/voice\") (SR-6)",
+     "fix": "run the picture or box from the container's left line to its right line, or put it in a row or a split",
+     "rule": "SR-6 T6-right-edges"
+    },
+    {
+     "check": "row-lines",
+     "sev": "FAIL",
+     "sel": "section#brand > div.lockup.rv > div.lk-text > div.lk-type",
+     "text": "AaInter · headlines AaSerif italic · the",
+     "msg": "a row of 3 items: its first item starts at 473px, the container's left line at 164px; its last item ends at 1231px, the container's right line at 1276px (2px either way) (SR-7)",
+     "fix": "start the row's first item on the container's left line and end its last on the right line, every item one height",
+     "rule": "SR-7 T-rows",
+     "crop": "1440-rhythm-06-row-lines.jpg"
+    },
+    {
+     "check": "split-pair",
+     "sev": "FAIL",
+     "sel": "section#about > div.split",
+     "text": "What it is A one-person studio that neve",
+     "msg": "the two columns of the split start 73px apart at the top: a split's columns are top-aligned, 8px either way (SR-8)",
+     "fix": "top-align both columns of the split (align-items: start)",
+     "rule": "SR-8 T-mode",
+     "crop": "1440-rhythm-07-split-pair.jpg"
+    },
+    {
+     "check": "split-pair",
+     "sev": "FAIL",
+     "sel": "section#top > div.hero2",
+     "text": "Automated vertical-video studio From a t",
+     "msg": "the two columns of the split start 21px apart at the top: a split's columns are top-aligned, 8px either way (SR-8)",
+     "fix": "top-align both columns of the split (align-items: start)",
+     "rule": "SR-8 T-mode"
+    },
+    {
+     "check": "split-pair",
+     "sev": "FAIL",
+     "sel": "section#cursor > div.split",
+     "text": "Signature element A cursor that acts lik",
+     "msg": "the two columns of the split start 11px apart at the top: a split's columns are top-aligned, 8px either way (SR-8)",
+     "fix": "top-align both columns of the split (align-items: start)",
+     "rule": "SR-8 T-mode"
+    },
+    {
+     "check": "split-pair",
+     "sev": "FAIL",
+     "sel": "section#top > div.hero2",
+     "text": "Automated vertical-video studio From a t",
+     "msg": "the split's columns are off the page's one pair of lines: its right column starts at x 797, on none of the split lines 637 (k=5), 732 (k=6), 827 (k=7) (SR-8)",
+     "fix": "start every split's right column on one shared line (wrap.left + k x (width + 24) / 12, k 5, 6 or 7; 6 on a place page) and end the left one 24px before it",
+     "rule": "SR-8 T-pair"
+    },
+    {
+     "check": "split-pair",
+     "sev": "FAIL",
+     "sel": "section#about > div.split",
+     "text": "What it is A one-person studio that neve",
+     "msg": "the split's columns are off the page's one pair of lines: its right column starts at x 748, the first split's at 797; its right column starts at x 748, on none of the split lines 637 (k=5), 732 (k=6), 827 (k=7) (SR-8)",
+     "fix": "start every split's right column on one shared line (wrap.left + k x (width + 24) / 12, k 5, 6 or 7; 6 on a place page) and end the left one 24px before it",
+     "rule": "SR-8 T-pair"
+    },
+    {
+     "check": "split-pair",
+     "sev": "FAIL",
+     "sel": "section#cursor > div.split",
+     "text": "Signature element A cursor that acts lik",
+     "msg": "the split's columns are off the page's one pair of lines: its right column starts at x 748, the first split's at 797; its right column starts at x 748, on none of the split lines 637 (k=5), 732 (k=6), 827 (k=7) (and 1 more like it: \"ClassicThe default forma\") (SR-8)",
+     "fix": "start every split's right column on one shared line (wrap.left + k x (width + 24) / 12, k 5, 6 or 7; 6 on a place page) and end the left one 24px before it",
+     "rule": "SR-8 T-pair"
+    },
+    {
+     "check": "split-pair",
+     "sev": "WARN",
+     "sel": "div#f1",
+     "text": "ClassicThe default format. A tech or har",
+     "msg": "the split does not run edge to edge on the container: its left column starts at 201px, the container's left at 164px; its right column ends at 1239px, the container's right at 1276px (it was moving as it was read: told as a WARN, look at it at rest) (SR-8)",
+     "fix": "run the split from the container's left line to its right line",
+     "rule": "SR-8 T-edges"
+    }
+   ],
+   "glAsked": 0
+  },
+  {
+   "width": 390,
+   "height": 844,
+   "screens": 49,
+   "held": 0,
+   "errors": [],
+   "findings": [
+    {
+     "check": "nav-covers",
+     "sev": "FAIL",
+     "sel": "div#progress",
+     "text": "",
+     "msg": "sits on top of the text \"Scene 1 is the claim in 14 words or fewe\" while the page scrolls: part of the line shows beside it",
+     "stop": 22,
+     "fix": "make the fixed nav one opaque band across the whole screen, or let it scroll away with the page"
+    },
+    {
+     "check": "off-viewport",
+     "sev": "FAIL",
+     "sel": "div.split > div.rv.r > div.orbit > div.halo",
+     "text": "",
+     "msg": "runs 15px off the left side of the screen",
+     "stop": 5,
+     "crop": "390-30-off-viewport.jpg",
+     "fix": "keep it inside the screen at this width: let it shrink, wrap or stack"
+    },
+    {
+     "check": "off-viewport",
+     "sev": "FAIL",
+     "sel": "section#brand > div.statrow.rv > div.stat2:nth-of-type(3)",
+     "text": "20% bottom kept free",
+     "msg": "runs 53px off the right side of the screen",
+     "stop": 34,
+     "fix": "keep it inside the screen at this width: let it shrink, wrap or stack"
+    },
+    {
+     "check": "overlap-text",
+     "sev": "FAIL",
+     "sel": "div > div.phone > div.screen > div.notch",
+     "text": "",
+     "msg": "lies over the text \"TOP 12% · PLATFORM UI\" (div.screen > div.sz-top)",
+     "stop": 1,
+     "crop": "390-08-overlap-text.jpg",
+     "fix": "move the box off the text (or the text off the box)"
+    },
+    {
+     "check": "overlap-text",
+     "sev": "FAIL",
+     "sel": "section#map > div.tree.rv > div.r:nth-of-type(10) > span.d",
+     "text": "The genera command: four analytics-picked videos",
+     "msg": "lies over the text \"scripts/genera_batch.py\" (div.r:nth-of-type(10) > span.p) (and 1 more like it: \"Brings every banked scri\")",
+     "stop": 37,
+     "fix": "move the box off the text (or the text off the box)"
+    },
+    {
+     "check": "collide",
+     "sev": "FAIL",
+     "sel": "section#map > div.tree.rv > div.r:nth-of-type(5) > span.p",
+     "text": "services/looks.py · series.py · yt_analytics.py",
+     "msg": "the words \"services/looks.py · series.py · \" lie over \"Look chooser (never repeats the \": two lines in one place",
+     "stop": 35,
+     "fix": "on a phone nothing lies on anything else: let the section grow with its content (min-height for its screens, never a fixed height; --hm: 2 when it needs two) or cut what it holds; keep pictures and cards off the buttons; pad the page under a fixed bar by the bar's height (top: the first section; end: the footer)"
+    },
+    {
+     "check": "collide",
+     "sev": "FAIL",
+     "sel": "section#map > div.tree.rv > div.r:nth-of-type(10) > span.p",
+     "text": "scripts/genera_batch.py",
+     "msg": "the words \"scripts/genera_batch.py\" lie over \"The genera command: four analyti\": two lines in one place",
+     "stop": 36,
+     "fix": "on a phone nothing lies on anything else: let the section grow with its content (min-height for its screens, never a fixed height; --hm: 2 when it needs two) or cut what it holds; keep pictures and cards off the buttons; pad the page under a fixed bar by the bar's height (top: the first section; end: the footer)"
+    },
+    {
+     "check": "collide",
+     "sev": "FAIL",
+     "sel": "section#map > div.tree.rv > div.r:nth-of-type(11) > span.p",
+     "text": "scripts/update_bank_scripts.py",
+     "msg": "the words \"scripts/update_bank_scripts.py\" lie over \"Brings every banked script up to\": two lines in one place",
+     "stop": 37,
+     "fix": "on a phone nothing lies on anything else: let the section grow with its content (min-height for its screens, never a fixed height; --hm: 2 when it needs two) or cut what it holds; keep pictures and cards off the buttons; pad the page under a fixed bar by the bar's height (top: the first section; end: the footer)"
+    },
+    {
+     "check": "tap-size",
+     "sev": "FAIL",
+     "sel": "div.container.foot > ul > li:nth-of-type(4) > a",
+     "text": "TikTok",
+     "msg": "a 43x17px tap target (and 1 more like it on this screen): 0px from the next one (\"Pause motion\"), so a thumb lands on the wrong one",
+     "stop": 48,
+     "fix": "make every link and control outside running text 44px tall on a phone: display: inline-flex; align-items: center; min-height: 44px (a footer list then needs no gap), a 44px small button, or a transparent ::before laid past the box"
+    },
+    {
+     "check": "cut-text",
+     "sev": "FAIL",
+     "sel": "section#brand > div.lockup.rv > div.lk-text > p.lk-tag",
+     "text": "HARD DATA / NO MARKETING FLUFF / REAL BENCHMARKS",
+     "msg": "cut 39px by the right edge of the screen (and 2 more like it: \"20%\", \"bottom kept free\")",
+     "stop": 32,
+     "fix": "give the text room: no overflow clipping a line, no line past its box"
+    },
+    {
+     "check": "cut-text",
+     "sev": "FAIL",
+     "sel": "div.lk-text > div.lk-type > div:nth-of-type(3) > b.t-mono",
+     "text": "Aa",
+     "msg": "runs past the edge of its box section#brand > div.lockup.rv (and 1 more like it: \"Mono · labels & data\")",
+     "stop": 33,
+     "fix": "give the text room: no overflow clipping a line, no line past its box"
+    },
+    {
+     "check": "cut-text",
+     "sev": "FAIL",
+     "sel": "section#map > div.tree.rv > div.r:nth-of-type(5) > span.p",
+     "text": "services/looks.py · series.py · yt_analytics.py",
+     "msg": "runs past the edge of its box section#map > div.tree.rv",
+     "stop": 35,
+     "fix": "give the text room: no overflow clipping a line, no line past its box"
+    },
+    {
+     "check": "cut-text",
+     "sev": "FAIL",
+     "sel": "section#start > div.term.rv > pre > span.c:nth-of-type(2)",
+     "text": "# the main series: alternates curiosity / game, ",
+     "msg": "cut 159px at the right by the overflow of section#start > div.term.rv (and 7 more like it: \"# an engineering fact ab\", \"# setup python3 -m venv \", \"# four videos picked fro\", \".venv/bin/python scripts\", ...)",
+     "stop": 38,
+     "fix": "give the text room: no overflow clipping a line, no line past its box"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight > div.statrow > div.stat2.rv:nth-of-type(1)",
+     "text": "6 content series",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 2,
+     "crop": "390-11-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight > div.statrow > div.stat2.rv:nth-of-type(2)",
+     "text": "9 Motion Graphics formats",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 2,
+     "crop": "390-12-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight > div.statrow > div.stat2.rv:nth-of-type(3)",
+     "text": "108 games in the roster",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 2,
+     "crop": "390-13-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight > div.statrow > div.stat2.rv:nth-of-type(4)",
+     "text": "14 scene types",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 2,
+     "crop": "390-14-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight > div.statrow > div.stat2.rv:nth-of-type(5)",
+     "text": "18 scene effects",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 2,
+     "crop": "390-15-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight > div.statrow > div.stat2.rv:nth-of-type(6)",
+     "text": "30 frames per second",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 2,
+     "crop": "390-16-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight > div.statrow > div.stat2.rv:nth-of-type(7)",
+     "text": "62–90 s video length (monetisable)",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 3,
+     "crop": "390-24-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight > div.statrow > div.stat2.rv:nth-of-type(8)",
+     "text": "0 user data collected",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 3,
+     "crop": "390-25-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#about > div.split > div.rv.l",
+     "text": "WHAT IT IS A one-person studio that never sleeps",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 4,
+     "crop": "390-27-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#about > div.split > div.rv.r",
+     "text": "Pause Gemini ElevenLabs Remotion QA gate Upload",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 4,
+     "crop": "390-28-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#pipeline > div.head.c",
+     "text": "HOW A VIDEO IS MADE Seven stages from idea to up",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 5,
+     "crop": "390-31-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#pipeline > div.vis.rv",
+     "text": "1 Topic 2 Script 3 Fact-check 4 Voice 5 Render 6",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 5,
+     "crop": "390-32-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#pipeline > div.flow.rv",
+     "text": "topic → Gemini script → fact-check → ElevenLabs ",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 5,
+     "crop": "390-33-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#series > div.head.c",
+     "text": "CONTENT One engine behind every series Motion Gr",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 12,
+     "crop": "390-48-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#series > div.series > div.card.main",
+     "text": "MAIN SERIES Motion Graphics Narrated kinetic-typ",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 13,
+     "crop": "390-50-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#series > div.series > div.card.rv:nth-of-type(2)",
+     "text": "Hardware Deep Dive Silicon, memory, storage, net",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 13,
+     "crop": "390-51-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#series > div.series > div.card.rv:nth-of-type(3)",
+     "text": "Everyday Tech Small everyday tech mysteries host",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 14,
+     "crop": "390-55-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#series > div.series > div.card.rv:nth-of-type(4)",
+     "text": "Gaming A Motion game video. Banked game scripts ",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 14,
+     "crop": "390-56-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#series > div.series > div.card.rv:nth-of-type(5)",
+     "text": "Automatic The AI picks the category with the lon",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 15,
+     "crop": "390-58-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#formats > div.head.c",
+     "text": "MOTION GRAPHICS Eleven content formats Each form",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 15,
+     "crop": "390-59-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#formats > div.rv.z",
+     "text": "Classic Myth Tier list What if Evolution Versus ",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 16,
+     "crop": "390-62-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#cursor > div.split > div.rv.l",
+     "text": "SIGNATURE ELEMENT A cursor that acts like a pers",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 18,
+     "crop": "390-67-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#cursor > div.split > div.rv.r > div.cur-stage",
+     "text": "CONTROL CENTER Airplane Mode Wi-Fi Bluetooth",
+     "msg": "starts \"background-color\" (0.4 s) the moment it is scrolled into view (an IntersectionObserver) on div.ti",
+     "stop": 18,
+     "crop": "390-68-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#cursor > div.head.c",
+     "text": "AMBIENT EFFECTS Effects picked from what the nar",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 19,
+     "crop": "390-72-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#cursor > div.fx.rv",
+     "text": "✈️ plane 🚀 rocket 🛰️ satellite 📡 waves ⚡ bolt",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 20,
+     "crop": "390-73-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#looks > div.head.c",
+     "text": "LOOKS AND RETENTION No two videos look the same ",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 20,
+     "crop": "390-74-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#looks > div.vis.rv",
+     "text": "",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 21,
+     "crop": "390-75-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#looks > div.series.looks > div.card.rv:nth-of-type(1)",
+     "text": "EIGHT LOOKS A new blue every time Own palette, b",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 21,
+     "crop": "390-76-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#looks > div.series.looks > div.card.rv:nth-of-type(2)",
+     "text": "COLD OPEN The claim first Scene 1 is the claim i",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 21,
+     "crop": "390-77-scroll-reveal.jpg",
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#looks > div.series.looks > div.card.rv:nth-of-type(3)",
+     "text": "VOTE A vote in one word The outro and the pinned",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 22,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#looks > div.series.looks > div.card.rv:nth-of-type(4)",
+     "text": "PACE The screen keeps moving No narration beyond",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 22,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#looks > div.series.looks > div.card.rv:nth-of-type(5)",
+     "text": "CAPTIONS Read it, hear it Word-by-word captions ",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 23,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#looks > div.series.looks > div.card.rv:nth-of-type(6)",
+     "text": "REAL NUMBERS Analytics pick the next four YouTub",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 23,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#games > div.head.c",
+     "text": "GAME VIDEOS Game videos built on real footage Ga",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 23,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#games > div.vis.rv",
+     "text": "",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 24,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#games > div.gates > div.gate.rv:nth-of-type(1)",
+     "text": "Footage rules Official Steam screenshots and cli",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 24,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#games > div.gates > div.gate.rv:nth-of-type(2)",
+     "text": "Facts grounded in sources Each game has a source",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 25,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#games > div.ledger.rv",
+     "text": "108 games in the roster 65 from 2025 28 from 202",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 26,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#gates > div.head.c",
+     "text": "QUALITY Two gates before anything goes public",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 26,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#gates > div.vis.rv",
+     "text": "Fact-check gate QA gate",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 27,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#gates > div.gates > div.gate.rv:nth-of-type(1)",
+     "text": "Fact-check gate A second pass looks for false te",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 27,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#gates > div.gates > div.gate.rv:nth-of-type(2)",
+     "text": "QA gate (ffmpeg) Duration between 61 and 92 seco",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 28,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#llm > div.head.c",
+     "text": "RESILIENCE One LLM client, automatic fallbacks E",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 28,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#llm > div.vis.rv",
+     "text": "Gemini Groq Cloudflare",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 29,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#llm > div.chain.rv",
+     "text": "Gemini model chain · quota-aware cooldowns persi",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 29,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#llm > p.sub.rv",
+     "text": "Adding another OpenAI-compatible API is one line",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 30,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#stack > div.head.c",
+     "text": "TECHNOLOGY Built with",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 30,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#brand > div.head.c",
+     "text": "BRAND LOOK The channel's eight blues Every video",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 32,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#brand > div.lockup.rv",
+     "text": "SiliconVerdict HARD DATA / NO MARKETING FLUFF / ",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 32,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#brand > div.swatches > div.sw2.rv:nth-of-type(1)",
+     "text": "Obsidian #05070C Background",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 33,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#brand > div.swatches > div.sw2.rv:nth-of-type(2)",
+     "text": "Signal blue #007AFF Glow",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 33,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#brand > div.swatches > div.sw2.rv:nth-of-type(3)",
+     "text": "Electric cyan #00F0FF Accent",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 33,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#brand > div.swatches > div.sw2.rv:nth-of-type(4)",
+     "text": "Paper #F8FAFC Text & one light scene",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 33,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#brand > div.statrow.rv",
+     "text": "9:16 always vertical 12% top kept free 20% botto",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 34,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#map > div.head.c",
+     "text": "CODEBASE Repository map",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 34,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#map > div.tree.rv",
+     "text": "main.py Pipeline entry point and CLI core/ Schem",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 35,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#start > div.head.c",
+     "text": "RUN IT Everyday commands",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 38,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#start > div.term.rv",
+     "text": "zsh — silicon-verdict Copy # setup python3 -m ve",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 38,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.head.c",
+     "text": "PROGRESS What's new Milestones of the project, n",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 39,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(1)",
+     "text": "Nov 2026 A softer site that changes look as you ",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 40,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(2)",
+     "text": "Nov 2026 The genera command and real analytics Y",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 40,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(3)",
+     "text": "Nov 2026 Every banked script follows the retenti",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 40,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(4)",
+     "text": "Nov 2026 Eight looks, captions and a video audit",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 41,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(5)",
+     "text": "Nov 2026 Pointer, UI presets and sound design Th",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 41,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(6)",
+     "text": "Nov 2026 Local voice backup When ElevenLabs runs",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 42,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(7)",
+     "text": "Nov 2026 Web portal rebuilt Full scroll-driven w",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 42,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(8)",
+     "text": "Motion as the main series Cursor character & sce",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 42,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(9)",
+     "text": "Six content formats 93 current games Myth, tier,",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 43,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(10)",
+     "text": "Grounded game facts Quoted and verified Source d",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 43,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist > div.cl.rv:nth-of-type(11)",
+     "text": "Resilient LLM layer Gemini + Groq + Cloudflare O",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 43,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#faq > div.head.c",
+     "text": "FAQ Questions, answered",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 43,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#faq > div.faq > details.rv.in:nth-of-type(1)",
+     "text": "Is Silicon Verdict a public app or service?",
+     "msg": "starts \"transform\" (0.6 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 44,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#faq > div.faq > details.rv.in:nth-of-type(2)",
+     "text": "Does it collect data from viewers or visitors?",
+     "msg": "starts \"transform\" (0.6 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 44,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#faq > div.faq > details.rv.in:nth-of-type(3)",
+     "text": "Who writes the scripts, and how are facts checke",
+     "msg": "starts \"transform\" (0.6 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 44,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#faq > div.faq > details.rv.in:nth-of-type(4)",
+     "text": "Is the narration a real voice?",
+     "msg": "starts \"transform\" (0.6 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 44,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#faq > div.faq > details.rv.in:nth-of-type(5)",
+     "text": "What happens if a video fails quality checks?",
+     "msg": "starts \"transform\" (0.6 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 44,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#faq > div.faq > details.rv.in:nth-of-type(6)",
+     "text": "Where does the game footage come from?",
+     "msg": "starts \"transform\" (0.6 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 44,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#faq > div.faq > details.rv.in:nth-of-type(7)",
+     "text": "How do I revoke access or request deletion?",
+     "msg": "starts \"transform\" (0.6 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 45,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#compliance > div.head.c",
+     "text": "PRIVACY & PLATFORM COMPLIANCE Built to respect y",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 45,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#compliance > div.comp > div.card.rv:nth-of-type(1)",
+     "text": "No user data collected No personal data, IP addr",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 45,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#compliance > div.comp > div.card.rv:nth-of-type(2)",
+     "text": "No tracking The web portal uses no tracking pixe",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 46,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#compliance > div.comp > div.card.rv:nth-of-type(3)",
+     "text": "Local credentials API keys and OAuth tokens stay",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 46,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#compliance > div.comp > div.card.rv:nth-of-type(4)",
+     "text": "Limited API use The TikTok Content Posting API a",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 46,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#compliance > div.notice2.rv",
+     "text": "Trademark & fair use. Product names, logos, hard",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 47,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "section#compliance > div.btns.rv",
+     "text": "Terms of Service Privacy Policy",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 47,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "scroll-reveal",
+     "sev": "FAIL",
+     "sel": "main > section.blk.container:nth-of-type(19) > div.cta.rv",
+     "text": "Follow the verdict. New vertical explainers on P",
+     "msg": "starts \"opacity\" (1.0 s) the moment it is scrolled into view (an IntersectionObserver)",
+     "stop": 48,
+     "fix": "show it at rest: no fade, rise or unmask when it is scrolled into view"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "main > section.blk.tight",
+     "text": "6 content series 9 Motion Graphics formats 108 g",
+     "msg": "no picture, effect or mock in this section; a feature section needs a visual",
+     "stop": 2,
+     "crop": "390-17-no-visual.jpg",
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#pipeline",
+     "text": "Seven stages from idea to upload",
+     "msg": "pictures, effects and mocks cover 2% of this section; a feature section needs a visual (about 25% or more)",
+     "stop": 6,
+     "crop": "390-35-no-visual.jpg",
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#cursor",
+     "text": "A cursor that acts like a person",
+     "msg": "no picture, effect or mock in this section; a feature section needs a visual",
+     "stop": 18,
+     "crop": "390-69-no-visual.jpg",
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#looks",
+     "text": "No two videos look the same",
+     "msg": "pictures, effects and mocks cover 4% of this section; a feature section needs a visual (about 25% or more)",
+     "stop": 21,
+     "crop": "390-78-no-visual.jpg",
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#games",
+     "text": "Game videos built on real footage",
+     "msg": "pictures, effects and mocks cover 4% of this section; a feature section needs a visual (about 25% or more)",
+     "stop": 24,
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#gates",
+     "text": "Two gates before anything goes public",
+     "msg": "pictures, effects and mocks cover 7% of this section; a feature section needs a visual (about 25% or more)",
+     "stop": 27,
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#llm",
+     "text": "One LLM client, automatic fallbacks",
+     "msg": "pictures, effects and mocks cover 8% of this section; a feature section needs a visual (about 25% or more)",
+     "stop": 29,
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#stack",
+     "text": "Built with",
+     "msg": "no picture, effect or mock in this section; a feature section needs a visual",
+     "stop": 31,
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#map",
+     "text": "Repository map",
+     "msg": "no picture, effect or mock in this section; a feature section needs a visual",
+     "stop": 35,
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#start",
+     "text": "Everyday commands",
+     "msg": "no picture, effect or mock in this section; a feature section needs a visual",
+     "stop": 38,
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#changelog",
+     "text": "What's new",
+     "msg": "no picture, effect or mock in this section; a feature section needs a visual",
+     "stop": 40,
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "no-visual",
+     "sev": "FAIL",
+     "sel": "section#compliance",
+     "text": "Built to respect your data",
+     "msg": "no picture, effect or mock in this section; a feature section needs a visual",
+     "stop": 46,
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "card-visual",
+     "sev": "FAIL",
+     "sel": "section#looks > div.series.looks",
+     "text": "EIGHT LOOKS A new blue every time Own palette, b",
+     "msg": "6 cards hold only text: no picture, icon, UI fragment or effect in any of them",
+     "stop": 21,
+     "crop": "390-79-card-visual.jpg",
+     "fix": "give the cards a visual: an inset panel with a UI fragment, a photograph or real icons"
+    },
+    {
+     "check": "card-visual",
+     "sev": "FAIL",
+     "sel": "section#games > div.ledger.rv",
+     "text": "108 games in the roster 65 from 2025 28 from 202",
+     "msg": "4 cards hold only text: no picture, icon, UI fragment or effect in any of them",
+     "stop": 26,
+     "fix": "give the cards a visual: an inset panel with a UI fragment, a photograph or real icons"
+    },
+    {
+     "check": "card-visual",
+     "sev": "FAIL",
+     "sel": "section#llm > div.chain.rv",
+     "text": "Gemini model chain · quota-aware cooldowns persi",
+     "msg": "3 cards hold only text: no picture, icon, UI fragment or effect in any of them",
+     "stop": 29,
+     "fix": "give the cards a visual: an inset panel with a UI fragment, a photograph or real icons"
+    },
+    {
+     "check": "card-visual",
+     "sev": "FAIL",
+     "sel": "section#changelog > div.clist",
+     "text": "Nov 2026 A softer site that changes look as you ",
+     "msg": "11 cards hold only text: no picture, icon, UI fragment or effect in any of them",
+     "stop": 40,
+     "fix": "give the cards a visual: an inset panel with a UI fragment, a photograph or real icons"
+    },
+    {
+     "check": "button-styles",
+     "sev": "FAIL",
+     "sel": "div.hero2 > div:nth-of-type(1) > div.btns > a.btn.btn-p",
+     "text": "Explore the pipeline",
+     "stop": 0,
+     "msg": "one button style (round, fill gradient) in 2 heights: 39, 55px (\"Explore the pipeline\" 55px, \"Classic\" 39px)",
+     "crop": "390-01-button-styles.jpg",
+     "fix": "one primary and one secondary button: one shape, one height per size, one label size"
+    },
+    {
+     "check": "button-styles",
+     "sev": "FAIL",
+     "sel": "div.hero2 > div:nth-of-type(1) > div.btns > a.btn.btn-s",
+     "text": "Watch the channel",
+     "stop": 0,
+     "msg": "one button style (round, fill #10192c) in 2 heights: 39, 55px (\"Watch the channel\" 55px, \"Hide safe zones\" 39px)",
+     "crop": "390-02-button-styles.jpg",
+     "fix": "one primary and one secondary button: one shape, one height per size, one label size"
+    },
+    {
+     "check": "copy-actions",
+     "sev": "FAIL",
+     "sel": "button#sztoggle",
+     "text": "Hide safe zones",
+     "msg": "3 actions in the hero (\"Explore the pipeline\", \"Watch the channel\", \"Hide safe zones\"); at most 2",
+     "stop": 2,
+     "crop": "390-18-copy-actions.jpg",
+     "fix": "few actions, one wording: at most 2 in the hero, the main action word for word in nav, hero and close"
+    },
+    {
+     "check": "heading-scale",
+     "sev": "FAIL",
+     "sel": "div#f1 > div:nth-of-type(1) > h3",
+     "text": "Classic",
+     "msg": "h3 headings in 6 sizes, 17.6px (\"A softer site that chang\") to 27.2px (x1.55)",
+     "stop": 16,
+     "crop": "390-63-heading-scale.jpg",
+     "fix": "size headings by level: the h1 largest, one size per level, each level below the one above"
+    },
+    {
+     "check": "heading-scale",
+     "sev": "FAIL",
+     "sel": "section.blk.tight > div.statrow > div.stat2.rv:nth-of-type(1) > b",
+     "text": "6",
+     "msg": "the figure \"6\" is set at 41.6px, larger than the h1 (40.7px) (and 1 more like it: \"9\")",
+     "fix": "set figures below the h1: a stat reads as data, not as the headline",
+     "stop": 2,
+     "crop": "390-19-heading-scale.jpg"
+    },
+    {
+     "check": "off-grid",
+     "sev": "FAIL",
+     "sel": "section#pipeline > div.tl > div.step:nth-of-type(4) > div.pin",
+     "text": "03",
+     "stop": 7,
+     "msg": "left edge at 34px, 10px off the page margin at 24px (78 elements, like div.pin); 2 more in this section off the grid too (div.pin at 34px, div.pin at 34px)",
+     "crop": "390-38-off-grid.jpg",
+     "fix": "move it onto the page margin, or the column edge its section uses"
+    },
+    {
+     "check": "tilt",
+     "sev": "FAIL",
+     "sel": "div.hero2 > div.phone-wrap > div > div.phone",
+     "text": "TOP 12% · PLATFORM UI DID YOU KNOW Your SSD forg",
+     "msg": "turned in 3D",
+     "stop": 1,
+     "crop": "390-09-tilt.jpg",
+     "fix": "set it straight"
+    },
+    {
+     "check": "contrast",
+     "sev": "FAIL",
+     "sel": "div.spin > div.node:nth-of-type(1) > div.in > em",
+     "text": "Gemini",
+     "stop": 4,
+     "msg": "body text over a effect reads at 4.5:1 at its worst tenth (needs 4.5:1) (and 8 more like it: \"Narrated kinetic-typogra\", \"The big fly-bys appear o\", \"Every video gets one of \", \"Every video wears one of\", ...)",
+     "crop": "390-29-contrast.jpg",
+     "fix": "put the text on a calm part of the picture, or on a solid panel"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#pipeline > div.tl > div.step:nth-of-type(4) > div.pin",
+     "text": "03",
+     "stop": 7,
+     "msg": "a caption, label or muted line in #4e556c on #070c26 reads 2.62:1 (needs 4.5:1)",
+     "crop": "390-39-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "div.tl > div.step:nth-of-type(4) > div.box > span.tagline",
+     "text": "second pass · reviewer panel",
+     "stop": 7,
+     "msg": "a caption, label or muted line in #3f4e78 on #070c26 reads 2.37:1 (needs 4.5:1)",
+     "crop": "390-40-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#pipeline > div.tl > div.step:nth-of-type(5) > div.pin",
+     "text": "04",
+     "stop": 8,
+     "msg": "a caption, label or muted line in #4f556c on #080b26 reads 2.61:1 (needs 4.5:1); 2 like it, like \"continuous ElevenLabs \"",
+     "crop": "390-41-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "div.tl > div.step:nth-of-type(5) > div.box > span.tagline",
+     "text": "services/voice_synthesizer.py · ElevenLabs + loc",
+     "stop": 8,
+     "msg": "a caption, label or muted line in #434c78 on #080b26 reads 2.34:1 (needs 4.5:1)",
+     "crop": "390-42-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#pipeline > div.tl > div.step:nth-of-type(6) > div.pin",
+     "text": "05",
+     "stop": 9,
+     "msg": "a caption, label or muted line in #4f556d on #080c28 reads 2.62:1 (needs 4.5:1)",
+     "crop": "390-43-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "div.tl > div.step:nth-of-type(6) > div.box > span.tagline",
+     "text": "remotion_studio · scripts/render_motion.mjs",
+     "stop": 9,
+     "msg": "a caption, label or muted line in #434d7a on #080c28 reads 2.37:1 (needs 4.5:1)",
+     "crop": "390-44-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#pipeline > div.tl > div.step:nth-of-type(7) > div.pin",
+     "text": "06",
+     "stop": 10,
+     "msg": "a caption, label or muted line in #4f5773 on #080f32 reads 2.62:1 (needs 4.5:1)",
+     "crop": "390-46-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "div.tl > div.step:nth-of-type(7) > div.box > span.tagline",
+     "text": "services/qa_inspector.py · ffmpeg",
+     "stop": 10,
+     "msg": "a caption, label or muted line in #43527f on #080e31 reads 2.48:1 (needs 4.5:1)",
+     "crop": "390-47-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#series > div.series > div.card.rv:nth-of-type(2) > p",
+     "text": "Silicon, memory, storage, networking and enginee",
+     "stop": 13,
+     "msg": "body text in #96a3ba on #0a1959 reads 6.36:1 (needs 7:1)",
+     "crop": "390-52-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#series > div.series > div.card.rv:nth-of-type(3) > p",
+     "text": "Small everyday tech mysteries hosted by the mous",
+     "stop": 14,
+     "msg": "body text in #96a3ba on #0a1957 reads 6.39:1 (needs 7:1); 2 like it, like \"A Motion game video. B\"",
+     "crop": "390-57-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#series > div.series > div.card.rv:nth-of-type(5) > p",
+     "text": "The AI picks the category with the longest rest,",
+     "stop": 15,
+     "msg": "body text in #96a3ba on #081442 reads 6.93:1 (needs 7:1)",
+     "crop": "390-60-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "div.split > div.rv.r > div.cur-stage > div.cc-title",
+     "text": "CONTROL CENTER",
+     "stop": 18,
+     "msg": "a caption, label or muted line in #6c7a92 on #070d1a reads 4.47:1 (needs 4.5:1)",
+     "crop": "390-70-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#looks > div.series.looks > div.card.rv:nth-of-type(1) > p",
+     "text": "Own palette, background, typeface, camera, trans",
+     "stop": 21,
+     "msg": "body text in #96a3ba on #0a2558 reads 5.81:1 (needs 7:1); 2 like it, like \"Scene 1 is the claim i\"",
+     "crop": "390-80-text-contrast.jpg",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#looks > div.series.looks > div.card.rv:nth-of-type(3) > p",
+     "text": "The outro and the pinned comment ask the same \"A",
+     "stop": 22,
+     "msg": "body text in #96a3ba on #0b2b69 reads 5.27:1 (needs 7:1); 2 like it, like \"No narration beyond 17\"",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#looks > div.series.looks > div.card.rv:nth-of-type(5) > p",
+     "text": "Word-by-word captions from the voice timing, an ",
+     "stop": 23,
+     "msg": "body text in #96a3ba on #092458 reads 5.87:1 (needs 7:1); 2 like it, like \"YouTube Analytics feed\"",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#games > div.head.c > p.sub",
+     "text": "Game videos show an engineering fact over offici",
+     "stop": 24,
+     "msg": "body text in #96a3ba on #071738 reads 6.94:1 (needs 7:1)",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#start > div.term.rv > div.bar > span",
+     "text": "zsh — silicon-verdict",
+     "stop": 38,
+     "msg": "a caption, label or muted line in #6c7a92 on #0c1426 reads 4.23:1 (needs 4.5:1)",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "text-contrast",
+     "sev": "FAIL",
+     "sel": "section#start > div.term.rv > pre > span.c:nth-of-type(4)",
+     "text": "# pick a format",
+     "stop": 38,
+     "msg": "body text in #6c7a92 on #060a14 reads 4.56:1 (needs 7:1); 2 like it, like \"# preview and tweak th\"",
+     "fix": "body text in the ink at 7:1 or more; grey (4.5:1 or more) only for captions and labels"
+    },
+    {
+     "check": "section-gaps",
+     "sev": "FAIL",
+     "sel": "section#compliance / main > section.blk.container:nth-of-type(19)",
+     "text": "",
+     "stop": 47,
+     "msg": "48px between these sections, -63% against the median 131px",
+     "fix": "use one gap between sections (all within 25% of each other)"
+    },
+    {
+     "check": "menu-toggle",
+     "sev": "FAIL",
+     "sel": "header.pill-wrap > nav.navpill > button.cmdk",
+     "text": "Open the jump menu",
+     "msg": "the menu button (\"Open the jump menu\") has no aria-expanded: a screen reader cannot tell the menu is open or shut",
+     "stop": 0,
+     "crop": "390-03-menu-toggle.jpg",
+     "fix": "use the starter's button: <button class=\"nav__toggle\" type=\"button\" aria-expanded=\"false\" aria-label=\"Menu\">; system.js flips it"
+    },
+    {
+     "check": "tap-size",
+     "sev": "WARN",
+     "sel": "button.pausebtn.global",
+     "text": "Pause motion",
+     "msg": "a 113x33px tap target: under the 44px a phone needs",
+     "stop": 0,
+     "crop": "390-04-tap-size.jpg",
+     "fix": "make every link and control outside running text 44px tall on a phone: display: inline-flex; align-items: center; min-height: 44px (a footer list then needs no gap), a 44px small button, or a transparent ::before laid past the box"
+    },
+    {
+     "check": "tap-size",
+     "sev": "WARN",
+     "sel": "header.pill-wrap > nav.navpill > a.brand",
+     "text": "SiliconVerdict",
+     "msg": "a 34x34px tap target: under the 44px a phone needs",
+     "stop": 0,
+     "crop": "390-05-tap-size.jpg",
+     "fix": "make every link and control outside running text 44px tall on a phone: display: inline-flex; align-items: center; min-height: 44px (a footer list then needs no gap), a 44px small button, or a transparent ::before laid past the box"
+    },
+    {
+     "check": "tap-size",
+     "sev": "WARN",
+     "sel": "header.pill-wrap > nav.navpill > button.cmdk",
+     "text": "Jump to…",
+     "msg": "a 113x41px tap target: under the 44px a phone needs",
+     "stop": 0,
+     "crop": "390-06-tap-size.jpg",
+     "fix": "make every link and control outside running text 44px tall on a phone: display: inline-flex; align-items: center; min-height: 44px (a footer list then needs no gap), a 44px small button, or a transparent ::before laid past the box"
+    },
+    {
+     "check": "tap-size",
+     "sev": "WARN",
+     "sel": "header.pill-wrap > nav.navpill > a.cta-pill",
+     "text": "Watch",
+     "msg": "a 79x42px tap target: under the 44px a phone needs",
+     "stop": 0,
+     "crop": "390-07-tap-size.jpg",
+     "fix": "make every link and control outside running text 44px tall on a phone: display: inline-flex; align-items: center; min-height: 44px (a footer list then needs no gap), a 44px small button, or a transparent ::before laid past the box"
+    },
+    {
+     "check": "tap-size",
+     "sev": "WARN",
+     "sel": "button#sztoggle",
+     "text": "Hide safe zones",
+     "msg": "a 146x39px tap target: under the 44px a phone needs",
+     "stop": 2,
+     "crop": "390-20-tap-size.jpg",
+     "fix": "make every link and control outside running text 44px tall on a phone: display: inline-flex; align-items: center; min-height: 44px (a footer list then needs no gap), a 44px small button, or a transparent ::before laid past the box"
+    },
+    {
+     "check": "tap-size",
+     "sev": "WARN",
+     "sel": "div.split > div.rv.r > div.orbit > button.pausebtn",
+     "text": "Pause",
+     "msg": "a 67x33px tap target: under the 44px a phone needs",
+     "stop": 5,
+     "crop": "390-34-tap-size.jpg",
+     "fix": "make every link and control outside running text 44px tall on a phone: display: inline-flex; align-items: center; min-height: 44px (a footer list then needs no gap), a 44px small button, or a transparent ::before laid past the box"
+    },
+    {
+     "check": "tap-size",
+     "sev": "WARN",
+     "sel": "section#formats > div.rv.z > div.tabs > button.tab.on",
+     "text": "Classic",
+     "msg": "a 87x39px tap target: under the 44px a phone needs",
+     "stop": 16,
+     "crop": "390-64-tap-size.jpg",
+     "fix": "make every link and control outside running text 44px tall on a phone: display: inline-flex; align-items: center; min-height: 44px (a footer list then needs no gap), a 44px small button, or a transparent ::before laid past the box"
+    },
+    {
+     "check": "tap-size",
+     "sev": "WARN",
+     "sel": "section#formats > div.rv.z > div.tabs > button.tab:nth-of-type(2)",
+     "text": "Myth",
+     "msg": "a 72x39px tap target (and 9 more like it on this screen): under the 44px a phone needs",
+     "stop": 16,
+     "crop": "390-65-tap-size.jpg",
+     "fix": "make every link and control outside running text 44px tall on a phone: display: inline-flex; align-items: center; min-height: 44px (a footer list then needs no gap), a 44px small button, or a transparent ::before laid past the box"
+    },
+    {
+     "check": "tap-size",
+     "sev": "WARN",
+     "sel": "section#start > div.term.rv > div.bar > button.cp",
+     "text": "Copy",
+     "msg": "a 54x26px tap target: under the 44px a phone needs",
+     "stop": 38,
+     "fix": "make every link and control outside running text 44px tall on a phone: display: inline-flex; align-items: center; min-height: 44px (a footer list then needs no gap), a 44px small button, or a transparent ::before laid past the box"
+    },
+    {
+     "check": "tap-size",
+     "sev": "WARN",
+     "sel": "div.container.foot > ul > li:nth-of-type(1) > a",
+     "text": "Terms of Service",
+     "msg": "a 111x17px tap target (and 2 more like it on this screen): under the 44px a phone needs",
+     "stop": 48,
+     "fix": "make every link and control outside running text 44px tall on a phone: display: inline-flex; align-items: center; min-height: 44px (a footer list then needs no gap), a 44px small button, or a transparent ::before laid past the box"
+    },
+    {
+     "check": "cut-text",
+     "sev": "WARN",
+     "sel": "section#formats > div.head.c > div.eyebrow",
+     "text": "MOTION GRAPHICS",
+     "msg": "sits across the edge of a panel behind it (and 2 more like it: \"Every video wears one of\", \"Milestones of the projec\")",
+     "stop": 15,
+     "crop": "390-61-cut-text.jpg",
+     "fix": "give the text room: no overflow clipping a line, no line past its box"
+    },
+    {
+     "check": "no-visual",
+     "sev": "WARN",
+     "sel": "section#series",
+     "text": "One engine behind every series",
+     "msg": "pictures, effects and mocks cover 16% of this section; a feature section needs a visual (about 25% or more)",
+     "stop": 13,
+     "crop": "390-53-no-visual.jpg",
+     "fix": "give the section a visual: a UI fragment on a ground, real icons, or a photograph that fits"
+    },
+    {
+     "check": "text-only",
+     "sev": "WARN",
+     "sel": "section#faq",
+     "text": "Questions, answered",
+     "msg": "the section is only text: no picture, icon, mock or effect in it",
+     "stop": 44,
+     "fix": "give the section a visual: a photograph that fits, the real icons, or a UI fragment on a ground"
+    },
+    {
+     "check": "card-visual",
+     "sev": "WARN",
+     "sel": "section#faq > div.faq",
+     "text": "Is Silicon Verdict a public app or service? Does",
+     "msg": "6 cards hold only text: no picture, icon, UI fragment or effect in any of them",
+     "stop": 44,
+     "fix": "give the cards a visual: an inset panel with a UI fragment, a photograph or real icons"
+    },
+    {
+     "check": "cta",
+     "sev": "WARN",
+     "sel": "section#pipeline",
+     "text": "Seven stages from idea to upload",
+     "msg": "a section over 1.5 screens long with no link or button in it",
+     "stop": 6,
+     "crop": "390-36-cta.jpg",
+     "fix": "add the action: a button in the hero, one on every priced item, one in the closing section"
+    },
+    {
+     "check": "cta",
+     "sev": "WARN",
+     "sel": "section#series",
+     "text": "One engine behind every series",
+     "msg": "a section over 1.5 screens long with no link or button in it",
+     "stop": 13,
+     "crop": "390-54-cta.jpg",
+     "fix": "add the action: a button in the hero, one on every priced item, one in the closing section"
+    },
+    {
+     "check": "cta",
+     "sev": "WARN",
+     "sel": "section#cursor",
+     "text": "A cursor that acts like a person",
+     "msg": "a section over 1.5 screens long with no link or button in it",
+     "stop": 18,
+     "crop": "390-71-cta.jpg",
+     "fix": "add the action: a button in the hero, one on every priced item, one in the closing section"
+    },
+    {
+     "check": "cta",
+     "sev": "WARN",
+     "sel": "section#looks",
+     "text": "No two videos look the same",
+     "msg": "a section over 1.5 screens long with no link or button in it",
+     "stop": 21,
+     "fix": "add the action: a button in the hero, one on every priced item, one in the closing section"
+    },
+    {
+     "check": "cta",
+     "sev": "WARN",
+     "sel": "section#games",
+     "text": "Game videos built on real footage",
+     "msg": "a section over 1.5 screens long with no link or button in it",
+     "stop": 24,
+     "fix": "add the action: a button in the hero, one on every priced item, one in the closing section"
+    },
+    {
+     "check": "cta",
+     "sev": "WARN",
+     "sel": "section#stack",
+     "text": "Built with",
+     "msg": "a section over 1.5 screens long with no link or button in it",
+     "stop": 31,
+     "fix": "add the action: a button in the hero, one on every priced item, one in the closing section"
+    },
+    {
+     "check": "cta",
+     "sev": "WARN",
+     "sel": "section#brand",
+     "text": "The channel's eight blues",
+     "msg": "a section over 1.5 screens long with no link or button in it",
+     "stop": 33,
+     "fix": "add the action: a button in the hero, one on every priced item, one in the closing section"
+    },
+    {
+     "check": "cta",
+     "sev": "WARN",
+     "sel": "section#map",
+     "text": "Repository map",
+     "msg": "a section over 1.5 screens long with no link or button in it",
+     "stop": 35,
+     "fix": "add the action: a button in the hero, one on every priced item, one in the closing section"
+    },
+    {
+     "check": "cta",
+     "sev": "WARN",
+     "sel": "section#changelog",
+     "text": "What's new",
+     "msg": "a section over 1.5 screens long with no link or button in it",
+     "stop": 40,
+     "fix": "add the action: a button in the hero, one on every priced item, one in the closing section"
+    },
+    {
+     "check": "heading-scale",
+     "sev": "WARN",
+     "sel": "div.lockup.rv > div.lk-text > div.lk-word > i",
+     "text": "Verdict",
+     "msg": "1 line of plain text set larger than the section headings (34.6px against h2 30.4px)",
+     "stop": 32,
+     "fix": "size headings by level: the h1 largest, one size per level, each level below the one above"
+    },
+    {
+     "check": "heading-scale",
+     "sev": "WARN",
+     "sel": "section.blk.tight > div.statrow > div.stat2.rv:nth-of-type(1) > b",
+     "text": "6",
+     "msg": "figures in 3 sizes, 24, 32, 42px (\"01\" at 24px, \"6\" at 41.6px)",
+     "fix": "set the page's figures (stats, measures, prices) in one or two sizes",
+     "stop": 2,
+     "crop": "390-21-heading-scale.jpg"
+    },
+    {
+     "check": "stagger",
+     "sev": "WARN",
+     "sel": "section#pipeline > div.tl",
+     "text": "01 Pick the topic core/topic_engine.py · data/hi",
+     "msg": "7 rows start at 2 different left offsets (+0, +22, +22, +22, +22, +22, +22px)",
+     "stop": 6,
+     "crop": "390-37-stagger.jpg",
+     "fix": "start every row of the list on one left edge"
+    },
+    {
+     "check": "off-grid",
+     "sev": "WARN",
+     "sel": "section#pipeline > div.tl > div.step:nth-of-type(6) > div.pin",
+     "text": "05",
+     "stop": 9,
+     "msg": "left edge at 34px, 10px off the page margin at 24px (78 elements, none of them near it)",
+     "crop": "390-45-off-grid.jpg",
+     "fix": "move it onto the page margin, or the column edge its section uses"
+    },
+    {
+     "check": "contrast",
+     "sev": "WARN",
+     "sel": "div.phone > div.screen > div.slide-area > div.slide.on",
+     "text": "DID YOU KNOW Your SSD forgets on purpose",
+     "stop": 1,
+     "msg": "large text over a effect reads at 1.1:1 at its worst tenth (needs 3:1), on a busy ground (and 1 more like it: \"forgets\")",
+     "crop": "390-10-contrast.jpg",
+     "fix": "put the text on a calm part of the picture, or on a solid panel"
+    },
+    {
+     "check": "body-size",
+     "sev": "WARN",
+     "sel": "section#start > div.term.rv > pre > span.c:nth-of-type(4)",
+     "text": "# pick a format",
+     "stop": 38,
+     "msg": "51 of 56 paragraphs of running text are set under 16px (13.4, 13.8, 14.4, 14.7, 14.9, 15.2, 15.4px)",
+     "fix": "set running text at 16px or more"
+    },
+    {
+     "check": "section-gaps",
+     "sev": "WARN",
+     "sel": "main > section.blk.tight / section#about",
+     "text": "",
+     "stop": 3,
+     "msg": "177px between these sections, +35% against the median 131px",
+     "crop": "390-26-section-gaps.jpg",
+     "fix": "use one gap between sections (all within 25% of each other)"
+    },
+    {
+     "check": "section-gaps",
+     "sev": "WARN",
+     "sel": "section#pipeline / section#series",
+     "text": "",
+     "stop": 12,
+     "msg": "165px between these sections, +26% against the median 131px",
+     "crop": "390-49-section-gaps.jpg",
+     "fix": "use one gap between sections (all within 25% of each other)"
+    },
+    {
+     "check": "section-gaps",
+     "sev": "WARN",
+     "sel": "main > section.blk.container:nth-of-type(19) / footer",
+     "text": "",
+     "stop": 48,
+     "msg": "64px between these sections, -51% against the median 131px",
+     "fix": "use one gap between sections (all within 25% of each other)"
+    },
+    {
+     "check": "nav-family",
+     "sev": "WARN",
+     "sel": "header.pill-wrap",
+     "text": "",
+     "stop": 16,
+     "msg": "the nav changes form as the page scrolls: its fill changes from #122562 to #101e45",
+     "crop": "390-66-nav-family.jpg",
+     "fix": "keep one nav on every screen: the same bar, fill, links and type"
+    },
+    {
+     "check": "fake-button",
+     "sev": "WARN",
+     "sel": "section#stack > div.marq:nth-of-type(2) > div > span:nth-of-type(1)",
+     "text": "Pythonpipeline",
+     "stop": 30,
+     "msg": "\"Pythonpipeline\" looks like a button (round, fill #11153b, the same look as the page's buttons) but is not a link or a button (8 like it)",
+     "fix": "make it a real link or button, or drop its button look"
+    },
+    {
+     "check": "fake-button",
+     "sev": "WARN",
+     "sel": "section#stack > div.marq:nth-of-type(2) > div > span:nth-of-type(9)",
+     "text": "Node.jsrender CLI",
+     "stop": 31,
+     "msg": "\"Node.jsrender CLI\" looks like a button (round, fill #111747, the same look as the page's buttons) but is not a link or a button (9 like it)",
+     "fix": "make it a real link or button, or drop its button look"
+    },
+    {
+     "check": "stranded-action",
+     "sev": "WARN",
+     "sel": "button#sztoggle",
+     "text": "Hide safe zones",
+     "msg": "stands 882px down from the nearest text of its block (\"Silicon Verdict is the product\") (and 2 more like it: \"Terms of Service\", \"Privacy Policy\")",
+     "stop": 2,
+     "crop": "390-22-stranded-action.jpg",
+     "fix": "put the button under or beside the text it belongs to"
+    },
+    {
+     "check": "fold-action",
+     "sev": "WARN",
+     "sel": "button#sztoggle",
+     "text": "",
+     "msg": "the hero's second button \"Hide safe zones\" starts 686px below the first screen (844px tall): it is not seen on load",
+     "stop": 2,
+     "crop": "390-23-fold-action.jpg",
+     "fix": "bring the hero's buttons onto the first screen: a shorter headline or line, the picture under the buttons"
+    }
+   ],
+   "glAsked": 0
+  }
+ ],
+ "notChecked": [
+  "scroll-linked (stepping)",
+  "scroll-reveal (the reveal walk; IntersectionObserver reveals are read)",
+  "hover-spill",
+  "hidden-visual",
+  "loop-pause",
+  "forms",
+  "reduced-motion",
+  "the dead-IntersectionObserver walk (hidden content is read with scripts off and under reduced motion)",
+  "hover-move"
+ ],
+ "shaders": 0,
+ "hidden": {
+  "screens": 48,
+  "quick": true
+ },
+ "sweep": {
+  "widths": [
+   1280,
+   1152,
+   1024,
+   896,
+   768
+  ],
+  "errors": [],
+  "findings": []
+ },
+ "narrow": {
+  "width": 320,
+  "height": 640,
+  "errors": [],
+  "findings": [
+   {
+    "check": "fold-cut",
+    "sev": "WARN",
+    "sel": "section#top > div.hero2 > div:nth-of-type(1) > p.lead",
+    "text": "Silicon Verdict is the production pipeline behin",
+    "msg": "a line of the hero text is sliced by the bottom of the first screen",
+    "crop": "narrow-320-01-fold-cut.jpg",
+    "width": 320,
+    "fix": "size the hero so the heading ends above the fold, or starts below it"
+   },
+   {
+    "check": "tap-size",
+    "sev": "WARN",
+    "sel": "button.pausebtn.global",
+    "text": "Pause motion",
+    "msg": "a 113x33px tap target: under the 44px a phone needs",
+    "crop": "narrow-320-02-tap-size.jpg",
+    "width": 320,
+    "fix": "make every link and control outside running text 44px tall on a phone: display: inline-flex; align-items: center; min-height: 44px (a footer list then needs no gap), a 44px small button, or a transparent ::before laid past the box"
+   },
+   {
+    "check": "tap-size",
+    "sev": "WARN",
+    "sel": "header.pill-wrap > nav.navpill > a.brand",
+    "text": "SiliconVerdict",
+    "msg": "a 34x34px tap target: under the 44px a phone needs",
+    "crop": "narrow-320-03-tap-size.jpg",
+    "width": 320,
+    "fix": "make every link and control outside running text 44px tall on a phone: display: inline-flex; align-items: center; min-height: 44px (a footer list then needs no gap), a 44px small button, or a transparent ::before laid past the box"
+   },
+   {
+    "check": "tap-size",
+    "sev": "WARN",
+    "sel": "header.pill-wrap > nav.navpill > button.cmdk",
+    "text": "Jump to…⌘K",
+    "msg": "a 36x36px tap target: under the 44px a phone needs",
+    "crop": "narrow-320-04-tap-size.jpg",
+    "width": 320,
+    "fix": "make every link and control outside running text 44px tall on a phone: display: inline-flex; align-items: center; min-height: 44px (a footer list then needs no gap), a 44px small button, or a transparent ::before laid past the box"
+   },
+   {
+    "check": "tap-size",
+    "sev": "WARN",
+    "sel": "header.pill-wrap > nav.navpill > a.cta-pill",
+    "text": "Watch",
+    "msg": "a 79x42px tap target: under the 44px a phone needs",
+    "crop": "narrow-320-05-tap-size.jpg",
+    "width": 320,
+    "fix": "make every link and control outside running text 44px tall on a phone: display: inline-flex; align-items: center; min-height: 44px (a footer list then needs no gap), a 44px small button, or a transparent ::before laid past the box"
+   },
+   {
+    "check": "tap-size",
+    "sev": "WARN",
+    "sel": "button#sztoggle",
+    "text": "Hide safe zones",
+    "msg": "a 146x39px tap target: under the 44px a phone needs",
+    "crop": "narrow-320-06-tap-size.jpg",
+    "width": 320,
+    "fix": "make every link and control outside running text 44px tall on a phone: display: inline-flex; align-items: center; min-height: 44px (a footer list then needs no gap), a 44px small button, or a transparent ::before laid past the box"
+   },
+   {
+    "check": "tap-size",
+    "sev": "WARN",
+    "sel": "div.split > div.rv.r > div.orbit > button.pausebtn",
+    "text": "Pause",
+    "msg": "a 67x33px tap target: under the 44px a phone needs",
+    "width": 320,
+    "fix": "make every link and control outside running text 44px tall on a phone: display: inline-flex; align-items: center; min-height: 44px (a footer list then needs no gap), a 44px small button, or a transparent ::before laid past the box"
+   },
+   {
+    "check": "tap-size",
+    "sev": "WARN",
+    "sel": "section#formats > div.rv.z > div.tabs > button.tab.on",
+    "text": "Classic",
+    "msg": "a 87x39px tap target: under the 44px a phone needs",
+    "width": 320,
+    "fix": "make every link and control outside running text 44px tall on a phone: display: inline-flex; align-items: center; min-height: 44px (a footer list then needs no gap), a 44px small button, or a transparent ::before laid past the box"
+   },
+   {
+    "check": "tap-size",
+    "sev": "WARN",
+    "sel": "section#formats > div.rv.z > div.tabs > button.tab:nth-of-type(2)",
+    "text": "Myth",
+    "msg": "a 72x39px tap target (and 9 more like it on this screen): under the 44px a phone needs",
+    "width": 320,
+    "fix": "make every link and control outside running text 44px tall on a phone: display: inline-flex; align-items: center; min-height: 44px (a footer list then needs no gap), a 44px small button, or a transparent ::before laid past the box"
+   },
+   {
+    "check": "off-viewport",
+    "sev": "FAIL",
+    "sel": "a.skip",
+    "text": "Skip to content",
+    "msg": "at 320px wide it runs 999px past the screen's left edge (cut there: the page clips what runs past it)",
+    "width": 320,
+    "fix": "keep it inside the screen at this width: let it shrink, wrap or stack"
+   },
+   {
+    "check": "off-viewport",
+    "sev": "FAIL",
+    "sel": "div.marq.rev > div > span",
+    "text": "TikTok Content Posting API v2export",
+    "msg": "at 320px wide it runs 3px past the screen's right edge (cut there: the page clips what runs past it)",
+    "crop": "narrow-320-08-off-viewport.jpg",
+    "width": 320,
+    "fix": "keep it inside the screen at this width: let it shrink, wrap or stack"
+   }
+  ]
+ },
+ "counts": {
+  "FAIL": 353,
+  "WARN": 82
+ },
+ "checks": {
+  "assets": "PASS",
+  "shader-lint": "PASS",
+  "gl-fallback": "PASS",
+  "empty-visual": "PASS",
+  "hero-fill": "PASS",
+  "flush": "PASS",
+  "placeholder": "PASS",
+  "sample-label": "PASS",
+  "caption": "PASS",
+  "credit-wall": "PASS",
+  "nav": "PASS",
+  "nav-covers": "FAIL",
+  "spill": "PASS",
+  "off-viewport": "FAIL",
+  "fold-card": "PASS",
+  "hover-spill": "not checked",
+  "overlap-text": "FAIL",
+  "collide": "FAIL",
+  "tap-size": "FAIL",
+  "row-gap": "PASS",
+  "cut-text": "FAIL",
+  "fold-cut": "WARN",
+  "marquee": "PASS",
+  "scroll-linked": "not checked",
+  "scroll-reveal": "FAIL",
+  "pinned": "PASS",
+  "loop-pause": "not checked",
+  "reduced-motion": "not checked",
+  "hidden-content": "FAIL",
+  "webgl": "PASS",
+  "no-visual": "FAIL",
+  "text-only": "WARN",
+  "card-visual": "FAIL",
+  "hidden-visual": "not checked",
+  "card-family": "PASS",
+  "card-layout": "PASS",
+  "nesting": "PASS",
+  "effect-repeat": "PASS",
+  "ui-fit": "PASS",
+  "ui-centre": "PASS",
+  "dark-ground": "PASS",
+  "button-styles": "FAIL",
+  "button-shape": "PASS",
+  "same-action": "PASS",
+  "button-picture": "PASS",
+  "cta": "WARN",
+  "pricing-tiers": "PASS",
+  "copy-headline": "WARN",
+  "copy-fact": "PASS",
+  "copy-headings": "FAIL",
+  "copy-buttons": "WARN",
+  "copy-actions": "FAIL",
+  "heading-scale": "FAIL",
+  "stagger": "FAIL",
+  "top-stagger": "PASS",
+  "off-grid": "FAIL",
+  "col-edge": "WARN",
+  "right-edge": "PASS",
+  "centre-axis": "PASS",
+  "tilt": "FAIL",
+  "contrast": "FAIL",
+  "text-contrast": "FAIL",
+  "body-size": "WARN",
+  "busy-ground": "PASS",
+  "section-gaps": "FAIL",
+  "proximity": "PASS",
+  "hole": "PASS",
+  "links": "PASS",
+  "forms": "not checked",
+  "photo-upscale": "PASS",
+  "photo-set": "PASS",
+  "photo-credit": "WARN",
+  "nav-family": "WARN",
+  "nav-labels": "PASS",
+  "link-styles": "PASS",
+  "heading-align": "PASS",
+  "label-centre": "PASS",
+  "fake-button": "WARN",
+  "stranded-action": "WARN",
+  "orphan": "PASS",
+  "unit-break": "PASS",
+  "tab-wrap": "PASS",
+  "effects-fit": "PASS",
+  "fade-cut": "PASS",
+  "photo-weight": "PASS",
+  "copy-length": "WARN",
+  "nav-current": "PASS",
+  "progress-bar": "PASS",
+  "photo-repeat": "PASS",
+  "button-contrast": "PASS",
+  "photo-print": "PASS",
+  "grounds": "PASS",
+  "split-align": "WARN",
+  "fact-agree": "PASS",
+  "fold-action": "WARN",
+  "action-count": "PASS",
+  "one-screen": "PASS",
+  "hover": "not checked",
+  "hover-move": "not checked",
+  "product-shown": "PASS",
+  "same-object": "PASS",
+  "font-load": "PASS",
+  "visual-caption": "PASS",
+  "visual-empty": "PASS",
+  "effect-kind": "PASS",
+  "hero-enter": "PASS",
+  "moment-none": "WARN",
+  "street-number": "PASS",
+  "postcode": "PASS",
+  "coordinates": "PASS",
+  "company-number": "PASS",
+  "phone-number": "PASS",
+  "hero-screen": "FAIL",
+  "section-height": "FAIL",
+  "section-air": "FAIL",
+  "one-section": "FAIL",
+  "one-heading": "PASS",
+  "container-edges": "FAIL",
+  "row-lines": "FAIL",
+  "split-pair": "FAIL",
+  "motion-layer": "PASS",
+  "count-text": "PASS",
+  "loop-cycle": "PASS",
+  "section-tile": "FAIL",
+  "empty-area": "FAIL",
+  "a11y-name": "PASS",
+  "img-alt": "PASS",
+  "field-label": "PASS",
+  "heading-order": "PASS",
+  "tabindex": "PASS",
+  "focus-ring": "PASS",
+  "focus-visible": "FAIL",
+  "focus-hidden": "PASS",
+  "skip-link": "PASS",
+  "menu-toggle": "FAIL",
+  "lang": "PASS",
+  "page-meta": "PASS",
+  "share-meta": "PASS",
+  "action-repeat": "PASS",
+  "map-link": "PASS",
+  "open-now": "PASS",
+  "assumed": "PASS",
+  "run-on": "PASS",
+  "form-fields": "PASS",
+  "form-send": "PASS"
+ }
+}

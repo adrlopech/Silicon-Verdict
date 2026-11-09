@@ -1,0 +1,62 @@
+/* Audit fixes (design-taste-frontend checks) that leave the scroll behaviour alone: contrast, edges, headings, visuals, pause, one screen per section. */
+:root, html[data-look] { --dim: #93A1BA; }
+html[data-look="paper"] { --dim: #566786; }
+.step .pin { color: var(--ink2); }
+.flow i { color: var(--muted); }
+.slide small { color: #C9D6EC; }
+.btn-p, .cta-pill { color: #06111f; }
+.slide:not(.on) { visibility: hidden; }
+
+/* nav on the content lines, one bar */
+header.pill-wrap { padding: 10px 24px 0; }
+nav.navpill { width: 100%; max-width: 1112px; justify-content: space-between; }
+nav.navpill .pill-links { margin: 0 auto; }
+
+/* splits top-aligned; rows end on the container lines */
+.split, .panel { align-items: start; }
+@media (min-width: 1001px) {
+  .series > .card:nth-child(4):nth-last-child(2), .series > .card:nth-child(5):last-child { grid-column: span 3; }
+}
+.lockup { width: 100%; }
+.lk-type { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; gap: 12px; text-align: left; }
+.lk-word { font-size: clamp(2rem, 4vw, 3rem); }
+.series .n { font-size: 3rem; }
+@media (max-width: 640px) { .series .n { display: none; } }
+.subhead { font-size: 1.25rem; font-weight: 700; text-align: center; letter-spacing: -.01em; margin: 0 0 8px; }
+
+/* tech stack: a wrapped list, no clipped carousel */
+.marq { overflow: visible; mask-image: none; -webkit-mask-image: none; }
+.marq div { width: auto; flex-wrap: wrap; justify-content: center; animation: none; }
+
+/* one button shape */
+.btn, .cta-pill, .tab, #sztoggle { border-radius: 14px; }
+
+/* focus ring on the side dots */
+.dots a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 6px; }
+
+/* diagrams */
+.vis { max-width: 820px; margin: 0 auto 56px; padding: 22px 28px; border-radius: 22px; background: var(--card); border: 1px solid var(--line); }
+.vis svg { display: block; width: 100%; height: auto; }
+.vis .ln, .vis .ar { stroke: var(--line-c); stroke-width: 2; fill: none; stroke-linecap: round; }
+.vis .nd { fill: rgba(var(--ac), .14); stroke: var(--cyan); stroke-width: 1.6; }
+.vis .fr { fill: rgba(var(--ac2), .1); stroke: var(--line-c); stroke-width: 1.4; }
+.vis .pl { fill: var(--cyan); opacity: .85; }
+.vis .ck { fill: none; stroke: var(--cyan); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.vis .tx { fill: var(--cyan); font: 600 14px var(--font); }
+.vis .lb { fill: var(--ink2); font: 500 14px var(--font); }
+
+/* pause control */
+.pausebtn { font: 600 .78rem var(--font); color: var(--text); background: var(--card-2); border: 1px solid var(--line-c); border-radius: 14px; padding: 8px 14px; cursor: pointer; transition: background-color .3s ease; }
+.pausebtn:hover { background: var(--card); }
+.orbit .pausebtn { position: absolute; right: 0; bottom: -6px; z-index: 3; }
+.pausebtn.global { position: fixed; left: 18px; bottom: 18px; z-index: 95; }
+html.motion-paused *, html.motion-paused *::before, html.motion-paused *::after { animation-play-state: paused !important; }
+
+/* one section per screen */
+section.blk:not(#pipeline):not(#changelog):not(#top) { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; }
+@media (max-width: 640px) { section.blk:not(#pipeline):not(#changelog):not(#top) { min-height: 0; } }
+
+/* second pass: text at 7:1, decorative numbers legible, terminal comments */
+.card p, .sub, .lead, .checks p, .step p { color: var(--ink2); }
+.series .n { color: rgba(var(--wh), .38); }
+.term .c, .term .bar span { color: #AEBBD2; }
