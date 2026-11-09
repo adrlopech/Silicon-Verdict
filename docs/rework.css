@@ -203,3 +203,13 @@ small, .tagline { opacity: 1; }
 @keyframes s2ok { 0%, 53% { opacity: 0; } 58%, 94% { opacity: 1; } 98%, 100% { opacity: 0; } }
 @keyframes r2lit { 0%, 33% { border-color: rgba(var(--wh), .09); background: rgba(var(--wh), .045); } 40%, 94% { border-color: rgba(var(--ac), .65); background: linear-gradient(160deg, rgba(var(--ac), .16), rgba(var(--ac2), .06)); } 100% { border-color: rgba(var(--wh), .09); background: rgba(var(--wh), .045); } }
 @media (max-width: 900px) { .rail { margin: 0 auto; width: 100%; } }
+
+/* roster title cards: real names and years from the catalog, Steam as the source */
+.gwall { grid-template-columns: repeat(4, 1fr); }
+.gtitle { position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; min-height: 118px; padding: 16px 18px; border-radius: 18px; text-align: left; overflow: hidden;
+  background: radial-gradient(circle at 100% 0%, rgba(var(--ac2), .34), rgba(var(--cardc), .8) 62%); border: 1px solid rgba(var(--ac), .24); transition: border-color .4s ease, transform .5s cubic-bezier(.22,1,.36,1); }
+.gtitle:hover { border-color: rgba(var(--ac), .65); transform: translateY(-3px); }
+.gtitle b { color: #fff; font-size: 1.02rem; line-height: 1.18; letter-spacing: -.015em; font-weight: 600; max-width: 82%; }
+.gtitle .gy { font: 600 .74rem var(--mono); color: var(--cyan); letter-spacing: .08em; }
+.gtitle .mono { position: absolute; right: 14px; top: 14px; width: 22px; height: 22px; opacity: .85; }
+@media (max-width: 900px) { .gwall { grid-template-columns: repeat(2, 1fr); } }
