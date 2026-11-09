@@ -65,7 +65,10 @@ Cada vez que el usuario escriba la palabra **"limpieza"** en el chat:
 
 ---
 
-## Protocolo de Disparo: "genera" (Flujo Guiado Interactivo de Dos Pasos)
+## Protocolo de Disparo: "genera" (ACTUAL desde 2026-11-09: lote automático de 4 vídeos)
+Al escribir **"genera"** (o `/genera`): no hay menú. Se ejecuta `scripts/genera_batch.py` (`--plan` solo muestra el plan): elige 4 formatos DISTINTOS con los datos de YouTube Analytics (2 probados, 1 de exploración, 1 por sorteo ponderado), renderiza los 4, los sube a YouTube como privados con `publishAt` MAÑANA en las mejores horas (franjas por defecto 13:00/16:00/19:00/22:00 UTC; con 2+ vídeos por franja se reordenan por vistas medias, `data/batch_log.json`) y prepara `data/batch_latest.json` para programarlos en TikTok Studio (@siliconverdict) siguiendo `.claude/commands/genera.md`. El menú de abajo queda como referencia del flujo manual anterior.
+
+## (Referencia anterior) "genera" (Flujo Guiado Interactivo de Dos Pasos)
 Cuando el usuario escriba exactamente la palabra clave **"genera"** en la interfaz o chat de Antigravity:
 
 1. **Paso 1: Despliegue del Menú de Selección (Suspensión de Ejecución)**
