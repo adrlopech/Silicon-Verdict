@@ -289,3 +289,8 @@ small, .tagline { opacity: 1; }
 /* round junction dots: the drop is 8px wide so the dot is not clipped to the 2px line */
 .rm-col::before { width: 8px; margin-left: -4px; background: radial-gradient(circle at 50% 100%, var(--cyan) 0 4px, transparent 4.5px), linear-gradient(180deg, rgba(var(--ac), .9), rgba(var(--ac), .55)) center / 2px 100% no-repeat; border-radius: 0; }
 .rm-col::after { width: 8px; margin-left: -4px; background: radial-gradient(circle at 50% 0, var(--cyan) 0 4px, transparent 4.5px), linear-gradient(0deg, rgba(var(--ac), .9), rgba(var(--ac), .55)) center / 2px 100% no-repeat !important; border-radius: 0; }
+
+/* tiles that link out */
+a.glogo, a.logo { text-decoration: none; color: inherit; cursor: pointer; }
+a.logo:hover b { color: var(--cyan); }
+a.glogo:focus-visible, a.logo:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
