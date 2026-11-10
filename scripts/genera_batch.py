@@ -24,7 +24,7 @@ import subprocess
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
@@ -57,9 +57,9 @@ def format_stats() -> Dict[str, Dict[str, float]]:
     return out
 
 
-def pick_formats(stats: Dict[str, Dict[str, float]], rng: random.Random, n: int = 4) -> List[Dict[str, Any]]:
+def pick_formats(stats: Dict[str, Dict[str, float]], rng: random.Random, n: int = 4, avoid: Optional[List[str]] = None) -> List[Dict[str, Any]]:
     from services.motion_generator import FORMAT_WEIGHTS, FORMATS
-    pool = [f for f in FORMATS if f not in ("easter",) and f in FORMAT_WEIGHTS]
+    pool = [f for f in FORMATS if f not in ("easter",) and f in FORMAT_WEIGHTS and f not in (avoid or [])]
     chosen: List[Dict[str, Any]] = []
 
     def add(fmt: str, why: str) -> None:
@@ -114,7 +114,7 @@ def small_copy(src: str, dst: Path) -> Path:
 
 def tiktok_caption(title: str) -> Dict[str, Any]:
     tags = re.findall(r"#([A-Za-z0-9]+)", re.sub(r"#\d+", "", title))
-    text = re.sub(r"\s*#\d+:?", "", title)  # "#1" would turn into a hashtag in the TikTok box
+    text = re.sub(r"#(\d+)", r"\1", title)  # "#1" would turn into a hashtag in the TikTok box: write "1"
     text = re.sub(r"\s*#\w+", "", text).strip()
     return {"caption": text, "hashtags": ["#" + t for t in tags]}
 
@@ -124,12 +124,14 @@ def main() -> int:
     ap.add_argument("--plan", action="store_true", help="show the plan and stop")
     ap.add_argument("--date", help="UTC date to publish on (default: tomorrow)")
     ap.add_argument("--seed", type=int, default=None)
+    ap.add_argument("--avoid", default="", help="comma-separated formats to leave out (e.g. the ones of the previous day)")
+    ap.add_argument("--out", default=None, help="where to write the batch manifest (default data/batch_latest.json)")
     args = ap.parse_args()
 
     day = datetime.strptime(args.date, "%Y-%m-%d").date() if args.date else (datetime.now(timezone.utc) + timedelta(days=1)).date()
     print("Reading the channel's numbers...")
     stats = format_stats()
-    picks = pick_formats(stats, random.Random(args.seed))
+    picks = pick_formats(stats, random.Random(args.seed), avoid=[x for x in args.avoid.split(",") if x])
     slots = ranked_slots()
     plan = []
     for pick, slot in zip(picks, slots):  # the best formats take the best-ranked slots
@@ -156,11 +158,12 @@ def main() -> int:
         entry = {**p, "title": res["title"], **tiktok_caption(res["title"]), "video": video, "tiktok_copy": str(small), "video_id": m[1] if m else None}
         done.append(entry)
         print(f"  {res['title']}\n  YouTube: {m[0] if m else 'FAILED'}  | TikTok copy: {small}")
-    LATEST.write_text(json.dumps(done, ensure_ascii=False, indent=1))
+    out = Path(args.out) if args.out else LATEST
+    out.write_text(json.dumps(done, ensure_ascii=False, indent=1))
     log = json.loads(LOG.read_text()) if LOG.is_file() else []
     log += [{"video_id": e["video_id"], "slot": e["slot"], "format": e["format"], "date": str(day)} for e in done if e["video_id"]]
     LOG.write_text(json.dumps(log, indent=1))
-    print(f"\nYouTube is scheduled. TikTok: finish in TikTok Studio from {LATEST.relative_to(BASE_DIR)} (caption, hashtags picked from the dropdown, Programación at each slot).")
+    print(f"\nYouTube is scheduled. TikTok: finish in TikTok Studio from {out} (caption, hashtags picked from the dropdown, Programación at each slot).")
     return 0
 
 
