@@ -1,14 +1,6 @@
 {
  "history": [
   {
-   "at": "2026-11-09T23:53:59.080Z",
-   "mode": "hook",
-   "host": "claude",
-   "decision": "allow",
-   "reason": "no build is active here",
-   "stopHookActive": false
-  },
-  {
    "at": "2026-11-09T23:55:28.177Z",
    "mode": "hook",
    "host": "claude",
@@ -154,6 +146,14 @@
   },
   {
    "at": "2026-11-10T20:05:44.392Z",
+   "mode": "hook",
+   "host": "claude",
+   "decision": "allow",
+   "reason": "no build is active here",
+   "stopHookActive": false
+  },
+  {
+   "at": "2026-11-10T20:07:08.948Z",
    "mode": "hook",
    "host": "claude",
    "decision": "allow",

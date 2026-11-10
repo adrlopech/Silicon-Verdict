@@ -495,6 +495,17 @@
     "trademark": false
   },
   {
+    "file": "ui-play.svg",
+    "icon": "ui:play",
+    "name": "Play",
+    "kind": "line",
+    "source": "@iconify-json/lucide@1.2.100",
+    "author": "Lucide Contributors",
+    "licence": "ISC",
+    "url": "https://github.com/lucide-icons/lucide",
+    "trademark": false
+  },
+  {
     "file": "ui-quote.svg",
     "icon": "ui:quote",
     "name": "Quote",
