@@ -1,0 +1,37 @@
+name: Latest video on the portal
+
+# Every 15 minutes: reads the channel's public YouTube feed and, if a new PUBLIC video appeared,
+# updates the hero card (cover, title, links) and commits it to main. Scheduled (private) videos never show up in the feed.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: latest-video
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pillow
+      - run: python scripts/update_latest_video.py
+      - name: Commit if the card changed
+        run: |
+          if git diff --quiet -- docs/index.html docs/assets/latest; then
+            echo "nothing new"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add docs/index.html docs/assets/latest
+            git commit -m "docs(site): latest video card follows the newest public upload"
+            git push
+          fi
