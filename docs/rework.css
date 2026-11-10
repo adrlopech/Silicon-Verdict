@@ -258,3 +258,34 @@ small, .tagline { opacity: 1; }
 .tree { display: none; }
 @media (max-width: 1000px) { .rm-cols { grid-template-columns: 1fr 1fr; } .rm-cols::before, .rm-col::before, .rm-col::after { display: none; } .rm-sg { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 640px) { .rm-cols { grid-template-columns: 1fr; } .rm-sg { grid-template-columns: 1fr; } }
+
+/* even game logos: every logo is trimmed and fitted to the same box */
+.glogo .gl { width: min(200px, 100%); height: auto; aspect-ratio: 200 / 64; margin: 0 auto; }
+
+/* formats: the last two cards share the last row */
+.fgrid { grid-template-columns: repeat(6, 1fr); }
+.fgrid .fcard { grid-column: span 2; }
+.fgrid .fcard:nth-last-child(-n+2) { grid-column: span 3; }
+@media (max-width: 1000px) { .fgrid { grid-template-columns: 1fr 1fr; } .fgrid .fcard, .fgrid .fcard:nth-last-child(-n+2) { grid-column: auto; } .fgrid .fcard:last-child { grid-column: 1 / -1; } }
+@media (max-width: 640px) { .fgrid { grid-template-columns: 1fr; } .fgrid .fcard:last-child { grid-column: auto; } }
+
+/* repository map: clean bus lines with junction dots */
+.rm-trunk { width: 2px; height: 18px; border-radius: 2px; background: linear-gradient(180deg, rgba(var(--ac), .9), rgba(var(--ac), .55)); position: relative; }
+.rm-trunk::after { content: ""; position: absolute; left: 50%; bottom: -4px; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 0 4px rgba(var(--ac), .18); }
+.rm-trunk.back { margin-top: 18px; } .rm-trunk.back::after { bottom: auto; top: -4px; }
+.rm-cols { margin-top: 18px; }
+.rm-cols::before { top: -18px; left: 12.5%; right: 12.5%; height: 2px; border-radius: 2px; background: linear-gradient(90deg, rgba(var(--ac), .25), rgba(var(--ac), .9) 30%, rgba(var(--ac), .9) 70%, rgba(var(--ac), .25)); }
+.rm-cols::after { content: ""; position: absolute; left: 12.5%; right: 12.5%; bottom: -18px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, rgba(var(--ac), .25), rgba(var(--ac), .9) 30%, rgba(var(--ac), .9) 70%, rgba(var(--ac), .25)); }
+.rm-col::before { top: -18px; height: 18px; width: 2px; border-radius: 2px; background: radial-gradient(circle at 50% 100%, var(--cyan) 0 3.5px, transparent 4px), linear-gradient(180deg, rgba(var(--ac), .9), rgba(var(--ac), .55)); }
+.rm-col::after { content: "" !important; position: absolute; left: 50%; bottom: -18px; top: auto !important; right: auto !important; width: 2px; height: 18px; border-radius: 2px; background: radial-gradient(circle at 50% 0, var(--cyan) 0 3.5px, transparent 4px), linear-gradient(0deg, rgba(var(--ac), .9), rgba(var(--ac), .55)); -webkit-mask: none !important; mask: none !important; opacity: 1 !important; }
+.rm-ch::after { content: ""; position: absolute; right: -28px; top: 28px; width: 34px; height: 34px; border-radius: 50%; background: color-mix(in srgb, var(--bg) 80%, rgb(var(--ac2))); border: 1px solid rgba(var(--ac), .55); z-index: 3; display: none; }
+.rm-ch { position: static; }
+.rm-col:not(:last-child) .rm-ch::after { display: block; filter: none; }
+@media (max-width: 1000px) { .rm-cols::before, .rm-cols::after, .rm-col::before, .rm-col::after, .rm-ch::after { display: none !important; } }
+
+.rm-col:not(:last-child)::before { }
+.rm-col:not(:last-child) .rm-ch::before { content: ""; position: absolute; right: -19px; top: 37px; width: 16px; height: 16px; background: var(--cyan); -webkit-mask: url(assets/icons/ui-arrow-right.svg) center / contain no-repeat; mask: url(assets/icons/ui-arrow-right.svg) center / contain no-repeat; z-index: 4; }
+@media (max-width: 1000px) { .rm-col .rm-ch::before { display: none !important; } }
+/* round junction dots: the drop is 8px wide so the dot is not clipped to the 2px line */
+.rm-col::before { width: 8px; margin-left: -4px; background: radial-gradient(circle at 50% 100%, var(--cyan) 0 4px, transparent 4.5px), linear-gradient(180deg, rgba(var(--ac), .9), rgba(var(--ac), .55)) center / 2px 100% no-repeat; border-radius: 0; }
+.rm-col::after { width: 8px; margin-left: -4px; background: radial-gradient(circle at 50% 0, var(--cyan) 0 4px, transparent 4.5px), linear-gradient(0deg, rgba(var(--ac), .9), rgba(var(--ac), .55)) center / 2px 100% no-repeat !important; border-radius: 0; }
