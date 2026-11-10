@@ -13,5 +13,10 @@
     each('.series:not(.looks) > .card.main', ['film'], '');
     each('.comp > .card', ['shield-check', 'lock', 'eye-off'], '');
   }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.ccopy'); if (!b) return;
+    var done = function () { var t = b.querySelector('span:last-child'); if (t) { t.textContent = 'Copied'; setTimeout(function () { t.textContent = 'Copy'; }, 1500); } };
+    try { navigator.clipboard.writeText(b.getAttribute('data-copy')).then(done); } catch (err) {}
+  });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
