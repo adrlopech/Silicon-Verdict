@@ -294,3 +294,7 @@ small, .tagline { opacity: 1; }
 a.glogo, a.logo { text-decoration: none; color: inherit; cursor: pointer; }
 a.logo:hover b { color: var(--cyan); }
 a.glogo:focus-visible, a.logo:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+
+/* publish step: the platform logos sit in the middle of their tiles, at a size that reads */
+.ill .pubA, .ill .pubB { top: 49%; width: 26%; height: auto; aspect-ratio: 1; transform: translate(-50%, -50%); }
+.ill .pubA { left: 27.2%; right: auto; } .ill .pubB { left: 72.8%; right: auto; }
