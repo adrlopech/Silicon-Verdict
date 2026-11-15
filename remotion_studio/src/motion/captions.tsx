@@ -19,7 +19,9 @@ export const chunkCaptions = (words: CaptionWord[], maxWords = 4, maxChars = 24)
     if (cur.length) out.push({ words: cur, s: cur[0].s, e: cur[cur.length - 1].e });
     cur = [];
   };
-  for (const w of words) {
+  for (const w0 of words) {
+    const w = { ...w0, w: w0.w.replace(/\*/g, '') };
+    if (!w.w) continue;
     const len = cur.map((x) => x.w).join(' ').length + w.w.length + 1;
     if (cur.length >= maxWords || (cur.length && len > maxChars)) flush();
     cur.push(w);

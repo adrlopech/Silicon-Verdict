@@ -554,6 +554,8 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
         project = generate_motion_project(topic, avoid_topics=get_recently_used_topics_safe(), kind="game" if game else "curiosity", game=game, catalog=catalog, facts=facts, fmt=format_name)
     logger.info("Motion Graphics (%s%s%s): '%s' (%d scenes)", project.kind, f", {game}" if game else "", f", format {format_name}" if format_name else "", project.title, len(project.scenes))
 
+    from services.motion_generator import strip_markers
+    strip_markers(project)  # *asterisks* around the accent word (a habit of the models) would be drawn and spoken literally
     from services.motion_generator import assign_cursors, sanitize_cursors
     sanitize_cursors(project.scenes, project.format)  # scripts written by hand (the banks) predate the rules: no tab, no hover, only pointer moments that mean something
     assign_cursors(project.scenes, project.format)

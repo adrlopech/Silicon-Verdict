@@ -482,15 +482,26 @@ def looks_english(text: str) -> bool:
     return spanish <= max(1, len(words) // 12) and english >= max(1, len(words) // 14)
 
 
+def strip_markers(p: MotionProject) -> None:
+    """Removes markdown emphasis marks (*word*, **word**) from everything shown, spoken or published: the renderer draws them as literal asterisks."""
+    clean = lambda t: re.sub(r"\s{2,}", " ", t.replace("*", "")).strip() if isinstance(t, str) else t
+    for f in ("title", "description", "pinned_comment", "screen_title"):
+        setattr(p, f, clean(getattr(p, f)))
+    p.tags = [clean(t) for t in p.tags]
+    for s in p.scenes:
+        for f in ("text", "accentText", "kicker", "narration", "unit", "left", "right", "callout"):
+            if getattr(s, f, None):
+                setattr(s, f, clean(getattr(s, f)))
+        if s.items:
+            s.items = [clean(i) for i in s.items]
+        if s.code:
+            s.code = [i.replace("*", "") for i in s.code] if s.type != "codeBlock" else s.code  # a code block may legitimately contain * (pointers, multiplication)
+
+
 def _repair(p: MotionProject) -> None:
     """Fixes what can be fixed without asking again: clamps scene lengths, trims overlong lists/code, forces the brand accent."""
+    strip_markers(p)
     for s in p.scenes:
-        s.text = s.text.replace("*", "").strip()  # the model sometimes marks the accent word with *asterisks*: they would be drawn literally
-        if s.accentText:
-            s.accentText = s.accentText.replace("*", "").strip()
-        if s.kicker:
-            s.kicker = s.kicker.replace("*", "").strip()
-        s.narration = s.narration.replace("*", "")
         s.durationInFrames = max(60, min(150, int(s.durationInFrames)))
         if s.items:
             s.items = s.items[:{"tier": 10, "timeline": 5, "ui": 6}.get(s.type, 4)]

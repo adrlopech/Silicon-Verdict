@@ -184,6 +184,7 @@ export const Kicker: React.FC<{ text?: string; delay?: number }> = ({ text, dela
   const frame = useCurrentFrame();
   const { theme, light } = useTheme();
   if (!text) return null;
+  text = text.replace(/\*/g, '');
   const p = interpolate(frame - delay, [0, 18], [0, 1], { ...clamp, easing: EASE_OUT });
   return (
     <div style={{ maxWidth: 940, fontFamily: MONO, fontSize: fit(30, text.length, 920, 0.95, 20), letterSpacing: 9, textTransform: 'uppercase', color: light ? 'rgba(10,18,32,0.6)' : 'rgba(255,255,255,0.55)', opacity: p, transform: `translateY(${(1 - p) * 14}px)` }}>
@@ -200,6 +201,7 @@ export const Words: React.FC<{ text: string; size: number; delay?: number; stagg
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const { theme, light } = useTheme();
+  text = text.replace(/\*/g, '');
   const words = (upper ? text.toUpperCase() : text).split(/\s+/).filter(Boolean);
   const longest = Math.max(1, ...words.map((w) => w.length));
   size = fit(size * look.scale, longest, 900, upper ? 0.74 : 0.64, 36); // a long word must never overflow the 1080 px frame
@@ -229,6 +231,7 @@ export const Accent: React.FC<{ text?: string; size: number; delay?: number }> =
   const look = useLook();
   const { scene } = useSceneCtx();
   if (!text) return null;
+  text = text.replace(/\*/g, '');
   const cue = scene?.accentCue != null ? Math.round(scene.accentCue * fps) : null;
   const pulse = cue != null ? interpolate(frame, [cue, cue + 5, cue + 16], [0, 1, 0], clamp) : 0; // the accent phrase pops as the narrator says it
   size = fit(size * look.scale, text.length, 900, 0.5, 44);
