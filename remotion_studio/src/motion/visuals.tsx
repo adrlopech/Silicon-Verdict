@@ -14,7 +14,7 @@ export type VisualName = 'crowd' | 'memory' | 'cores' | 'network' | 'bars' | 'wa
 export const VISUAL_NAMES: VisualName[] = ['crowd', 'memory', 'cores', 'network', 'bars', 'wave', 'gauge', 'map', 'city', 'layers', 'matrix', 'radar', 'orbit'];
 
 /** Scene types that carry a stage behind them (the others fill the frame by themselves). */
-export const STAGE_SCENES = new Set(['bigText', 'textWithAccent', 'card', 'counter', 'progressBar', 'curve', 'verdict', 'list', 'codeBlock', 'timeline']);
+export const STAGE_SCENES = new Set(['bigText', 'textWithAccent', 'card', 'counter', 'progressBar', 'curve', 'verdict', 'list', 'codeBlock', 'timeline', 'headline']);
 
 const RULES: [RegExp, VisualName][] = [
   [/\b(crowds?|npcs?|people|characters?|pedestrians?|players?|population|team|employees?|staff|citizens|everyone|audience)\b/i, 'crowd'],

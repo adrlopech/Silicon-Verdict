@@ -17,7 +17,8 @@ MIN_VIDEO_SECONDS = 62.0  # final length floor (YouTube monetisation: more than 
 VOICE_LEAD = 0.12  # seconds after a scene starts before the narrator speaks (the text lands first)
 # One narrator per format (content study, Nov 2026: viewers had already commented on hearing the same voice in every video). The numbers match ELEVENLABS_VOICE_1/2/3:
 # Daniel was dropped on 2026-11-15 (the user dislikes the voice): his formats went to Adam (hardware, evolution) and Liam (decode, the classic explainer). Game videos keep Liam.
-VOICE_BY_FORMAT = {"hardware": 2, "evolution": 2, "decode": 3, None: 3, "versus": 2, "myth": 2, "tier": 2, "whatif": 3, "fix": 3, "simple": 3, "easter": 3}
+VOICE_BY_FORMAT = {"hardware": 2, "evolution": 2, "decode": 3, None: 3, "versus": 2, "myth": 2, "tier": 2, "whatif": 3, "fix": 3, "simple": 3, "easter": 3,
+                   "top5": 3, "eli5": 3, "fails": 2, "numbers": 2, "quiz": 3, "stop": 3, "rumor": 2, "review": 2, "news": 2}
 
 
 def narrator_voice(project: Any) -> str:
@@ -278,6 +279,8 @@ MUSIC_BY_FORMAT = {
     None: ("motion_bed.wav", "bed_chill.mp3"), "hardware": ("motion_bed.wav", "bed_minimal.mp3"), "evolution": ("bed_epic.mp3", "motion_bed.wav"), "decode": ("bed_minimal.mp3", "bed_chill.mp3"),
     "versus": ("bed_drive.mp3", "bed_epic.mp3"), "myth": ("bed_dark.mp3", "bed_minimal.mp3"), "tier": ("bed_drive.mp3", "bed_bright.mp3"), "whatif": ("bed_dark.mp3", "bed_epic.mp3"),
     "fix": ("bed_bright.mp3", "bed_chill.mp3"), "simple": ("bed_chill.mp3", "bed_bright.mp3"), "easter": ("bed_epic.mp3", "bed_dark.mp3"),
+    "top5": ("bed_drive.mp3", "bed_bright.mp3"), "eli5": ("bed_chill.mp3", "bed_bright.mp3"), "fails": ("bed_dark.mp3", "bed_epic.mp3"), "numbers": ("bed_minimal.mp3", "bed_drive.mp3"),
+    "quiz": ("bed_bright.mp3", "bed_drive.mp3"), "stop": ("bed_drive.mp3", "bed_dark.mp3"), "rumor": ("bed_dark.mp3", "bed_minimal.mp3"), "review": ("bed_minimal.mp3", "bed_chill.mp3"), "news": ("bed_minimal.mp3", "bed_epic.mp3"),
 }
 WHOOSHES = ("sfx_whoosh.wav", "sfx_whoosh_soft.wav", "sfx_swish.wav", "sfx_slide.wav")  # scene changes rotate through these
 
@@ -503,7 +506,7 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
 
     from services.motion_generator import FORMATS
     if fmt == "any":  # automatic: one of the topics of the Motion Graphics menu (classic, curiosity, game and every format), never the same as last time
-        options = [("auto", "auto"), ("curiosity", "auto"), ("game", "auto")] + [("auto", f) for f in FORMATS]
+        options = [("auto", "auto"), ("curiosity", "auto"), ("game", "auto")] + [("auto", f) for f in FORMATS if f != "news"]  # the news bulletin is a section of its own: never a random pick
         if not available_games():
             options = [o for o in options if o[0] != "game" and o[1] != "easter"]
         last = _last_motion_choice()
@@ -519,6 +522,10 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
     elif fmt != "auto":
         kind = "curiosity"  # the other formats are told with motion graphics only
     format_name = None if fmt == "auto" else fmt
+    if fmt == "news":  # the bulletin reads today's headlines (public RSS feeds) as its SOURCE TEXT
+        from services.tech_news import build_source_text
+        source_text = source_text or build_source_text()
+        topic = topic or f"Tech briefing of {datetime.now(timezone.utc).strftime('%d %B %Y')}"
     facts = source_text if (source_text and topic and kind == "curiosity") else None
     game = None
     project = None

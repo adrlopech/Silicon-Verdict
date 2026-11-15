@@ -1,0 +1,114 @@
+{
+ "accent": "#00F0FF",
+ "kind": "curiosity",
+ "topic": "Five reasons a gaming PC stutters, ranked",
+ "screen_title": "Why PCs stutter",
+ "title": "Top 5: Why Your PC Stutters #siliconverdict #pcgaming #techtop5",
+ "description": "Five common reasons a gaming PC stutters, counted down from five to one, with the mechanism behind each.",
+ "tags": [
+  "pcgaming",
+  "stutter",
+  "fps",
+  "vram",
+  "ram",
+  "ssd",
+  "cpu",
+  "hardware"
+ ],
+ "pinned_comment": "Heat or memory? Reply with one word.",
+ "format": "top5",
+ "scenes": [
+  {
+   "type": "bigText",
+   "text": "Why games stutter",
+   "narration": "Your PC doesn't stutter by accident. Here are five real reasons, ranked.",
+   "durationInFrames": 90,
+   "icons": [
+    "gauge",
+    "warning"
+   ]
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Five culprits",
+   "narration": "Stay to the end, because the number one cause surprises most people.",
+   "durationInFrames": 100,
+   "accentText": "ranked"
+  },
+  {
+   "type": "rank",
+   "text": "Background apps",
+   "narration": "Number five: background apps quietly eat memory and processor time while you play.",
+   "durationInFrames": 120,
+   "value": 5,
+   "accentText": "stealing RAM",
+   "kicker": "top 5"
+  },
+  {
+   "type": "rank",
+   "text": "Overheating chip",
+   "narration": "Number four: when a chip gets too hot, it slows itself down to stay safe.",
+   "durationInFrames": 120,
+   "value": 4,
+   "accentText": "thermal throttling",
+   "kicker": "top 5"
+  },
+  {
+   "type": "rank",
+   "text": "Slow storage",
+   "narration": "Number three: games streaming from a hard drive wait much longer than from an SSD.",
+   "durationInFrames": 120,
+   "value": 3,
+   "accentText": "waiting on disk",
+   "kicker": "top 5"
+  },
+  {
+   "type": "counter",
+   "text": "Frame budget",
+   "narration": "At sixty frames per second, every frame gets about sixteen point seven milliseconds.",
+   "durationInFrames": 120,
+   "accentText": "per frame",
+   "value": 16.7,
+   "unit": "ms"
+  },
+  {
+   "type": "rank",
+   "text": "Too little RAM",
+   "narration": "Number two: when memory runs out, Windows swaps data to disk, and frames hitch.",
+   "durationInFrames": 120,
+   "value": 2,
+   "accentText": "swapping to disk",
+   "kicker": "top 5"
+  },
+  {
+   "type": "rank",
+   "text": "Out of VRAM",
+   "narration": "And number one: graphics memory runs out, so textures must be fetched mid-game.",
+   "durationInFrames": 130,
+   "value": 1,
+   "accentText": "VRAM shortage",
+   "kicker": "top 5"
+  },
+  {
+   "type": "card",
+   "text": "Memory beats speed",
+   "narration": "Often, the fastest chip loses to a smaller, steadier pool of memory.",
+   "durationInFrames": 110,
+   "accentText": "steady wins"
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Fix the cause",
+   "narration": "Check temperatures and memory before you spend money on a faster chip.",
+   "durationInFrames": 110,
+   "accentText": "check first"
+  },
+  {
+   "type": "outro",
+   "text": "Smooth",
+   "narration": "Follow for more tech. Which hurts more, heat or low memory?",
+   "durationInFrames": 100,
+   "accentText": "Follow for more"
+  }
+ ]
+}

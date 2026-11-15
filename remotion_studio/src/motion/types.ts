@@ -1,5 +1,5 @@
 /** Data contract of the MotionGraphic composition. Everything shown on screen comes from these props (no text lives in the code). */
-export type SceneType = 'bigText' | 'textWithAccent' | 'counter' | 'list' | 'codeBlock' | 'progressBar' | 'outro' | 'curve' | 'flash' | 'footage' | 'tier' | 'versus' | 'verdict' | 'timeline' | 'ui' | 'card';
+export type SceneType = 'bigText' | 'textWithAccent' | 'counter' | 'list' | 'codeBlock' | 'progressBar' | 'outro' | 'curve' | 'flash' | 'footage' | 'tier' | 'versus' | 'verdict' | 'timeline' | 'ui' | 'card' | 'rank' | 'quiz' | 'headline';
 
 export type SceneFx = 'plane' | 'rocket' | 'satellite' | 'waves' | 'bolts' | 'embers' | 'snow' | 'drops' | 'packets' | 'coins' | 'equalizer' | 'signalbars' | 'notifications' | 'batteryfill' | 'clock' | 'padlock' | 'magnify' | 'bits';
 export type ToggleKey = 'airplane' | 'wifi' | 'bluetooth' | 'airdrop';
@@ -18,7 +18,7 @@ export interface MotionScene {
   leftValue?: number; // versus: the left contender's figure for this scene's metric
   rightValue?: number; // versus: the right contender's figure
   winner?: 'left' | 'right' | 'none'; // versus: who wins (default: the bigger value; set it for lower-is-better metrics)
-  verdict?: 'myth' | 'fact' | 'partly'; // verdict: the stamp
+  verdict?: 'myth' | 'fact' | 'partly' | 'buy' | 'wait' | 'skip'; // verdict: the stamp
   code?: string[]; // codeBlock: up to 8 short lines
   light?: boolean; // light background variant for this scene
   mediaSrc?: string; // footage: path inside the render's public dir, e.g. games/skyrim_00.jpg or games/clip.mp4

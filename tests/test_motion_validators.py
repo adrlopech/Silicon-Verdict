@@ -616,3 +616,66 @@ def test_every_banked_script_passes_the_retention_rules():
         return  # the bank is git-ignored: nothing to check on a fresh clone
     bad = [(Path(f).stem, failing(json.loads(Path(f).read_text(encoding="utf-8")))[0][:60]) for f in files if failing(json.loads(Path(f).read_text(encoding="utf-8")))]
     assert not bad, bad[:5]
+
+
+# ---- nine newer formats (Nov 2026): top5, eli5, fails, numbers, quiz, stop, rumor, review and the news bulletin ----
+NEW_FORMATS = ("top5", "eli5", "fails", "numbers", "quiz", "stop", "rumor", "review", "news")
+
+
+def test_new_formats_are_fully_registered():
+    from services.looks import AFFINITY
+    from services.motion_generator import FORMAT_WEIGHTS
+    from services.motion_pipeline import MUSIC_BY_FORMAT, VOICE_BY_FORMAT
+    from services.series import SERIES
+    for f in NEW_FORMATS:
+        assert f in FORMATS and f in FORMAT_RULES and f in SERIES and f in AFFINITY and f in MUSIC_BY_FORMAT and f in VOICE_BY_FORMAT
+    assert "news" not in FORMAT_WEIGHTS  # the bulletin is a section of its own: never picked at random
+
+
+def _fmt_project(fmt, specs):
+    scenes = [MotionSceneModel(type=t, text="Short line", narration=_NARR, durationInFrames=90, **extra) for t, extra in specs]
+    return MotionProject(topic="t", screen_title="Test", title="A test title #siliconverdict #tech", description="One. Two.", tags=["a"] * 6, pinned_comment="Why?", scenes=scenes, format=fmt)
+
+
+def test_top5_needs_ranks_in_countdown_order():
+    ok = _fmt_project("top5", [("bigText", {})] + [("rank", {"value": v}) for v in (5, 4, 3, 2, 1)] + [("outro", {})])
+    bad = _fmt_project("top5", [("bigText", {})] + [("rank", {"value": v}) for v in (1, 2, 3, 4, 5)] + [("outro", {})])
+    assert not any("rank" in p for p in __import__("services.motion_generator", fromlist=["_format_problems"])._format_problems(ok, "top5"))
+    assert any("5, 4, 3, 2, 1" in p for p in __import__("services.motion_generator", fromlist=["_format_problems"])._format_problems(bad, "top5"))
+
+
+def test_quiz_scenes_need_three_options_and_a_correct_one():
+    from services.motion_generator import _format_problems
+    good = _fmt_project("quiz", [("bigText", {}), ("quiz", {"items": ["a", "b", "c"], "value": 2}), ("card", {}), ("quiz", {"items": ["a", "b", "c"], "value": 3}), ("outro", {})])
+    bad = _fmt_project("quiz", [("bigText", {}), ("quiz", {"items": ["a", "b"], "value": 5}), ("quiz", {"items": ["a", "b", "c"], "value": 1}), ("outro", {})])
+    assert not _format_problems(good, "quiz")
+    assert any("exactly 3 options" in p for p in _format_problems(bad, "quiz")) and any("correct option" in p for p in _format_problems(bad, "quiz"))
+
+
+def test_news_needs_headlines_with_an_outlet_and_only_in_news():
+    from services.motion_generator import _format_problems
+    heads = [("headline", {"kicker": "THE VERGE"}), ("card", {})] * 3
+    assert not _format_problems(_fmt_project("news", [("bigText", {})] + heads + [("outro", {})]), "news")
+    assert any("outlet" in p for p in _format_problems(_fmt_project("news", [("bigText", {})] + [("headline", {})] * 3 + [("outro", {})]), "news"))
+    assert any("only to the news" in p for p in _format_problems(_fmt_project("myth", [("bigText", {}), ("headline", {"kicker": "X"}), ("outro", {})]), "myth"))
+
+
+def test_review_ends_in_a_buy_wait_skip_verdict():
+    from services.motion_generator import _format_problems
+    ok = _fmt_project("review", [("bigText", {}), ("list", {"items": ["a", "b"]}), ("counter", {"value": 3}), ("list", {"items": ["a", "b"]}), ("verdict", {"verdict": "wait", "accentText": "Next gen is close"}), ("outro", {})])
+    assert not _format_problems(ok, "review")
+    wrong = _fmt_project("review", [("bigText", {}), ("list", {"items": ["a", "b"]}), ("list", {"items": ["a", "b"]}), ("verdict", {"verdict": "myth", "accentText": "x"}), ("outro", {})])
+    assert any("buy, wait or skip" in p for p in _format_problems(wrong, "review"))
+
+
+def test_tech_news_ranks_widely_covered_stories_first_and_reads_text():
+    from datetime import datetime, timezone
+    from services.tech_news import build_source_text, cluster
+    now = datetime(2026, 11, 15, 12, tzinfo=timezone.utc)
+    mk = lambda o, t, s="Summary here.": {"outlet": o, "title": t, "summary": s, "when": now}  # noqa: E731
+    items = [mk("A", "Nvidia faces new chip export probe in Asia"), mk("B", "New probe into Nvidia chip exports opens in Asia"), mk("C", "Tiny gadget gets a firmware update"),
+             mk("A", "SpaceX catches Starship booster with chopsticks again"), mk("D", "Starship booster caught by SpaceX chopsticks"), mk("A", "Pentagon tests robot packs"), mk("B", "Linux kernel adds a rust driver")]
+    groups = cluster(items)
+    assert len(groups[0]["outlets"]) == 2 and len(groups[1]["outlets"]) == 2
+    text = build_source_text(items=items, now=now)
+    assert "Story 1 (reported by" in text and "chip" in text.lower()

@@ -20,6 +20,15 @@ SERIES: Dict[str, Tuple[str, str]] = {
     "tier": ("Tier List", "pctierlist"),
     "hardware": ("Silicon Files", "siliconfiles"),
     "simple": ("Everyday Tech", "everydaytech"),
+    "top5": ("Top 5", "techtop5"),
+    "eli5": ("Explained Simply", "explainedsimply"),
+    "fails": ("Tech Fails", "techfails"),
+    "numbers": ("By the Numbers", "bythenumbers"),
+    "quiz": ("Tech Quiz", "techquiz"),
+    "stop": ("Stop Doing This", "stopdoingthis"),
+    "rumor": ("Rumor Mill", "rumormill"),
+    "review": ("Worth It", "worthit"),
+    "news": ("Tech Briefing", "techbriefing"),
 }
 MAX_TITLE = 100  # MotionProject.title limit
 _HASHTAGS = re.compile(r"\s*#\w+")

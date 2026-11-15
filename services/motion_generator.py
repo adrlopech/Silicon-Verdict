@@ -56,7 +56,7 @@ UI_PRESETS: Dict[str, dict] = {
     "dimm": {"action": "click", "n": (4, 4), "value": None, "need": ("leftValue", "rightValue"), "doc": 'items = the four slot names ("A1", "A2", "B1", "B2"), leftValue / rightValue = the two slots (1-4) the sticks go into, accentText (optional) = the badge that lights up'},
     "permissions": {"action": "click", "n": (2, 4), "value": "index", "need": (), "doc": 'items = switches "Name|on" (Microphone, Camera, Location), value = the one the pointer turns off'},
 }
-UI_FORMATS_OFF = ("tier", "versus", "myth", "evolution")  # these formats are built from a fixed run of their own scenes
+UI_FORMATS_OFF = ("tier", "versus", "myth", "evolution", "top5", "quiz", "news", "review")  # these formats are built from a fixed run of their own scenes
 MAX_UI_SCENES = 2
 
 
@@ -210,12 +210,12 @@ def cursor_from_pose(pose: Optional[str], scene_type: str, index: int, total: in
     return "select" if scene_type == "textWithAccent" and pose == "point" else None
 
 
-SceneType = Literal["bigText", "textWithAccent", "counter", "list", "codeBlock", "progressBar", "outro", "curve", "flash", "footage", "tier", "versus", "verdict", "timeline", "ui", "card"]
-FORMATS = ("myth", "tier", "whatif", "easter", "evolution", "versus", "hardware", "simple", "fix", "decode")   # content formats on top of the two kinds (curiosity / game); "easter" is always a game video; "hardware" and "simple" are the old Hardware / Everyday-with-mascot categories, now told in the Motion style; "fix" and "decode" come from the Nov 2026 niche research (notes/niche_research_2026-11.md)
+SceneType = Literal["bigText", "textWithAccent", "counter", "list", "codeBlock", "progressBar", "outro", "curve", "flash", "footage", "tier", "versus", "verdict", "timeline", "ui", "card", "rank", "quiz", "headline"]
+FORMATS = ("myth", "tier", "whatif", "easter", "evolution", "versus", "hardware", "simple", "fix", "decode", "top5", "eli5", "fails", "numbers", "quiz", "stop", "rumor", "review", "news")   # content formats on top of the two kinds (curiosity / game); "easter" is always a game video; "hardware" and "simple" are the old Hardware / Everyday-with-mascot categories, now told in the Motion style; "fix" and "decode" come from the Nov 2026 niche research (notes/niche_research_2026-11.md)
 TIER_LETTERS = ("S", "A", "B", "C", "D", "F")
 # How often `--motion-format any` picks each topic. Our three TikTok breakouts (800+ views) were the number-driven formats (what-if, versus, evolution) and the niche research
 # found "fix it now" and "decoded" to be the biggest unserved clusters; tier lists and myths stalled at the first test wave (notes/content_style_study_2026-11.md).
-FORMAT_WEIGHTS = {"whatif": 3, "versus": 3, "evolution": 3, "fix": 3, "decode": 3, "hardware": 2, "simple": 1, "myth": 1, "tier": 1, "easter": 1, "classic": 1, "curiosity": 1, "game": 1}
+FORMAT_WEIGHTS = {"whatif": 3, "versus": 3, "evolution": 3, "fix": 3, "decode": 3, "hardware": 2, "simple": 1, "myth": 1, "tier": 1, "top5": 2, "eli5": 2, "fails": 2, "numbers": 2, "quiz": 2, "stop": 2, "rumor": 2, "review": 1, "easter": 1, "classic": 1, "curiosity": 1, "game": 1}
 
 
 class MotionSceneModel(BaseModel):
@@ -223,15 +223,15 @@ class MotionSceneModel(BaseModel):
     text: str = Field(..., description="Main line, at most 7 words (bigText: at most 4). For 'footage': a 2-6 word callout naming the technical detail")
     accentText: Optional[str] = Field(default=None, description="ONE accent word or short phrase (max 3 words) shown in colour, italic serif")
     kicker: Optional[str] = Field(default=None, description="Optional tiny label above the text, 1-3 words")
-    value: Optional[float] = Field(default=None, description="counter: final number (> 0); progressBar: percentage 0-100")
+    value: Optional[float] = Field(default=None, description="counter: final number (> 0); progressBar: percentage 0-100; rank: its position (5, 4, 3, 2, 1); quiz: the correct option (1, 2 or 3)")
     unit: Optional[str] = Field(default=None, description="counter/progressBar suffix such as %, ms, GB")
-    items: Optional[List[str]] = Field(default=None, description="list: 2-4 items of at most 5 words. tier: the board so far as \"S|label\" entries (tier letter S A B C D F, label at most 22 characters). timeline: 3-5 chronological \"year|label\" entries (label at most 28 characters)")
+    items: Optional[List[str]] = Field(default=None, description="quiz: exactly 3 answer options of at most 4 words. list: 2-4 items of at most 5 words. tier: the board so far as \"S|label\" entries (tier letter S A B C D F, label at most 22 characters). timeline: 3-5 chronological \"year|label\" entries (label at most 28 characters)")
     left: Optional[str] = Field(default=None, description="versus: name of the left contender, at most 16 characters (the same in every versus scene)")
     right: Optional[str] = Field(default=None, description="versus: name of the right contender, at most 16 characters (the same in every versus scene)")
     leftValue: Optional[float] = Field(default=None, description="versus: the left contender's real, approximate figure for this scene's metric (> 0); `unit` is shared by both")
     rightValue: Optional[float] = Field(default=None, description="versus: the right contender's real, approximate figure for the same metric (> 0)")
     winner: Optional[Literal["left", "right", "none"]] = Field(default=None, description="versus: who wins this round; leave empty when the BIGGER figure wins, set it when lower is better")
-    verdict: Optional[Literal["myth", "fact", "partly"]] = Field(default=None, description="verdict scenes only: is the claim a myth, a fact or partly true")
+    verdict: Optional[Literal["myth", "fact", "partly", "buy", "wait", "skip"]] = Field(default=None, description="verdict scenes only: is the claim a myth, a fact or partly true (myth format); buy, wait or skip (review format)")
     code: Optional[List[str]] = Field(default=None, description="codeBlock: 2-8 short real code or shell lines (max 38 characters each)")
     light: bool = Field(default=False, description="Light background variant, use for at most one scene")
     mediaId: Optional[str] = Field(default=None, description="footage scenes only: the id of ONE item of the footage list; never reuse an id")
@@ -461,6 +461,46 @@ FORMAT = DECODED. A name or spec string everyone sees and few can read ("RTX 507
 - Make ONE number concrete with a counter or progressBar that is said in the narration (what 6000 transfers per second, 20 Gbps or 750 watts really means).
 - Only naming schemes that are stable and well documented. Say "roughly" for any rule with exceptions ("vendors bend this pattern now and then"). No prices, no benchmarks, no rumours about unreleased products.
 - Last scene before the outro is a textWithAccent takeaway ("Now you can read the next one"). The outro asks a question.""",
+    "top5": FORMAT_COMMON + """
+FORMAT = TOP 5. A countdown of exactly five items of ONE category, from number 5 to number 1 (the most surprising or most impressive last): five tiny PC components, five tricks inside a game engine, five reasons a phone gets slow...
+- Scene 1 is the hook that names the category and the criterion ("Five reasons your PC stutters, ranked."). Never state a score.
+- Then five consecutive `rank` scenes: `value` = the position (5, 4, 3, 2, 1 in that order), `text` = the item (max 6 words), `accentText` = the one-line why (max 3 words), `kicker` = "top 5". The narration of each rank scene gives ONE true, concrete reason or figure.
+- Between ranks 3 and 2 you may put one counter, card or list scene as a breather. The last scene before the outro is a textWithAccent that sums it up.""",
+    "eli5": FORMAT_COMMON + """
+FORMAT = EXPLAINED SIMPLY. ONE hard idea (cache, a GPU, encryption, an SSD, the cloud, a compiler, latency) explained with a single everyday analogy (a library, a kitchen, a postal service, traffic).
+- Scene 1 is the hook as a question a child would ask. Then 2 or 3 `card` scenes: each card states a piece of the ANALOGY (text) and the matching technical piece (accentText, at most 3 words). Keep the same analogy throughout.
+- At least one `list` scene that maps analogy to reality (2-4 items "kitchen = CPU" style), and one counter or progressBar with a real figure said in the narration.
+- Say where the analogy breaks down in one honest line. Last scene before the outro: a textWithAccent that gives the one-sentence version.""",
+    "fails": FORMAT_COMMON + """
+FORMAT = TECH FAILS. ONE famous, well documented technology failure or bug (a crash, a recall, a bad update, a naming mistake, a lost spacecraft) told as a story: what happened, why, what it cost, what changed.
+- At least one `timeline` scene (3-5 "year|label" items, four-digit years, only dates you are SURE about) and at least one counter or progressBar with a real approximate figure said in the narration (cost, units, minutes).
+- Tone: curious, never mocking people. Only events you know very well; hedge anything uncertain ("roughly", "reportedly"). End with the lesson engineers drew from it.""",
+    "numbers": FORMAT_COMMON + """
+FORMAT = BY THE NUMBERS. ONE subject (a CPU, a data center, a console, Wi-Fi, a game engine) told only through 4 to 6 striking figures.
+- At least 4 scenes of type counter or progressBar, each with a different real, approximate figure said in the narration (value > 0, unit filled in). Between them put a textWithAccent or card that gives the figure meaning ("That is a stadium of people").
+- Scene 1 is the biggest figure as the hook. Never invent a figure: use only numbers you know well and say "roughly".""",
+    "quiz": FORMAT_COMMON + """
+FORMAT = TECH QUIZ. Two or three questions about technology, each answered with a reveal.
+- Each question is ONE `quiz` scene: `text` = the question (max 7 words), `items` = exactly 3 options (max 4 words each), `value` = the correct option (1, 2 or 3), `kicker` = "question 1", "question 2"... The narration reads the question and the three options, then reveals the answer and the one-line reason (the reveal happens in the second half of the scene).
+- Put one explanation scene (card, counter or list) after each quiz scene. Questions must have ONE unambiguous, well documented answer. Spread the correct answers over different positions.
+- Scene 1 is the hook ("Most people fail the second one."). The outro asks which question was harder.""",
+    "stop": FORMAT_COMMON + """
+FORMAT = STOP DOING THIS. Three habits that quietly hurt a PC, phone or setup (leaving it charging overnight, closing every background app, keeping 40 browser tabs, cheap cables...), each with the cost and the better habit.
+- Scene 1 is the claim ("Three habits are killing your laptop battery."). Then for each habit: a headline scene naming the habit (textWithAccent: the habit in white, the cost as the accent) and a supporting scene (counter, progressBar, list or card) with a real, hedged figure or mechanism.
+- Only habits with solid evidence; hedge ("often", "a few percent"). SAFETY: no registry edits, no disabling security. Last scene before the outro: a list of the three better habits.""",
+    "rumor": FORMAT_COMMON + """
+FORMAT = RUMOR MILL. ONE widely repeated tech rumour or claim, weighed.
+- Scene 1 states the rumour as people say it. Then 2 or 3 `card` or `list` scenes with the evidence for and against (what is documented, what is only claimed), and ONE `progressBar` scene whose `value` is how plausible the claim is (0-100, said in the narration as "roughly seventy percent plausible"; `text` = "plausibility").
+- Only rumours with a documented basis in the SOURCE TEXT when one is given; never a rumour about a real person. Make the final call hedged and clear. The outro asks the viewer to vote.""",
+    "review": FORMAT_COMMON + """
+FORMAT = WORTH IT? A quick verdict on ONE well-known kind of tech purchase decision (a 1440p monitor, a second SSD, an RTX upgrade over two generations, a mesh Wi-Fi kit, a mechanical keyboard).
+- Two `list` scenes: what you get (2-4 items) and what it costs you or who it is for (2-4 items), plus one counter or progressBar with a real approximate figure said in the narration.
+- The last content scene is a `verdict` scene: `verdict` = buy, wait or skip, `text` = the decision as a question ("Upgrade to 1440p?", max 7 words), `accentText` = the reason in at most 6 words, `kicker` = "worth it?". No prices of specific retailers, no brand favouritism, no benchmarks you cannot be sure of.""",
+    "news": FORMAT_COMMON + """
+FORMAT = TECH BRIEFING (a news bulletin, the channel's news section). A calm, authoritative anchor reads the three or four most important tech stories of the SOURCE TEXT, each in two beats.
+- Scene 1 is the cold open: the single biggest story as a claim. Then ONE `headline` scene per story (3 or 4 stories): `text` = the headline in your own words (max 10 words), `kicker` = the outlet you rely on, in capitals ("THE VERGE", from the "reported by" list), `accentText` = what it means in at most 4 words, `unit` = how fresh ("TODAY", "THIS WEEK"). After each headline scene put ONE supporting scene (card, list or counter) that gives the key fact or figure.
+- Use ONLY stories and facts of the SOURCE TEXT. Paraphrase in your own words, never copy sentences, no quotes. Name the outlet in the narration ("according to The Verge"). Anything the outlets only report or allege gets "reportedly" or "allegedly". Never add prices, dates or numbers that the text does not state.
+- Last scene before the outro: a textWithAccent that names the day's theme. The outro vote asks which story matters more.""",
     "easter": FORMAT_COMMON + """
 FORMAT = HIDDEN DETAIL (the 'easter egg' format). Tell the most surprising, little-known detail the SOURCE TEXT gives about the game's development, design or technology, as a reveal:
 setup ("You have played this a hundred times"), clue, then the reveal. Open scene 1 with the game name and the promise of a secret, put kicker "hidden detail" on the reveal scenes, and show the
@@ -624,8 +664,62 @@ def _format_problems(p: MotionProject, fmt: Optional[str]) -> List[str]:
             out.append(f"{fmt} format needs a codeBlock scene ({'the exact menu path or command' if fmt == 'fix' else 'the label broken into its parts'})")
         if not count("list"):
             out.append(f"{fmt} format needs a list scene ({'the steps' if fmt == 'fix' else 'what each part tells you'})")
-    if fmt not in ("myth", "tier", "versus", "evolution") and (tiers or count("versus") or count("verdict") or count("timeline")):
+    for i, s in enumerate(sc, 1):
+        if s.type == "rank" and not (s.value and 1 <= s.value <= 9 and float(s.value).is_integer()):
+            out.append(f"scene {i}: a rank scene needs `value` = its position (5, 4, 3, 2, 1)")
+        elif s.type == "quiz":
+            if not (s.items and len(s.items) == 3):
+                out.append(f"scene {i}: a quiz scene needs exactly 3 options in `items`")
+            if not (s.value and int(s.value) in (1, 2, 3)):
+                out.append(f"scene {i}: a quiz scene needs `value` = the correct option (1, 2 or 3)")
+        elif s.type == "headline" and not (s.kicker or "").strip():
+            out.append(f"scene {i}: a headline scene needs `kicker` = the outlet")
+        elif s.type == "verdict" and fmt == "review" and s.verdict not in ("buy", "wait", "skip"):
+            out.append(f"scene {i}: in a review the verdict is buy, wait or skip")
+        elif s.type == "verdict" and fmt != "review" and s.verdict in ("buy", "wait", "skip"):
+            out.append(f"scene {i}: buy / wait / skip stamps belong only to the review format")
+    if fmt == "top5":
+        ranks = [s.value for s in sc if s.type == "rank"]
+        if ranks != [5, 4, 3, 2, 1]:
+            out.append(f"top5 format needs five rank scenes with values 5, 4, 3, 2, 1 in that order, got {ranks}")
+    elif fmt == "quiz":
+        if not 2 <= count("quiz") <= 3:
+            out.append(f"quiz format needs 2-3 quiz scenes, got {count('quiz')}")
+    elif fmt == "news":
+        if not 3 <= count("headline") <= 4:
+            out.append(f"news format needs 3-4 headline scenes (one per story), got {count('headline')}")
+    elif fmt == "review":
+        if count("verdict") != 1 or sc[-2].type != "verdict" and not any(x.type == "verdict" for x in sc[-4:]):
+            out.append("review format needs ONE verdict scene near the end (buy, wait or skip)")
+        if count("list") < 2:
+            out.append("review format needs two list scenes (what you get, what it costs)")
+    elif fmt == "fails":
+        if not count("timeline") or not (count("counter") or count("progressBar")):
+            out.append("fails format needs a timeline scene and a counter or progressBar scene")
+    elif fmt == "numbers":
+        if count("counter") + count("progressBar") < 4:
+            out.append("numbers format needs at least 4 counter or progressBar scenes")
+    elif fmt == "eli5":
+        if count("card") < 2 or not count("list"):
+            out.append("eli5 format needs at least 2 card scenes (the analogy) and a list scene (analogy = reality)")
+    elif fmt == "stop":
+        if not count("list") or not (count("counter") or count("progressBar") or count("card")):
+            out.append("stop format needs a list scene and a counter, progressBar or card scene")
+    elif fmt == "rumor":
+        if not count("progressBar") or count("card") + count("list") < 2:
+            out.append("rumor format needs a progressBar (plausibility) and at least 2 card or list scenes")
+    if fmt != "top5" and count("rank"):
+        out.append("rank scenes belong only to the top5 format")
+    if fmt != "quiz" and count("quiz"):
+        out.append("quiz scenes belong only to the quiz format")
+    if fmt != "news" and count("headline"):
+        out.append("headline scenes belong only to the news format")
+    if fmt not in ("myth", "tier", "versus", "evolution", "review", "fails") and (tiers or count("versus") or count("verdict") or count("timeline")):
         out.append("tier / versus / verdict / timeline scenes belong only to their own format")
+    if fmt == "review" and (tiers or count("versus") or count("timeline")):
+        out.append("a review uses only a verdict scene among the format scenes")
+    if fmt == "fails" and (tiers or count("versus") or count("verdict")):
+        out.append("a fails video uses only timeline scenes among the format scenes")
     if fmt == "myth" and (tiers or count("versus") or count("timeline")):
         out.append("a myth video uses only verdict scenes among the format scenes")
     if fmt == "tier" and (count("versus") or count("verdict") or count("timeline")):
@@ -745,7 +839,7 @@ def make_validator(catalog: Optional[Dict[str, dict]] = None, facts: Optional[st
             if not 5 <= len(used_media) <= 11:
                 out.append(f"{len(used_media)} footage scenes (need 6-10)")
         for i, s in enumerate(p.scenes, 1):
-            limit = 4 if s.type == "bigText" else 7
+            limit = 4 if s.type == "bigText" else 10 if s.type == "headline" else 7
             if len(s.text.split()) > limit and s.type != "footage":
                 out.append(f"scene {i}: text longer than {limit} words")
             if s.type == "footage" and (len(s.text.split()) > 7 or not s.mediaId):
@@ -764,7 +858,7 @@ def make_validator(catalog: Optional[Dict[str, dict]] = None, facts: Optional[st
                 out.append(f"scene {i}: list needs 2-4 items")
             if s.type == "codeBlock" and not (s.code and len(s.code) >= 2):
                 out.append(f"scene {i}: codeBlock needs 2+ code lines")
-            if i > 1 and s.type == p.scenes[i - 2].type and s.type not in ("outro", "footage", "tier", "versus", "verdict", "timeline"):
+            if i > 1 and s.type == p.scenes[i - 2].type and s.type not in ("outro", "footage", "tier", "versus", "verdict", "timeline", "rank"):
                 out.append(f"scenes {i - 1} and {i} have the same type")
         if not looks_english(p.all_text):
             out.append("the text is not English: everything must be American English")

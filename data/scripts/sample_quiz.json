@@ -1,0 +1,119 @@
+{
+ "accent": "#00F0FF",
+ "kind": "curiosity",
+ "topic": "A two-question tech quiz about memory and graphics card names",
+ "screen_title": "Tech Quiz",
+ "title": "Tech Quiz: Can You Pass These Two? #siliconverdict #techquiz #pcbuild",
+ "description": "Two quick questions about RAM speed and graphics card names, each with the answer and the reason.",
+ "tags": [
+  "techquiz",
+  "ram",
+  "ssd",
+  "nvidia",
+  "rtx",
+  "pcbuild",
+  "hardware",
+  "quiz"
+ ],
+ "pinned_comment": "Question one or two? Reply with one word.",
+ "format": "quiz",
+ "scenes": [
+  {
+   "type": "bigText",
+   "text": "Can you pass this?",
+   "narration": "Most people get the second question wrong, and the first one is easy.",
+   "durationInFrames": 90,
+   "icons": [
+    "brain",
+    "bulb"
+   ]
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Two questions",
+   "narration": "Stay for the second one, because the answer is hiding in the name.",
+   "durationInFrames": 100,
+   "accentText": "no googling"
+  },
+  {
+   "type": "quiz",
+   "text": "Which is faster?",
+   "narration": "Question one. Which is faster: A, an SSD, B, RAM, or C, both the same?",
+   "durationInFrames": 260,
+   "items": [
+    "An SSD",
+    "RAM",
+    "Both equal"
+   ],
+   "value": 2,
+   "kicker": "question 1"
+  },
+  {
+   "type": "card",
+   "text": "RAM wins",
+   "narration": "RAM answers in about a hundred nanoseconds, while an SSD needs far longer.",
+   "durationInFrames": 120,
+   "accentText": "by far"
+  },
+  {
+   "type": "counter",
+   "text": "Roughly faster",
+   "narration": "That gap is roughly a thousand times, which is why programs live in RAM.",
+   "durationInFrames": 120,
+   "accentText": "in latency",
+   "value": 1000,
+   "unit": "x"
+  },
+  {
+   "type": "quiz",
+   "text": "What does Ti mean?",
+   "narration": "Question two. In RTX 4090 Ti, does Ti mean titanium, turbo, or tier one?",
+   "durationInFrames": 260,
+   "items": [
+    "Titanium",
+    "Turbo",
+    "Tier one"
+   ],
+   "value": 1,
+   "kicker": "question 2"
+  },
+  {
+   "type": "card",
+   "text": "Ti is titanium",
+   "narration": "Nvidia uses Ti for titanium, the name of its faster mid-generation tier.",
+   "durationInFrames": 120,
+   "accentText": "a faster tier"
+  },
+  {
+   "type": "list",
+   "text": "Reading the name",
+   "narration": "So now the rest of a graphics card name is easier to read.",
+   "durationInFrames": 120,
+   "items": [
+    "RTX = ray tracing family",
+    "Number = generation and tier",
+    "Ti = Titanium, faster tier"
+   ]
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Names hide meaning",
+   "narration": "Every product name hides a clue, once you know the code.",
+   "durationInFrames": 100,
+   "accentText": "the code"
+  },
+  {
+   "type": "bigText",
+   "text": "Now you know",
+   "narration": "Share this with the friend who always guesses.",
+   "durationInFrames": 80
+  },
+  {
+   "type": "outro",
+   "text": "Quiz over",
+   "narration": "Follow for more tech. Which question was harder, one or two?",
+   "durationInFrames": 100,
+   "accentText": "Follow for more"
+  }
+ ]
+}

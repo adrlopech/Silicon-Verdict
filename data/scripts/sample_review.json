@@ -1,0 +1,113 @@
+{
+ "accent": "#00F0FF",
+ "kind": "curiosity",
+ "topic": "Is a 1440p monitor worth upgrading to from 1080p",
+ "screen_title": "Worth it? 1440p",
+ "title": "Worth It? Upgrading To A 1440p Monitor #siliconverdict #pcgaming #worthit",
+ "description": "A quick verdict on moving from a 1080p to a 1440p gaming monitor: what you get, what it costs, and who should buy.",
+ "tags": [
+  "1440p",
+  "monitor",
+  "pcgaming",
+  "upgrade",
+  "gpu",
+  "hardware",
+  "worthit",
+  "display"
+ ],
+ "pinned_comment": "Buy or skip? Reply with one word.",
+ "format": "review",
+ "scenes": [
+  {
+   "type": "bigText",
+   "text": "Is 1440p worth it?",
+   "narration": "A 1440p monitor looks sharper, but it also asks more of your graphics card.",
+   "durationInFrames": 90,
+   "icons": [
+    "monitor",
+    "gpu"
+   ]
+  },
+  {
+   "type": "textWithAccent",
+   "text": "One quick verdict",
+   "narration": "Stay to the end, because the answer depends on one thing you own.",
+   "durationInFrames": 100,
+   "accentText": "your GPU"
+  },
+  {
+   "type": "list",
+   "text": "What you get",
+   "narration": "Here is what the upgrade actually gives you on the desk.",
+   "durationInFrames": 120,
+   "items": [
+    "A sharper image",
+    "More desktop space",
+    "Better text clarity"
+   ]
+  },
+  {
+   "type": "counter",
+   "text": "More pixels",
+   "narration": "A 1440p screen draws roughly 78 percent more pixels than a 1080p one.",
+   "durationInFrames": 130,
+   "accentText": "more pixels",
+   "value": 78,
+   "unit": "%"
+  },
+  {
+   "type": "card",
+   "text": "The hidden cost",
+   "narration": "More pixels means your graphics card must work harder for every single frame.",
+   "durationInFrames": 120,
+   "accentText": "more GPU load"
+  },
+  {
+   "type": "list",
+   "text": "What it costs",
+   "narration": "So the price is more than the monitor itself, as you will see.",
+   "durationInFrames": 120,
+   "items": [
+    "Higher monitor price",
+    "Lower frame rates",
+    "May need a stronger GPU"
+   ]
+  },
+  {
+   "type": "curve",
+   "text": "Diminishing returns",
+   "narration": "Sharpness keeps improving, but each step looks a little less dramatic than the last.",
+   "durationInFrames": 110
+  },
+  {
+   "type": "textWithAccent",
+   "text": "It depends",
+   "narration": "The deciding question is whether your graphics card has headroom to spare.",
+   "durationInFrames": 110,
+   "accentText": "headroom"
+  },
+  {
+   "type": "verdict",
+   "text": "Upgrade to 1440p?",
+   "narration": "If your card has headroom, this is the upgrade that most players notice.",
+   "durationInFrames": 160,
+   "verdict": "buy",
+   "accentText": "If your GPU has headroom",
+   "kicker": "worth it?"
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Check first",
+   "narration": "Test one game at 1440p before you commit your budget.",
+   "durationInFrames": 100,
+   "accentText": "test it"
+  },
+  {
+   "type": "outro",
+   "text": "Verdict",
+   "narration": "Follow for more tech. Will you buy it, or skip it?",
+   "durationInFrames": 100,
+   "accentText": "Follow for more"
+  }
+ ]
+}

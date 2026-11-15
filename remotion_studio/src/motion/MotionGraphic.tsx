@@ -7,6 +7,7 @@ import { PropField, pickIcons } from './props';
 import { BigText, Card, CodeBlock, Counter, Curve, Flash, Footage, ListScene, Outro, ProgressBar, TextWithAccent } from './scenes';
 import { Tier, Timeline, Verdict, Versus } from './formats';
 import { UiScene } from './ui';
+import { Headline, Quiz, Rank } from './scenes2';
 import { CursorLayer } from './cursor';
 import { Captions, captionSpaceFor, chunkCaptions } from './captions';
 import { Callout, Decor, Shock } from './decor';
@@ -33,6 +34,9 @@ const SCENES: Record<MotionScene['type'], React.FC<{ scene: MotionScene }>> = {
   timeline: Timeline,
   ui: UiScene,
   card: Card,
+  rank: Rank,
+  quiz: Quiz,
+  headline: Headline,
 };
 
 /** One scene wrapper: it enters with its own transition (varied per scene), drifts under a slow camera move, lands with an impact ring and thematic objects,
@@ -68,7 +72,7 @@ const SceneShell: React.FC<{ scene: MotionScene; index: number; total: number; r
         <Ambient fx={fx} />
         <Decor scene={scene} index={index} total={total} />
         <PropField icons={icons} index={index} />
-        <AbsoluteFill style={scene.cursor === 'toggle' ? { transform: 'translateY(-200px)' } : visual ? { transform: 'translateY(-150px)' } : undefined}>{children}</AbsoluteFill>
+        <AbsoluteFill style={scene.cursor === 'toggle' ? { transform: 'translateY(-200px)' } : visual && scene.type !== 'headline' ? { transform: 'translateY(-150px)' } : undefined}>{children}</AbsoluteFill>
       </AbsoluteFill>
       <Impact seed={index} />
       {rehook && <Shock />}

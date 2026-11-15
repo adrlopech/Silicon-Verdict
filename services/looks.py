@@ -21,6 +21,15 @@ AFFINITY = {
     "hardware": ("blueprint", "obsidian", "glass", "ocean"),
     "simple": ("paper", "ocean", "glass", "ice"),
     "easter": ("indigo", "cobalt", "ocean", "obsidian"),
+    "top5": ("cobalt", "indigo", "ocean", "obsidian"),
+    "eli5": ("paper", "glass", "ocean", "ice"),
+    "fails": ("obsidian", "indigo", "cobalt", "blueprint"),
+    "numbers": ("blueprint", "ice", "cobalt", "ocean"),
+    "quiz": ("indigo", "cobalt", "glass", "ocean"),
+    "stop": ("cobalt", "obsidian", "glass", "paper"),
+    "rumor": ("glass", "ice", "indigo", "obsidian"),
+    "review": ("paper", "obsidian", "ocean", "glass"),
+    "news": ("ocean", "ice", "blueprint", "glass"),
     None: LOOKS,
 }
 AVOID_LAST = 3  # a look is not used again until three other videos have been made

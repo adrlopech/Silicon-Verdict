@@ -141,6 +141,9 @@ const VERDICTS = {
   myth: { label: 'MYTH', color: '#7C8CFF' },
   fact: { label: 'FACT', color: '#00F0FF' },
   partly: { label: 'PARTLY TRUE', color: '#9CCBFF' },
+  buy: { label: 'BUY', color: '#00F0FF' },
+  wait: { label: 'WAIT', color: '#9CCBFF' },
+  skip: { label: 'SKIP', color: '#7C8CFF' },
 } as const;
 
 /** A claim on screen, then a stamp slams down: MYTH / FACT / PARTLY TRUE. The accent text is the one-line correction. */
