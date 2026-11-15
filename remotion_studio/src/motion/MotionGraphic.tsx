@@ -84,19 +84,20 @@ const SceneShell: React.FC<{ scene: MotionScene; index: number; total: number; r
     drift: `scale(${1 + 0.07 * prog}) translate(${dir * (prog - 0.5) * 36}px, ${(0.5 - prog) * 22}px) rotate(${dir * (prog - 0.5) * 0.8}deg)`,
     push: `scale(${1 + 0.12 * prog})`,
     orbit: `scale(${1.03 + 0.05 * prog}) rotate(${dir * (prog - 0.5) * 3.2}deg) translate(${dir * (prog - 0.5) * 50}px, 0px)`,
-    handheld: `scale(1.025) translate(${shake(1)}px, ${shake(2)}px) rotate(${shake(3) * 0.06}deg)`,
+    handheld: `scale(1.02) translate(${dir * (prog - 0.5) * 24}px, ${(0.5 - prog) * 16}px)`,
     still: 'none',
   }[look.camera];
   const camPunch = punch > 0.001 ? `${cam === 'none' ? '' : cam} scale(${1 + 0.035 * punch})` : cam;
   return (
     <AbsoluteFill style={style} data-scene={index}>
+      {/* the camera moves only the backdrop (stage, decor, fly-bys, icons): type under a scale / rotation / tremor shimmers and reads as shaking */}
       <AbsoluteFill style={{ transform: camPunch }}>
         <Stage scene={scene} name={visual} index={index} avail={room} />
         {!staged && <Ambient fx={fx} />}
         {!staged && <Decor scene={scene} index={index} total={total} />}
         <PropField icons={icons} index={index} />
-        <AbsoluteFill ref={holder} style={scene.cursor === 'toggle' ? { transform: 'translateY(-200px)' } : lift > 0 ? { transform: `translateY(${-lift}px)` } : undefined}>{children}</AbsoluteFill>
       </AbsoluteFill>
+      <AbsoluteFill ref={holder} style={scene.cursor === 'toggle' ? { transform: 'translateY(-200px)' } : lift > 0 ? { transform: `translateY(${-lift}px)` } : undefined}>{children}</AbsoluteFill>
       <Impact seed={index} />
       {rehook && <Shock />}
       <Callout scene={scene} />

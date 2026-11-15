@@ -313,6 +313,19 @@ def scene_audio_info(scenes: list) -> list:
              "callout_at": getattr(s, "calloutCue", None) if getattr(s, "callout", None) else None} for s in scenes]
 
 
+# Mean level (dB, ffmpeg volumedetect) of each effect file, and the mean level each kind of cue is brought to. The old flat multipliers left sfx_whoosh (mean -5.9 dB) louder than the voice;
+# now every cue sits well under it. Without a voice (silent previews) the effects are 6 dB louder.
+SFX_MEAN = {"sfx_blip.wav": -11.8, "sfx_boom.wav": -14.3, "sfx_chime.wav": -17.9, "sfx_click.wav": -25.1, "sfx_ding.wav": -15.9, "sfx_error.wav": -10.9, "sfx_glitch.wav": -17.3, "sfx_hit.wav": -15.5,
+            "sfx_pop.wav": -13.7, "sfx_riser.wav": -19.7, "sfx_slide.wav": -19.8, "sfx_sparkle.wav": -17.1, "sfx_swish.wav": -18.1, "sfx_tick.wav": -21.2, "sfx_type.wav": -24.2, "sfx_whoosh.wav": -5.9, "sfx_whoosh_soft.wav": -20.5}
+CUE_TARGET_DB = {"rehook": -30, "first": -31, "flash": -30, "riser": -35, "click": -33, "select": -35, "grab": -33, "verdict": -32, "outro": -33, "tick": -37, "pop": -34}
+WHOOSH_TARGET_DB = -38
+
+
+def sfx_gain(fname: str, target_db: float, voiced: bool) -> float:
+    """Linear gain that brings an effect file to `target_db` mean level (+6 dB when there is no narration)."""
+    return 10 ** ((target_db + (0 if voiced else 6) - SFX_MEAN.get(fname, -18.0)) / 20)
+
+
 CUE_VOLUME = {"rehook": (0.34, 0.55), "first": (0.35, 0.5), "flash": (0.5, 0.7), "riser": (0.26, 0.45), "click": (0.3, 0.5), "select": (0.26, 0.45), "grab": (0.28, 0.45), "verdict": (0.28, 0.45), "outro": (0.3, 0.5), "tick": (0.12, 0.22), "pop": (0.24, 0.4)}
 
 
@@ -385,7 +398,7 @@ def add_sound(raw: Path, out: Path, scene_starts: list, voice_clips: Optional[li
         whoosh = WHOOSHES[i_ % len(WHOOSHES)]
         ins += ["-i", str(audio / (whoosh if (audio / whoosh).is_file() else "sfx_whoosh.wav"))]
         ms = int(start / FPS * 1000)
-        parts.append(f"[{n}:a]adelay={ms}|{ms},volume={0.3 if voiced else 0.55}[w{n}]")
+        parts.append(f"[{n}:a]adelay={ms}|{ms},volume={sfx_gain(whoosh, WHOOSH_TARGET_DB, voiced):.4f}[w{n}]")
         labels.append(f"[w{n}]")
         n += 1
     for fname, at, cue in sound_cues(scene_starts, kinds, info):  # pattern breaks you can hear (an impact on the cold open and on flashes, a riser into each data reveal) and what happens on screen
@@ -393,7 +406,7 @@ def add_sound(raw: Path, out: Path, scene_starts: list, voice_clips: Optional[li
             continue
         ins += ["-i", str(audio / fname)]
         ms = int(at * 1000)
-        vol = CUE_VOLUME[cue][0 if voiced else 1]
+        vol = sfx_gain(fname, CUE_TARGET_DB[cue], voiced)
         parts.append(f"[{n}:a]adelay={ms}|{ms},volume={vol}[c{n}]")
         labels.append(f"[c{n}]")
         n += 1
