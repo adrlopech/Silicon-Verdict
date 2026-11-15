@@ -211,7 +211,8 @@ def test_narrator_rotates_by_format_and_can_be_turned_off(monkeypatch):
     daniel, adam, liam = settings.ELEVENLABS_VOICE_1, settings.ELEVENLABS_VOICE_2, settings.ELEVENLABS_VOICE_3
     voice = lambda fmt, kind="curiosity": narrator_voice(SimpleNamespace(format=fmt, kind=kind))  # noqa: E731
     monkeypatch.setattr(settings, "MOTION_VOICE_ROTATION", True)
-    assert (voice("decode"), voice(None), voice("versus"), voice("myth"), voice("fix"), voice("whatif")) == (daniel, daniel, adam, adam, liam, liam)
+    assert (voice("decode"), voice(None), voice("versus"), voice("myth"), voice("fix"), voice("whatif")) == (liam, liam, adam, adam, liam, liam)
+    assert daniel not in {voice(f) for f in (None, 'hardware', 'evolution', 'decode', 'versus', 'myth', 'tier', 'whatif', 'fix', 'simple', 'easter')}  # Daniel is retired
     assert voice("decode", "game") == liam
     monkeypatch.setattr(settings, "MOTION_VOICE_ROTATION", False)
     assert voice("decode") == liam

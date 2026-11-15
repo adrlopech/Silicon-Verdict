@@ -16,8 +16,8 @@ FPS = 30
 MIN_VIDEO_SECONDS = 62.0  # final length floor (YouTube monetisation: more than 60 s)
 VOICE_LEAD = 0.12  # seconds after a scene starts before the narrator speaks (the text lands first)
 # One narrator per format (content study, Nov 2026: viewers had already commented on hearing the same voice in every video). The numbers match ELEVENLABS_VOICE_1/2/3:
-# Daniel (steady broadcaster) tells the explainers, Adam (dominant, firm) the verdicts and fights, Liam (energetic) the quick, punchy formats. Game videos keep Liam.
-VOICE_BY_FORMAT = {"hardware": 1, "evolution": 1, "decode": 1, None: 1, "versus": 2, "myth": 2, "tier": 2, "whatif": 3, "fix": 3, "simple": 3, "easter": 3}
+# Daniel was dropped on 2026-11-15 (the user dislikes the voice): his formats went to Adam (hardware, evolution) and Liam (decode, the classic explainer). Game videos keep Liam.
+VOICE_BY_FORMAT = {"hardware": 2, "evolution": 2, "decode": 3, None: 3, "versus": 2, "myth": 2, "tier": 2, "whatif": 3, "fix": 3, "simple": 3, "easter": 3}
 
 
 def narrator_voice(project: Any) -> str:
