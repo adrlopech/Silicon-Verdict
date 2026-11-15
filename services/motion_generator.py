@@ -391,6 +391,14 @@ FOOTAGE AVAILABLE for {game} (each can be shown once):
 
 CURIOSITY_RULES = "\nCURIOSITY VIDEO: no footage scenes; use the motion-graphic scene types only."
 
+CURIOSITY_FACTS_RULES = """
+SOURCE TEXT. This video is about a specific, real subject. Every claim about it (what it does, how it works, dates, names, figures, who said what) must come from the SOURCE TEXT below;
+do not use outside knowledge about the subject and do not invent. Say "reportedly" for anything the text says is reported. General computing explanations that are not specific to the subject
+(what an animation rig, a cloud layer or memory budget is) are fine. A counter / progressBar scene may ONLY use a figure that is written in the SOURCE TEXT (the validator rejects any other).
+Never say how many days are left before a release or use relative dates ("this week", "tomorrow"): write the date itself.
+SOURCE TEXT:
+{facts}"""
+
 FORMAT_COMMON = """
 CONTENT FORMAT. This video follows a fixed format. The scene-type variety rule below does NOT apply to the format's own scene types (tier, versus, verdict, timeline),
 which may follow each other. Everything else stays the same: a hook first, an outro last, a narration on every scene, 150-190 words in total, and NEVER two consecutive scenes of the same type unless it is one of the format's own types.
@@ -860,7 +868,7 @@ def generate_motion_project(topic: Optional[str] = None, avoid_topics: Optional[
         system += (GAME_RULES.format(game=game, catalog=lines, facts=facts) if facts else GAME_RESTRICTIVE.format(game=game, catalog=lines))
         base = f"Make a motion-graphics video about an engineering fact of the game {game}" + (f", specifically: {topic}" if topic else "") + ".\n"
     else:
-        system += CURIOSITY_RULES
+        system += CURIOSITY_RULES + (CURIOSITY_FACTS_RULES.format(facts=facts) if facts else "")
         base = (f"Make a motion-graphics explainer about: {topic}\n" if topic
                 else "Pick ONE fascinating idea about computers, hardware, coding, AI or tech that works well as animated typography (a surprising fact, a counter-intuitive mechanism, a tip).\n")
     if fmt:

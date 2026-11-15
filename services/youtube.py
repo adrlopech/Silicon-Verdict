@@ -57,7 +57,9 @@ class YouTubeService:
             )
 
         logger.info("Loading YouTube OAuth credentials from: %s", self.token_file)
-        credentials = Credentials.from_authorized_user_file(str(self.token_file), YOUTUBE_SCOPES)
+        # Keep the scopes stored in the file: passing YOUTUBE_SCOPES here would narrow them and the
+        # refresh below would rewrite token.json without the analytics scopes.
+        credentials = Credentials.from_authorized_user_file(str(self.token_file))
 
         # Refresh token automatically if expired
         if not credentials or not credentials.valid:

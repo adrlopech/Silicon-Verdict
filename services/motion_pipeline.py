@@ -484,9 +484,11 @@ def _last_motion_choice():
         return None
 
 
-def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, dry_run: bool = False, privacy: str = "public", kind: str = "auto", fmt: str = "auto") -> Dict[str, Any]:
+def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, dry_run: bool = False, privacy: str = "public", kind: str = "auto", fmt: str = "auto",
+                        source_text: Optional[str] = None) -> Dict[str, Any]:
     """kind: curiosity | game | auto (a game video when a game with unused footage is not blacklisted, otherwise a curiosity).
-    fmt: auto (the classic explainer) | myth | tier | whatif | easter | evolution | versus | any (a random format). `easter` is always a game video, the rest are curiosities."""
+    fmt: auto (the classic explainer) | myth | tier | whatif | easter | evolution | versus | any (a random format). `easter` is always a game video, the rest are curiosities.
+    source_text: with kind='curiosity' and a topic, the real text the script must stick to (claims, dates and figures are checked against it)."""
     from services.history import get_recently_used_topics_safe, record_short_history
     from services.motion_generator import generate_motion_project
     from services.output_layout import timestamp_stem, video_dir
@@ -517,7 +519,7 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
     elif fmt != "auto":
         kind = "curiosity"  # the other formats are told with motion graphics only
     format_name = None if fmt == "auto" else fmt
-    facts = None
+    facts = source_text if (source_text and topic and kind == "curiosity") else None
     game = None
     project = None
     banked_game = False

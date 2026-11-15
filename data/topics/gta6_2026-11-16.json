@@ -1,0 +1,26 @@
+[
+ {
+  "format": "evolution",
+  "why": "best-scoring format on the channel; GTA V to GTA VI by the numbers",
+  "topic": "How Rockstar's open worlds grew from Grand Theft Auto V (2013) to Red Dead Redemption 2 (2018) to Grand Theft Auto VI (scheduled 19 November 2026). Show the growth in unique NPC animations (55,000, 300,000, 600,000), in the Rockstar team (2,441 employees growing to 4,711 across 12 offices) and in the weather (volumetric clouds and fog in Red Dead Redemption 2, localised and persistent weather in Grand Theft Auto VI), with timeline scenes for the milestones. The title must end with exactly these hashtags: #siliconverdict #gta6 #evolution",
+  "source": "data/topic_facts/gta6_evolution.txt"
+ },
+ {
+  "format": "myth",
+  "why": "myth or fact keeps comment bait and strong engagement; timely GTA VI questions",
+  "topic": "Myth or fact about Grand Theft Auto VI: test 4 or 5 beliefs people repeat about the game scheduled for 19 November 2026, chosen only from the SOURCE TEXT (for example: it launches on PC, physical copies include a disc, the NPCs are AI generated, you can carry unlimited weapons, the map is three times bigger than Red Dead Redemption 2 (reportedly), Xbox One cannot play it at all). The title must end with exactly these hashtags: #siliconverdict #gta6 #gaming",
+  "source": "data/topic_facts/gta6_myths.txt"
+ },
+ {
+  "format": "classic",
+  "why": "classic explainer (the Skyrim loading-doors style that got 1,100 views); NPC animation retargeting",
+  "topic": "The engineering trick that lets Grand Theft Auto VI have over 600,000 NPC animations for crowds of every height without filling the console's memory: retargeting animations on the fly (a 5'6\" animation does not line up on a 6'2\" NPC), plus why the density of handcrafted NPCs heavily taxes the Zen 2 CPU cores of the consoles. Do NOT compare with the animation counts of Red Dead Redemption 2 or Grand Theft Auto V (another video covers that). The title must end with exactly these hashtags: #siliconverdict #gta6 #gamedev",
+  "source": "data/topic_facts/gta6_npc_animation.txt"
+ },
+ {
+  "format": "classic",
+  "why": "classic explainer; GTA VI weather engineering (localised rain, persistent puddles, hurricanes)",
+  "topic": "How the re-engineered weather system of Grand Theft Auto VI works: more realistic cloud formations that move across the world, localised rain showers, persistent puddles, rainwater pouring from rooftops and lamp posts, reduced visibility and stronger wind in storms, seasonal hurricanes and rainbows under the right light, compared with the volumetric clouds and fog of Red Dead Redemption 2. The title must end with exactly these hashtags: #siliconverdict #gta6 #graphics",
+  "source": "data/topic_facts/gta6_weather.txt"
+ }
+]

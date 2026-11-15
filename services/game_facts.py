@@ -116,6 +116,9 @@ def get_game_facts(game: str) -> Optional[str]:
     return text or None
 
 
+NUMBER_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12}
+
+
 def figures_in(text: str) -> set:
     """Every number written in the dossier (thousand separators removed), as floats."""
     out = set()
@@ -124,4 +127,7 @@ def figures_in(text: str) -> set:
             out.add(float(m.replace(",", "")))
         except ValueError:
             pass
+    for word in re.findall(r"[a-z]+", text.lower()):  # numbers written as words ("three times larger", "two primary firearms")
+        if word in NUMBER_WORDS:
+            out.add(float(NUMBER_WORDS[word]))
     return out

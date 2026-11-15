@@ -119,6 +119,14 @@ def tiktok_caption(title: str) -> Dict[str, Any]:
     return {"caption": text, "hashtags": ["#" + t for t in tags]}
 
 
+def produce(p: Dict[str, Any], run_motion_pipeline) -> Dict[str, Any]:
+    """Renders one video of the plan: a chosen subject with its own source text, or a data-picked format."""
+    if p.get("topic"):
+        source = (BASE_DIR / p["source"]).read_text(encoding="utf-8") if p.get("source") else None
+        return run_motion_pipeline(topic=p["topic"], export_only=True, kind="curiosity", fmt="auto" if p["format"] == "classic" else p["format"], source_text=source)
+    return run_motion_pipeline(export_only=True, fmt=p["format"])
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--plan", action="store_true", help="show the plan and stop")
@@ -126,15 +134,21 @@ def main() -> int:
     ap.add_argument("--seed", type=int, default=None)
     ap.add_argument("--avoid", default="", help="comma-separated formats to leave out (e.g. the ones of the previous day)")
     ap.add_argument("--out", default=None, help="where to write the batch manifest (default data/batch_latest.json)")
+    ap.add_argument("--topics", default=None, help="JSON file with the 4 videos to make instead of the data-picked formats: [{format, topic, source (path to a text file), why}]; "
+                                                  "format 'classic' = the classic explainer. Slots are assigned in file order (first = best slot)")
     args = ap.parse_args()
 
     day = datetime.strptime(args.date, "%Y-%m-%d").date() if args.date else (datetime.now(timezone.utc) + timedelta(days=1)).date()
     print("Reading the channel's numbers...")
-    stats = format_stats()
-    picks = pick_formats(stats, random.Random(args.seed), avoid=[x for x in args.avoid.split(",") if x])
+    if args.topics:
+        picks = json.loads(Path(args.topics).read_text(encoding="utf-8"))
+    else:
+        stats = format_stats()
+        picks = pick_formats(stats, random.Random(args.seed), avoid=[x for x in args.avoid.split(",") if x])
     slots = ranked_slots()
     plan = []
-    for pick, slot in zip(picks, slots):  # the best formats take the best-ranked slots
+    for pick, slot in zip(picks, slots):  # the best formats take the best-ranked slots (a topics file may pin a slot with "slot": "HH:MM")
+        slot = pick.get("slot", slot)
         when = datetime.strptime(f"{day} {slot}", "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc)
         plan.append({**pick, "slot": slot, "publish_at": when.strftime("%Y-%m-%dT%H:%M:00Z"), "madrid": (when + timedelta(hours=1)).strftime("%H:%M")})
     plan.sort(key=lambda p: p["slot"])
@@ -146,9 +160,14 @@ def main() -> int:
 
     from services.motion_pipeline import run_motion_pipeline
     done: List[Dict[str, Any]] = []
+    out = Path(args.out) if args.out else LATEST
     for p in plan:
         print(f"\n== {p['format']} ==")
-        res = run_motion_pipeline(export_only=True, fmt=p["format"])
+        try:
+            res = produce(p, run_motion_pipeline)
+        except Exception as exc:  # one failed script must not lose the videos already uploaded: carry on with the next
+            print(f"  FAILED (nothing uploaded for this slot): {str(exc)[:300]}")
+            continue
         video = res["youtube_video"]
         up = subprocess.run([sys.executable, str(BASE_DIR / "scripts" / "upload_existing.py"), video, "--publish-at", p["publish_at"]], cwd=BASE_DIR, capture_output=True, text=True, env={**__import__("os").environ, "PYTHONPATH": str(BASE_DIR)})
         m = re.search(r"youtu\.be/([\w-]+)", up.stdout)
@@ -158,12 +177,12 @@ def main() -> int:
         entry = {**p, "title": res["title"], **tiktok_caption(res["title"]), "video": video, "tiktok_copy": str(small), "video_id": m[1] if m else None}
         done.append(entry)
         print(f"  {res['title']}\n  YouTube: {m[0] if m else 'FAILED'}  | TikTok copy: {small}")
-    out = Path(args.out) if args.out else LATEST
-    out.write_text(json.dumps(done, ensure_ascii=False, indent=1))
-    log = json.loads(LOG.read_text()) if LOG.is_file() else []
-    log += [{"video_id": e["video_id"], "slot": e["slot"], "format": e["format"], "date": str(day)} for e in done if e["video_id"]]
-    LOG.write_text(json.dumps(log, indent=1))
-    print(f"\nYouTube is scheduled. TikTok: finish in TikTok Studio from {out} (caption, hashtags picked from the dropdown, Programación at each slot).")
+        out.write_text(json.dumps(done, ensure_ascii=False, indent=1))  # saved after every video
+        if entry["video_id"]:
+            log = json.loads(LOG.read_text()) if LOG.is_file() else []
+            LOG.write_text(json.dumps(log + [{"video_id": entry["video_id"], "slot": entry["slot"], "format": entry["format"], "date": str(day)}], indent=1))
+    failed = len(plan) - len(done)
+    print(f"\nYouTube is scheduled ({len(done)} of {len(plan)}{'; rerun the failed ones with --topics and a pinned slot' if failed else ''}). TikTok: finish in TikTok Studio from {out} (caption, hashtags picked from the dropdown, Programación at each slot).")
     return 0
 
 
