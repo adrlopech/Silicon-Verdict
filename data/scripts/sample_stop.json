@@ -1,0 +1,109 @@
+{
+ "accent": "#00F0FF",
+ "kind": "curiosity",
+ "topic": "Three habits that shorten laptop battery life",
+ "screen_title": "Stop doing this",
+ "title": "Stop Doing This To Your Laptop Battery #siliconverdict #laptop #stopdoingthis",
+ "description": "Three everyday habits that can shorten laptop battery life, and the simple habits that help instead.",
+ "tags": [
+  "laptop",
+  "battery",
+  "lithium",
+  "habits",
+  "charging",
+  "heat",
+  "hardware",
+  "tips"
+ ],
+ "pinned_comment": "Heat or charge? Reply with one word.",
+ "format": "stop",
+ "scenes": [
+  {
+   "type": "bigText",
+   "text": "Stop doing this",
+   "narration": "Three everyday habits quietly shorten your laptop battery life.",
+   "durationInFrames": 90,
+   "icons": [
+    "battery",
+    "warning"
+   ]
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Three habits",
+   "narration": "And the last one is the one most people miss.",
+   "durationInFrames": 100,
+   "accentText": "one is common"
+  },
+  {
+   "type": "card",
+   "text": "Always at 100%",
+   "narration": "First, leaving it plugged in at one hundred percent all day, every day.",
+   "durationInFrames": 120,
+   "accentText": "plugged in"
+  },
+  {
+   "type": "progressBar",
+   "text": "Cap the charge",
+   "narration": "Many batteries age slower when charging stops near 80 percent instead of 100.",
+   "durationInFrames": 130,
+   "accentText": "often kinder",
+   "value": 80,
+   "unit": "%"
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Hot bags and cars",
+   "narration": "Second, leaving it in a hot car or a stuffy backpack.",
+   "durationInFrames": 110,
+   "accentText": "heat"
+  },
+  {
+   "type": "counter",
+   "text": "Heat limit",
+   "narration": "Above roughly 35 degrees Celsius, batteries can lose capacity for good.",
+   "durationInFrames": 130,
+   "accentText": "careful",
+   "value": 35,
+   "unit": "C"
+  },
+  {
+   "type": "card",
+   "text": "Draining to zero",
+   "narration": "Third, running it all the way down to zero percent again and again.",
+   "durationInFrames": 120,
+   "accentText": "deep discharge"
+  },
+  {
+   "type": "list",
+   "text": "Better habits",
+   "narration": "Instead, charge in the middle, keep it cool, and plug in before it runs flat.",
+   "durationInFrames": 130,
+   "items": [
+    "Stop near 80 percent",
+    "Keep it cool",
+    "Plug in before 20 percent"
+   ]
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Habits, not hacks",
+   "narration": "None of this needs software, only a few small changes in how you use it.",
+   "durationInFrames": 120,
+   "accentText": "small changes"
+  },
+  {
+   "type": "bigText",
+   "text": "Start today",
+   "narration": "Start with just one of them this week and see the difference.",
+   "durationInFrames": 90
+  },
+  {
+   "type": "outro",
+   "text": "Stop",
+   "narration": "Follow for more tech. Which habit are you changing first, heat or charge?",
+   "durationInFrames": 100,
+   "accentText": "Follow for more"
+  }
+ ]
+}

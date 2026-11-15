@@ -1,0 +1,110 @@
+{
+ "accent": "#00F0FF",
+ "kind": "curiosity",
+ "topic": "The Apollo Guidance Computer by the numbers",
+ "screen_title": "Apollo, by numbers",
+ "title": "The Apollo Computer In Four Numbers #siliconverdict #apollo #bythenumbers",
+ "description": "The Apollo Guidance Computer that helped land humans on the Moon, told through four numbers: memory, program, weight and power.",
+ "tags": [
+  "apollo",
+  "moon",
+  "computer",
+  "history",
+  "memory",
+  "engineering",
+  "bythenumbers",
+  "space"
+ ],
+ "pinned_comment": "Impressive or old? Reply with one word.",
+ "format": "numbers",
+ "scenes": [
+  {
+   "type": "bigText",
+   "text": "Apollo's computer",
+   "narration": "The computer that reached the Moon had less memory than a photo.",
+   "durationInFrames": 90,
+   "icons": [
+    "chip",
+    "rocket"
+   ]
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Four numbers",
+   "narration": "Stay to the end, because the last number is the strangest one.",
+   "durationInFrames": 100,
+   "accentText": "tell the story"
+  },
+  {
+   "type": "counter",
+   "text": "Erasable memory",
+   "narration": "Its working memory held just 2048 words, roughly four kilobytes.",
+   "durationInFrames": 120,
+   "accentText": "its RAM",
+   "value": 2048,
+   "unit": "words"
+  },
+  {
+   "type": "card",
+   "text": "Tiny, by design",
+   "narration": "Engineers wrote the code by hand to fit, counting every single word.",
+   "durationInFrames": 110,
+   "accentText": "every word counted"
+  },
+  {
+   "type": "counter",
+   "text": "Fixed memory",
+   "narration": "The program itself lived in 36,864 words of woven wire memory.",
+   "durationInFrames": 130,
+   "accentText": "its program",
+   "value": 36864,
+   "unit": "words"
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Woven by hand",
+   "narration": "Workers literally wove the software into wires, so a bug could not be patched.",
+   "durationInFrames": 120,
+   "accentText": "rope memory"
+  },
+  {
+   "type": "counter",
+   "text": "Weight",
+   "narration": "The whole unit weighed about 32 kilograms, small enough to fly in a spacecraft.",
+   "durationInFrames": 120,
+   "accentText": "about",
+   "value": 32,
+   "unit": "kg"
+  },
+  {
+   "type": "card",
+   "text": "Slow, but enough",
+   "narration": "It ran at roughly two megahertz, yet it navigated people all the way to the Moon.",
+   "durationInFrames": 130,
+   "accentText": "still enough"
+  },
+  {
+   "type": "counter",
+   "text": "Power draw",
+   "narration": "And the last number: it drew only about 55 watts, like a bright light bulb.",
+   "durationInFrames": 130,
+   "accentText": "light bulb",
+   "value": 55,
+   "unit": "W"
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Less is more",
+   "narration": "Tight limits forced engineers to write brilliantly careful code.",
+   "durationInFrames": 110,
+   "accentText": "constraints"
+  },
+  {
+   "type": "outro",
+   "text": "Numbers",
+   "narration": "Follow for more tech. Is that impressive, or just old?",
+   "durationInFrames": 100,
+   "accentText": "Follow for more"
+  }
+ ]
+}

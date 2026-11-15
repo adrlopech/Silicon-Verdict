@@ -1,0 +1,108 @@
+{
+ "accent": "#00F0FF",
+ "kind": "curiosity",
+ "topic": "How a CPU cache works, explained with a kitchen",
+ "screen_title": "Cache, in a kitchen",
+ "title": "CPU Cache Explained With A Kitchen #siliconverdict #cpu #explainedsimply",
+ "description": "A CPU cache explained with one everyday analogy: a chef, a small shelf and a big pantry.",
+ "tags": [
+  "cpu",
+  "cache",
+  "ram",
+  "explained",
+  "analogy",
+  "hardware",
+  "computing",
+  "tech"
+ ],
+ "pinned_comment": "Shelf or pantry? Reply with one word.",
+ "format": "eli5",
+ "scenes": [
+  {
+   "type": "bigText",
+   "text": "Cache, in a kitchen",
+   "narration": "Your processor keeps its favorite data on a tiny shelf, like a chef.",
+   "durationInFrames": 90,
+   "icons": [
+    "chip",
+    "brain"
+   ]
+  },
+  {
+   "type": "textWithAccent",
+   "text": "One simple idea",
+   "narration": "Stay to the end, the catch comes last, and it explains everything.",
+   "durationInFrames": 100,
+   "accentText": "chef's shelf"
+  },
+  {
+   "type": "card",
+   "text": "The pantry",
+   "narration": "Imagine a huge pantry down the hall. That is your main memory, RAM.",
+   "durationInFrames": 110,
+   "accentText": "RAM"
+  },
+  {
+   "type": "textWithAccent",
+   "text": "The counter shelf",
+   "narration": "Now picture a small shelf right beside the chef. That is the cache.",
+   "durationInFrames": 110,
+   "accentText": "cache"
+  },
+  {
+   "type": "list",
+   "text": "Kitchen equals computer",
+   "narration": "So the chef grabs from the shelf first, and walks to the pantry only when needed.",
+   "durationInFrames": 130,
+   "items": [
+    "Chef = the processor",
+    "Shelf = the cache",
+    "Pantry = the RAM"
+   ]
+  },
+  {
+   "type": "counter",
+   "text": "Pantry trips are slow",
+   "narration": "Reaching RAM takes roughly a hundred times longer than reaching the fastest cache.",
+   "durationInFrames": 130,
+   "accentText": "slower",
+   "value": 100,
+   "unit": "x"
+  },
+  {
+   "type": "card",
+   "text": "The shelf is tiny",
+   "narration": "The shelf is small, so the processor keeps whatever it used most recently.",
+   "durationInFrames": 110,
+   "accentText": "so choose well"
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Where it breaks",
+   "narration": "The analogy breaks in one place: a chip guesses what you will need next.",
+   "durationInFrames": 110,
+   "accentText": "it guesses"
+  },
+  {
+   "type": "card",
+   "text": "The catch",
+   "narration": "That guessing is the catch from earlier. When the chip guesses wrong, everything slows down.",
+   "durationInFrames": 120,
+   "accentText": "guessing"
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Now you get it",
+   "narration": "So a cache is just a small, fast shelf that keeps useful things close.",
+   "durationInFrames": 110,
+   "accentText": "a small shelf"
+  },
+  {
+   "type": "outro",
+   "text": "Cache",
+   "narration": "Follow for more tech. Would you call it a shelf, or a pantry?",
+   "durationInFrames": 100,
+   "accentText": "Follow for more"
+  }
+ ]
+}

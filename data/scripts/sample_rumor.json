@@ -1,0 +1,112 @@
+{
+ "accent": "#00F0FF",
+ "kind": "curiosity",
+ "topic": "The rumor that incognito mode makes you anonymous online",
+ "screen_title": "Is incognito private?",
+ "title": "Does Incognito Mode Make You Anonymous? #siliconverdict #privacy #rumormill",
+ "description": "A common rumor says incognito mode makes you invisible online. We weigh what it actually does and who can still see you.",
+ "tags": [
+  "incognito",
+  "privacy",
+  "browser",
+  "anonymous",
+  "security",
+  "rumormill",
+  "tracking",
+  "tech"
+ ],
+ "pinned_comment": "Believed or doubted? Reply with one word.",
+ "format": "rumor",
+ "scenes": [
+  {
+   "type": "bigText",
+   "text": "Incognito is private?",
+   "narration": "Many people think incognito mode makes them invisible online. It doesn't.",
+   "durationInFrames": 90,
+   "icons": [
+    "shield",
+    "lock"
+   ]
+  },
+  {
+   "type": "textWithAccent",
+   "text": "The rumor",
+   "narration": "Stay to the end, because one detail surprises almost everyone.",
+   "durationInFrames": 100,
+   "accentText": "you vanish"
+  },
+  {
+   "type": "card",
+   "text": "What it does",
+   "narration": "It does one thing: your browser forgets your history and cookies when you close the window.",
+   "durationInFrames": 130,
+   "accentText": "forgets locally"
+  },
+  {
+   "type": "list",
+   "text": "Who still sees you",
+   "narration": "But websites, a school or work network, and your provider can still see the traffic.",
+   "durationInFrames": 130,
+   "items": [
+    "The websites you visit",
+    "Your school or work network",
+    "Your internet provider"
+   ]
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Private from whom?",
+   "narration": "So it protects you from the next person using your device, not from the internet.",
+   "durationInFrames": 120,
+   "accentText": "just the device"
+  },
+  {
+   "type": "progressBar",
+   "text": "Plausibility",
+   "narration": "As a claim of anonymity, the rumor is only roughly ten percent plausible.",
+   "durationInFrames": 130,
+   "accentText": "of the claim",
+   "value": 10,
+   "unit": "%"
+  },
+  {
+   "type": "card",
+   "text": "Real privacy",
+   "narration": "Real privacy takes more, like blocking trackers and being careful what you sign into.",
+   "durationInFrames": 120,
+   "accentText": "needs more"
+  },
+  {
+   "type": "textWithAccent",
+   "text": "The verdict",
+   "narration": "So the call is clear: incognito is a tidy-up tool, not an invisibility cloak.",
+   "durationInFrames": 120,
+   "accentText": "mostly false"
+  },
+  {
+   "type": "list",
+   "text": "Use it for",
+   "narration": "Use it for shared computers, gift shopping, or signing into two accounts at once.",
+   "durationInFrames": 120,
+   "items": [
+    "Shared computers",
+    "Gift shopping",
+    "Two accounts at once"
+   ]
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Know the limits",
+   "narration": "Know a tool's limits, and it becomes useful instead of misleading.",
+   "durationInFrames": 110,
+   "accentText": "the limits"
+  },
+  {
+   "type": "outro",
+   "text": "Verdict",
+   "narration": "Follow for more tech. Did you believe it, or did you doubt it?",
+   "durationInFrames": 100,
+   "accentText": "Follow for more"
+  }
+ ]
+}

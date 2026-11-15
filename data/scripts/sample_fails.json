@@ -1,0 +1,117 @@
+{
+ "accent": "#00F0FF",
+ "kind": "curiosity",
+ "topic": "The Mars Climate Orbiter unit mix-up of 1999",
+ "screen_title": "The unit mix-up",
+ "title": "The Unit Mix-Up That Lost A Spacecraft #siliconverdict #space #techfails",
+ "description": "In 1999 a mix-up between pound-force and newton units cost NASA the Mars Climate Orbiter, a lesson in checking interfaces.",
+ "tags": [
+  "nasa",
+  "mars",
+  "orbiter",
+  "bug",
+  "software",
+  "techfails",
+  "engineering",
+  "space"
+ ],
+ "pinned_comment": "Software or people? Reply with one word.",
+ "format": "fails",
+ "scenes": [
+  {
+   "type": "bigText",
+   "text": "A unit mistake",
+   "narration": "One unit mix-up destroyed a spacecraft and roughly a hundred million dollars.",
+   "durationInFrames": 90,
+   "icons": [
+    "rocket",
+    "warning"
+   ]
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Mars, 1999",
+   "narration": "Stay to the end, because the bug was hiding in plain sight.",
+   "durationInFrames": 100,
+   "accentText": "lost"
+  },
+  {
+   "type": "timeline",
+   "text": "Mars Climate Orbiter",
+   "narration": "NASA launched the orbiter in 1998, and lost it near Mars the next year.",
+   "durationInFrames": 140,
+   "kicker": "tech fails",
+   "items": [
+    "1998|Orbiter launches",
+    "1999|Lost at Mars",
+    "1999|Review finds the bug"
+   ]
+  },
+  {
+   "type": "card",
+   "text": "Two teams, two units",
+   "narration": "One team's software reported thrust in pound-force seconds, while navigation expected newton-seconds.",
+   "durationInFrames": 130,
+   "accentText": "no check"
+  },
+  {
+   "type": "list",
+   "text": "The mismatch",
+   "narration": "The two units differ by a factor of about four point four five.",
+   "durationInFrames": 120,
+   "items": [
+    "Software said pound-force",
+    "Navigation read newtons",
+    "One pound-force is about 4.45 newtons"
+   ]
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Small errors add up",
+   "narration": "Each small thrust error added up over months, pushing the craft off course.",
+   "durationInFrames": 110,
+   "accentText": "every burn"
+  },
+  {
+   "type": "counter",
+   "text": "The cost",
+   "narration": "The loss cost roughly 125 million dollars, ended by a single assumption.",
+   "durationInFrames": 130,
+   "accentText": "roughly",
+   "value": 125,
+   "unit": "M$"
+  },
+  {
+   "type": "card",
+   "text": "Nobody checked",
+   "narration": "The math was right on both sides. The mistake lived in the handoff between them.",
+   "durationInFrames": 120,
+   "accentText": "the interface"
+  },
+  {
+   "type": "list",
+   "text": "What changed",
+   "narration": "The review board urged clearer unit checks between teams after the loss.",
+   "durationInFrames": 130,
+   "items": [
+    "State units everywhere",
+    "Cross-team checks",
+    "Independent review"
+   ]
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Always state units",
+   "narration": "The lesson is simple: a number without a unit is only half a number.",
+   "durationInFrames": 110,
+   "accentText": "always"
+  },
+  {
+   "type": "outro",
+   "text": "Fails",
+   "narration": "Follow for more tech. Was it a software bug, or a people problem?",
+   "durationInFrames": 100,
+   "accentText": "Follow for more"
+  }
+ ]
+}
