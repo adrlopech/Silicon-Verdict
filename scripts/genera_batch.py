@@ -121,6 +121,14 @@ def tiktok_caption(title: str) -> Dict[str, Any]:
 
 def produce(p: Dict[str, Any], run_motion_pipeline) -> Dict[str, Any]:
     """Renders one video of the plan: a chosen subject with its own source text, or a data-picked format."""
+    if p.get("script"):  # a hand-written MotionProject (JSON), checked by the same validator as generated ones
+        from services.motion_generator import MotionProject, make_validator
+        script = MotionProject.model_validate_json((BASE_DIR / p["script"]).read_text(encoding="utf-8"))
+        facts = (BASE_DIR / p["source"]).read_text(encoding="utf-8") if p.get("source") else None
+        problems = make_validator(facts=facts, fmt=None if p["format"] == "classic" else p["format"], retention=True)(script)
+        if problems:
+            raise ValueError(f"the script {p['script']} does not pass the validator: {problems}")
+        return run_motion_pipeline(topic=script.topic, export_only=True, kind="curiosity", fmt="auto" if p["format"] == "classic" else p["format"], source_text=facts, script=script)
     if p.get("topic"):
         source = (BASE_DIR / p["source"]).read_text(encoding="utf-8") if p.get("source") else None
         return run_motion_pipeline(topic=p["topic"], export_only=True, kind="curiosity", fmt="auto" if p["format"] == "classic" else p["format"], source_text=source)

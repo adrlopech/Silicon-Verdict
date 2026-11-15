@@ -1,0 +1,135 @@
+{
+ "topic": "How Rockstar's open worlds grew from Grand Theft Auto V (2013) to Red Dead Redemption 2 (2018) to Grand Theft Auto VI (scheduled 19 November 2026)",
+ "screen_title": "GTA V to GTA VI",
+ "title": "From GTA V to GTA VI: How Rockstar's Worlds Grew #siliconverdict #gta6 #evolution",
+ "description": "From 55,000 NPC animations in Grand Theft Auto V to over 600,000 in Grand Theft Auto VI, and a team that nearly doubled. The evolution of Rockstar's open worlds by the numbers.",
+ "tags": [
+  "gta6",
+  "grandtheftautovi",
+  "rockstar",
+  "evolution",
+  "gtav",
+  "reddeadredemption2",
+  "gamedev",
+  "gaming"
+ ],
+ "pinned_comment": "Bigger or deeper? Reply with one word.",
+ "accent": "#00F0FF",
+ "kind": "curiosity",
+ "format": "evolution",
+ "scenes": [
+  {
+   "type": "bigText",
+   "text": "55,000 to 600,000",
+   "narration": "Rockstar went from fifty-five thousand NPC animations to over six hundred thousand.",
+   "durationInFrames": 90,
+   "icons": [
+    "controller",
+    "rocket"
+   ]
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Three games, one trend",
+   "narration": "Here is how three open worlds grew, and the last number is the one nobody expected.",
+   "durationInFrames": 110,
+   "accentText": "one trend"
+  },
+  {
+   "type": "timeline",
+   "text": "Rockstar open worlds",
+   "narration": "Grand Theft Auto V in 2013, Red Dead Redemption 2 in 2018, then GTA VI.",
+   "durationInFrames": 140,
+   "kicker": "evolution",
+   "items": [
+    "2013|Grand Theft Auto V",
+    "2018|Red Dead Redemption 2",
+    "2026|GTA VI, 19 November"
+   ]
+  },
+  {
+   "type": "counter",
+   "text": "NPC animations, GTA V",
+   "narration": "Grand Theft Auto V shipped with 55,000 unique NPC animations, which was already a lot.",
+   "durationInFrames": 130,
+   "accentText": "animations",
+   "value": 55000,
+   "icons": [
+    "brain",
+    "gear"
+   ]
+  },
+  {
+   "type": "card",
+   "text": "Red Dead Redemption 2",
+   "narration": "Red Dead Redemption 2 pushed that to 300,000, with a volumetric clouds and fog system on top.",
+   "durationInFrames": 130,
+   "accentText": "300,000"
+  },
+  {
+   "type": "counter",
+   "text": "NPC animations, GTA VI",
+   "narration": "And GTA VI now has over 600,000 unique NPC animations, double what Red Dead Redemption 2 had.",
+   "durationInFrames": 140,
+   "accentText": "animations",
+   "value": 600000,
+   "icons": [
+    "brain",
+    "rocket"
+   ]
+  },
+  {
+   "type": "timeline",
+   "text": "The road to launch",
+   "narration": "In between, Rockstar confirmed the game, revealed it, and broke trailer records.",
+   "durationInFrames": 140,
+   "kicker": "evolution",
+   "items": [
+    "2018|RDR2 launches",
+    "2022|Development confirmed",
+    "2023|Official reveal",
+    "2025|2nd trailer: 475M views"
+   ]
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Weather grew up too",
+   "narration": "Fog and clouds in Red Dead became a world that is much more localised and persistent.",
+   "durationInFrames": 120,
+   "accentText": "persistent"
+  },
+  {
+   "type": "counter",
+   "text": "Rockstar employees",
+   "narration": "Now the last number: the team grew from 2,441 people to 4,711, across twelve offices.",
+   "durationInFrames": 140,
+   "accentText": "4,711",
+   "value": 4711,
+   "icons": [
+    "globe",
+    "gear"
+   ]
+  },
+  {
+   "type": "card",
+   "text": "Bigger every time",
+   "narration": "Each Rockstar open world has packed in more animation, more weather and more people than the last.",
+   "durationInFrames": 130,
+   "accentText": "every time"
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Scale is the story",
+   "narration": "From fifty-five thousand animations to over six hundred thousand in just two generations.",
+   "durationInFrames": 110,
+   "accentText": "the story"
+  },
+  {
+   "type": "outro",
+   "text": "Evolved",
+   "narration": "Follow for more tech. Does GTA VI need to be bigger or deeper?",
+   "durationInFrames": 100,
+   "accentText": "Follow for more"
+  }
+ ]
+}

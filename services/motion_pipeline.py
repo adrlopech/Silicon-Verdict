@@ -485,7 +485,7 @@ def _last_motion_choice():
 
 
 def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, dry_run: bool = False, privacy: str = "public", kind: str = "auto", fmt: str = "auto",
-                        source_text: Optional[str] = None) -> Dict[str, Any]:
+                        source_text: Optional[str] = None, script: Optional[Any] = None) -> Dict[str, Any]:
     """kind: curiosity | game | auto (a game video when a game with unused footage is not blacklisted, otherwise a curiosity).
     fmt: auto (the classic explainer) | myth | tier | whatif | easter | evolution | versus | any (a random format). `easter` is always a game video, the rest are curiosities.
     source_text: with kind='curiosity' and a topic, the real text the script must stick to (claims, dates and figures are checked against it)."""
@@ -548,6 +548,8 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
         from services.story_bank import pop_story
         recent = {t.strip().lower() for t in get_recently_used_topics_safe()}
         project = pop_story("motion", lambda p: p.format == format_name and p.kind == "curiosity" and p.topic.strip().lower() not in recent)
+    if script is not None:  # a script written by hand (data/scripts/*.json): used as it is, no model involved
+        project = script
     if project is None:
         project = generate_motion_project(topic, avoid_topics=get_recently_used_topics_safe(), kind="game" if game else "curiosity", game=game, catalog=catalog, facts=facts, fmt=format_name)
     logger.info("Motion Graphics (%s%s%s): '%s' (%d scenes)", project.kind, f", {game}" if game else "", f", format {format_name}" if format_name else "", project.title, len(project.scenes))

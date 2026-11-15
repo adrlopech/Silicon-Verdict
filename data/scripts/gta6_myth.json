@@ -1,0 +1,181 @@
+{
+ "topic": "Myth or fact about Grand Theft Auto VI: what people believe about the game scheduled for 19 November 2026",
+ "screen_title": "GTA VI Myth or Fact",
+ "title": "GTA VI Myth or Fact: What You Got Wrong #siliconverdict #gta6 #gaming",
+ "description": "We test the beliefs people repeat about Grand Theft Auto VI against what Rockstar and its release plans actually say. Discs, AI NPCs, weapons, the map and more.",
+ "tags": [
+  "gta6",
+  "grandtheftautovi",
+  "rockstar",
+  "gaming",
+  "mythorfact",
+  "gtavi",
+  "ps5",
+  "xboxseriesx"
+ ],
+ "pinned_comment": "Disc myth or weapon limit? Reply with one word.",
+ "accent": "#00F0FF",
+ "kind": "curiosity",
+ "format": "myth",
+ "scenes": [
+  {
+   "type": "bigText",
+   "text": "Wrong about GTA VI?",
+   "narration": "Some of what you believe about GTA VI is already wrong.",
+   "durationInFrames": 90,
+   "icons": [
+    "controller",
+    "warning"
+   ]
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Myth or fact?",
+   "narration": "Let's test the beliefs, and the last one catches most people out.",
+   "durationInFrames": 100,
+   "accentText": "GTA VI"
+  },
+  {
+   "type": "verdict",
+   "text": "Physical copies include a disc",
+   "narration": "First belief: the box holds a disc. Actually it holds a download code.",
+   "durationInFrames": 150,
+   "verdict": "myth",
+   "accentText": "Just a download code",
+   "kicker": "myth or fact"
+  },
+  {
+   "type": "list",
+   "text": "What the box holds",
+   "narration": "Rockstar swapped discs for codes to stop leaks, and you can preload early.",
+   "durationInFrames": 130,
+   "items": [
+    "Download code, no disc",
+    "In shops 12 November",
+    "Preload a week early"
+   ],
+   "icons": [
+    "disk",
+    "lock"
+   ]
+  },
+  {
+   "type": "verdict",
+   "text": "The NPCs are AI generated",
+   "narration": "Next belief: the crowds are AI generated. Rockstar says they are handcrafted instead.",
+   "durationInFrames": 150,
+   "verdict": "myth",
+   "accentText": "Handcrafted, no generative AI",
+   "kicker": "myth or fact"
+  },
+  {
+   "type": "codeBlock",
+   "text": "How the NPCs are made",
+   "narration": "No procedural generation. Every NPC is handcrafted, with traits shaped by district and behavior.",
+   "durationInFrames": 140,
+   "code": [
+    "procedural = false",
+    "handcrafted = true",
+    "traits = district",
+    "traits += player_behavior"
+   ],
+   "icons": [
+    "code",
+    "brain"
+   ]
+  },
+  {
+   "type": "verdict",
+   "text": "You can carry unlimited weapons",
+   "narration": "Third belief: the old unlimited weapon inventory returns. It does not, there are strict limits now.",
+   "durationInFrames": 150,
+   "verdict": "myth",
+   "accentText": "Two primaries, two sidearms",
+   "kicker": "myth or fact"
+  },
+  {
+   "type": "list",
+   "text": "Your loadout",
+   "narration": "You carry two primary firearms and two sidearms. The rest stays in your vehicle.",
+   "durationInFrames": 130,
+   "items": [
+    "2 primary firearms",
+    "2 sidearms",
+    "The rest stays in your car"
+   ],
+   "icons": [
+    "gear",
+    "check"
+   ]
+  },
+  {
+   "type": "verdict",
+   "text": "The map is three times bigger",
+   "narration": "Fourth belief: the map is three times bigger than Red Dead Redemption 2. Reported, not confirmed.",
+   "durationInFrames": 150,
+   "verdict": "partly",
+   "accentText": "Reported figure only",
+   "kicker": "myth or fact"
+  },
+  {
+   "type": "counter",
+   "text": "Reported map size",
+   "narration": "Reports say roughly three times the playable area of Red Dead Redemption 2.",
+   "durationInFrames": 140,
+   "accentText": "times RDR2",
+   "value": 3,
+   "unit": "x",
+   "icons": [
+    "globe",
+    "planet"
+   ]
+  },
+  {
+   "type": "verdict",
+   "text": "No microtransactions at launch",
+   "narration": "Fifth belief: no microtransactions at launch. That one is true, Rockstar confirmed it.",
+   "durationInFrames": 150,
+   "verdict": "fact",
+   "accentText": "Rockstar confirmed it",
+   "kicker": "myth or fact"
+  },
+  {
+   "type": "list",
+   "text": "Ruled out at launch",
+   "narration": "Rockstar also confirmed there is no generative AI in the game.",
+   "durationInFrames": 130,
+   "items": [
+    "No microtransactions",
+    "No generative AI",
+    "No procedural NPCs"
+   ],
+   "icons": [
+    "shield",
+    "cross"
+   ]
+  },
+  {
+   "type": "verdict",
+   "text": "Xbox One can't play it at all",
+   "narration": "Here is the catch from earlier: Xbox One can play it, but only via Xbox Cloud Gaming.",
+   "durationInFrames": 150,
+   "verdict": "partly",
+   "accentText": "Only through the cloud",
+   "kicker": "myth or fact"
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Check before you believe",
+   "narration": "Most people never check the source, so check before you share the next myth.",
+   "durationInFrames": 110,
+   "accentText": "believe"
+  },
+  {
+   "type": "outro",
+   "text": "Verdict",
+   "narration": "Follow for more tech. Which shocked you more, the disc myth or the weapon limit?",
+   "durationInFrames": 110,
+   "accentText": "Follow for more"
+  }
+ ]
+}
