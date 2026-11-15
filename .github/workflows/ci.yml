@@ -16,8 +16,7 @@ jobs:
           cache: pip
       - name: Install dependencies
         run: |
-          grep -vE '^(faster-whisper)' requirements.txt > /tmp/req.txt
-          pip install -r /tmp/req.txt -r requirements-dev.txt av  # av comes with faster-whisper, which is left out here
+          pip install -r requirements.txt -r requirements-dev.txt
       - name: Lint
         run: ruff check .
       - name: Unit tests
