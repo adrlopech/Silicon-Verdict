@@ -122,18 +122,28 @@ Selecciona el enfoque temático para este vídeo (60-120s):
 9. **Detalle oculto de un juego** (footage real; solo hechos de la fuente).
 10. **Arréglalo ya** (un síntoma que todos han sufrido y un ajuste exacto para arreglarlo; el cursor hace los clics).
 11. **Decodificado** (qué significa de verdad el nombre o la etiqueta de un producto: RTX 5070 Ti, DDR5-6000 CL30, AX3000...).
-12. **Automático** (la IA elige uno de los 11 temas anteriores, distinto del último vídeo de Motion Graphics).
+12. **Top 5** (cuenta atrás del 5 al 1).
+13. **Explicado fácil** (una idea difícil contada sencilla).
+14. **Fallos tech** (un fracaso famoso, paso a paso).
+15. **Por los números** (una cifra y lo que significa).
+16. **Quiz** (pregunta de tres opciones y revelación).
+17. **Deja de hacerlo** (un hábito que conviene abandonar y por qué).
+18. **Rumor** (un rumor sopesado, con cautela).
+19. **¿Vale la pena?** (veredicto comprar / esperar / saltar).
+20. **Noticiario Tech Briefing** (titulares de hoy leídos en vivo de RSS).
+21. **Automático** (la IA elige uno de los 19 temas anteriores, distinto del último vídeo; nunca el noticiario).
 
-👉 Responde únicamente con el número deseado: **[1 al 12]**
+👉 Responde únicamente con el número deseado: **[1 al 21]**
 ---
 
      Tras la respuesta ejecuta (siempre con `--series motion --privacy public`):
      * `1` → sin flags extra (alterna). `2` → `--motion-kind curiosity`. `3` → `--motion-kind game`.
      * `4` → `--motion-format myth`, `5` → `--motion-format tier`, `6` → `--motion-format whatif`, `7` → `--motion-format evolution`, `8` → `--motion-format versus`, `9` → `--motion-format easter`.
      * `10` → `--motion-format fix`, `11` → `--motion-format decode`.
-     * `12` → `--motion-format any` (elige uno de los 11 temas con pesos —`FORMAT_WEIGHTS` en `services/motion_generator.py`: what-if, versus, evolución, fix y decode pesan 3, hardware 2, el resto 1—, excluye el del último vídeo y descarta los de juegos si no queda ningún juego con footage sin usar).
+     * `12` → `top5`, `13` → `eli5`, `14` → `fails`, `15` → `numbers`, `16` → `quiz`, `17` → `stop`, `18` → `rumor`, `19` → `review`, `20` → `news` (todos con `--motion-format`).
+     * `21` → `--motion-format any` (elige uno de los 19 temas con pesos —`FORMAT_WEIGHTS` en `services/motion_generator.py`: what-if, versus, evolución, fix y decode pesan 3, hardware 2, el resto 1—, excluye el del último vídeo y descarta los de juegos si no queda ningún juego con footage sin usar).
      * `9` es siempre un juego: necesita un juego con footage sin usar y dossier de fuentes; si no hay ninguno, el proceso se detiene y lo dice.
-     * Entrada no válida en este segundo menú: *"Opción no válida. Introduce un número del 1 al 12."* y sigue esperando.
+     * Entrada no válida en este segundo menú: *"Opción no válida. Introduce un número del 1 al 21."* y sigue esperando.
      * Los vídeos de juegos usan capturas y clips reales: cada elemento se usa una sola vez y se borra, y el juego queda bloqueado 14 días.
      * Estilo de retención (estudio `notes/content_style_study_2026-11.md`): `RETENTION_RULES` se añade al prompt de todo guion nuevo y `retention_problems()` lo valida (`make_validator(..., retention=True)`): apertura directa (la afirmación en ≤14 palabras, sin saludo ni "so/today/did you know"), un bucle abierto en las escenas 2-5 (una promesa que se cumple en el último tercio) y nunca tres titulares seguidos (`bigText`/`textWithAccent`). Los bancos escritos a mano no se obligan al generar, pero desde 2026-11-09 TODOS (241 archivos en `docs/generated_scripts/bank/` y las filas sin usar de `story_bank`) cumplen las reglas: `scripts/update_bank_scripts.py` (`--dry-run`, `--backup`; idempotente) añade el bucle abierto corto, la votación de dos opciones (versus: "Team A or team B?"), cambia la escena central de tres titulares seguidos por `card`, quita muletillas y recorta escenas largas; lo que necesita reescritura manual está en `docs/generated_scripts/bank/fixes.json` (tema -> hook / narración por escena). `scripts/lint_retention.py` mide los 8 formatos y `tests/test_motion_validators.py` falla si un guion del banco incumple. Las escenas `card` son un titular enmarcado (sin datos extra) para romper rachas.
      * Puntero (cursor): ya no hay pestañas de navegador ni `hover`/`busy`/`idle`. Solo actúa cuando significa algo (`CURSOR_SCENES` en `services/motion_generator.py`): `select` subraya la frase clave de un `bigText`/`textWithAccent` justo cuando el narrador la dice (el pipeline fija `cursorCue` desde los tiempos de la voz, `cursor_cues()` en `services/motion_pipeline.py`), `drag` tira del tirador de una `progressBar` o lleva la ficha nueva de un `tier` a su fila, `click` pulsa el ajuste o el paso en una `codeBlock`/`list` y `toggle` (solo la primera escena, panel Control Center). Máx. 3 escenas con puntero (4 en `fix`), separadas al menos 2 escenas. `sanitize_cursors` y `assign_cursors` limpian y completan los guiones antiguos del banco al renderizar.

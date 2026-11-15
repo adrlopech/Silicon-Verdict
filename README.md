@@ -121,6 +121,15 @@ The motion series also speaks fixed formats (hardware and simple are the old cat
 .venv/bin/python main.py --series motion --motion-format simple --export-only     # everyday tech mystery hosted by the cursor
 .venv/bin/python main.py --series motion --motion-format fix --export-only      # a symptom fixed with one exact setting, the cursor does the clicks
 .venv/bin/python main.py --series motion --motion-format decode --export-only   # what a product name or spec label really means
+.venv/bin/python main.py --series motion --motion-format top5 --export-only     # a countdown from 5 to 1
+.venv/bin/python main.py --series motion --motion-format eli5 --export-only     # a hard idea explained simply
+.venv/bin/python main.py --series motion --motion-format fails --export-only    # a famous tech failure, step by step
+.venv/bin/python main.py --series motion --motion-format numbers --export-only  # one number and what it means
+.venv/bin/python main.py --series motion --motion-format quiz --export-only     # a three-option question, then the reveal
+.venv/bin/python main.py --series motion --motion-format stop --export-only     # a habit to drop and why
+.venv/bin/python main.py --series motion --motion-format rumor --export-only    # a rumour weighed up and hedged
+.venv/bin/python main.py --series motion --motion-format review --export-only   # buy / wait / skip verdict
+.venv/bin/python main.py --series motion --motion-format news --export-only     # Tech Briefing: today's headlines from live RSS feeds (never picked by `any`)
 .venv/bin/python main.py --series motion --motion-format any                      # a weighted random one (what-if, versus, evolution, fix and decode come up most)
 ```
 
