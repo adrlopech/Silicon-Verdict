@@ -12,6 +12,7 @@ import { Captions, captionSpaceFor, chunkCaptions } from './captions';
 import { Callout, Decor, Shock } from './decor';
 import { LookCtx, SceneCtx, lookFor } from './looks';
 import { Ambient, sceneFx } from './ambient';
+import { Stage, Ticker, VisualName, pickVisuals } from './visuals';
 import { HEIGHT, MotionGraphicProps, MotionScene, OVERLAP, SceneFx, WIDTH, defaultTheme } from './types';
 import { useLook } from './looks';
 
@@ -36,7 +37,7 @@ const SCENES: Record<MotionScene['type'], React.FC<{ scene: MotionScene }>> = {
 
 /** One scene wrapper: it enters with its own transition (varied per scene), drifts under a slow camera move, lands with an impact ring and thematic objects,
  *  and leaves with the matching exit while the next scene enters on top. */
-const SceneShell: React.FC<{ scene: MotionScene; index: number; total: number; rehook: boolean; icons: string[]; fx: SceneFx | null; next?: MotionScene; last: boolean; children: React.ReactNode }> = ({ scene, index, total, rehook, icons, fx, next, last, children }) => {
+const SceneShell: React.FC<{ scene: MotionScene; index: number; total: number; rehook: boolean; icons: string[]; fx: SceneFx | null; visual: VisualName | null; next?: MotionScene; last: boolean; children: React.ReactNode }> = ({ scene, index, total, rehook, icons, fx, visual, next, last, children }) => {
   const frame = useCurrentFrame();
   const look = useLook();
   const hard = look.transitions.find((t) => t === 'whip' || t === 'glitch' || t === 'zoomThrough') ?? look.transitions[0];
@@ -62,10 +63,12 @@ const SceneShell: React.FC<{ scene: MotionScene; index: number; total: number; r
   return (
     <AbsoluteFill style={style} data-scene={index}>
       <AbsoluteFill style={{ transform: camPunch }}>
+        <Stage scene={scene} name={visual} index={index} />
+        <Ticker scene={scene} index={index} />
         <Ambient fx={fx} />
         <Decor scene={scene} index={index} total={total} />
         <PropField icons={icons} index={index} />
-        <AbsoluteFill style={scene.cursor === 'toggle' ? { transform: 'translateY(-200px)' } : undefined}>{children}</AbsoluteFill>
+        <AbsoluteFill style={scene.cursor === 'toggle' ? { transform: 'translateY(-200px)' } : visual ? { transform: 'translateY(-150px)' } : undefined}>{children}</AbsoluteFill>
       </AbsoluteFill>
       <Impact seed={index} />
       {rehook && <Shock />}
@@ -117,6 +120,7 @@ export const MotionGraphic: React.FC<MotionGraphicProps> = ({ scenes, theme = de
   // the Control Center panel and the caption strip take the place of the floating icon tiles
   scenes.forEach((sc, i) => sceneIcons.push(sc.cursor === 'toggle' || captionSpaceFor(sc, chunks.length > 0) > 0 ? [] : pickIcons(sc, sceneIcons[i - 1] ?? [])));
   const fxs = sceneFx(scenes);
+  const visuals = pickVisuals(scenes);
   const isLight = (sc: MotionScene) => look.light || !!sc.light; // a light look is light everywhere; otherwise a scene may ask for the light variant
   const light = isLight(scenes[current]);
   const flash = scenes[current].type === 'flash';
@@ -136,7 +140,7 @@ export const MotionGraphic: React.FC<MotionGraphicProps> = ({ scenes, theme = de
               <Sequence key={i} from={starts[i]} durationInFrames={scene.durationInFrames + (last ? 0 : OVERLAP)} layout="none">
                 <ThemeCtx.Provider value={{ theme: th, light: isLight(scene) }}>
                   <SceneCtx.Provider value={{ scene, captionSpace: captionSpaceFor(scene, chunks.length > 0) }}>
-                    <SceneShell scene={scene} index={i} total={scenes.length} rehook={i === rehookAt} icons={sceneIcons[i]} fx={fxs[i]} next={scenes[i + 1]} last={last}>
+                    <SceneShell scene={scene} index={i} total={scenes.length} rehook={i === rehookAt} icons={sceneIcons[i]} fx={fxs[i]} visual={visuals[i]} next={scenes[i + 1]} last={last}>
                       <C scene={scene} />
                     </SceneShell>
                   </SceneCtx.Provider>

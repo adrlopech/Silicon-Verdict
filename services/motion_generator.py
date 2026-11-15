@@ -240,6 +240,7 @@ class MotionSceneModel(BaseModel):
     mediaSeconds: Optional[float] = Field(default=None, description="Set by the pipeline, never by the model")
     credit: Optional[str] = Field(default=None, description="Set by the pipeline, never by the model")
     evidence: Optional[str] = Field(default=None, description="GAME videos only: a VERBATIM quote (6-30 words) copied from the SOURCE TEXT that supports this scene's claim about the game; empty if the scene makes no claim about the game")
+    visual: Optional[str] = Field(default=None, description="Text scenes: the animated stage drawn behind the text (crowd, memory, cores, network, bars, wave, gauge, map, city, layers, matrix, radar, orbit). Optional: it is picked automatically from the scene's words when empty")
     fx: Optional[str] = Field(default=None, description="An animated element that illustrates the line (plane, rocket, satellite, waves, bolts, embers, snow, drops, packets, coins, equalizer). Optional: it is picked automatically from the scene's words when empty")
     toggle: Optional[str] = Field(default=None, description="With cursor=toggle: the switch of the Control Center panel the cursor flips: airplane, wifi, bluetooth or airdrop")
     cursor: Optional[str] = Field(default=None, description="The pointer acts in this scene ONLY when the action means something: select (drags across the key phrase of a bigText / textWithAccent scene), drag (progressBar: pulls the bar to its value; tier: carries the new chip into its row), click (codeBlock or list: presses the setting or the step), toggle (first scene only, only for a video about a phone/computer setting: opens a Control Center panel and flips a switch). Empty = no pointer in this scene")
@@ -335,6 +336,7 @@ readable in 2 seconds; no emojis.
 CURSOR (optional, use it SPARINGLY): the channel's character is a mouse pointer. It appears only when it does something that MEANS something, never as decoration, never to introduce the topic (no browser tab, no hovering, no waiting, no loading ring).
 Set `cursor` on a scene only for: select (a bigText or textWithAccent scene: it drags across the key phrase, as if selecting it, while the narrator says it), drag (a progressBar scene: it pulls the bar to its value; a tier scene: it carries the new chip into its row), click (a codeBlock or list scene: it presses the setting or the step the narrator names),
 toggle (ONLY the first scene and ONLY when the whole video is about a phone or computer setting such as airplane mode: it opens a macOS-style Control Center panel and flips the switch named in `toggle`: airplane, wifi, bluetooth or airdrop). Never on flash scenes. At most 3 scenes per video (4 in a fix video), never in two scenes in a row.
+VISUAL STAGE (optional): every text scene also shows an animated drawing behind the words. It is picked automatically from what the scene says; set `visual` only when you want a specific one: crowd (people, NPCs, teams), memory (RAM, storage, copies), cores (CPU, threads, load), network (online, servers, packets), bars (growth, comparisons), wave (sound, signals), gauge (speed, fps, latency), map (world, regions), city (streets, buildings), layers (rendering, pipelines, stacks), matrix (code, data, AI), radar (weather, scanning, tracking), orbit (a system of parts). Never ask for the same one in consecutive scenes.
 Metadata: title <= 80 characters + 2-3 hashtags (#siliconverdict first), description 2 sentences, 6-8 tags, pinned_comment = the two-option vote of the outro.
 screen_title <= 24 characters. accent = always #00F0FF (channel electric cyan)."""
 
@@ -483,6 +485,12 @@ def looks_english(text: str) -> bool:
 def _repair(p: MotionProject) -> None:
     """Fixes what can be fixed without asking again: clamps scene lengths, trims overlong lists/code, forces the brand accent."""
     for s in p.scenes:
+        s.text = s.text.replace("*", "").strip()  # the model sometimes marks the accent word with *asterisks*: they would be drawn literally
+        if s.accentText:
+            s.accentText = s.accentText.replace("*", "").strip()
+        if s.kicker:
+            s.kicker = s.kicker.replace("*", "").strip()
+        s.narration = s.narration.replace("*", "")
         s.durationInFrames = max(60, min(150, int(s.durationInFrames)))
         if s.items:
             s.items = s.items[:{"tier": 10, "timeline": 5, "ui": 6}.get(s.type, 4)]

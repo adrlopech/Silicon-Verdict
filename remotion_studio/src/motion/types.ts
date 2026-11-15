@@ -26,6 +26,7 @@ export interface MotionScene {
   mediaSeconds?: number; // footage: clip length (video loops if the scene lasts longer)
   credit?: string; // footage: game name shown as a tag
   icons?: string[]; // 1-4 thematic objects floating around the text (names from props.tsx ICONS); picked from the scene's words when empty
+  visual?: string; // text scenes: the animated stage drawn behind the text (crowd, memory, cores, network, bars, wave, gauge, map, city, layers, matrix, radar, orbit); picked from the scene's words when empty
   fx?: SceneFx; // an animated element related to what the scene says (a plane flying across, signal waves, lightning...); picked from the scene's words when empty
   toggle?: ToggleKey; // with cursor 'toggle': which switch of the Control Center panel the cursor flips (airplane mode switches the radios off)
   cursor?: CursorAction; // the pointer acts in this scene only when the action means something: select (highlights the key phrase as it is spoken), drag (pulls a progress bar, drops the new tier chip), click (presses a step or a setting: code and list scenes), toggle (flips a Control Center switch)
