@@ -121,7 +121,7 @@ export const Headline: React.FC<P> = ({ scene }) => {
         <Accent text={scene.accentText} size={112} delay={14} />
       </SafeBox>
       <AbsoluteFill style={{ pointerEvents: 'none' }}>
-        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 420, height: 56, overflow: 'hidden', borderTop: `2px solid ${theme.accent}55`, borderBottom: `2px solid ${theme.accent}55`, background: light ? 'rgba(255,255,255,0.7)' : 'rgba(5,10,24,0.7)', opacity: bar }}>
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 560, height: 56, overflow: 'hidden', borderTop: `2px solid ${theme.accent}55`, borderBottom: `2px solid ${theme.accent}55`, background: light ? 'rgba(255,255,255,0.7)' : 'rgba(5,10,24,0.7)', opacity: bar }}>
           <div style={{ position: 'absolute', left: x, top: 8, whiteSpace: 'nowrap', fontFamily: MONO, fontWeight: 500, fontSize: 30, letterSpacing: 5, color: theme.accent }}>{strip.repeat(6)}</div>
         </div>
       </AbsoluteFill>

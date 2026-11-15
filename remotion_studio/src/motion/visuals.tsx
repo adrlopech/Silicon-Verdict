@@ -51,7 +51,7 @@ export const pickVisuals = (scenes: MotionScene[]): (VisualName | null)[] => {
 type Ctx = { accent: string; accent2: string; ink: string; light: boolean; frame: number; seed: number };
 
 // the region where the visuals live: from the middle of the frame down to the caption strip
-const TOP = 860;
+const DH = 560; // design height of every visual: it is drawn in a 560 px band above the captions and scaled down when the text leaves less room
 const bottomOf = (captionSpace: number) => HEIGHT - SAFE_BOTTOM - captionSpace + 10;
 
 const Person: React.FC<{ x: number; y: number; h: number; color: string; lit: number; sway: number }> = ({ x, y, h, color, lit, sway }) => {
@@ -65,7 +65,7 @@ const Person: React.FC<{ x: number; y: number; h: number; color: string; lit: nu
   );
 };
 
-const Crowd: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, seed, bottom }) => {
+const Crowd: React.FC<Ctx & { bottom: number; top: number }> = ({ accent, accent2, frame, seed, bottom, top }) => {
   const rows = [
     { y: bottom - 20, h: 150, n: 8, c: accent, k: 1 },
     { y: bottom - 150, h: 112, n: 10, c: accent2, k: 0.7 },
@@ -86,7 +86,7 @@ const Crowd: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, see
   );
 };
 
-const Memory: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, seed, bottom }) => {
+const Memory: React.FC<Ctx & { bottom: number; top: number }> = ({ accent, accent2, frame, seed, bottom, top }) => {
   const cols = 12, rows = 6, cw = 70, ch = 46, gap = 12;
   const x0 = (WIDTH - (cols * (cw + gap) - gap)) / 2, y0 = bottom - rows * (ch + gap) - 40;
   const fill = interpolate(frame, [4, 90], [0, 1], { ...clamp, easing: EASE_IO });
@@ -106,8 +106,8 @@ const Memory: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, se
   );
 };
 
-const Cores: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, seed, bottom }) => {
-  const n = 4, cell = 150, gap = 26;
+const Cores: React.FC<Ctx & { bottom: number; top: number }> = ({ accent, accent2, frame, seed, bottom, top }) => {
+  const n = 4, cell = 112, gap = 18;
   const x0 = (WIDTH - (n * cell + (n - 1) * gap)) / 2, y0 = bottom - n * (cell + gap) + 10;
   return (
     <svg width={WIDTH} height={HEIGHT} style={{ position: 'absolute', left: 0, top: 0 }}>
@@ -132,9 +132,9 @@ const Cores: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, see
 
 const NODES: [number, number][] = [[0.12, 0.2], [0.34, 0.05], [0.6, 0.18], [0.88, 0.08], [0.22, 0.55], [0.5, 0.5], [0.78, 0.46], [0.1, 0.92], [0.4, 0.88], [0.7, 0.95], [0.92, 0.78]];
 const EDGES: [number, number][] = [[0, 1], [1, 2], [2, 3], [0, 4], [1, 5], [2, 5], [3, 6], [4, 5], [5, 6], [4, 7], [5, 8], [6, 9], [6, 10], [8, 9], [7, 8], [9, 10]];
-const Network: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, bottom }) => {
-  const h = bottom - TOP - 40;
-  const pt = (i: number): [number, number] => [60 + NODES[i][0] * (WIDTH - 120), TOP + 40 + NODES[i][1] * h];
+const Network: React.FC<Ctx & { bottom: number; top: number }> = ({ accent, accent2, frame, bottom, top }) => {
+  const h = bottom - top - 40;
+  const pt = (i: number): [number, number] => [60 + NODES[i][0] * (WIDTH - 120), top + 40 + NODES[i][1] * h];
   return (
     <svg width={WIDTH} height={HEIGHT} style={{ position: 'absolute', left: 0, top: 0 }}>
       {EDGES.map(([a, b], i) => {
@@ -161,10 +161,10 @@ const Network: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, b
   );
 };
 
-const Bars: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, seed, bottom }) => {
+const Bars: React.FC<Ctx & { bottom: number; top: number }> = ({ accent, accent2, frame, seed, bottom, top }) => {
   const n = 9, bw = 74, gap = 28;
   const x0 = (WIDTH - (n * (bw + gap) - gap)) / 2;
-  const max = bottom - TOP - 120;
+  const max = bottom - top - 120;
   return (
     <svg width={WIDTH} height={HEIGHT} style={{ position: 'absolute', left: 0, top: 0 }}>
       <line x1={x0 - 20} y1={bottom - 20} x2={WIDTH - x0 + 20} y2={bottom - 20} stroke={accent} strokeOpacity={0.5} strokeWidth={3} />
@@ -185,8 +185,8 @@ const Bars: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, seed
   );
 };
 
-const Wave: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, bottom }) => {
-  const cy = (TOP + bottom) / 2 + 60;
+const Wave: React.FC<Ctx & { bottom: number; top: number }> = ({ accent, accent2, frame, bottom, top }) => {
+  const cy = (top + bottom) / 2 + 60;
   const line = (amp: number, freq: number, speed: number, ph: number) => {
     const pts: string[] = [];
     for (let x = 0; x <= WIDTH; x += 12) pts.push(`${x},${cy + Math.sin((x / WIDTH) * Math.PI * 2 * freq + frame / speed + ph) * amp * (0.55 + 0.45 * Math.sin(x / 140 - frame / 26))}`);
@@ -205,7 +205,7 @@ const Wave: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, bott
   );
 };
 
-const Gauge: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, bottom }) => {
+const Gauge: React.FC<Ctx & { bottom: number; top: number }> = ({ accent, accent2, frame, bottom, top }) => {
   const cx = WIDTH / 2, cy = bottom - 90, r = 400;
   const sweep = interpolate(frame, [4, 60], [0, 1], { ...clamp, easing: EASE_OUT });
   const needle = -Math.PI + Math.PI * Math.min(1, sweep * 0.78 + Math.sin(frame / 9) * 0.03 * sweep);
@@ -225,8 +225,8 @@ const Gauge: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, bot
   );
 };
 
-const MapGrid: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, seed, bottom }) => {
-  const cx = WIDTH / 2, cy = (TOP + bottom) / 2 + 40, rx = 470, ry = 290;
+const MapGrid: React.FC<Ctx & { bottom: number; top: number }> = ({ accent, accent2, frame, seed, bottom, top }) => {
+  const cx = WIDTH / 2, cy = (top + bottom) / 2 + 40, rx = 470, ry = 290;
   const scan = ((frame * 5) % (rx * 2 + 200)) - rx - 100;
   return (
     <svg width={WIDTH} height={HEIGHT} style={{ position: 'absolute', left: 0, top: 0 }}>
@@ -254,7 +254,7 @@ const MapGrid: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, s
   );
 };
 
-const City: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, seed, bottom }) => {
+const City: React.FC<Ctx & { bottom: number; top: number }> = ({ accent, accent2, frame, seed, bottom, top }) => {
   const n = 15, bw = 64;
   return (
     <svg width={WIDTH} height={HEIGHT} style={{ position: 'absolute', left: 0, top: 0 }}>
@@ -281,8 +281,8 @@ const City: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, seed
   );
 };
 
-const Layers: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, bottom }) => {
-  const cy = (TOP + bottom) / 2 + 80;
+const Layers: React.FC<Ctx & { bottom: number; top: number }> = ({ accent, accent2, frame, bottom, top }) => {
+  const cy = (top + bottom) / 2 + 80;
   return (
     <div style={{ position: 'absolute', left: 0, top: 0, width: WIDTH, height: HEIGHT, perspective: 1400 }}>
       {[0, 1, 2, 3].map((i) => {
@@ -300,17 +300,17 @@ const Layers: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, bo
   );
 };
 
-const Matrix: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, seed, bottom }) => {
+const Matrix: React.FC<Ctx & { bottom: number; top: number }> = ({ accent, accent2, frame, seed, bottom, top }) => {
   const cols = 24;
   const GL = '01ABCDEF01{}<>/=+';
   return (
     <svg width={WIDTH} height={HEIGHT} style={{ position: 'absolute', left: 0, top: 0 }}>
       {Array.from({ length: cols }).map((_, c) => {
         const speed = 3 + random(`s${seed}${c}`) * 5, off = random(`o${seed}${c}`) * 1400;
-        const head = ((frame * speed + off) % (bottom - TOP + 300)) + TOP - 150;
+        const head = ((frame * speed + off) % (bottom - top + 300)) + top - 150;
         return Array.from({ length: 9 }).map((__, k) => {
           const y = head - k * 44;
-          if (y < TOP - 20 || y > bottom) return null;
+          if (y < top - 20 || y > bottom) return null;
           const ch = GL[Math.floor(random(`g${seed}${c}${k}${Math.floor(frame / 6)}`) * GL.length)];
           return <text key={`${c}-${k}`} x={20 + c * 43} y={y} fontFamily={MONO} fontSize={36} fill={k === 0 ? accent2 : accent} fillOpacity={k === 0 ? 1 : 0.7 - k * 0.07}>{ch}</text>;
         });
@@ -319,8 +319,8 @@ const Matrix: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, se
   );
 };
 
-const Radar: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, seed, bottom }) => {
-  const cx = WIDTH / 2, cy = (TOP + bottom) / 2 + 50, R = 420;
+const Radar: React.FC<Ctx & { bottom: number; top: number }> = ({ accent, accent2, frame, seed, bottom, top }) => {
+  const cx = WIDTH / 2, cy = (top + bottom) / 2, R = Math.min(300, (bottom - top) / 2 - 20);
   const a = (frame * 0.07) % (Math.PI * 2);
   return (
     <svg width={WIDTH} height={HEIGHT} style={{ position: 'absolute', left: 0, top: 0 }}>
@@ -342,8 +342,8 @@ const Radar: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, see
   );
 };
 
-const Orbit: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, bottom }) => {
-  const cx = WIDTH / 2, cy = (TOP + bottom) / 2 + 40;
+const Orbit: React.FC<Ctx & { bottom: number; top: number }> = ({ accent, accent2, frame, bottom, top }) => {
+  const cx = WIDTH / 2, cy = (top + bottom) / 2 + 40;
   return (
     <svg width={WIDTH} height={HEIGHT} style={{ position: 'absolute', left: 0, top: 0 }}>
       {[150, 255, 360].map((r, ri) => <ellipse key={r} cx={cx} cy={cy} rx={r * 1.25} ry={r * 0.62} fill="none" stroke={ri === 1 ? accent2 : accent} strokeOpacity={0.35} strokeWidth={2.5} strokeDasharray={ri === 2 ? '3 14' : undefined} />)}
@@ -363,38 +363,32 @@ const Orbit: React.FC<Ctx & { bottom: number }> = ({ accent, accent2, frame, bot
   );
 };
 
-const STAGES: Record<VisualName, React.FC<Ctx & { bottom: number }>> = { crowd: Crowd, memory: Memory, cores: Cores, network: Network, bars: Bars, wave: Wave, gauge: Gauge, map: MapGrid, city: City, layers: Layers, matrix: Matrix, radar: Radar, orbit: Orbit };
+const STAGES: Record<VisualName, React.FC<Ctx & { bottom: number; top: number }>> = { crowd: Crowd, memory: Memory, cores: Cores, network: Network, bars: Bars, wave: Wave, gauge: Gauge, map: MapGrid, city: City, layers: Layers, matrix: Matrix, radar: Radar, orbit: Orbit };
 
-/** The stage behind the text of one scene: it fades in, keeps moving for the whole scene and sits at moderate opacity so the headline stays readable over it. */
-export const Stage: React.FC<{ scene: MotionScene; name: VisualName | null; index: number }> = ({ scene, name, index }) => {
+/** The stage behind the text of one scene. `avail` = the room (px) between the bottom of the text and the caption strip, measured by the scene shell: the visual is drawn in a 560 px band
+ *  and scaled down to fit it, so it never runs behind the text; with less than half the band free it is left out. It fades in, keeps moving and stays at moderate opacity. */
+export const Stage: React.FC<{ scene: MotionScene; name: VisualName | null; index: number; avail: number }> = ({ scene, name, index, avail }) => {
   const frame = useCurrentFrame();
   const { theme, light } = useTheme();
   const { captionSpace } = useSceneCtx();
   if (!name || !STAGE_SCENES.has(scene.type)) return null;
+  const k = Math.min(1, avail / DH);
+  if (k < 0.5) return null;
   const C = STAGES[name];
   const p = interpolate(frame, [0, 22], [0, 1], { ...clamp, easing: EASE_OUT });
+  const bottom = bottomOf(captionSpace);
+  const top = bottom - DH;
   const ctx: Ctx = { accent: light ? '#0A5CFF' : theme.accent, accent2: light ? '#00A3E0' : theme.accent2 ?? theme.accent, ink: light ? '#0A1220' : '#FFFFFF', light, frame, seed: index * 17 + 3 };
   return (
-    <AbsoluteFill style={{ pointerEvents: 'none', opacity: (light ? 0.62 : 0.78) * p, transform: `translateY(${(1 - p) * 70}px)`, WebkitMaskImage: `linear-gradient(to bottom, transparent ${Math.round((TOP - 90) / 19.2)}%, #000 ${Math.round((TOP + 110) / 19.2)}%)` }}>
-      <C {...ctx} bottom={bottomOf(captionSpace)} />
+    <AbsoluteFill style={{ pointerEvents: 'none', opacity: (light ? 0.7 : 0.9) * p * (k < 0.7 ? 0.85 : 1), transform: `translateY(${(1 - p) * 70}px)` }}>
+      <AbsoluteFill style={{ transform: `scale(${k})`, transformOrigin: `50% ${bottom}px`, WebkitMaskImage: `linear-gradient(to bottom, transparent ${top}px, #000 ${top + 70}px)` }}>
+        <C {...ctx} bottom={bottom} top={top} />
+      </AbsoluteFill>
     </AbsoluteFill>
   );
 };
 
-/** A ticker of the scene's key terms scrolling across the top, under the HUD: a second, constant motion layer. */
-export const Ticker: React.FC<{ scene: MotionScene; index: number }> = ({ scene, index }) => {
-  const frame = useCurrentFrame();
-  const { theme, light } = useTheme();
-  if (!STAGE_SCENES.has(scene.type) || index % 3 !== 1) return null;
-  const words = Array.from(new Set(`${scene.text} ${scene.accentText ?? ''} ${scene.narration ?? ''}`.replace(/[^A-Za-z0-9' -]/g, ' ').split(/\s+/).filter((w) => w.length > 4))).slice(0, 7);
-  if (words.length < 3) return null;
-  const strip = words.map((w) => w.toUpperCase()).join('   ///   ') + '   ///   ';
-  const x = -((frame * 4) % (strip.length * 22));
-  const p = interpolate(frame, [6, 24], [0, 1], clamp);
-  const col = light ? 'rgba(10,18,32,0.5)' : `${theme.accent}`;
-  return (
-    <div style={{ position: 'absolute', left: 0, right: 0, top: SAFE_TOP + 20, height: 40, overflow: 'hidden', opacity: 0.35 * p, pointerEvents: 'none' }}>
-      <div style={{ position: 'absolute', left: x, whiteSpace: 'nowrap', fontFamily: MONO, fontSize: 30, letterSpacing: 4, color: col }}>{strip.repeat(4)}</div>
-    </div>
-  );
-};
+/** Room under the text of a scene: from `textBottom` (+ a margin) down to the caption strip. */
+export const stageRoom = (textBottom: number, captionSpace: number): number => bottomOf(captionSpace) - 20 - (textBottom + 36);
+export const STAGE_TEXT_MAX_BOTTOM = 760; // the text block is lifted (up to just under the HUD) until it ends above this line, which leaves the stage 450 px or more
+export const STAGE_TEXT_MIN_TOP = 340; // never lifted into the HUD / progress strip

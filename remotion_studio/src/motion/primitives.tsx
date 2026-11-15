@@ -174,7 +174,7 @@ export const SafeBox: React.FC<{ children: React.ReactNode; gap?: number }> = ({
   const { captionSpace } = useSceneCtx(); // the caption strip takes room from the bottom of the scene when it is shown
   const left = look.align === 'left';
   return (
-    <div style={{ position: 'absolute', left: 64, right: 64, top: SAFE_TOP + 130, bottom: SAFE_BOTTOM + captionSpace, display: 'flex', flexDirection: 'column', alignItems: left ? 'flex-start' : 'center', justifyContent: 'center', gap, textAlign: left ? 'left' : 'center' }}>
+    <div data-safebox="1" style={{ position: 'absolute', left: 64, right: 64, top: SAFE_TOP + 130, bottom: SAFE_BOTTOM + captionSpace, display: 'flex', flexDirection: 'column', alignItems: left ? 'flex-start' : 'center', justifyContent: 'center', gap, textAlign: left ? 'left' : 'center' }}>
       {children}
     </div>
   );
@@ -208,7 +208,7 @@ export const Words: React.FC<{ text: string; size: number; delay?: number; stagg
   const lines = Math.ceil(words.join(' ').length / Math.max(6, Math.floor(900 / (size * 0.5))));
   if (lines > 3) size = Math.max(36, Math.floor(size * 0.82)); // very long lines shrink instead of growing taller than the safe area
   return (
-    <div data-cursor="text" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: look.align === 'left' ? 'flex-start' : 'center', columnGap: size * 0.28, rowGap: size * 0.06, fontFamily: look.sans, fontWeight: weight, fontSize: size, lineHeight: 1.04, letterSpacing: -size * 0.025, color: color ?? (light ? '#0A1220' : theme.text) }}>
+    <div data-cursor="text" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: look.align === 'left' ? 'flex-start' : 'center', columnGap: size * 0.28, rowGap: size * 0.06, fontFamily: look.sans, fontWeight: weight, fontSize: size, lineHeight: 1.04, letterSpacing: -size * 0.025, color: color ?? (light ? '#0A1220' : theme.text), textShadow: light ? 'none' : '0 4px 26px rgba(0,0,0,0.55)' }}>
       {words.map((w, i) => {
         // bouncy pop: overshoots its size, tilts alternately and settles; the opacity/blur use the clamped value so nothing flickers
         const raw = spring({ frame: frame - delay - i * stagger, fps, config: { damping: 11, stiffness: 150, mass: 0.8 } });

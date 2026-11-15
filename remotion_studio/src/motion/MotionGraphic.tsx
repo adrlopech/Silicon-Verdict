@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { AbsoluteFill, Sequence, interpolate, useCurrentFrame } from 'remotion';
 import { Background, Hud, ThemeCtx, clamp } from './primitives';
 import { ENTER, EXIT, pickTransition } from './transitions';
@@ -11,9 +11,9 @@ import { Headline, Quiz, Rank } from './scenes2';
 import { CursorLayer } from './cursor';
 import { Captions, captionSpaceFor, chunkCaptions } from './captions';
 import { Callout, Decor, Shock } from './decor';
-import { LookCtx, SceneCtx, lookFor } from './looks';
+import { LookCtx, SceneCtx, lookFor, useSceneCtx } from './looks';
 import { Ambient, sceneFx } from './ambient';
-import { Stage, Ticker, VisualName, pickVisuals } from './visuals';
+import { STAGE_SCENES, STAGE_TEXT_MAX_BOTTOM, STAGE_TEXT_MIN_TOP, Stage, VisualName, pickVisuals, stageRoom } from './visuals';
 import { HEIGHT, MotionGraphicProps, MotionScene, OVERLAP, SceneFx, WIDTH, defaultTheme } from './types';
 import { useLook } from './looks';
 
@@ -44,6 +44,30 @@ const SCENES: Record<MotionScene['type'], React.FC<{ scene: MotionScene }>> = {
 const SceneShell: React.FC<{ scene: MotionScene; index: number; total: number; rehook: boolean; icons: string[]; fx: SceneFx | null; visual: VisualName | null; next?: MotionScene; last: boolean; children: React.ReactNode }> = ({ scene, index, total, rehook, icons, fx, visual, next, last, children }) => {
   const frame = useCurrentFrame();
   const look = useLook();
+  const { captionSpace } = useSceneCtx();
+  // measure where the text block really is (layout values, so entrance animations and the camera do not matter): the block is lifted until it ends above STAGE_TEXT_MAX_BOTTOM
+  // and the stage is drawn only in the room left under it; scenes without a stage keep the text where it is
+  const holder = useRef<HTMLDivElement>(null);
+  const [box, setBox] = useState<{ top: number; bottom: number } | null>(null);
+  useLayoutEffect(() => {
+    const sb = holder.current?.querySelector('[data-safebox]') as HTMLElement | null;
+    if (!sb) return;
+    let top = Infinity;
+    let bottom = 0;
+    sb.childNodes.forEach((n) => {
+      const el = n as HTMLElement;
+      if (!el.offsetHeight) return;
+      top = Math.min(top, el.offsetTop);
+      bottom = Math.max(bottom, el.offsetTop + el.offsetHeight);
+    });
+    if (!isFinite(top)) return;
+    const t = sb.offsetTop + top;
+    const b = sb.offsetTop + bottom;
+    if (!box || Math.abs(box.top - t) > 1 || Math.abs(box.bottom - b) > 1) setBox({ top: t, bottom: b });
+  });
+  const staged = !!visual && STAGE_SCENES.has(scene.type);
+  const lift = staged && box ? Math.max(0, Math.min(box.bottom - STAGE_TEXT_MAX_BOTTOM, box.top - STAGE_TEXT_MIN_TOP)) : 0;
+  const room = staged ? (box ? stageRoom(box.bottom - lift, captionSpace) : 460) : 0;
   const hard = look.transitions.find((t) => t === 'whip' || t === 'glitch' || t === 'zoomThrough') ?? look.transitions[0];
   const name = index === 0 ? 'zoomThrough' : rehook ? hard : pickTransition(index, scene.transition, look.transitions);
   const exitName = pickTransition(index + 1, next?.transition, look.transitions); // the exit always matches the NEXT scene's entrance
@@ -67,12 +91,11 @@ const SceneShell: React.FC<{ scene: MotionScene; index: number; total: number; r
   return (
     <AbsoluteFill style={style} data-scene={index}>
       <AbsoluteFill style={{ transform: camPunch }}>
-        <Stage scene={scene} name={visual} index={index} />
-        <Ticker scene={scene} index={index} />
-        <Ambient fx={fx} />
-        <Decor scene={scene} index={index} total={total} />
+        <Stage scene={scene} name={visual} index={index} avail={room} />
+        {!staged && <Ambient fx={fx} />}
+        {!staged && <Decor scene={scene} index={index} total={total} />}
         <PropField icons={icons} index={index} />
-        <AbsoluteFill style={scene.cursor === 'toggle' ? { transform: 'translateY(-200px)' } : visual && scene.type !== 'headline' ? { transform: 'translateY(-150px)' } : undefined}>{children}</AbsoluteFill>
+        <AbsoluteFill ref={holder} style={scene.cursor === 'toggle' ? { transform: 'translateY(-200px)' } : lift > 0 ? { transform: `translateY(${-lift}px)` } : undefined}>{children}</AbsoluteFill>
       </AbsoluteFill>
       <Impact seed={index} />
       {rehook && <Shock />}

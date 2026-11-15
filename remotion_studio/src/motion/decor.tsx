@@ -3,6 +3,7 @@ import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } fr
 import { MONO } from './fonts';
 import { CAPTION_SPACE, useLook, useSceneCtx } from './looks';
 import { EASE_OUT, clamp, useTheme } from './primitives';
+import { STAGE_SCENES } from './visuals';
 import { HEIGHT, MotionScene, SAFE_BOTTOM, SAFE_TOP } from './types';
 
 /** Scenes whose layout leaves the lower part of the frame empty: the look's decor fills it. */
@@ -54,6 +55,7 @@ export const Callout: React.FC<{ scene: MotionScene }> = ({ scene }) => {
   const { fps } = useVideoConfig();
   const { theme, light } = useTheme();
   const look = useLook();
+  const { captionSpace } = useSceneCtx();
   if (!scene.callout || scene.calloutCue == null) return null;
   const at = Math.round(scene.calloutCue * fps);
   const f = frame - at;
@@ -62,7 +64,7 @@ export const Callout: React.FC<{ scene: MotionScene }> = ({ scene }) => {
   const fade = interpolate(f, [66, 84], [1, 0], clamp);
   const left = look.align === 'left';
   return (
-    <div style={{ position: 'absolute', top: SAFE_TOP + 96, right: left ? 64 : undefined, left: left ? undefined : '50%', transform: `${left ? '' : 'translateX(-50%) '}translateY(${(1 - Math.min(1, pop)) * -26}px) scale(${0.7 + 0.3 * pop})`, opacity: Math.min(1, pop * 1.6) * fade, display: 'flex', alignItems: 'center', gap: 14, padding: '12px 28px', borderRadius: 999, background: light ? 'rgba(255,255,255,0.92)' : 'rgba(6,14,36,0.78)', border: `2px solid ${theme.accent}`, boxShadow: `0 0 34px ${theme.accent}66`, fontFamily: MONO, fontWeight: 500, fontSize: 52, letterSpacing: 1, color: light ? '#0A1220' : '#FFFFFF', whiteSpace: 'nowrap' }}>
+    <div style={{ position: 'absolute', ...(STAGE_SCENES.has(scene.type) ? { top: HEIGHT - SAFE_BOTTOM - captionSpace - 118 } : { top: SAFE_TOP + 96 }), right: left ? 64 : undefined, left: left ? undefined : '50%', transform: `${left ? '' : 'translateX(-50%) '}translateY(${(1 - Math.min(1, pop)) * -26}px) scale(${0.7 + 0.3 * pop})`, opacity: Math.min(1, pop * 1.6) * fade, display: 'flex', alignItems: 'center', gap: 14, padding: '12px 28px', borderRadius: 999, background: light ? 'rgba(255,255,255,0.92)' : 'rgba(6,14,36,0.78)', border: `2px solid ${theme.accent}`, boxShadow: `0 0 34px ${theme.accent}66`, fontFamily: MONO, fontWeight: 500, fontSize: 52, letterSpacing: 1, color: light ? '#0A1220' : '#FFFFFF', whiteSpace: 'nowrap' }}>
       <span style={{ color: theme.accent, fontSize: 38 }}>▲</span>
       {scene.callout}
     </div>
