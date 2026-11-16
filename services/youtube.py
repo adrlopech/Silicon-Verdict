@@ -211,6 +211,21 @@ class YouTubeService:
         return video_url
 
 
+    def set_thumbnail(self, video_id: str, image_path: str) -> None:
+        """Sets the custom thumbnail (cover) of an uploaded video; a PNG/JPEG under 2 MB."""
+        img = Path(image_path)
+        if not img.is_file():
+            raise FileNotFoundError(f"Cover image does not exist: {image_path}")
+        if img.stat().st_size > 2 * 1024 * 1024:  # the API refuses bigger files: re-encode as a JPEG
+            from PIL import Image
+            jpg = img.with_suffix(".jpg")
+            Image.open(img).convert("RGB").save(jpg, quality=88)
+            img = jpg
+        mime = "image/png" if img.suffix.lower() == ".png" else "image/jpeg"
+        self.get_authenticated_client().thumbnails().set(videoId=video_id, media_body=MediaFileUpload(str(img), mimetype=mime)).execute()
+        logger.info("Thumbnail set for %s", video_id)
+
+
 # Global service instance and backward-compatibility wrapper
 youtube_service = YouTubeService()
 

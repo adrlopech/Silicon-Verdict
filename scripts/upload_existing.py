@@ -53,6 +53,14 @@ def main() -> None:
         publish_at=args.publish_at,
     )
     print(f"Published: {url}")
+    cover = video.with_suffix(".png")
+    if cover.is_file():
+        try:
+            from services.youtube import youtube_service
+            youtube_service.set_thumbnail(url.rsplit("/", 1)[-1], str(cover))
+            print(f"Cover set: {cover.name}")
+        except Exception as exc:  # the video is already up: a missing cover is reported, never fatal
+            print(f"Cover NOT set ({str(exc)[:200]})")
 
 
 if __name__ == "__main__":

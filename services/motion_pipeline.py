@@ -53,6 +53,26 @@ def render_motion(props: dict, out_mp4: Path, public_dir: Optional[Path] = None)
     return out_mp4
 
 
+def render_cover(props: dict, out_png: Path, public_dir: Optional[Path] = None) -> Optional[Path]:
+    """The cover (thumbnail) of a video: a still of its cold open without subtitles (scripts/render_cover.mjs). Best effort: None when it cannot be made, the video never waits on it."""
+    import json
+    out_png = Path(out_png).resolve()
+    props_path = out_png.with_suffix(".props.json")
+    try:
+        props_path.write_text(json.dumps(props, ensure_ascii=False), encoding="utf-8")
+        cmd = ["node", str(settings.BASE_DIR / "scripts" / "render_cover.mjs"), str(props_path), str(out_png)] + ([str(public_dir)] if public_dir else [])
+        proc = subprocess.run(cmd, cwd=str(settings.BASE_DIR), capture_output=True, text=True, timeout=300)
+        if proc.returncode != 0 or not out_png.is_file():
+            logger.warning("Cover not rendered: %s", (proc.stdout + proc.stderr)[-300:])
+            return None
+        return out_png
+    except Exception as exc:
+        logger.warning("Cover not rendered: %s", exc)
+        return None
+    finally:
+        props_path.unlink(missing_ok=True)
+
+
 _TOKEN = re.compile(r"[^\w\+\%\$\#\-\'\.]")
 
 
@@ -607,6 +627,7 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
             project.description = project.description.rstrip() + "\n\nGame footage: " + "; ".join(build_credits(used_entries)) + " (official Steam store media)."
         clips, continuous = narrate_scenes(project, work / "voice")  # first: the narration decides how long each scene lasts
         raw = render_motion(project.to_props(), work / "raw.mp4", public)
+        cover = render_cover(project.to_props(), work / "cover.png", public)
         starts, acc = [], 0
         for sc in project.scenes:
             starts.append(acc)
@@ -630,6 +651,8 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
             d = video_dir(platform, project.title)
             shutil.copyfile(video, d / f"{stem}.mp4")
             out[platform] = d / f"{stem}.mp4"
+            if cover:  # the cover sits next to each copy: <stem>.png (YouTube thumbnail, TikTok cover)
+                shutil.copyfile(cover, d / f"{stem}.png")
         tags = list(dict.fromkeys(joined_hashtag(t) for t in project.tags))  # hashtags are always one joined word ("#techexplained", never "#tech explained")
         meta = out["tiktok"].with_suffix(".txt")
         meta.write_text(
@@ -657,7 +680,7 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
         logger.info("Motion Graphics video ready in %.0fs: %s", time.time() - t0, out["tiktok"])
         return {"kind": project.kind, "format": project.format, "game": project.game, "youtube_video": str(out["youtube"]), "youtube_url": youtube_url, "tiktok_video": str(out["tiktok"]), "tiktok_metadata": str(meta),
                 "title": project.title, "topic": project.topic, "qa_failures": fails, "uploaded": not export_only and not dry_run,
-                "duration": project.total_frames / FPS, "tiktok_cover": ""}
+                "duration": project.total_frames / FPS, "tiktok_cover": str(out["tiktok"].with_suffix(".png")) if cover else ""}
     except BaseException:
         from services.story_bank import release_story  # a script taken from the bank is only spent by a video that was actually produced
         release_story(project)

@@ -182,7 +182,7 @@ def main() -> int:
         if not m:
             print("  YouTube upload failed:", (up.stdout + up.stderr)[-300:])
         small = small_copy(res["tiktok_video"], SMALL_DIR / f"{Path(video).parent.name[:40].replace(' ', '_')}.mp4")
-        entry = {**p, "title": res["title"], **tiktok_caption(res["title"]), "video": video, "tiktok_copy": str(small), "video_id": m[1] if m else None}
+        entry = {**p, "title": res["title"], **tiktok_caption(res["title"]), "video": video, "tiktok_copy": str(small), "cover": res.get("tiktok_cover") or None, "video_id": m[1] if m else None}
         done.append(entry)
         print(f"  {res['title']}\n  YouTube: {m[0] if m else 'FAILED'}  | TikTok copy: {small}")
         out.write_text(json.dumps(done, ensure_ascii=False, indent=1))  # saved after every video
