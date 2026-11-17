@@ -1,100 +1,69 @@
 #!/usr/bin/env python3
-"""Silicon Verdict Command Center & System Help Guide.
-
-Lists all configured chat triggers, interactive options, CLI scripts, and directory structures.
-"""
+"""Silicon Verdict command reference (python main.py help). The full documentation is in guide/README.md."""
 
 HELP_TEXT = """================================================================================
- ⚡ SILICON VERDICT: COMMAND CENTER & OPERATIONAL PIPELINE MANUAL
+ SILICON VERDICT: COMMAND REFERENCE   (full documentation: guide/README.md)
 ================================================================================
 
-1. PRIMARY CHAT COMMANDS (Direct Text Triggers)
+1. CHAT COMMANDS (with Claude Code, see CLAUDE.md)
 --------------------------------------------------------------------------------
- • genera
-   Triggers the two-step interactive production workflow:
-   1. Pauses automatic generation and prompts with thematic selection [1, 2, 3, or 4].
-   2. Upon receiving your selection, produces a unified vertical master (60-120s),
-      enforces word budget guardrails (145-260w), high-CTR Frame 0 cover, semantic
-      B-roll, auto-publishes to YouTube Shorts, and generates local staging files
-      in output/tiktok/ for seamless manual upload.
+ genera      Four videos of four different formats, picked from the channel's own numbers,
+             rendered, uploaded to YouTube (private + publishAt, with cover) and scheduled on
+             TikTok Studio at the best hours. Add "de hoy" to publish today instead of tomorrow.
+ limpieza    scripts/cleanup.py: wipes output/tiktok, output/youtube and temp/. Keeps data/, assets/, .env.
+ help        This reference.
+ corregir    Legacy audit of the old pipeline (not used for Motion videos): see guide/legacy.md.
 
- • corregir
-   On-demand QA and automated audit system (does NOT run automatically):
-   1. Audits latest video in output/tiktok/: subtitles/Whisper, audio clipping,
-      B-roll coherence, mobile Safe Zones, and cover frame.
-   2. Outputs comprehensive audit report and asks for user confirmation ("Yes" / "No").
-   3. If confirmed, rebuilds corrected video and saves rules in data/qa_rules.json.
-
- • limpieza
-   Atomic disk cleanup:
-   - Purges every per-video folder in output/tiktok/ (video, cover and metadata).
-   - Purges every per-video folder in output/youtube/.
-   - Purges intermediate render frames and cache folders in temp/.
-   - PRESERVES intact: data/history.db, credentials (.env) and tokens.
-
- • help / commands
-   Displays this detailed command reference, CLI syntax, and architecture guide.
-
+2. MAKING VIDEOS
 --------------------------------------------------------------------------------
-2. INTERACTIVE "genera" MENU OPTIONS
+ PYTHONPATH=. .venv/bin/python scripts/genera_batch.py --plan [--date YYYY-MM-DD] [--avoid a,b]
+ PYTHONPATH=. .venv/bin/python scripts/genera_batch.py [--date YYYY-MM-DD]
+ PYTHONPATH=. .venv/bin/python scripts/genera_batch.py --topics retry.json --out data/batch_retry.json
+
+ .venv/bin/python main.py --series motion --motion-format <format> [--export-only]
+   formats: myth tier whatif easter evolution versus hardware simple fix decode
+            top5 eli5 fails numbers quiz stop rumor review news any
+ .venv/bin/python main.py --series motion --motion-kind curiosity --topic "How TRIM keeps SSDs fast"
+ .venv/bin/python main.py --series motion --motion-kind game          # needs prepared game footage
+ .venv/bin/python main.py --series hardware | --series simple          # shortcuts for those formats
+ .venv/bin/python main.py --category 1|2|3|auto                        # old categories, told as Motion videos
+
+3. PUBLISHING
 --------------------------------------------------------------------------------
- Every option is told in the Motion style (kinetic typography, narrated, 62-90 s):
+ .venv/bin/python scripts/upload_existing.py "<video.mp4>" [--privacy private --publish-at 2026-11-17T13:00:00Z]
+ .venv/bin/python scripts/retry_youtube_uploads.py data/batch_<date>.json
+ .venv/bin/python scripts/authenticate_yt.py                           # renew the YouTube token (expires every 7 days)
 
- [1] Hardware Deep Dive   -> Motion format "hardware": silicon, memory, storage, networking
-     and engineering explained with a mechanism and real figures; the mouse cursor only
-     appears as an accent.
-
- [2] Gaming               -> Motion "game" video: banked scripts over screenshots of their game,
-     then source-grounded videos with real footage (a hardware video if neither is possible).
-
- [3] Everyday Tech        -> Motion format "simple": everyday tech mysteries hosted by the mouse cursor,
-     a character that clicks, selects, drags and opens tabs on screen.
-
- [4] Automatic (AI)
-     Queries data/history.db to select the optimal category based on rotation rest
-     periods and audience retention analytics.
-
+4. BANKS, FOOTAGE, ANALYTICS
 --------------------------------------------------------------------------------
-3. TERMINAL COMMANDS & CLI (Headless Execution & Maintenance)
+ .venv/bin/python scripts/refill_story_bank.py --series motion --format <format>
+ .venv/bin/python scripts/fetch_game_images.py | fetch_game_clips.py | caption_game_media.py | build_game_facts.py
+ .venv/bin/python scripts/report_retention.py [--days 28 --min-views 300]
+ .venv/bin/python scripts/render_silent_preview.py <script.json> --out DIR   # no-voice preview of a script
+ .venv/bin/python -m services.tech_news                                # today's headlines (news format)
+
+5. CHECKS
 --------------------------------------------------------------------------------
- • Direct production via CLI:
-   .venv/bin/python main.py --series motion --motion-format myth   # Motion formats: classic, myth, tier, whatif, evolution, versus, easter, hardware, simple, fix, decode, top5, eli5, fails, numbers, quiz, stop, rumor, review, news
-   .venv/bin/python main.py --series simple                   # Everyday tech with the cursor (= --motion-format simple)
-   .venv/bin/python main.py --series hardware                 # Hardware deep dive (= --motion-format hardware)
-   .venv/bin/python main.py --category 1 --privacy public     # Hardware Benchmarks
-   .venv/bin/python main.py --category 2 --privacy public     # Gaming & Optimization
-   .venv/bin/python main.py --category 3 --privacy public     # Tech Curiosities
-   .venv/bin/python main.py --category auto --privacy public  # Auto AI rotation
+ .venv/bin/python -m pytest
+ .venv/bin/ruff check .
+ (cd remotion_studio && npx tsc --noEmit -p .)
+ python3 docs/check_portal.py
 
- • Interactive terminal mode:
-   .venv/bin/python main.py --interactive
-
- • QA audit and correction via CLI:
-   .venv/bin/python main.py --audit-latest                   # Report only
-   .venv/bin/python main.py --apply-fixes                    # Apply corrections
-
- • Scheduler and automated jobs:
-   .venv/bin/python scripts/scheduler.py --run-now           # Today's production
-   .venv/bin/python scripts/cleanup.py                       # Disk cleanup
-
- • MLOps, B-Roll, and Analytics:
-   .venv/bin/python scripts/analytics_sync.py                # Sync YouTube Analytics
-   .venv/bin/python scripts/analytics_sync.py --simulate     # Offline analytics simulation
-   .venv/bin/python scripts/authenticate_yt.py               # Authorize OAuth credentials
-
+6. WHERE THINGS ARE
 --------------------------------------------------------------------------------
-4. KEY DIRECTORIES & FILES
---------------------------------------------------------------------------------
- • output/youtube/<title>/ One folder per video (named after its title); video named by date and time.
- • output/tiktok/<title>/  One folder per video with <date_time>.mp4, _cover.jpg and .txt metadata.
- • data/history.db        SQLite database: 30-topic queue, telemetry, and API costs.
- • data/category_weights.json  Dynamic algorithmic weights driven by real audience retention.
- • data/qa_rules.json     Learned phonetic pronunciation rules and hook filters.
+ output/youtube/<title>/<date-time>.mp4 and .png      video and cover
+ output/tiktok/<title>/<date-time>.mp4 .png .txt      TikTok copy, cover and metadata (title, hashtags, pinned comment)
+ output/tiktok_small/<title>.mp4                      <10 MB copy for the TikTok upload
+ data/batch_latest.json                               manifest of the last genera batch
+ data/batch_log.json                                  slot of every scheduled video (ranks the hours)
+ data/history.db                                      history, story bank, game registry
+ data/scripts/                                        hand-written scripts (MotionProject JSON)
 ================================================================================
 """
 
+
 def print_help() -> None:
-    """Prints the Silicon Verdict command center help guide."""
+    """Prints the command reference."""
     print(HELP_TEXT)
 
 

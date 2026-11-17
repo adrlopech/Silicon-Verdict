@@ -1,0 +1,125 @@
+# Motion engine
+
+The video is one Remotion composition, `MotionGraphic` (`remotion_studio/src/motion/`), driven only by JSON props: `title`, `theme`, `look`, `captions` and `scenes`.
+It is always 1080x1920 (9:16) at 30 fps. The top 12 % and bottom 20 % of the frame stay free for the Shorts / TikTok interface (`SAFE_TOP`, `SAFE_BOTTOM` in `types.ts`).
+
+**Brand:** obsidian background `#05070C`, blue `#007AFF`, electric cyan `#00F0FF` as the accent, Inter for text, an italic serif for accent words, JetBrains Mono for HUD lines (Google Fonts only, loaded in `fonts.ts`).
+The generator can never choose another accent colour. All text auto-fits: a long word, headline or number shrinks instead of leaving the frame.
+
+## Where the code is
+
+| File | What it holds |
+|---|---|
+| `MotionGraphic.tsx` | The composition and `SceneShell`: layers, camera, text lift, transitions, HUD |
+| `types.ts` | Props types, scene types, safe zones, `uiAct()` (when a UI preset's action happens) |
+| `scenes.tsx` | General scenes: `bigText`, `textWithAccent`, `counter`, `list`, `codeBlock`, `progressBar`, `curve`, `flash`, `footage`, `card`, `outro` |
+| `formats.tsx` | `tier`, `versus`, `verdict`, `timeline` |
+| `scenes2.tsx` | `rank`, `quiz`, `headline` (the newer formats) |
+| `visuals.tsx` | The **stage**: 13 animated visuals behind text scenes |
+| `looks.ts` | The 8 looks |
+| `decor.tsx` | Decoration of the look, callouts and the shock effects |
+| `ambient.tsx` | Effects picked from what the narration names (a plane, lightning, snow...) |
+| `cursor.tsx` | The mouse pointer layer |
+| `ui.tsx`, `ui_kit.tsx`, `ui_presets.tsx`, `ui_presets2.tsx` | The 20 drawn interfaces |
+| `captions.tsx` | Word-by-word subtitles |
+| `primitives.tsx` | Shared pieces: `SafeBox`, `Words`, `Accent`, `Kicker`, the HUD |
+| `transitions.ts`, `fx.tsx`, `props.tsx`, `fonts.ts` | Transitions, small effects, prop fields, fonts |
+
+Preview and tweak live: `cd remotion_studio && npx remotion studio`, open **MotionGraphic**. Type-check: `npx tsc --noEmit -p .`
+
+## Scene types
+
+| Type | Use |
+|---|---|
+| `bigText`, `textWithAccent` | Headlines (at most 4 and 7 words). The accent word is cyan italic serif |
+| `card` | A framed headline with no extra data; breaks runs of headlines |
+| `counter` | A number counting up. **Counters round decimals** (16.7 shows 17): avoid decimals in scripts |
+| `progressBar`, `curve`, `list`, `codeBlock` | Evidence scenes |
+| `flash` | A one-word punch |
+| `footage` | Real game footage inside the look (see [Game videos](games.md)) |
+| `tier`, `versus`, `verdict`, `timeline` | Table formats |
+| `rank`, `quiz`, `headline` | The countdown, quiz and news formats |
+| `ui` | A drawn interface the cursor uses (at most 2 per video) |
+| `outro` | Always last; ends with a two-option vote |
+
+A scene carries `text`, optional `accentText`, `kicker`, `value`, `items`, `code`, `unit`, `left`/`right`/`leftValue`/`rightValue`, `verdict`, `callout`, `cursor`, `mediaSrc`, a `visual` hint and `durationInFrames`
+(60-150 frames). Set `light: true` on at most one scene. Samples: `sample.json`, `sample_formats.json`, `sample_ui.json`.
+
+## Looks
+
+Eight visual identities, all blue (`looks.ts`, chosen by `services/looks.py`): *obsidian*, *ocean*, *indigo*, *cobalt*, *glass*, *paper* (light), *ice* (blue monochrome), *blueprint*.
+A look sets the palette, the background (glow, aurora, gradient mesh, frosted spheres, dot matrix, grid), the particles, the headline typeface, left or centred layout, capitals,
+the camera move (drift, push, orbit, handheld, still), the pool of transitions, the HUD (mono line, story segments, corner brackets, ruler ticks) and the caption style.
+`choose_look` uses the format's affinities (`AFFINITY` in `services/looks.py`), never one of the last three looks (kept in `shorts_history.preset` as `remotion_motion:<look>`), and varies the pick by a hash of the topic.
+Force one in a silent preview: `scripts/render_silent_preview.py <script.json> --look cobalt --out DIR`.
+
+## Layers, camera and legibility
+
+`SceneShell` draws two separate layers:
+
+1. **Backdrop** (stage, ambient effects, decor, props): this is the only layer the **camera** moves (drift, push, orbit, a gentle handheld drift, or still).
+2. **Text**: fixed. It never gets scale, rotation or shake, only a vertical lift when it must make room for the stage.
+
+The rule came from a bug: with the camera on the whole scene, text under a continuous scale or rotation visibly vibrated. Do not apply camera transforms to the text layer.
+
+**Stage and text never collide.** The text block is measured (`data-safebox`, `offsetTop` / `offsetHeight`, which ignore transforms). If the block ends below `STAGE_TEXT_MAX_BOTTOM` (760 px) it is lifted
+(never above `STAGE_TEXT_MIN_TOP`, 340 px, which would hit the HUD); the stage is drawn in the room left under it, scaled to fit (`DH = 560` design height), and dropped when there is none.
+A scene with a stage gets no ambient fly-by or decor. The callout sits above the captions; text has a shadow; the news band stays clear of captions.
+
+## Stage visuals
+
+`pickVisuals` in `visuals.tsx` reads the narration and text of a scene and picks a visual: `Crowd`, `Memory`, `Cores`, `Network`, `Bars`, `Wave`, `Gauge`, `MapGrid`, `City`, `Layers`, `Matrix`, `Radar`, `Orbit`.
+They appear behind `STAGE_SCENES` (`bigText`, `textWithAccent`, `card`, `counter`, `progressBar`, `curve`, `verdict`, `list`, `codeBlock`, `timeline`, `headline`). A script may suggest one with the scene's `visual` field.
+
+## Ambient effects and decor
+
+`ambient.tsx` adds effects chosen from what the narration names: a plane crossing the screen, signal waves, lightning, embers, snow, packets, coins, an equalizer, notification banners, a filling battery,
+a clock, a padlock, a magnifier, binary rain. The big fly-bys appear once per video and no effect repeats within three scenes.
+`decor.tsx` puts a design element of the look in the empty lower part of text scenes (a giant outlined scene number, concentric rings or a dimension line).
+
+## Beats inside a video
+
+- **Callout**: on long scenes a tag with a figure and its unit (or an acronym) from the second half of the narration pops up when the narrator says it, with a small zoom punch and a pop sound (`pick_callout`).
+- **Re-hook**: at the scene nearest the middle, a flash, a wide ring, a boom and a riser (`rehook_index`).
+- **Loop tease**: the last frames fade to the hook headline so the replay feels continuous (`LoopTease`).
+- **Captions**: word by word from the voice timing (`build_captions`), the spoken word highlighted; skipped on `tier`, `ui`, `footage`, `flash`. The accent phrase pulses when the narrator says it (`accentCue`).
+  A progress indicator in the look's style shows how much of the video is left. All colours, including tier ranks and verdict stamps, are blue.
+
+## The cursor
+
+The mouse pointer is a character used only when it means something (no tabs, no hovering, no waiting). A scene may carry `cursor`:
+
+| Action | Where | What it does |
+|---|---|---|
+| `select` | `bigText`, `textWithAccent` | Drags across the key phrase as the narrator says it (`cursorCue` comes from the voice timing, `cursor_cues()`) |
+| `drag` | `progressBar`, `tier` | Grabs the knob and pulls the bar; carries the new chip into its row |
+| `click` | `codeBlock`, `list` | Presses the setting or step |
+| `toggle` | first scene only | A macOS-style Control Center panel (flip Airplane Mode, watch Wi-Fi and Bluetooth switch off) |
+
+At most 3 pointer scenes per video (4 in `fix`), never closer than two scenes. `cursor.tsx` measures the elements tagged `data-cursor="target"` every frame, so it acts on what is really on screen.
+`sanitize_cursors` and `assign_cursors` (`services/motion_generator.py`) clean and complete older scripts.
+
+## UI presets
+
+A `ui` scene draws an interface that the cursor really uses. The data contract of each is `UI_PRESETS` in `services/motion_generator.py` (it also feeds the prompt):
+`display`, `taskmgr`, `bios`, `terminal`, `gpupanel`, `gamemenu`, `frametime`, `speedtest`, `wifilist`, `router`, `keycaps`, `filemgr`, `diskbar`, `battery`, `tabmem`, `speclabel`, `leaderboard`, `partpicker`,
+`dimm`, `permissions`. At most 2 per video, never consecutive. They are generic (channel palette, no logos). `UI_FORMATS_OFF` disables them in `tier`, `versus`, `myth`, `evolution`, `top5`, `quiz`, `news` and `review`, which are built from a fixed run of their own scenes. Demo of all 20: `sample_ui.json`.
+
+## Retention rules
+
+`retention_problems()` (`services/motion_generator.py`) enforces them on every generated script; hand-written banks are measured with `scripts/lint_retention.py`.
+
+1. **Cold open**: scene 1 is the claim or the surprising number in about 14 words or fewer (validator limit 16), never a greeting or "so / today / did you know".
+2. **Open loop**: one of scenes 2-5 promises a payoff that the last third delivers (matched by the `OPEN_LOOP` pattern; the prompt lists accepted phrasings).
+3. **Visual break**: never three headline scenes in a row.
+4. **Two-option vote**: the outro narration ends with "A or B?" and `pinned_comment` repeats it ("A or B? Reply with one word.", at most 120 characters).
+5. **Pace**: at most 17 words of narration per scene (24 in tier/versus), so the screen changes every 5-6 seconds.
+
+All 241 banked scripts (`docs/generated_scripts/bank/` and the unused `story_bank` rows) were brought up to these rules on 9 Nov 2026 by `scripts/update_bank_scripts.py` (idempotent; `--dry-run`, `--backup`).
+`tests/test_motion_validators.py` fails if a banked script breaks a rule.
+
+## Quality tools
+
+- `scripts/render_silent_preview.py`: renders a script with no narration (no ElevenLabs, no upload, no history) to check a design or a script.
+- `scripts/analyze_motion.py <video> --cuts 60,170`: measures pops and jitter per shot without watching.
+- `scripts/render_cover.mjs <props.json> <out.png> [publicDir] [frame]`: the cover still.
