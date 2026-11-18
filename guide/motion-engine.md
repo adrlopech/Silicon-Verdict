@@ -16,6 +16,7 @@ The generator can never choose another accent colour. All text auto-fits: a long
 | `formats.tsx` | `tier`, `versus`, `verdict`, `timeline` |
 | `scenes2.tsx` | `rank`, `quiz`, `headline` (the newer formats) |
 | `scenes3.tsx` | `split` and `units` |
+| `anim.ts`, `reveal.tsx`, `bigfx.tsx` | The animation arsenal: picker, text reveals, big on-screen elements |
 | `visuals.tsx` | The **stage**: 13 animated visuals behind text scenes |
 | `looks.ts` | The 8 looks |
 | `decor.tsx` | Decoration of the look, callouts and the shock effects |
@@ -37,7 +38,7 @@ Preview and tweak live: `cd remotion_studio && npx remotion studio`, open **Moti
 | `counter` | A number counting up. **Counters round decimals** (16.7 shows 17): avoid decimals in scripts |
 | `progressBar`, `curve`, `list`, `codeBlock` | Evidence scenes |
 | `flash` | A one-word punch |
-| `footage` | Real game footage inside the look (see [Game videos](games.md)) |
+| `footage` | Real game footage, ungraded (see [Game videos](games.md)) |
 | `tier`, `versus`, `verdict`, `timeline` | Table formats |
 | `rank`, `quiz`, `headline` | The countdown, quiz and news formats |
 | `units` | A price or size in units of an object: a grid of icons (card, chip, RAM, drive, phone, coin, bolt, console, cube) that fills one by one under a big ×N |
@@ -56,6 +57,16 @@ the camera move (drift, push, orbit, handheld, still), the pool of transitions, 
 `choose_look` uses the format's affinities (`AFFINITY` in `services/looks.py`), never one of the last three looks (kept in `shorts_history.preset` as `remotion_motion:<look>`), and varies the pick by a hash of the topic.
 Force one in a silent preview: `scripts/render_silent_preview.py <script.json> --look cobalt --out DIR`.
 
+## The animation arsenal
+
+Three things are picked per scene from the scene's own words (`pickSeries` in `anim.ts`: deterministic, so the same script renders the same video, and never one of the last few picks, so nothing repeats):
+
+- **Text reveal** (`reveal.tsx`): `pop` (bouncy words), `type` (typewriter with a caret; the first scene always types), `draw` (outline drawn, then filled), `scramble` (random glyphs that resolve), `mask` (words rise out of a mask), `drop` (letters fall and bounce), `wave` (letters rise in a wave), `blur` (zoom-in from a blur), `slice` (two halves slide in). Every effect ends on untouched text. The accent phrase uses the letter effects too.
+- **Camera move** (`MotionGraphic.tsx`): `pushIn`, `pullOut`, `panLeft`, `panRight`, `tiltUp`, `tiltDown`, `dolly`, `orbit`, `crane`, `punch`; every third scene also jump-cuts to a closer frame halfway through. Looks that asked for a still camera get a gentler version.
+- **Big element** (`bigfx.tsx`, behind the text, moved by the camera): `rings`, `rays`, `scribble` (a hand-drawn circle and underline), `arrow`, `giantIcon`, `brackets`, `laser`, `speed`, `stars`, `diamonds`, `pie`, `crosshair`, `dotwave`, `frameDraw`. Scenes with a stage visual only get the quiet ones; flash, footage, tier, ui, outro and every third scene get none.
+
+Add one by adding its name to the lists in `anim.ts` and drawing it.
+
 ## Layers, camera and legibility
 
 `SceneShell` draws two separate layers:
@@ -64,6 +75,8 @@ Force one in a silent preview: `scripts/render_silent_preview.py <script.json> -
 2. **Text**: fixed. It never gets scale, rotation or shake, only a vertical lift when it must make room for the stage.
 
 The rule came from a bug: with the camera on the whole scene, text under a continuous scale or rotation visibly vibrated. Do not apply camera transforms to the text layer.
+
+**Captions never touch anything.** The caption strip sits `CAPTION_DROP` (56 px) below the bottom of the content area, and everything a scene draws is faded out just above it (a mask in `SceneShell`), so no text, stage or big element can sit under a subtitle.
 
 **Stage and text never collide.** The text block is measured (`data-safebox`, `offsetTop` / `offsetHeight`, which ignore transforms). If the block ends below `STAGE_TEXT_MAX_BOTTOM` (760 px) it is lifted
 (never above `STAGE_TEXT_MIN_TOP`, 340 px, which would hit the HUD); the stage is drawn in the room left under it, scaled to fit (`DH = 560` design height), and dropped when there is none.
@@ -89,7 +102,7 @@ a clock, a padlock, a magnifier, binary rain. The big fly-bys appear once per vi
 - **Caption styles** per look: `pill`, `plain`, `underline`, `mono`, plus `oneword` (one huge outlined word at a time, cobalt), `wordpill` (the spoken word on a coloured pill, ocean) and `twotone` (two lines, first half in the accent colour, glass).
 - **Key = value rows**: a `codeBlock` whose lines all look like `KEY = meaning` is drawn as key pills with their meaning (decode labels), not as typed code.
 - **Callout leader line**: over a stage the callout tag is joined by a thin line to a pulsing ring on the visual.
-- **Footage** sits over a blurred, darkened copy of itself that fills the frame.
+- **Footage** is shown exactly as it is (no colour grade, tint, scan lines, vignette or brackets) in a rounded card over a blurred copy of itself that fills the frame.
 - **Captions**: word by word from the voice timing (`build_captions`), the spoken word highlighted; skipped on `tier`, `ui`, `footage`, `flash`. The accent phrase pulses when the narrator says it (`accentCue`).
   A progress indicator in the look's style shows how much of the video is left. All colours, including tier ranks and verdict stamps, are blue.
 

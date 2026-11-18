@@ -2,6 +2,7 @@ import React, { createContext, useContext } from 'react';
 import { AbsoluteFill, Easing, interpolate, random, spring, useCurrentFrame, useVideoConfig } from 'remotion';
 import { MONO, SANS, SERIF } from './fonts';
 import { LookCtx, useLook, useSceneCtx } from './looks';
+import { RevealWord } from './reveal';
 import { BRAND_BLUE, MotionTheme, SAFE_BOTTOM, SAFE_TOP } from './types';
 
 export const ThemeCtx = createContext<{ theme: MotionTheme; light: boolean }>({ theme: { accent: '#00F0FF', background: '#05070C', text: '#FFF' }, light: false });
@@ -151,8 +152,8 @@ export const Hud: React.FC<{ index: number; total: number; label: string; series
       <>
         {arm({ left: 40, top: SAFE_TOP - 6, borderLeftWidth: 4, borderTopWidth: 4 })}
         {arm({ right: 40, top: SAFE_TOP - 6, borderRightWidth: 4, borderTopWidth: 4 })}
-        {arm({ left: 40, bottom: 330, borderLeftWidth: 4, borderBottomWidth: 4 })}
-        {arm({ right: 40, bottom: 330, borderRightWidth: 4, borderBottomWidth: 4 })}
+        {arm({ left: 40, bottom: 290, borderLeftWidth: 4, borderBottomWidth: 4 })}
+        {arm({ right: 40, bottom: 290, borderRightWidth: 4, borderBottomWidth: 4 })}
         <div style={{ ...row, left: 96 }}>[{String(index + 1).padStart(2, '0')}/{String(total).padStart(2, '0')}] {name}</div>
         <div style={{ ...row, right: 96 }}>{tc}</div>
         <div style={{ position: 'absolute', left: 96, right: 96, top: SAFE_TOP + 60, height: 3, background: track }}><div style={{ width: `${done * 100}%`, height: '100%', background: theme.accent }} /></div>
@@ -212,6 +213,7 @@ export const Words: React.FC<{ text: string; size: number; delay?: number; stagg
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const { theme, light } = useTheme();
+  const mode = useSceneCtx().reveal ?? 'pop';
   text = text.replace(/\*/g, '');
   const words = (upper ? text.toUpperCase() : text).split(/\s+/).filter(Boolean);
   const longest = Math.max(1, ...words.map((w) => w.length));
@@ -221,6 +223,10 @@ export const Words: React.FC<{ text: string; size: number; delay?: number; stagg
   return (
     <div data-cursor="text" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: look.align === 'left' ? 'flex-start' : 'center', columnGap: size * 0.28, rowGap: size * 0.06, fontFamily: look.sans, fontWeight: weight, fontSize: size, lineHeight: 1.04, letterSpacing: -size * 0.025, color: color ?? (light ? '#0A1220' : theme.text), textShadow: light ? 'none' : '0 4px 26px rgba(0,0,0,0.55)' }}>
       {words.map((w, i) => {
+        if (mode !== 'pop') {
+          const char0 = words.slice(0, i).reduce((n, x) => n + x.length, 0);
+          return <RevealWord key={i} word={w} mode={mode} index={i} delay={delay} stagger={stagger} size={size} accent={theme.accent} char0={char0} total={words.join('').length} />;
+        }
         // bouncy pop: overshoots its size, tilts alternately and settles; the opacity/blur use the clamped value so nothing flickers
         const raw = spring({ frame: frame - delay - i * stagger, fps, config: { damping: 11, stiffness: 150, mass: 0.8 } });
         const s = Math.min(1, raw);
@@ -240,7 +246,7 @@ export const Accent: React.FC<{ text?: string; size: number; delay?: number }> =
   const { fps } = useVideoConfig();
   const { theme, light } = useTheme();
   const look = useLook();
-  const { scene } = useSceneCtx();
+  const { scene, reveal } = useSceneCtx();
   if (!text) return null;
   text = text.replace(/\*/g, '');
   const cue = scene?.accentCue != null ? Math.round(scene.accentCue * fps) : null;
@@ -250,7 +256,7 @@ export const Accent: React.FC<{ text?: string; size: number; delay?: number }> =
   const s = Math.min(1, raw);
   return (
     <div data-cursor="accent" style={{ maxWidth: 940, fontFamily: SERIF, fontStyle: 'italic', fontWeight: 400, fontSize: size, lineHeight: 1.0, color: theme.accent, opacity: s, transformOrigin: look.align === 'left' ? '0% 50%' : '50% 50%', transform: `translateY(${(1 - raw) * size * 0.5}px) scale(${(0.6 + 0.4 * raw) * (1 + 0.14 * pulse)}) rotate(${(1 - raw) * -5}deg)`, filter: `blur(${(1 - s) * 10}px)`, textShadow: light ? 'none' : `0 0 ${size * (0.35 + pulse * 0.5)}px ${theme.accent}${pulse > 0.05 ? 'CC' : '66'}` }}>
-      {text}
+      {['type', 'scramble', 'drop', 'wave', 'mask'].includes(reveal ?? '') ? text.split(/\s+/).map((w, k, arr) => <React.Fragment key={k}><RevealWord word={w} mode={reveal!} index={k} delay={delay + 4} stagger={4} size={size} accent={theme.accent} char0={arr.slice(0, k).reduce((n, x) => n + x.length, 0)} total={text.replace(/\s+/g, '').length} />{k < arr.length - 1 ? ' ' : ''}</React.Fragment>) : text}
     </div>
   );
 };

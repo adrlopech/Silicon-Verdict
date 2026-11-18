@@ -26,7 +26,7 @@ Top the footage up whenever games run out of unused items. A game with fewer tha
 - **Footage is spent once.** Every item is used in ONE video and then deleted. Its key goes to a ledger (`game_media_used` in `data/history.db`) so it is never downloaded again.
   The footage is only spent when a finished video passes the QA gate.
 - **Games rest 14 days.** After a game appears it is blacklisted for 14 days (`BLACKLIST_DAYS`; inspect with `python -m services.game_registry`).
-- **A footage scene must show what its narration mentions.** The fact-check pass verifies it. The scene shows the footage inside the channel look (blue/cyan grade, scan line, corner brackets, game tag).
+- **A footage scene must show what its narration mentions.** The fact-check pass verifies it. The scene shows the footage as it is, with no colour filter, in a rounded card over a blurred copy of itself and a game tag.
 - **Facts come from the dossier.** `services/game_facts.py` builds a dossier (the development, technology and design sections of the Wikipedia article plus the Steam store description), prebuilt so production never depends on Wikipedia.
   The script may only state facts the dossier supports; every claim-bearing scene (at least 6) carries a verbatim `evidence` quote, and the validator rejects any quote that is not really in the dossier.
   A counter or bar may only show a figure written in the dossier.

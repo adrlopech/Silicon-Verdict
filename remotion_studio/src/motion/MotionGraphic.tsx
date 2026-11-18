@@ -12,10 +12,13 @@ import { Split, Units } from './scenes3';
 import { CursorLayer } from './cursor';
 import { Captions, captionSpaceFor, chunkCaptions } from './captions';
 import { Callout, Decor, Shock } from './decor';
-import { LookCtx, SceneCtx, lookFor, useSceneCtx } from './looks';
+import { CAPTION_DROP, LookCtx, SceneCtx, lookFor, useSceneCtx } from './looks';
+import { BIG_FX, BIG_FX_LIGHT, BigFxName, CAMERA_MOVES, CameraMove, REVEALS, Reveal, pickSeries } from './anim';
+import { BigFx } from './bigfx';
 import { Ambient, sceneFx } from './ambient';
 import { STAGE_SCENES, STAGE_TEXT_MAX_BOTTOM, STAGE_TEXT_MIN_TOP, Stage, VisualName, pickVisuals, stageRoom } from './visuals';
-import { HEIGHT, MotionGraphicProps, MotionScene, OVERLAP, SceneFx, WIDTH, defaultTheme } from './types';
+import { HEIGHT, MotionGraphicProps, MotionScene, OVERLAP, SAFE_BOTTOM, SceneFx, WIDTH, defaultTheme } from './types';
+import { EASE_IO, EASE_OUT } from './primitives';
 import { useLook } from './looks';
 
 const SCENES: Record<MotionScene['type'], React.FC<{ scene: MotionScene }>> = {
@@ -44,7 +47,7 @@ const SCENES: Record<MotionScene['type'], React.FC<{ scene: MotionScene }>> = {
 
 /** One scene wrapper: it enters with its own transition (varied per scene), drifts under a slow camera move, lands with an impact ring and thematic objects,
  *  and leaves with the matching exit while the next scene enters on top. */
-const SceneShell: React.FC<{ scene: MotionScene; index: number; total: number; rehook: boolean; icons: string[]; fx: SceneFx | null; visual: VisualName | null; next?: MotionScene; last: boolean; children: React.ReactNode }> = ({ scene, index, total, rehook, icons, fx, visual, next, last, children }) => {
+const SceneShell: React.FC<{ scene: MotionScene; index: number; total: number; rehook: boolean; icons: string[]; fx: SceneFx | null; visual: VisualName | null; move: CameraMove; big: BigFxName | null; next?: MotionScene; last: boolean; children: React.ReactNode }> = ({ scene, index, total, rehook, icons, fx, visual, move, big, next, last, children }) => {
   const frame = useCurrentFrame();
   const look = useLook();
   const { captionSpace } = useSceneCtx();
@@ -69,6 +72,8 @@ const SceneShell: React.FC<{ scene: MotionScene; index: number; total: number; r
     if (!box || Math.abs(box.top - t) > 1 || Math.abs(box.bottom - b) > 1) setBox({ top: t, bottom: b });
   });
   const staged = !!visual && STAGE_SCENES.has(scene.type);
+  const edge = HEIGHT - SAFE_BOTTOM - captionSpace; // bottom of the content area; the caption strip starts CAPTION_DROP + 22 px below it
+  const fade = `linear-gradient(180deg, #000 0, #000 ${edge + 6}px, transparent ${edge + 6 + Math.round(CAPTION_DROP * 0.8)}px)`;
   const lift = staged && box ? Math.max(0, Math.min(box.bottom - STAGE_TEXT_MAX_BOTTOM, box.top - STAGE_TEXT_MIN_TOP)) : 0;
   const room = staged ? (box ? stageRoom(box.bottom - lift, captionSpace) : 460) : 0;
   const hard = look.transitions.find((t) => t === 'whip' || t === 'glitch' || t === 'zoomThrough') ?? look.transitions[0];
@@ -80,27 +85,39 @@ const SceneShell: React.FC<{ scene: MotionScene; index: number; total: number; r
   // slow push-in with a sideways drift that alternates direction, so a static scene never sits still
   const prog = frame / Math.max(1, scene.durationInFrames);
   const dir = index % 2 === 0 ? 1 : -1;
-  const shake = (k: number) => Math.sin(frame * 0.9 + index * 3 + k) * 3.2 + Math.sin(frame * 2.3 + k * 5) * 1.6; // handheld: a small, constant tremor
   const calloutAt = scene.callout && scene.calloutCue != null ? Math.round(scene.calloutCue * 30) : null;
   const punch = calloutAt != null ? interpolate(frame, [calloutAt, calloutAt + 3, calloutAt + 12], [0, 1, 0], clamp) : 0; // a small zoom punch as the tag lands
+  // camera: a different move for (almost) every scene, picked per scene (anim.ts), moving only the backdrop. Looks that ask for a still camera get a gentler version, never none.
+  const amp = look.camera === 'still' ? 0.55 : look.camera === 'handheld' ? 1.15 : 1;
+  const e = interpolate(prog, [0, 1], [0, 1], { ...clamp, easing: EASE_IO });
+  const jump = index % 3 === 1 ? interpolate(frame, [Math.round(scene.durationInFrames * 0.5), Math.round(scene.durationInFrames * 0.5) + 5], [0, 1], { ...clamp, easing: EASE_OUT }) : 0; // a jump cut to a closer frame halfway through
   const cam = {
-    drift: `scale(${1 + 0.07 * prog}) translate(${dir * (prog - 0.5) * 36}px, ${(0.5 - prog) * 22}px) rotate(${dir * (prog - 0.5) * 0.8}deg)`,
-    push: `scale(${1 + 0.12 * prog})`,
-    orbit: `scale(${1.03 + 0.05 * prog}) rotate(${dir * (prog - 0.5) * 3.2}deg) translate(${dir * (prog - 0.5) * 50}px, 0px)`,
-    handheld: `scale(1.02) translate(${dir * (prog - 0.5) * 24}px, ${(0.5 - prog) * 16}px)`,
-    still: 'none',
-  }[look.camera];
-  const camPunch = punch > 0.001 ? `${cam === 'none' ? '' : cam} scale(${1 + 0.035 * punch})` : cam;
+    pushIn: `scale(${1 + 0.17 * amp * e})`,
+    pullOut: `scale(${1 + 0.17 * amp * (1 - e)})`,
+    panLeft: `scale(1.14) translate(${(0.5 - e) * 110 * amp}px, 0px)`,
+    panRight: `scale(1.14) translate(${(e - 0.5) * 110 * amp}px, 0px)`,
+    tiltUp: `scale(1.14) translate(0px, ${(0.5 - e) * 120 * amp}px)`,
+    tiltDown: `scale(1.14) translate(0px, ${(e - 0.5) * 120 * amp}px)`,
+    dolly: `scale(${1.05 + 0.15 * amp * e}) translate(${dir * (e - 0.5) * 70 * amp}px, ${(0.5 - e) * 50 * amp}px)`,
+    orbit: `scale(${1.08 + 0.06 * e}) rotate(${dir * (e - 0.5) * 4.4 * amp}deg) translate(${dir * (e - 0.5) * 60 * amp}px, 0px)`,
+    crane: `scale(${1.1 + 0.08 * amp * e}) translate(0px, ${(1 - e) * 95 * amp}px)`,
+    punch: `scale(${1 + 0.22 * amp * interpolate(frame, [0, 9], [1, 0], { ...clamp, easing: EASE_OUT }) + 0.07 * amp * e})`,
+  }[move];
+  const camPunch = `${cam} ${punch > 0.001 ? `scale(${1 + 0.035 * punch})` : ''} ${jump > 0 ? `scale(${1 + 0.11 * jump})` : ''}`;
   return (
     <AbsoluteFill style={style} data-scene={index}>
+      {/* everything the scene draws fades out just above the caption strip, so a subtitle never sits on a text or an object */}
+      <AbsoluteFill style={captionSpace > 0 ? { WebkitMaskImage: fade, maskImage: fade } : undefined}>
       {/* the camera moves only the backdrop (stage, decor, fly-bys, icons): type under a scale / rotation / tremor shimmers and reads as shaking */}
       <AbsoluteFill style={{ transform: camPunch }}>
+        {big && <BigFx name={big} scene={scene} index={index} />}
         <Stage scene={scene} name={visual} index={index} avail={room} />
         {!staged && <Ambient fx={fx} />}
         {!staged && <Decor scene={scene} index={index} total={total} />}
         <PropField icons={icons} index={index} />
       </AbsoluteFill>
       <AbsoluteFill ref={holder} style={scene.cursor === 'toggle' ? { transform: 'translateY(-200px)' } : lift > 0 ? { transform: `translateY(${-lift}px)` } : undefined}>{children}</AbsoluteFill>
+      </AbsoluteFill>
       <Impact seed={index} />
       {rehook && <Shock />}
       <Callout scene={scene} />
@@ -152,6 +169,11 @@ export const MotionGraphic: React.FC<MotionGraphicProps> = ({ scenes, theme = de
   scenes.forEach((sc, i) => sceneIcons.push(sc.cursor === 'toggle' || captionSpaceFor(sc, chunks.length > 0) > 0 ? [] : pickIcons(sc, sceneIcons[i - 1] ?? [])));
   const fxs = sceneFx(scenes);
   const visuals = pickVisuals(scenes);
+  const NO_EXTRAS = new Set(['flash', 'footage', 'tier', 'ui', 'outro']);
+  const salt = `${title}|${lookName ?? ''}`;
+  const reveals = pickSeries<Reveal>(scenes, REVEALS, `${salt}r`, 2, () => REVEALS);
+  const moves = pickSeries<CameraMove>(scenes, CAMERA_MOVES, `${salt}c`, 4, () => CAMERA_MOVES);
+  const bigs = pickSeries<BigFxName>(scenes, BIG_FX, `${salt}b`, 5, (i) => (NO_EXTRAS.has(scenes[i].type) || i % 3 === 2 ? null : STAGE_SCENES.has(scenes[i].type) && visuals[i] ? BIG_FX_LIGHT : BIG_FX));
   const isLight = (sc: MotionScene) => look.light || !!sc.light; // a light look is light everywhere; otherwise a scene may ask for the light variant
   const light = isLight(scenes[current]);
   const flash = scenes[current].type === 'flash';
@@ -170,8 +192,8 @@ export const MotionGraphic: React.FC<MotionGraphicProps> = ({ scenes, theme = de
             return (
               <Sequence key={i} from={starts[i]} durationInFrames={scene.durationInFrames + (last ? 0 : OVERLAP)} layout="none">
                 <ThemeCtx.Provider value={{ theme: th, light: isLight(scene) }}>
-                  <SceneCtx.Provider value={{ scene, captionSpace: captionSpaceFor(scene, chunks.length > 0) }}>
-                    <SceneShell scene={scene} index={i} total={scenes.length} rehook={i === rehookAt} icons={sceneIcons[i]} fx={fxs[i]} visual={visuals[i]} next={scenes[i + 1]} last={last}>
+                  <SceneCtx.Provider value={{ scene, captionSpace: captionSpaceFor(scene, chunks.length > 0), reveal: i === 0 ? 'type' : reveals[i] ?? 'pop' }}>
+                    <SceneShell scene={scene} index={i} total={scenes.length} rehook={i === rehookAt} icons={sceneIcons[i]} fx={fxs[i]} visual={visuals[i]} move={moves[i] ?? 'pushIn'} big={bigs[i]} next={scenes[i + 1]} last={last}>
                       <C scene={scene} />
                     </SceneShell>
                   </SceneCtx.Provider>

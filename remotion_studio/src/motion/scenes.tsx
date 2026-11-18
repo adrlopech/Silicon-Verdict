@@ -264,7 +264,7 @@ export const Outro: React.FC<P> = ({ scene }) => {
 };
 
 
-/** Real game footage (screenshot or trailer clip) in the channel look: blue/cyan grade, scan line, corner brackets, game tag and a callout. */
+/** Real game footage (screenshot or trailer clip) shown as it is, in a rounded card over a blurred copy of itself, with a game tag. */
 export const Footage: React.FC<P> = ({ scene }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -274,12 +274,9 @@ export const Footage: React.FC<P> = ({ scene }) => {
   const progress = Math.min(1, frame / Math.max(1, scene.durationInFrames));
   const zoom = interpolate(progress, [0, 1], [1.04, 1.14]);
   const panX = interpolate(progress, [0, 1], [-12, 12]);
-  const sweep = ((frame / fps) % 2.4) / 2.4;
-  const grade = 'grayscale(0.55) contrast(1.1) brightness(0.9) saturate(1.1)';
-  const media: React.CSSProperties = { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: grade };
-  const bracket = (pos: React.CSSProperties) => <div style={{ position: 'absolute', width: 38, height: 38, borderColor: theme.accent, borderStyle: 'solid', borderWidth: 0, filter: `drop-shadow(0 0 6px ${theme.accent})`, ...pos }} />;
+  const media: React.CSSProperties = { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }; // the footage is shown exactly as it is: no grade, tint, scan lines or vignette
   // the same picture, blurred and darkened, fills the whole frame behind the 16:9 card: no empty bars above and below it
-  const fill: React.CSSProperties = { position: 'absolute', inset: -60, width: 'calc(100% + 120px)', height: 'calc(100% + 120px)', objectFit: 'cover', filter: 'blur(30px) brightness(0.7) saturate(1.3)', transform: `scale(${1.08 + 0.05 * progress})` };
+  const fill: React.CSSProperties = { position: 'absolute', inset: -60, width: 'calc(100% + 120px)', height: 'calc(100% + 120px)', objectFit: 'cover', filter: 'blur(34px) brightness(0.62)', transform: `scale(${1.08 + 0.05 * progress})` };
   return (
     <>
       <AbsoluteFill style={{ overflow: 'hidden', opacity: enter }}>
@@ -293,7 +290,7 @@ export const Footage: React.FC<P> = ({ scene }) => {
         <AbsoluteFill style={{ background: `linear-gradient(180deg, rgba(5,7,12,0.4) 0%, rgba(5,7,12,0.05) 40%, rgba(5,7,12,0.45) 100%)` }} />
       </AbsoluteFill>
     <SafeBox gap={36}>
-      <div style={{ position: 'relative', width: W, height: H, borderRadius: 26, overflow: 'hidden', background: '#05070C', boxShadow: `inset 0 0 0 1px ${theme.accent}55, 0 30px 90px rgba(0,0,0,0.55), 0 0 60px ${BRAND_BLUE}44`, opacity: enter, transform: `translateY(${(1 - enter) * 50}px) scale(${0.96 + 0.04 * enter})` }}>
+      <div style={{ position: 'relative', width: W, height: H, borderRadius: 26, overflow: 'hidden', background: '#05070C', boxShadow: '0 30px 90px rgba(0,0,0,0.55)', opacity: enter, transform: `translateY(${(1 - enter) * 50}px) scale(${0.96 + 0.04 * enter})` }}>
         {scene.mediaSrc && scene.mediaKind === 'video' ? (
           <Loop durationInFrames={Math.max(1, Math.round((scene.mediaSeconds ?? 3) * fps))}>
             <OffthreadVideo src={staticFile(scene.mediaSrc)} muted style={media} />
@@ -301,14 +298,6 @@ export const Footage: React.FC<P> = ({ scene }) => {
         ) : scene.mediaSrc ? (
           <Img src={staticFile(scene.mediaSrc)} style={{ ...media, transform: `scale(${zoom}) translateX(${panX}px)` }} />
         ) : null}
-        <AbsoluteFill style={{ background: `linear-gradient(160deg, ${BRAND_BLUE}66 0%, ${BRAND_BLUE}33 55%, ${theme.accent}33 100%)`, mixBlendMode: 'color' }} />
-        <AbsoluteFill style={{ background: 'radial-gradient(ellipse at center, rgba(0,0,0,0) 48%, rgba(3,8,18,0.8) 100%)' }} />
-        <AbsoluteFill style={{ opacity: 0.1, backgroundImage: 'linear-gradient(rgba(255,255,255,0.7) 1px, transparent 1px)', backgroundSize: '100% 6px' }} />
-        <div style={{ position: 'absolute', left: 0, right: 0, top: `${sweep * 100}%`, height: 3, background: `linear-gradient(90deg, transparent, ${theme.accent}, transparent)`, opacity: 0.55 }} />
-        {bracket({ top: 18, left: 18, borderTopWidth: 4, borderLeftWidth: 4 })}
-        {bracket({ top: 18, right: 18, borderTopWidth: 4, borderRightWidth: 4 })}
-        {bracket({ bottom: 18, left: 18, borderBottomWidth: 4, borderLeftWidth: 4 })}
-        {bracket({ bottom: 18, right: 18, borderBottomWidth: 4, borderRightWidth: 4 })}
         {scene.credit && (
           <div style={{ position: 'absolute', left: 34, bottom: 30, padding: '8px 18px', borderRadius: 999, background: 'rgba(5,7,12,0.72)', border: `1px solid ${theme.accent}66`, fontFamily: MONO, fontSize: fit(24, scene.credit.length, 560, 0.62, 16), letterSpacing: 2, color: theme.accent, textTransform: 'uppercase', maxWidth: 640, whiteSpace: 'nowrap', overflow: 'hidden' }}>
             ● {scene.credit}

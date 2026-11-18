@@ -1,7 +1,7 @@
 import React from 'react';
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
 import { MONO, SANS } from './fonts';
-import { CAPTION_SPACE, NO_CAPTION, useLook } from './looks';
+import { CAPTION_DROP, CAPTION_SPACE, NO_CAPTION, useLook } from './looks';
 import { clamp, useTheme } from './primitives';
 import { CaptionWord, MotionScene, HEIGHT, SAFE_BOTTOM } from './types';
 
@@ -64,7 +64,7 @@ export const Captions: React.FC<{ chunks: Chunk[]; scene: MotionScene | undefine
     if (style === 'mono') return { color: on ? theme.accent : base, textShadow: on ? `0 0 18px ${theme.accent}` : 'none' };
     return { color: on ? theme.accent : base, transform: on ? 'scale(1.08)' : 'none' };
   };
-  const top = HEIGHT - SAFE_BOTTOM - CAPTION_SPACE + 22;
+  const top = HEIGHT - SAFE_BOTTOM - CAPTION_SPACE + 22 + CAPTION_DROP;
   if (style === 'oneword') {
     // one huge word at a time: the word being said (or the last one said), outlined, popping in on every word
     let cur = chunk.words[0];

@@ -2,6 +2,7 @@ import { createContext, useContext } from 'react';
 import { JAKARTA, MANROPE, OUTFIT, SANS, SORA, SPACE } from './fonts';
 import { MotionScene } from './types';
 import { TransitionName } from './transitions';
+import type { Reveal } from './anim';
 
 /**
  * A LOOK is the visual identity of one video: palette, background, headline typeface, alignment, HUD, camera, transitions and caption style.
@@ -70,9 +71,11 @@ export const LookCtx = createContext<Look>(LOOKS.obsidian);
 export const useLook = () => useContext(LookCtx);
 
 /** The scene being drawn (for the cues the pipeline sets on it) and how much room the caption strip takes from its bottom. */
-export const SceneCtx = createContext<{ scene: MotionScene | null; captionSpace: number }>({ scene: null, captionSpace: 0 });
+export const SceneCtx = createContext<{ scene: MotionScene | null; captionSpace: number; reveal?: Reveal }>({ scene: null, captionSpace: 0 });
 export const useSceneCtx = () => useContext(SceneCtx);
 
 /** Scenes that are built to fill the frame: no caption strip over them. */
 export const NO_CAPTION = new Set(['tier', 'ui', 'footage', 'flash']);
 export const CAPTION_SPACE = 170;
+/** The caption strip sits this many px lower than the bottom of the scene's content area, so a caption never touches a text or an object (the scene is also faded out above it). */
+export const CAPTION_DROP = 56;
