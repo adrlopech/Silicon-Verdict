@@ -679,3 +679,20 @@ def test_tech_news_ranks_widely_covered_stories_first_and_reads_text():
     assert len(groups[0]["outlets"]) == 2 and len(groups[1]["outlets"]) == 2
     text = build_source_text(items=items, now=now)
     assert "Story 1 (reported by" in text and "chip" in text.lower()
+
+
+def test_priced_format_and_new_scene_types():
+    import json
+    from pathlib import Path
+    from services.motion_generator import FORMATS, MotionProject, make_validator
+    assert "priced" in FORMATS
+    d = json.loads((Path(__file__).resolve().parent.parent / "data" / "scripts" / "sample_priced.json").read_text(encoding="utf-8"))
+    p = MotionProject.model_validate(d)
+    assert make_validator(fmt="priced", retention=True)(p) == []
+    assert p.series_label == "Priced In"
+    p.scenes[2].unit = "other cards"  # the unit must be the same in every units scene
+    assert any("SAME name" in x for x in make_validator(fmt="priced", retention=True)(p))
+    d2 = json.loads((Path(__file__).resolve().parent.parent / "data" / "scripts" / "sample_split.json").read_text(encoding="utf-8"))
+    assert make_validator(fmt="versus", retention=True)(MotionProject.model_validate(d2)) == []
+    d2["format"] = "myth"
+    assert any("split scenes belong" in x for x in make_validator(fmt="myth", retention=True)(MotionProject.model_validate(d2)))

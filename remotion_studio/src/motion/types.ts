@@ -1,5 +1,5 @@
 /** Data contract of the MotionGraphic composition. Everything shown on screen comes from these props (no text lives in the code). */
-export type SceneType = 'bigText' | 'textWithAccent' | 'counter' | 'list' | 'codeBlock' | 'progressBar' | 'outro' | 'curve' | 'flash' | 'footage' | 'tier' | 'versus' | 'verdict' | 'timeline' | 'ui' | 'card' | 'rank' | 'quiz' | 'headline';
+export type SceneType = 'bigText' | 'textWithAccent' | 'counter' | 'list' | 'codeBlock' | 'progressBar' | 'outro' | 'curve' | 'flash' | 'footage' | 'tier' | 'versus' | 'verdict' | 'timeline' | 'ui' | 'card' | 'rank' | 'quiz' | 'headline' | 'split' | 'units';
 
 export type SceneFx = 'plane' | 'rocket' | 'satellite' | 'waves' | 'bolts' | 'embers' | 'snow' | 'drops' | 'packets' | 'coins' | 'equalizer' | 'signalbars' | 'notifications' | 'batteryfill' | 'clock' | 'padlock' | 'magnify' | 'bits';
 export type ToggleKey = 'airplane' | 'wifi' | 'bluetooth' | 'airdrop';
@@ -30,6 +30,7 @@ export interface MotionScene {
   fx?: SceneFx; // an animated element related to what the scene says (a plane flying across, signal waves, lightning...); picked from the scene's words when empty
   toggle?: ToggleKey; // with cursor 'toggle': which switch of the Control Center panel the cursor flips (airplane mode switches the radios off)
   cursor?: CursorAction; // the pointer acts in this scene only when the action means something: select (highlights the key phrase as it is spoken), drag (pulls a progress bar, drops the new tier chip), click (presses a step or a setting: code and list scenes), toggle (flips a Control Center switch)
+  demo?: string; // split scenes: what each panel draws (bars, res, speed, size, ago); its figures are leftValue / rightValue and unit
   preset?: string; // ui scenes: which drawn interface (display, taskmgr, bios, terminal, gpupanel, gamemenu, frametime, speedtest, wifilist, router, keycaps, filemgr, diskbar, battery, tabmem, speclabel, leaderboard, partpicker, dimm, permissions); its data lives in text / items / value / accentText / leftValue / rightValue / code
   callout?: string; // a short tag (a figure or a key term) that pops up mid-scene, set by the pipeline from the narration
   calloutCue?: number; // seconds after the scene starts at which the narrator says it
@@ -55,6 +56,7 @@ export interface CaptionWord {
 
 export interface MotionGraphicProps {
   title: string;
+  series?: string; // the series label shown in the title strip of the HUD ("Fix It Now #4"), set by the pipeline
   look?: string; // the visual look of the whole video (see looks.ts); obsidian when empty
   captions?: CaptionWord[]; // word timing of the narration for the caption strip (set by the pipeline)
   scenes: MotionScene[];

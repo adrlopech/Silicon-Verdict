@@ -1,0 +1,138 @@
+{
+ "accent": "#00F0FF",
+ "kind": "curiosity",
+ "topic": "DDR4 versus DDR5 in four rounds",
+ "screen_title": "DDR4 vs DDR5",
+ "title": "Spec Duel: DDR4 vs DDR5 in Four Rounds #siliconverdict #ddr5 #specduel",
+ "description": "DDR4 and DDR5 compared in four rounds: data rate, bandwidth, voltage and lanes per stick.",
+ "tags": [
+  "ddr4",
+  "ddr5",
+  "ram",
+  "memory",
+  "bandwidth",
+  "pcbuild",
+  "hardware",
+  "tech"
+ ],
+ "pinned_comment": "DDR4 or DDR5? Reply with one word.",
+ "format": "versus",
+ "scenes": [
+  {
+   "type": "bigText",
+   "text": "DDR4 or DDR5?",
+   "narration": "DDR5 is not just faster. It does something DDR4 never could.",
+   "durationInFrames": 90
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Four rounds,",
+   "narration": "Four rounds, same memory, and the last round has a catch.",
+   "durationInFrames": 100,
+   "accentText": "one catch"
+  },
+  {
+   "type": "versus",
+   "text": "Base data rate",
+   "narration": "Round one, speed. Standard DDR4 starts at thirty-two hundred transfers a second, DDR5 at forty-eight hundred.",
+   "durationInFrames": 150,
+   "accentText": "per second",
+   "kicker": "round 1",
+   "left": "DDR4",
+   "right": "DDR5",
+   "leftValue": 3200,
+   "rightValue": 4800,
+   "unit": "MT/s"
+  },
+  {
+   "type": "split",
+   "text": "Bandwidth per stick",
+   "narration": "That works out to about twenty-five point six gigabytes a second for DDR4, and thirty-eight point four for DDR5.",
+   "durationInFrames": 160,
+   "accentText": "per module",
+   "kicker": "round 1 in GB/s",
+   "left": "DDR4",
+   "right": "DDR5",
+   "leftValue": 25.6,
+   "rightValue": 38.4,
+   "unit": "GB/s",
+   "demo": "speed"
+  },
+  {
+   "type": "versus",
+   "text": "Operating voltage",
+   "narration": "Round two, power. DDR5 runs at one point one volts, DDR4 at one point two, so lower wins.",
+   "durationInFrames": 140,
+   "accentText": "lower wins",
+   "kicker": "round 2",
+   "left": "DDR4",
+   "right": "DDR5",
+   "leftValue": 1.2,
+   "rightValue": 1.1,
+   "unit": "V",
+   "winner": "right"
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Halfway there",
+   "narration": "Two rounds done, and the next one is the one most people miss.",
+   "durationInFrames": 100,
+   "accentText": "most miss"
+  },
+  {
+   "type": "split",
+   "text": "Biggest common stick",
+   "narration": "Round three, capacity. The biggest sticks you can easily buy are roughly thirty-two gigabytes for DDR4 and sixty-four for DDR5.",
+   "durationInFrames": 160,
+   "accentText": "capacity",
+   "kicker": "round 3",
+   "left": "DDR4",
+   "right": "DDR5",
+   "leftValue": 32,
+   "rightValue": 64,
+   "unit": "GB",
+   "demo": "size"
+  },
+  {
+   "type": "card",
+   "text": "Two lanes per stick",
+   "narration": "Here is the twist: each DDR5 stick is split into two independent thirty-two bit lanes.",
+   "durationInFrames": 120,
+   "accentText": "DDR5 trick"
+  },
+  {
+   "type": "versus",
+   "text": "Lanes per stick",
+   "narration": "Round four, lanes per stick: DDR4 has one, DDR5 has two, which keeps the processor busier.",
+   "durationInFrames": 140,
+   "accentText": "two beat one",
+   "kicker": "round 4",
+   "left": "DDR4",
+   "right": "DDR5",
+   "leftValue": 1,
+   "rightValue": 2,
+   "unit": "lanes"
+  },
+  {
+   "type": "textWithAccent",
+   "text": "DDR5 wins",
+   "narration": "DDR5 wins on paper, but only if your motherboard and processor support it.",
+   "durationInFrames": 110,
+   "accentText": "on paper"
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Faster is not free",
+   "narration": "Higher speed also means higher latency numbers, so real gains are smaller than the headline.",
+   "durationInFrames": 110,
+   "accentText": "latency too"
+  },
+  {
+   "type": "outro",
+   "text": "DDR4 or DDR5?",
+   "narration": "Follow for more. Are you team DDR4 or team DDR5?",
+   "durationInFrames": 100,
+   "accentText": "Follow for more"
+  }
+ ]
+}

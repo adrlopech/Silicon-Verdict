@@ -56,7 +56,7 @@ UI_PRESETS: Dict[str, dict] = {
     "dimm": {"action": "click", "n": (4, 4), "value": None, "need": ("leftValue", "rightValue"), "doc": 'items = the four slot names ("A1", "A2", "B1", "B2"), leftValue / rightValue = the two slots (1-4) the sticks go into, accentText (optional) = the badge that lights up'},
     "permissions": {"action": "click", "n": (2, 4), "value": "index", "need": (), "doc": 'items = switches "Name|on" (Microphone, Camera, Location), value = the one the pointer turns off'},
 }
-UI_FORMATS_OFF = ("tier", "versus", "myth", "evolution", "top5", "quiz", "news", "review")  # these formats are built from a fixed run of their own scenes
+UI_FORMATS_OFF = ("tier", "versus", "myth", "evolution", "top5", "quiz", "news", "review", "priced")  # these formats are built from a fixed run of their own scenes
 MAX_UI_SCENES = 2
 
 
@@ -210,12 +210,13 @@ def cursor_from_pose(pose: Optional[str], scene_type: str, index: int, total: in
     return "select" if scene_type == "textWithAccent" and pose == "point" else None
 
 
-SceneType = Literal["bigText", "textWithAccent", "counter", "list", "codeBlock", "progressBar", "outro", "curve", "flash", "footage", "tier", "versus", "verdict", "timeline", "ui", "card", "rank", "quiz", "headline"]
-FORMATS = ("myth", "tier", "whatif", "easter", "evolution", "versus", "hardware", "simple", "fix", "decode", "top5", "eli5", "fails", "numbers", "quiz", "stop", "rumor", "review", "news")   # content formats on top of the two kinds (curiosity / game); "easter" is always a game video; "hardware" and "simple" are the old Hardware / Everyday-with-mascot categories, now told in the Motion style; "fix" and "decode" come from the Nov 2026 niche research (notes/niche_research_2026-11.md)
+SceneType = Literal["bigText", "textWithAccent", "counter", "list", "codeBlock", "progressBar", "outro", "curve", "flash", "footage", "tier", "versus", "verdict", "timeline", "ui", "card", "rank", "quiz", "headline", "split", "units"]
+FORMATS = ("myth", "tier", "whatif", "easter", "evolution", "versus", "hardware", "simple", "fix", "decode", "top5", "eli5", "fails", "numbers", "quiz", "stop", "rumor", "review", "news", "priced")   # content formats on top of the two kinds (curiosity / game); "easter" is always a game video; "hardware" and "simple" are the old Hardware / Everyday-with-mascot categories, now told in the Motion style; "fix" and "decode" come from the Nov 2026 niche research (notes/niche_research_2026-11.md)
 TIER_LETTERS = ("S", "A", "B", "C", "D", "F")
+SPLIT_DEMOS = ("bars", "res", "speed", "size", "ago")
 # How often `--motion-format any` picks each topic. Our three TikTok breakouts (800+ views) were the number-driven formats (what-if, versus, evolution) and the niche research
 # found "fix it now" and "decoded" to be the biggest unserved clusters; tier lists and myths stalled at the first test wave (notes/content_style_study_2026-11.md).
-FORMAT_WEIGHTS = {"whatif": 3, "versus": 3, "evolution": 3, "fix": 3, "decode": 3, "hardware": 2, "simple": 1, "myth": 1, "tier": 1, "top5": 2, "eli5": 2, "fails": 2, "numbers": 2, "quiz": 2, "stop": 2, "rumor": 2, "review": 1, "easter": 1, "classic": 1, "curiosity": 1, "game": 1}
+FORMAT_WEIGHTS = {"whatif": 3, "versus": 3, "evolution": 3, "fix": 3, "decode": 3, "hardware": 2, "simple": 1, "myth": 1, "tier": 1, "top5": 2, "eli5": 2, "fails": 2, "numbers": 2, "quiz": 2, "stop": 2, "rumor": 2, "review": 1, "priced": 2, "easter": 1, "classic": 1, "curiosity": 1, "game": 1}
 
 
 class MotionSceneModel(BaseModel):
@@ -244,6 +245,7 @@ class MotionSceneModel(BaseModel):
     fx: Optional[str] = Field(default=None, description="An animated element that illustrates the line (plane, rocket, satellite, waves, bolts, embers, snow, drops, packets, coins, equalizer). Optional: it is picked automatically from the scene's words when empty")
     toggle: Optional[str] = Field(default=None, description="With cursor=toggle: the switch of the Control Center panel the cursor flips: airplane, wifi, bluetooth or airdrop")
     cursor: Optional[str] = Field(default=None, description="The pointer acts in this scene ONLY when the action means something: select (drags across the key phrase of a bigText / textWithAccent scene), drag (progressBar: pulls the bar to its value; tier: carries the new chip into its row), click (codeBlock or list: presses the setting or the step), toggle (first scene only, only for a video about a phone/computer setting: opens a Control Center panel and flips a switch). Empty = no pointer in this scene")
+    demo: Optional[str] = Field(default=None, description="split scenes only: what each panel draws: bars (a big figure and a proportional bar), res (the same shape drawn with few and with many pixels), speed (two runners racing at the two speeds), size (two squares whose AREAS follow the figures) or ago (a counter of how long ago, for then-versus-now). The figures are leftValue and rightValue, `unit` is shared, left and right are the labels")
     preset: Optional[str] = Field(default=None, description="ui scenes only: the drawn interface (display, taskmgr, bios, terminal, gpupanel, gamemenu, frametime, speedtest, wifilist, router, keycaps, filemgr, diskbar, battery, tabmem, speclabel, leaderboard, partpicker, dimm, permissions); its data goes in items, value, accentText, leftValue, rightValue, unit and code as the UI PRESETS rules say")
     callout: Optional[str] = Field(default=None, description="Set by the pipeline from the narration, never by the model: a short tag (a figure or a key term) that pops up in the middle of a long scene")
     calloutCue: Optional[float] = Field(default=None, description="Set by the pipeline from the voice timing, never by the model: seconds after the scene starts at which the narrator says the callout")
@@ -282,11 +284,18 @@ class MotionProject(BaseModel):
         """The JSON the MotionGraphic composition receives as inputProps."""
         return {
             "title": self.screen_title,
+            **({"series": self.series_label} if self.series_label else {}),
             "theme": {"accent": self.accent, "background": "#05070C", "text": "#FFFFFF"},
             "scenes": [s.model_dump(exclude_none=True) for s in self.scenes],
             **({"look": self.look} if self.look else {}),
             **({"captions": [c.model_dump() for c in self.captions]} if self.captions else {}),
         }
+
+    @property
+    def series_label(self) -> str:
+        """The series part of the title ("Fix It Now #4" of "Fix It Now #4: If you..."), shown in the title strip of the HUD."""
+        head = self.title.split(":", 1)[0].strip() if ":" in self.title else ""
+        return head if 3 <= len(head) <= 24 and "#" not in head.rsplit(" ", 1)[0] else ""
 
     @property
     def total_frames(self) -> int:
@@ -424,18 +433,21 @@ FORMAT = TIER LIST. Rank 6 to 8 items of ONE category (kinds of RAM, SSD types, 
 FORMAT = WHAT IF. One absurd but physically meaningful hypothetical about computing ("What if your PC had no cache?", "What if an SSD never erased data?", "What if RAM was as slow as a hard drive?").
 - Scene 1: bigText with kicker "what if" and the hypothetical in 2-4 words. Scene 2 restates it as a question in textWithAccent.
 - Then walk through the consequences step by step, ESCALATING each time, alternating the scene types (never two of the same type in a row), with real mechanisms and real approximate figures (counter, progressBar, curve, list, codeBlock). Say "roughly" when a figure is approximate.
-- The consequences must follow from how the hardware or software really works; never invent figures. Close with what the real design does to avoid this, and why that is clever.""",
+- The consequences must follow from how the hardware or software really works; never invent figures. Close with what the real design does to avoid this, and why that is clever.
+- OPTIONAL: ONE `split` scene to compare normal against the hypothetical: `demo` = speed or size, `left` / `right` = the labels, `leftValue` / `rightValue` = the figures (spoken in the narration), `unit` shared.""",
     "evolution": FORMAT_COMMON + """
 FORMAT = EVOLUTION. How ONE thing evolved over time (GPUs, storage, CPUs, game graphics, memory, the web...).
 - Use at least 2 `timeline` scenes: `items` = 3 to 5 chronological "year|label" entries, each year EXACTLY four digits ("1999", never "1990s" or "late 90s"; label at most 28 characters), only milestones you are SURE about, with the exact year. `kicker` = "evolution".
 - Between timeline scenes use counter, progressBar or curve scenes that show the growth (transistors, capacity, price, speed) with real, approximate figures spoken in the narration.
-- Hook with the span ("Thirty years of storage in sixty seconds"), end with what the trend means for the future.""",
+- Hook with the span ("Thirty years of storage in sixty seconds"), end with what the trend means for the future.
+- OPTIONAL: ONE `split` scene with `demo` = "ago" for a then-versus-now: `left` / `right` = the two years ("2012", "2025"), `leftValue` / `rightValue` = how many days ago each was (spoken as rounded years), `unit` = "days ago".""",
     "versus": FORMAT_COMMON + """
 FORMAT = VERSUS. Two contenders (two consoles, two technologies, two standards) fought over 3 to 5 ROUNDS, each round one `versus` scene about ONE metric.
 - `left` and `right` = the contender names (max 16 characters, IDENTICAL in every round), `leftValue` / `rightValue` = real approximate positive figures for that metric, `unit` shared by both,
   `text` = the metric ("Memory bandwidth"), `accentText` = a short tag ("per second"), `kicker` = "round 1", "round 2"... When LOWER is better (latency, price, power) set `winner` to the contender that wins.
   Both figures MUST be spoken in that scene's narration (digits are fine: "twenty-five point six versus forty-eight"). If you are not sure of a figure, pick another metric.
-- Scene 1 is the hook that names both contenders, the last scene before the outro is a textWithAccent that names the overall winner and the catch ("but it depends on...").""",
+- Scene 1 is the hook that names both contenders, the last scene before the outro is a textWithAccent that names the overall winner and the catch ("but it depends on...").
+- OPTIONAL: for ONE round you may use a `split` scene instead of `versus` (two stacked panels): `demo` = bars, speed or size, `left` / `right` = the labels, `leftValue` / `rightValue` = the figures (spoken in the narration), `unit` shared.""",
     "hardware": FORMAT_COMMON + """
 FORMAT = HARDWARE DEEP DIVE (the old Hardware category, now in the Motion style). ONE surprising, well documented fact about silicon, memory, storage, networking, displays, power or engineering infrastructure
 (cache and RAM latency, EUV lithography, why clocks stalled near 5 GHz, SSD wear, GPS and atomic clocks, fiber optics, thermal paste, power supplies, GPUs versus CPUs, ECC memory, data centers...).
@@ -501,6 +513,12 @@ FORMAT = TECH BRIEFING (a news bulletin, the channel's news section). A calm, au
 - Scene 1 is the cold open: the single biggest story as a claim. Then ONE `headline` scene per story (3 or 4 stories): `text` = the headline in your own words (max 10 words), `kicker` = the outlet you rely on, in capitals ("THE VERGE", from the "reported by" list), `accentText` = what it means in at most 4 words, `unit` = how fresh ("TODAY", "THIS WEEK"). After each headline scene put ONE supporting scene (card, list or counter) that gives the key fact or figure.
 - Use ONLY stories and facts of the SOURCE TEXT. Paraphrase in your own words, never copy sentences, no quotes. Name the outlet in the narration ("according to The Verge"). Anything the outlets only report or allege gets "reportedly" or "allegedly". Never add prices, dates or numbers that the text does not state.
 - Last scene before the outro: a textWithAccent that names the day's theme. The outro vote asks which story matters more.""",
+    "priced": FORMAT_COMMON + """
+FORMAT = PRICED IN X. ONE unit of measure (a graphics card, a phone, a CPU, an SSD, a stick of RAM, a dollar, a watt) and 4 to 6 surprising things whose price or size is told IN THAT UNIT.
+- Scene 1 is the hook that names the unit and the first surprise ("A tank round costs five graphics cards."). Never state a total.
+- Then 4 to 6 `units` scenes, one per thing: `unit` = the unit's name, IDENTICAL in every units scene (max 3 words, plural: "RTX 5090 cards"), `text` = the thing (max 6 words, "One 120 mm tank round"), `value` = how many units it equals (a positive number up to 60; a decimal under 1 is fine for something cheaper than one unit, a decimal above 1 is rounded on screen so use whole numbers), `accentText` = the thing's own price or size (max 3 words, "$27,800 each"), `kicker` = "cost in units of".
+- The unit's real price or size and EVERY figure must be well documented and said in the narration ("a tank round is roughly twenty-eight thousand dollars, about five of these cards"). Say "roughly". If you are not sure of a figure, pick another thing. No prices of specific retailers.
+- Between units scenes put at most one counter, card or list scene as a breather; two units scenes may follow each other. The last scene before the outro is a textWithAccent that gives the surprise. The outro asks which one surprised the viewer most.""",
     "easter": FORMAT_COMMON + """
 FORMAT = HIDDEN DETAIL (the 'easter egg' format). Tell the most surprising, little-known detail the SOURCE TEXT gives about the game's development, design or technology, as a reveal:
 setup ("You have played this a hundred times"), clue, then the reveal. Open scene 1 with the game name and the promise of a secret, put kicker "hidden detail" on the reveal scenes, and show the
@@ -665,6 +683,22 @@ def _format_problems(p: MotionProject, fmt: Optional[str]) -> List[str]:
         if not count("list"):
             out.append(f"{fmt} format needs a list scene ({'the steps' if fmt == 'fix' else 'what each part tells you'})")
     for i, s in enumerate(sc, 1):
+        if s.type == "units":
+            if not (s.value is not None and 0 < s.value <= 200):
+                out.append(f"scene {i}: a units scene needs `value` = how many units (a positive number up to 200)")
+            if not (s.unit or "").strip():
+                out.append(f"scene {i}: a units scene needs `unit` = the unit's name")
+            elif s.value is not None and not _said(s.value, s.narration):
+                out.append(f"scene {i}: the units figure must be said in that scene's narration")
+        elif s.type == "split":
+            if (s.demo or "bars") not in SPLIT_DEMOS:
+                out.append(f"scene {i}: split `demo` must be one of {', '.join(SPLIT_DEMOS)}")
+            if not (s.left and s.right and len(s.left) <= 16 and len(s.right) <= 16):
+                out.append(f"scene {i}: split needs `left` and `right` labels of at most 16 characters")
+            if not (s.leftValue and s.rightValue and s.leftValue > 0 and s.rightValue > 0):
+                out.append(f"scene {i}: split needs positive leftValue and rightValue")
+            elif not (_said(s.leftValue, s.narration) or _said(s.rightValue, s.narration)):
+                out.append(f"scene {i}: the split figures must be said in that scene's narration")
         if s.type == "rank" and not (s.value and 1 <= s.value <= 9 and float(s.value).is_integer()):
             out.append(f"scene {i}: a rank scene needs `value` = its position (5, 4, 3, 2, 1)")
         elif s.type == "quiz":
@@ -708,6 +742,16 @@ def _format_problems(p: MotionProject, fmt: Optional[str]) -> List[str]:
     elif fmt == "rumor":
         if not count("progressBar") or count("card") + count("list") < 2:
             out.append("rumor format needs a progressBar (plausibility) and at least 2 card or list scenes")
+    if fmt == "priced":
+        units = [s.unit.strip().lower() for s in sc if s.type == "units" and s.unit]
+        if not 4 <= count("units") <= 6:
+            out.append(f"priced format needs 4-6 units scenes (one per thing), got {count('units')}")
+        elif len(set(units)) > 1:
+            out.append("the unit must have the SAME name in every units scene")
+    if fmt != "priced" and count("units"):
+        out.append("units scenes belong only to the priced format")
+    if count("split") and fmt not in (None, "versus", "evolution", "whatif", "numbers", "fails", "hardware", "priced"):
+        out.append("split scenes belong only to versus, evolution, whatif, numbers, fails, hardware and priced videos")
     if fmt != "top5" and count("rank"):
         out.append("rank scenes belong only to the top5 format")
     if fmt != "quiz" and count("quiz"):
@@ -858,7 +902,7 @@ def make_validator(catalog: Optional[Dict[str, dict]] = None, facts: Optional[st
                 out.append(f"scene {i}: list needs 2-4 items")
             if s.type == "codeBlock" and not (s.code and len(s.code) >= 2):
                 out.append(f"scene {i}: codeBlock needs 2+ code lines")
-            if i > 1 and s.type == p.scenes[i - 2].type and s.type not in ("outro", "footage", "tier", "versus", "verdict", "timeline", "rank"):
+            if i > 1 and s.type == p.scenes[i - 2].type and s.type not in ("outro", "footage", "tier", "versus", "verdict", "timeline", "rank", "units", "split"):
                 out.append(f"scenes {i - 1} and {i} have the same type")
         if not looks_english(p.all_text):
             out.append("the text is not English: everything must be American English")

@@ -22,7 +22,7 @@ HELP_TEXT = """=================================================================
 
  .venv/bin/python main.py --series motion --motion-format <format> [--export-only]
    formats: myth tier whatif easter evolution versus hardware simple fix decode
-            top5 eli5 fails numbers quiz stop rumor review news any
+            top5 eli5 fails numbers quiz stop rumor review news priced any
  .venv/bin/python main.py --series motion --motion-kind curiosity --topic "How TRIM keeps SSDs fast"
  .venv/bin/python main.py --series motion --motion-kind game          # needs prepared game footage
  .venv/bin/python main.py --series hardware | --series simple          # shortcuts for those formats

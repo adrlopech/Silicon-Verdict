@@ -11,7 +11,7 @@ import { TransitionName } from './transitions';
 export type BgStyle = 'glow' | 'aurora' | 'mesh' | 'orbs' | 'dots' | 'blueprint' | 'mono';
 export type HudStyle = 'mono' | 'story' | 'brackets' | 'ticks';
 export type CameraStyle = 'drift' | 'push' | 'orbit' | 'handheld' | 'still';
-export type CaptionStyle = 'pill' | 'plain' | 'underline' | 'mono';
+export type CaptionStyle = 'pill' | 'plain' | 'underline' | 'mono' | 'oneword' | 'twotone' | 'wordpill';
 export type ParticleStyle = 'dots' | 'squares' | 'none';
 export type DecorStyle = 'none' | 'number' | 'ring' | 'dimension';
 
@@ -42,16 +42,16 @@ export const LOOKS: Record<string, Look> = {
     transitions: ['pushLeft', 'zoomThrough', 'iris', 'glitch', 'pushUp', 'blinds', 'whip', 'flip', 'wipe', 'zoomOut', 'diagonal', 'spin', 'fade'], captions: 'pill', scale: 1.0, decor: 'none' },
   // sky blue over a moving aurora of navy and royal blue
   ocean: { name: 'ocean', accent: '#4DC3FF', accent2: '#0A4DFF', background: '#030B1F', text: '#FFFFFF', light: false, bg: 'aurora', floorGrid: false, particles: 'dots', hud: 'story', align: 'center', upper: false, sans: SPACE, camera: 'push',
-    transitions: ['zoomThrough', 'pushUp', 'fade', 'iris', 'zoomOut'], captions: 'plain', scale: 1.04, decor: 'none' },
+    transitions: ['zoomThrough', 'pushUp', 'fade', 'iris', 'zoomOut'], captions: 'wordpill', scale: 1.04, decor: 'none' },
   // periwinkle and indigo: the bluest end of violet, nothing purple
   indigo: { name: 'indigo', accent: '#8FA8FF', accent2: '#3B3FF0', background: '#060921', text: '#FFFFFF', light: false, bg: 'aurora', floorGrid: false, particles: 'squares', hud: 'ticks', align: 'left', upper: false, sans: SORA, camera: 'orbit',
     transitions: ['whip', 'flip', 'spin', 'diagonal', 'pushLeft'], captions: 'underline', scale: 1.1, decor: 'ring' },
   // modern and bold: a saturated cobalt gradient mesh with soft light blobs and film grain, big rounded type
   cobalt: { name: 'cobalt', accent: '#9BE8FF', accent2: '#4C8DFF', background: '#061552', text: '#FFFFFF', light: false, bg: 'mesh', floorGrid: false, particles: 'squares', hud: 'brackets', align: 'left', upper: false, sans: OUTFIT, camera: 'handheld',
-    transitions: ['whip', 'diagonal', 'zoomThrough', 'pushLeft', 'blinds'], captions: 'pill', scale: 1.2, decor: 'number' },
+    transitions: ['whip', 'diagonal', 'zoomThrough', 'pushLeft', 'blinds'], captions: 'oneword', scale: 1.2, decor: 'number' },
   // modern and calm: frosted glass spheres drifting over midnight blue
   glass: { name: 'glass', accent: '#7CC8FF', accent2: '#4A6BFF', background: '#040A1C', text: '#FFFFFF', light: false, bg: 'orbs', floorGrid: false, particles: 'dots', hud: 'story', align: 'center', upper: false, sans: JAKARTA, camera: 'drift',
-    transitions: ['fade', 'zoomOut', 'iris', 'pushUp', 'zoomThrough'], captions: 'plain', scale: 1.06, decor: 'none' },
+    transitions: ['fade', 'zoomOut', 'iris', 'pushUp', 'zoomThrough'], captions: 'twotone', scale: 1.06, decor: 'none' },
   // a light look: blue ink on a pale blue sheet
   paper: { name: 'paper', accent: '#0A5CFF', accent2: '#00B3FF', background: '#EAF2FF', text: '#0A1220', light: true, bg: 'dots', floorGrid: false, particles: 'none', hud: 'story', align: 'left', upper: false, sans: MANROPE, camera: 'still',
     transitions: ['fade', 'pushLeft', 'wipe', 'zoomOut', 'pushUp'], captions: 'pill', scale: 1.12, decor: 'number' },

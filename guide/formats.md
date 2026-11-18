@@ -1,7 +1,7 @@
 # Content formats
 
 A **format** is a recipe: its own scene types, prompt rules and validator (`FORMAT_RULES` and `_format_problems` in `services/motion_generator.py`). There are the classic explainer plus
-19 named formats. Every format shares the same rules: a hook first, an outro last, a narration on every scene, 150-190 spoken words, 13-19 scenes (tier and versus may use 9-19),
+20 named formats. Every format shares the same rules: a hook first, an outro last, a narration on every scene, 150-190 spoken words, 13-19 scenes (tier and versus may use 9-19),
 and the [retention rules](motion-engine.md#retention-rules). The same fact-check pass applies to all of them.
 
 Call one with `--motion-format <name>`:
@@ -35,6 +35,7 @@ Call one with `--motion-format <name>`:
 | `stop` | Three habits that quietly hurt a device, each with a better one | list + counter/progressBar/card | Liam | 2 |
 | `rumor` | One rumour weighed, with a plausibility bar | progressBar + card/list | Adam | 2 |
 | `review` | "Worth it?" verdict: buy, wait or skip | list x2, verdict | Adam | 1 |
+| `priced` | The price or size of 4-6 surprising things told in units of one object ("Priced in PS5s") | units | Liam | 2 |
 | `news` | Tech Briefing: today's headlines from live RSS feeds | headline | Adam | never picked |
 | `easter` | A game's hidden detail, told over real footage | footage | Liam (all game videos) | 1 (only if a game has unused footage) |
 
@@ -59,6 +60,7 @@ Beyond the shared rules, `_format_problems` rejects a script when:
 - **stop**: no `list`, or none of counter/progressBar/card.
 - **rumor**: no `progressBar`, or fewer than 2 `card`/`list` scenes.
 - **review**: not exactly one `verdict` near the end, fewer than 2 `list` scenes, or a verdict other than buy/wait/skip. Buy/wait/skip stamps are only valid in `review`.
+- **priced**: not 4-6 `units` scenes, or the `unit` name differs between them. A units figure must be said in the narration (up to 200, whole numbers recommended).
 - **news**: not 3-4 `headline` scenes, or a headline without a `kicker` (the outlet). Headlines allow 10 words; three headline scenes in a row are rejected.
 - Scene types that belong to one format are rejected in the others: `rank` (top5), `quiz` (quiz), `headline` (news), and tier / versus / verdict / timeline (their own formats, plus review and fails for verdict and timeline).
 
@@ -72,6 +74,8 @@ Beyond the shared rules, `_format_problems` rejects a script when:
 | `timeline` | `items` as `"year\|label"` |
 | `rank` | `value` = position 5..1, `text` = item, `accentText` = why |
 | `quiz` | `items` = 3 options, `value` = correct option 1-3 |
+| `units` | `unit` = the unit's name (same in every scene), `value` = how many units, `text` = the thing, `accentText` = its own price or size |
+| `split` | `demo` = bars / res / speed / size / ago, `left` / `right` labels, `leftValue` / `rightValue`, `unit`. Allowed in versus, evolution, whatif, numbers, fails, hardware and priced |
 | `headline` | `text` = headline, `kicker` = outlet in capitals, `accentText` = meaning, `unit` = how long ago |
 
 Demos: `remotion_studio/src/motion/sample_formats.json` (tier, versus, verdict, timeline) and `sample_ui.json`. Hand-written samples of the newer formats are in `data/scripts/sample_*.json`.

@@ -63,11 +63,29 @@ export const Callout: React.FC<{ scene: MotionScene }> = ({ scene }) => {
   const pop = spring({ frame: f, fps, config: { damping: 11, stiffness: 190, mass: 0.7 } });
   const fade = interpolate(f, [66, 84], [1, 0], clamp);
   const left = look.align === 'left';
+  // over a stage the tag is an annotation: a thin leader line runs from it up to a pulsing ring on the visual, as in a magnified illustration
+  const staged = STAGE_SCENES.has(scene.type);
+  const tagTop = HEIGHT - SAFE_BOTTOM - captionSpace - 118;
+  const tagX = left ? 760 : 540;
+  const ringX = left ? 560 : 540 + (scene.durationInFrames % 2 ? 170 : -170);
+  const ringY = tagTop - 250;
+  const draw = interpolate(f, [4, 22], [0, 1], { ...clamp, easing: EASE_OUT });
+  const ringPulse = 1 + 0.18 * Math.sin(f / 4);
+  const lineLen = Math.hypot(tagX - ringX, tagTop - ringY - 34);
   return (
+    <>
+    {staged && (
+      <svg width={1080} height={HEIGHT} style={{ position: 'absolute', left: 0, top: 0, pointerEvents: 'none', opacity: fade }}>
+        <line x1={ringX} y1={ringY + 30} x2={tagX} y2={tagTop} stroke={theme.accent} strokeWidth={3} strokeLinecap="round" strokeDasharray={lineLen} strokeDashoffset={lineLen * (1 - draw)} style={{ filter: `drop-shadow(0 0 6px ${theme.accent})` }} />
+        <circle cx={ringX} cy={ringY} r={26 * ringPulse} fill="none" stroke={theme.accent} strokeWidth={4} opacity={draw} style={{ filter: `drop-shadow(0 0 10px ${theme.accent})` }} />
+        <circle cx={ringX} cy={ringY} r={7} fill={theme.accent} opacity={draw} />
+      </svg>
+    )}
     <div style={{ position: 'absolute', ...(STAGE_SCENES.has(scene.type) ? { top: HEIGHT - SAFE_BOTTOM - captionSpace - 118 } : { top: SAFE_TOP + 96 }), right: left ? 64 : undefined, left: left ? undefined : '50%', transform: `${left ? '' : 'translateX(-50%) '}translateY(${(1 - Math.min(1, pop)) * -26}px) scale(${0.7 + 0.3 * pop})`, opacity: Math.min(1, pop * 1.6) * fade, display: 'flex', alignItems: 'center', gap: 14, padding: '12px 28px', borderRadius: 999, background: light ? 'rgba(255,255,255,0.92)' : 'rgba(6,14,36,0.78)', border: `2px solid ${theme.accent}`, boxShadow: `0 0 34px ${theme.accent}66`, fontFamily: MONO, fontWeight: 500, fontSize: 52, letterSpacing: 1, color: light ? '#0A1220' : '#FFFFFF', whiteSpace: 'nowrap' }}>
       <span style={{ color: theme.accent, fontSize: 38 }}>▲</span>
       {scene.callout}
     </div>
+    </>
   );
 };
 

@@ -8,6 +8,7 @@ import { BigText, Card, CodeBlock, Counter, Curve, Flash, Footage, ListScene, Ou
 import { Tier, Timeline, Verdict, Versus } from './formats';
 import { UiScene } from './ui';
 import { Headline, Quiz, Rank } from './scenes2';
+import { Split, Units } from './scenes3';
 import { CursorLayer } from './cursor';
 import { Captions, captionSpaceFor, chunkCaptions } from './captions';
 import { Callout, Decor, Shock } from './decor';
@@ -37,6 +38,8 @@ const SCENES: Record<MotionScene['type'], React.FC<{ scene: MotionScene }>> = {
   rank: Rank,
   quiz: Quiz,
   headline: Headline,
+  split: Split,
+  units: Units,
 };
 
 /** One scene wrapper: it enters with its own transition (varied per scene), drifts under a slow camera move, lands with an impact ring and thematic objects,
@@ -128,7 +131,7 @@ const LoopTease: React.FC<{ text: string; total: number }> = ({ text, total }) =
   );
 };
 
-export const MotionGraphic: React.FC<MotionGraphicProps> = ({ scenes, theme = defaultTheme, title, look: lookName, captions }) => {
+export const MotionGraphic: React.FC<MotionGraphicProps> = ({ scenes, theme = defaultTheme, title, series, look: lookName, captions }) => {
   if (!scenes?.length) throw new Error('MotionGraphic needs at least one scene');
   const frame = useCurrentFrame();
   const look = lookFor(lookName);
@@ -179,7 +182,7 @@ export const MotionGraphic: React.FC<MotionGraphicProps> = ({ scenes, theme = de
           {!flash && <Captions chunks={chunks} scene={scenes[current]} />}
           <LoopTease text={scenes[0].text} total={start} />
           {!flash && <CursorLayer scenes={scenes} starts={starts} current={current} accent={th.accent} />}
-          {!flash && <Hud index={current} total={scenes.length} label={title} segments={segments} />}
+          {!flash && <Hud index={current} total={scenes.length} label={title} series={series} segments={segments} />}
         </AbsoluteFill>
       </ThemeCtx.Provider>
     </LookCtx.Provider>

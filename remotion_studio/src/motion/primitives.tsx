@@ -107,7 +107,7 @@ export const Background: React.FC<{ light: boolean; background: string; accent: 
 };
 
 /** HUD of the video: label, timecode and a progress indicator, drawn in the look's style (mono line, story segments, corner brackets, ruler ticks). */
-export const Hud: React.FC<{ index: number; total: number; label: string; segments: { start: number; len: number }[] }> = ({ index, total, label, segments }) => {
+export const Hud: React.FC<{ index: number; total: number; label: string; series?: string; segments: { start: number; len: number }[] }> = ({ index, total, label, series, segments }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const { theme, light } = useTheme();
@@ -115,8 +115,19 @@ export const Hud: React.FC<{ index: number; total: number; label: string; segmen
   const s = Math.floor(frame / fps);
   const tc = `00:${String(s).padStart(2, '0')}:${String(frame % fps).padStart(2, '0')}`;
   const color = light ? 'rgba(10,18,32,0.5)' : 'rgba(255,255,255,0.42)';
-  const row: React.CSSProperties = { position: 'absolute', top: SAFE_TOP + 16, fontFamily: MONO, fontSize: 24, letterSpacing: 3, color, textTransform: 'uppercase' };
-  const name = label.length > 24 ? label.slice(0, 23) + '…' : label;
+  const row: React.CSSProperties = { position: 'absolute', top: SAFE_TOP + 14, fontFamily: MONO, fontSize: 27, letterSpacing: 2, color, textTransform: 'uppercase', whiteSpace: 'nowrap' };
+  // the title strip stays on the whole video: the series in the accent colour, then the topic, so a viewer who scrolls in late still knows what this is
+  const dup = !!series && label.toLowerCase().startsWith(series.toLowerCase().replace(/\s*#\d+$/, '').slice(0, 8));
+  if (dup) series = undefined; // the topic already starts with the series name
+  const room = Math.max(10, 30 - (series ? Math.min(series.length, 18) + 3 : 0));
+  const topic = label.length > room ? label.slice(0, room - 1) + '…' : label;
+  const strong = light ? '#0A1220' : '#FFFFFF';
+  const name = (
+    <span style={{ fontWeight: 700, color: strong }}>
+      {series && <><span style={{ color: theme.accent }}>{series.length > 18 ? series.slice(0, 17) + '…' : series}</span><span style={{ opacity: 0.5 }}> · </span></>}
+      {topic}
+    </span>
+  );
   const end = segments.length ? segments[segments.length - 1].start + segments[segments.length - 1].len : 1;
   const done = Math.min(1, frame / end);
   const track = light ? 'rgba(10,18,32,0.16)' : 'rgba(255,255,255,0.2)';

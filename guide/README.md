@@ -6,7 +6,7 @@ Everything you need to run, understand and change the studio. Start with the fir
 |---|---|
 | [Quick start](quick-start.md) | install the project, set the keys and render your first video |
 | [Daily workflow](daily-workflow.md) | make and schedule the four videos of the day (`genera`), retry a failed slot, clean up |
-| [Formats](formats.md) | know what each of the 19 content formats is, how to call it and what its validator demands |
+| [Formats](formats.md) | know what each of the 20 content formats is, how to call it and what its validator demands |
 | [Pipeline](pipeline.md) | follow a video from topic to upload: scripts, fact-check, voice, render, sound, QA, covers |
 | [Motion engine](motion-engine.md) | change how videos look: scenes, looks, cursor, UI presets, stage visuals, captions |
 | [Game videos](games.md) | prepare footage and source dossiers for game videos |

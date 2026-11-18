@@ -30,6 +30,7 @@ AFFINITY = {
     "rumor": ("glass", "ice", "indigo", "obsidian"),
     "review": ("paper", "obsidian", "ocean", "glass"),
     "news": ("ocean", "ice", "blueprint", "glass"),
+    "priced": ("cobalt", "obsidian", "indigo", "ocean"),
     None: LOOKS,
 }
 AVOID_LAST = 3  # a look is not used again until three other videos have been made

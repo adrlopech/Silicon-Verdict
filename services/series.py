@@ -29,6 +29,7 @@ SERIES: Dict[str, Tuple[str, str]] = {
     "rumor": ("Rumor Mill", "rumormill"),
     "review": ("Worth It", "worthit"),
     "news": ("Tech Briefing", "techbriefing"),
+    "priced": ("Priced In", "pricedin"),
 }
 MAX_TITLE = 100  # MotionProject.title limit
 _HASHTAGS = re.compile(r"\s*#\w+")

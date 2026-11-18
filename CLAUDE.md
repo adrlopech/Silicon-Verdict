@@ -37,7 +37,7 @@ PYTHONPATH=. .venv/bin/python scripts/genera_batch.py --topics reintento.json --
 .venv/bin/python -m pytest && .venv/bin/ruff check . && (cd remotion_studio && npx tsc --noEmit -p .)
 ```
 
-Formatos (`--motion-format`): myth, tier, whatif, easter, evolution, versus, hardware, simple, fix, decode, top5, eli5, fails, numbers, quiz, stop, rumor, review, news, any. Ver `guide/formats.md`.
+Formatos (`--motion-format`): myth, tier, whatif, easter, evolution, versus, hardware, simple, fix, decode, top5, eli5, fails, numbers, quiz, stop, rumor, review, news, priced, any. Ver `guide/formats.md`.
 Los guiones nuevos de formatos recientes (`fails`, `eli5`, `rumor`) a menudo no pasan los validadores: si un hueco falla, reintentar con un formato probado o con un guion escrito a mano en `data/scripts/`.
 
 ## Mapa del código

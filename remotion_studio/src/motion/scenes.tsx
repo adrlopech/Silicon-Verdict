@@ -128,6 +128,30 @@ export const CodeBlock: React.FC<P> = ({ scene }) => {
   const typed = Math.floor(interpolate(frame, [8, Math.max(24, scene.durationInFrames - 30)], [0, total], { ...clamp, easing: EASE_IO }));
   let left = typed;
   const panel = interpolate(frame, [0, 16], [0, 1], { ...clamp, easing: EASE_OUT });
+  // "KEY = meaning" lines (a label split into its parts) are drawn as key / value rows instead of typed code: the key is a pill, the meaning is plain text
+  const pairs = lines.map((l) => l.match(/^(\S.{0,17}?)\s=\s+(\S.*)$/));
+  if (lines.length >= 2 && pairs.every(Boolean)) {
+    return (
+      <SafeBox gap={52}>
+        <div data-cursor="code" style={{ width: 920, borderRadius: 30, padding: '34px 38px', background: 'rgba(10,22,44,0.72)', border: `1px solid ${theme.accent}33`, boxShadow: `0 30px 90px rgba(0,0,0,0.5), 0 0 0 1px ${theme.accent}22`, opacity: panel, display: 'flex', flexDirection: 'column', gap: 18 }}>
+          {pairs.map((m, i) => {
+            const p = interpolate(frame, [10 + i * 9, 24 + i * 9], [0, 1], { ...clamp, easing: EASE_OUT });
+            const key = m![1].trim();
+            const val = m![2].trim();
+            return (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 22, opacity: p, transform: `translateX(${(1 - p) * -60}px)` }}>
+                <span style={{ flex: '0 0 auto', padding: '8px 22px', borderRadius: 16, background: theme.accent, color: '#05070C', fontFamily: MONO, fontWeight: 700, fontSize: fit(44, key.length, 330, 0.62, 28), letterSpacing: 0.5, boxShadow: `0 0 26px ${theme.accent}55` }}>{key}</span>
+                <span style={{ color: theme.accent, fontFamily: MONO, fontSize: 38, opacity: 0.8 }}>=</span>
+                <span style={{ fontFamily: SANS, fontWeight: 700, fontSize: fit(46, val.length, 470, 0.5, 28), lineHeight: 1.1, color: '#FFFFFF' }}>{val}</span>
+              </div>
+            );
+          })}
+        </div>
+        <Words text={scene.text} size={92} delay={18} />
+        <Accent text={scene.accentText} size={116} delay={26} />
+      </SafeBox>
+    );
+  }
   return (
     <SafeBox gap={52}>
       <div data-cursor="code" style={{ width: 920, borderRadius: 30, padding: '30px 38px 38px', background: 'rgba(10,22,44,0.72)', border: `1px solid ${theme.accent}33`, boxShadow: `0 30px 90px rgba(0,0,0,0.5), 0 0 0 1px ${theme.accent}22`, opacity: panel, transform: `translateY(${(1 - panel) * 40}px) scale(${0.97 + 0.03 * panel})`, textAlign: 'left' }}>
@@ -254,7 +278,20 @@ export const Footage: React.FC<P> = ({ scene }) => {
   const grade = 'grayscale(0.55) contrast(1.1) brightness(0.9) saturate(1.1)';
   const media: React.CSSProperties = { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: grade };
   const bracket = (pos: React.CSSProperties) => <div style={{ position: 'absolute', width: 38, height: 38, borderColor: theme.accent, borderStyle: 'solid', borderWidth: 0, filter: `drop-shadow(0 0 6px ${theme.accent})`, ...pos }} />;
+  // the same picture, blurred and darkened, fills the whole frame behind the 16:9 card: no empty bars above and below it
+  const fill: React.CSSProperties = { position: 'absolute', inset: -60, width: 'calc(100% + 120px)', height: 'calc(100% + 120px)', objectFit: 'cover', filter: 'blur(30px) brightness(0.7) saturate(1.3)', transform: `scale(${1.08 + 0.05 * progress})` };
   return (
+    <>
+      <AbsoluteFill style={{ overflow: 'hidden', opacity: enter }}>
+        {scene.mediaSrc && scene.mediaKind === 'video' ? (
+          <Loop durationInFrames={Math.max(1, Math.round((scene.mediaSeconds ?? 3) * fps))}>
+            <OffthreadVideo src={staticFile(scene.mediaSrc)} muted style={fill} />
+          </Loop>
+        ) : scene.mediaSrc ? (
+          <Img src={staticFile(scene.mediaSrc)} style={fill} />
+        ) : null}
+        <AbsoluteFill style={{ background: `linear-gradient(180deg, rgba(5,7,12,0.4) 0%, rgba(5,7,12,0.05) 40%, rgba(5,7,12,0.45) 100%)` }} />
+      </AbsoluteFill>
     <SafeBox gap={36}>
       <div style={{ position: 'relative', width: W, height: H, borderRadius: 26, overflow: 'hidden', background: '#05070C', boxShadow: `inset 0 0 0 1px ${theme.accent}55, 0 30px 90px rgba(0,0,0,0.55), 0 0 60px ${BRAND_BLUE}44`, opacity: enter, transform: `translateY(${(1 - enter) * 50}px) scale(${0.96 + 0.04 * enter})` }}>
         {scene.mediaSrc && scene.mediaKind === 'video' ? (
@@ -281,5 +318,6 @@ export const Footage: React.FC<P> = ({ scene }) => {
       <Words text={scene.text} size={86} delay={10} upper />
       <Accent text={scene.accentText} size={110} delay={18} />
     </SafeBox>
+    </>
   );
 };

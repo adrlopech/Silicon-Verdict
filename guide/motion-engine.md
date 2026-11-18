@@ -15,6 +15,7 @@ The generator can never choose another accent colour. All text auto-fits: a long
 | `scenes.tsx` | General scenes: `bigText`, `textWithAccent`, `counter`, `list`, `codeBlock`, `progressBar`, `curve`, `flash`, `footage`, `card`, `outro` |
 | `formats.tsx` | `tier`, `versus`, `verdict`, `timeline` |
 | `scenes2.tsx` | `rank`, `quiz`, `headline` (the newer formats) |
+| `scenes3.tsx` | `split` and `units` |
 | `visuals.tsx` | The **stage**: 13 animated visuals behind text scenes |
 | `looks.ts` | The 8 looks |
 | `decor.tsx` | Decoration of the look, callouts and the shock effects |
@@ -39,6 +40,8 @@ Preview and tweak live: `cd remotion_studio && npx remotion studio`, open **Moti
 | `footage` | Real game footage inside the look (see [Game videos](games.md)) |
 | `tier`, `versus`, `verdict`, `timeline` | Table formats |
 | `rank`, `quiz`, `headline` | The countdown, quiz and news formats |
+| `units` | A price or size in units of an object: a grid of icons (card, chip, RAM, drive, phone, coin, bolt, console, cube) that fills one by one under a big ×N |
+| `split` | Two stacked A/B panels with corner labels and a VS chip; `demo` draws bars, a pixel-resolution comparison, a race, squares by area or a "days ago" counter |
 | `ui` | A drawn interface the cursor uses (at most 2 per video) |
 | `outro` | Always last; ends with a two-option vote |
 
@@ -82,6 +85,11 @@ a clock, a padlock, a magnifier, binary rain. The big fly-bys appear once per vi
 - **Callout**: on long scenes a tag with a figure and its unit (or an acronym) from the second half of the narration pops up when the narrator says it, with a small zoom punch and a pop sound (`pick_callout`).
 - **Re-hook**: at the scene nearest the middle, a flash, a wide ring, a boom and a riser (`rehook_index`).
 - **Loop tease**: the last frames fade to the hook headline so the replay feels continuous (`LoopTease`).
+- **Title strip**: the HUD line stays on the whole video with the series in the accent colour and the topic (`series` prop, from `MotionProject.series_label`).
+- **Caption styles** per look: `pill`, `plain`, `underline`, `mono`, plus `oneword` (one huge outlined word at a time, cobalt), `wordpill` (the spoken word on a coloured pill, ocean) and `twotone` (two lines, first half in the accent colour, glass).
+- **Key = value rows**: a `codeBlock` whose lines all look like `KEY = meaning` is drawn as key pills with their meaning (decode labels), not as typed code.
+- **Callout leader line**: over a stage the callout tag is joined by a thin line to a pulsing ring on the visual.
+- **Footage** sits over a blurred, darkened copy of itself that fills the frame.
 - **Captions**: word by word from the voice timing (`build_captions`), the spoken word highlighted; skipped on `tier`, `ui`, `footage`, `flash`. The accent phrase pulses when the narrator says it (`accentCue`).
   A progress indicator in the look's style shows how much of the video is left. All colours, including tier ranks and verdict stamps, are blue.
 

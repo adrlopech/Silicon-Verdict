@@ -1,0 +1,127 @@
+{
+ "accent": "#00F0FF",
+ "kind": "curiosity",
+ "topic": "Apple and Nvidia launch prices measured in PlayStation 5 consoles",
+ "screen_title": "Priced in PS5s",
+ "title": "Priced In: Tech Launch Prices Measured in PS5 Consoles #siliconverdict #pricedin #tech",
+ "description": "Four famous tech launch prices, told in a single unit: the launch price of a disc PlayStation 5.",
+ "tags": [
+  "pricing",
+  "ps5",
+  "apple",
+  "nvidia",
+  "rtx5090",
+  "macpro",
+  "visionpro",
+  "tech"
+ ],
+ "pinned_comment": "The stand or the Mac Pro? Reply with one word.",
+ "format": "priced",
+ "scenes": [
+  {
+   "type": "bigText",
+   "text": "14 PS5s?",
+   "narration": "A Mac Pro costs about fourteen PlayStation 5 consoles. Seriously.",
+   "durationInFrames": 90
+  },
+  {
+   "type": "textWithAccent",
+   "text": "One unit,",
+   "narration": "One unit: a launch-price disc PS5, four hundred ninety-nine dollars. Stay for the last one.",
+   "durationInFrames": 120,
+   "accentText": "everything priced"
+  },
+  {
+   "type": "units",
+   "text": "Apple Pro Display stand",
+   "narration": "Apple's Pro Display XDR stand cost nine hundred ninety-nine dollars, which is about two PlayStations.",
+   "durationInFrames": 130,
+   "value": 2,
+   "unit": "PS5 consoles",
+   "accentText": "$999 stand",
+   "kicker": "cost in units of"
+  },
+  {
+   "type": "card",
+   "text": "Not the screen",
+   "narration": "Not the screen. Just the stand that holds it up, sold separately.",
+   "durationInFrames": 100,
+   "accentText": "just the stand"
+  },
+  {
+   "type": "units",
+   "text": "Apple Vision Pro",
+   "narration": "The Vision Pro launched at three thousand four hundred ninety-nine dollars, roughly seven PlayStations.",
+   "durationInFrames": 130,
+   "value": 7,
+   "unit": "PS5 consoles",
+   "accentText": "$3,499 launch",
+   "kicker": "cost in units of"
+  },
+  {
+   "type": "textWithAccent",
+   "text": "The prices",
+   "narration": "Now the prices get serious, and the numbers get weirder.",
+   "durationInFrames": 100,
+   "accentText": "get serious"
+  },
+  {
+   "type": "units",
+   "text": "Pro Display XDR",
+   "narration": "The Pro Display XDR itself launched at four thousand nine hundred ninety-nine dollars, about ten PlayStations.",
+   "durationInFrames": 130,
+   "value": 10,
+   "unit": "PS5 consoles",
+   "accentText": "$4,999 display",
+   "kicker": "cost in units of"
+  },
+  {
+   "type": "units",
+   "text": "RTX 5090 Founders",
+   "narration": "Meanwhile the RTX 5090 Founders Edition launched at one thousand nine hundred ninety-nine dollars, about four consoles.",
+   "durationInFrames": 130,
+   "value": 4,
+   "unit": "PS5 consoles",
+   "accentText": "$1,999 launch",
+   "kicker": "cost in units of"
+  },
+  {
+   "type": "card",
+   "text": "One graphics card",
+   "narration": "So one graphics card equals four whole game consoles, at launch prices.",
+   "durationInFrames": 100,
+   "accentText": "four consoles"
+  },
+  {
+   "type": "units",
+   "text": "Mac Pro, 2023",
+   "narration": "And the 2023 Mac Pro started at six thousand nine hundred ninety-nine dollars, roughly fourteen PlayStations.",
+   "durationInFrames": 140,
+   "value": 14,
+   "unit": "PS5 consoles",
+   "accentText": "$6,999 base",
+   "kicker": "cost in units of"
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Fourteen consoles",
+   "narration": "Fourteen game consoles for one desktop, and that was only the base model.",
+   "durationInFrames": 110,
+   "accentText": "one desktop"
+  },
+  {
+   "type": "textWithAccent",
+   "text": "Next price tag",
+   "narration": "Next time you see a price tag, ask how many consoles it really is.",
+   "durationInFrames": 110,
+   "accentText": "ask this"
+  },
+  {
+   "type": "outro",
+   "text": "Priced in PS5s",
+   "narration": "Follow for more. Which price shocked you most: the stand or the Mac Pro?",
+   "durationInFrames": 110,
+   "accentText": "Follow for more"
+  }
+ ]
+}

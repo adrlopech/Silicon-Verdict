@@ -18,7 +18,7 @@ VOICE_LEAD = 0.12  # seconds after a scene starts before the narrator speaks (th
 # One narrator per format (content study, Nov 2026: viewers had already commented on hearing the same voice in every video). The numbers match ELEVENLABS_VOICE_1/2/3:
 # Daniel was dropped on 2026-11-15 (the user dislikes the voice): his formats went to Adam (hardware, evolution) and Liam (decode, the classic explainer). Game videos keep Liam.
 VOICE_BY_FORMAT = {"hardware": 2, "evolution": 2, "decode": 3, None: 3, "versus": 2, "myth": 2, "tier": 2, "whatif": 3, "fix": 3, "simple": 3, "easter": 3,
-                   "top5": 3, "eli5": 3, "fails": 2, "numbers": 2, "quiz": 3, "stop": 3, "rumor": 2, "review": 2, "news": 2}
+                   "top5": 3, "eli5": 3, "fails": 2, "numbers": 2, "quiz": 3, "stop": 3, "rumor": 2, "review": 2, "news": 2, "priced": 3}
 
 
 def narrator_voice(project: Any) -> str:
@@ -290,7 +290,7 @@ def _narrate_per_scene(project: Any, work_dir: Path) -> list:
     return clips
 
 
-RISER_TYPES = ("counter", "versus", "verdict", "timeline")  # data reveals: a rising sweep lands on the scene start
+RISER_TYPES = ("counter", "versus", "verdict", "timeline", "units", "split")  # data reveals: a rising sweep lands on the scene start
 MAX_RISERS = 4
 
 
@@ -300,7 +300,7 @@ MUSIC_BY_FORMAT = {
     "versus": ("bed_drive.mp3", "bed_epic.mp3"), "myth": ("bed_dark.mp3", "bed_minimal.mp3"), "tier": ("bed_drive.mp3", "bed_bright.mp3"), "whatif": ("bed_dark.mp3", "bed_epic.mp3"),
     "fix": ("bed_bright.mp3", "bed_chill.mp3"), "simple": ("bed_chill.mp3", "bed_bright.mp3"), "easter": ("bed_epic.mp3", "bed_dark.mp3"),
     "top5": ("bed_drive.mp3", "bed_bright.mp3"), "eli5": ("bed_chill.mp3", "bed_bright.mp3"), "fails": ("bed_dark.mp3", "bed_epic.mp3"), "numbers": ("bed_minimal.mp3", "bed_drive.mp3"),
-    "quiz": ("bed_bright.mp3", "bed_drive.mp3"), "stop": ("bed_drive.mp3", "bed_dark.mp3"), "rumor": ("bed_dark.mp3", "bed_minimal.mp3"), "review": ("bed_minimal.mp3", "bed_chill.mp3"), "news": ("bed_minimal.mp3", "bed_epic.mp3"),
+    "quiz": ("bed_bright.mp3", "bed_drive.mp3"), "stop": ("bed_drive.mp3", "bed_dark.mp3"), "rumor": ("bed_dark.mp3", "bed_minimal.mp3"), "review": ("bed_minimal.mp3", "bed_chill.mp3"), "priced": ("bed_drive.mp3", "bed_minimal.mp3"), "news": ("bed_minimal.mp3", "bed_epic.mp3"),
 }
 WHOOSHES = ("sfx_whoosh.wav", "sfx_whoosh_soft.wav", "sfx_swish.wav", "sfx_slide.wav")  # scene changes rotate through these
 

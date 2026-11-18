@@ -27,13 +27,13 @@ format + topic ─► script ─► validators ─► fact-check ─► ElevenLa
 
 ## Content
 
-Nineteen formats on top of the classic explainer, each with its own scenes, prompt rules and validator:
+Twenty formats on top of the classic explainer, each with its own scenes, prompt rules and validator:
 
 | Group | Formats |
 |---|---|
 | Verdicts and rankings | `myth` · `tier` · `top5` · `versus` · `review` |
 | Explainers | `hardware` · `simple` · `eli5` · `decode` · `fix` · `stop` |
-| Stories and numbers | `evolution` · `fails` · `numbers` · `whatif` · `rumor` · `quiz` |
+| Stories and numbers | `evolution` · `fails` · `numbers` · `priced` · `whatif` · `rumor` · `quiz` |
 | News | `news` (Tech Briefing, today's headlines from live RSS feeds) |
 | Games | `easter` and the `game` kind: an engineering fact told over real Steam footage |
 
@@ -69,7 +69,7 @@ All the documentation lives in [`guide/`](guide/README.md):
 |---|---|
 | [Quick start](guide/quick-start.md) | Install, keys, first video |
 | [Daily workflow](guide/daily-workflow.md) | `genera`: plan, produce, schedule, retry, clean up |
-| [Formats](guide/formats.md) | The 19 formats and what their validators demand |
+| [Formats](guide/formats.md) | The 20 formats and what their validators demand |
 | [Pipeline](guide/pipeline.md) | Script, fact-check, voice, render, sound, QA, cover, files |
 | [Motion engine](guide/motion-engine.md) | Scenes, looks, camera, stage visuals, cursor, UI presets, retention rules |
 | [Game videos](guide/games.md) | Footage, dossiers, one-use ledger |
