@@ -140,6 +140,7 @@ def main() -> int:
     ap.add_argument("--plan", action="store_true", help="show the plan and stop")
     ap.add_argument("--date", help="UTC date to publish on (default: tomorrow)")
     ap.add_argument("--seed", type=int, default=None)
+    ap.add_argument("--public-first", action="store_true", help="the first video of the plan (its slot already passed) is uploaded PUBLIC right away instead of scheduled")
     ap.add_argument("--avoid", default="", help="comma-separated formats to leave out (e.g. the ones of the previous day)")
     ap.add_argument("--out", default=None, help="where to write the batch manifest (default data/batch_latest.json)")
     ap.add_argument("--topics", default=None, help="JSON file with the 4 videos to make instead of the data-picked formats: [{format, topic, source (path to a text file), why}]; "
@@ -177,12 +178,14 @@ def main() -> int:
             print(f"  FAILED (nothing uploaded for this slot): {str(exc)[:300]}")
             continue
         video = res["youtube_video"]
-        up = subprocess.run([sys.executable, str(BASE_DIR / "scripts" / "upload_existing.py"), video, "--publish-at", p["publish_at"]], cwd=BASE_DIR, capture_output=True, text=True, env={**__import__("os").environ, "PYTHONPATH": str(BASE_DIR)})
+        now = args.public_first and p is plan[0]  # a slot that already passed: public now, no publishAt
+        flags = ["--privacy", "public"] if now else ["--publish-at", p["publish_at"]]
+        up = subprocess.run([sys.executable, str(BASE_DIR / "scripts" / "upload_existing.py"), video, *flags], cwd=BASE_DIR, capture_output=True, text=True, env={**__import__("os").environ, "PYTHONPATH": str(BASE_DIR)})
         m = re.search(r"youtu\.be/([\w-]+)", up.stdout)
         if not m:
             print("  YouTube upload failed:", (up.stdout + up.stderr)[-300:])
         small = small_copy(res["tiktok_video"], SMALL_DIR / f"{Path(video).parent.name[:40].replace(' ', '_')}.mp4")
-        entry = {**p, "title": res["title"], **tiktok_caption(res["title"]), "video": video, "tiktok_copy": str(small), "cover": res.get("tiktok_cover") or None, "video_id": m[1] if m else None}
+        entry = {**p, **({"public_now": True} if now else {}), "title": res["title"], **tiktok_caption(res["title"]), "video": video, "tiktok_copy": str(small), "cover": res.get("tiktok_cover") or None, "video_id": m[1] if m else None}
         done.append(entry)
         print(f"  {res['title']}\n  YouTube: {m[0] if m else 'FAILED'}  | TikTok copy: {small}")
         out.write_text(json.dumps(done, ensure_ascii=False, indent=1))  # saved after every video

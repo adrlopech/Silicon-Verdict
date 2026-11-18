@@ -31,7 +31,7 @@ It takes ten to twenty minutes and nothing needs watching. For every slot it ren
 (YouTube publishes it at that time), sets the cover as the thumbnail, makes a copy under 10 MB for TikTok, and appends the entry to `data/batch_latest.json`:
 title, TikTok caption, hashtags, TikTok copy, cover, slot and YouTube id. The manifest is saved after every video, so a crash loses nothing.
 
-Options: `--seed`, `--avoid`, `--out FILE` (manifest path), `--topics FILE` (see below).
+Options: `--seed`, `--avoid`, `--out FILE` (manifest path), `--topics FILE` (see below), `--public-first` (the first video of the plan, whose slot has already passed, is uploaded public right away instead of scheduled; its TikTok copy is published with "Ahora").
 
 ### When a slot fails
 
