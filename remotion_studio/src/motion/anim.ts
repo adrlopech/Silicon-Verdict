@@ -5,7 +5,8 @@ import type { MotionScene } from './types';
  * scene's own words, never the same as the previous scenes, so a video never repeats itself and the same script always renders the same video.
  */
 export type Reveal = 'pop' | 'type' | 'draw' | 'scramble' | 'mask' | 'drop' | 'wave' | 'blur' | 'slice';
-export const REVEALS: Reveal[] = ['pop', 'type', 'draw', 'scramble', 'mask', 'drop', 'wave', 'blur', 'slice'];
+/** The reveals picked by default are the calm ones; scramble, drop and slice are implemented (reveal.tsx) but kept out of the pool because they read as too intense. */
+export const REVEALS: Reveal[] = ['pop', 'type', 'draw', 'mask', 'wave', 'blur'];
 
 export type CameraMove = 'pushIn' | 'pullOut' | 'panLeft' | 'panRight' | 'tiltUp' | 'tiltDown' | 'dolly' | 'orbit' | 'crane' | 'punch';
 export const CAMERA_MOVES: CameraMove[] = ['pushIn', 'pullOut', 'panLeft', 'panRight', 'tiltUp', 'tiltDown', 'dolly', 'orbit', 'crane', 'punch'];

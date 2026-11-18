@@ -88,29 +88,29 @@ const SceneShell: React.FC<{ scene: MotionScene; index: number; total: number; r
   const calloutAt = scene.callout && scene.calloutCue != null ? Math.round(scene.calloutCue * 30) : null;
   const punch = calloutAt != null ? interpolate(frame, [calloutAt, calloutAt + 3, calloutAt + 12], [0, 1, 0], clamp) : 0; // a small zoom punch as the tag lands
   // camera: a different move for (almost) every scene, picked per scene (anim.ts), moving only the backdrop. Looks that ask for a still camera get a gentler version, never none.
-  const amp = look.camera === 'still' ? 0.55 : look.camera === 'handheld' ? 1.15 : 1;
+  const amp = look.camera === 'still' ? 0.6 : 1; // calm by default: small moves that are felt more than seen
   const e = interpolate(prog, [0, 1], [0, 1], { ...clamp, easing: EASE_IO });
-  const jump = index % 3 === 1 ? interpolate(frame, [Math.round(scene.durationInFrames * 0.5), Math.round(scene.durationInFrames * 0.5) + 5], [0, 1], { ...clamp, easing: EASE_OUT }) : 0; // a jump cut to a closer frame halfway through
+  const jump = index % 5 === 2 ? interpolate(frame, [Math.round(scene.durationInFrames * 0.5), Math.round(scene.durationInFrames * 0.5) + 5], [0, 1], { ...clamp, easing: EASE_OUT }) : 0; // a jump cut to a closer frame halfway through
   const cam = {
-    pushIn: `scale(${1 + 0.17 * amp * e})`,
-    pullOut: `scale(${1 + 0.17 * amp * (1 - e)})`,
-    panLeft: `scale(1.14) translate(${(0.5 - e) * 110 * amp}px, 0px)`,
-    panRight: `scale(1.14) translate(${(e - 0.5) * 110 * amp}px, 0px)`,
-    tiltUp: `scale(1.14) translate(0px, ${(0.5 - e) * 120 * amp}px)`,
-    tiltDown: `scale(1.14) translate(0px, ${(e - 0.5) * 120 * amp}px)`,
-    dolly: `scale(${1.05 + 0.15 * amp * e}) translate(${dir * (e - 0.5) * 70 * amp}px, ${(0.5 - e) * 50 * amp}px)`,
-    orbit: `scale(${1.08 + 0.06 * e}) rotate(${dir * (e - 0.5) * 4.4 * amp}deg) translate(${dir * (e - 0.5) * 60 * amp}px, 0px)`,
-    crane: `scale(${1.1 + 0.08 * amp * e}) translate(0px, ${(1 - e) * 95 * amp}px)`,
-    punch: `scale(${1 + 0.22 * amp * interpolate(frame, [0, 9], [1, 0], { ...clamp, easing: EASE_OUT }) + 0.07 * amp * e})`,
+    pushIn: `scale(${1 + 0.08 * amp * e})`,
+    pullOut: `scale(${1 + 0.08 * amp * (1 - e)})`,
+    panLeft: `scale(1.07) translate(${(0.5 - e) * 56 * amp}px, 0px)`,
+    panRight: `scale(1.07) translate(${(e - 0.5) * 56 * amp}px, 0px)`,
+    tiltUp: `scale(1.07) translate(0px, ${(0.5 - e) * 60 * amp}px)`,
+    tiltDown: `scale(1.07) translate(0px, ${(e - 0.5) * 60 * amp}px)`,
+    dolly: `scale(${1.03 + 0.07 * amp * e}) translate(${dir * (e - 0.5) * 36 * amp}px, ${(0.5 - e) * 26 * amp}px)`,
+    orbit: `scale(${1.04 + 0.03 * e}) rotate(${dir * (e - 0.5) * 2 * amp}deg) translate(${dir * (e - 0.5) * 30 * amp}px, 0px)`,
+    crane: `scale(${1.05 + 0.04 * amp * e}) translate(0px, ${(1 - e) * 48 * amp}px)`,
+    punch: `scale(${1 + 0.09 * amp * interpolate(frame, [0, 9], [1, 0], { ...clamp, easing: EASE_OUT }) + 0.03 * amp * e})`,
   }[move];
-  const camPunch = `${cam} ${punch > 0.001 ? `scale(${1 + 0.035 * punch})` : ''} ${jump > 0 ? `scale(${1 + 0.11 * jump})` : ''}`;
+  const camPunch = `${cam} ${punch > 0.001 ? `scale(${1 + 0.035 * punch})` : ''} ${jump > 0 ? `scale(${1 + 0.05 * jump})` : ''}`;
   return (
     <AbsoluteFill style={style} data-scene={index}>
       {/* everything the scene draws fades out just above the caption strip, so a subtitle never sits on a text or an object */}
       <AbsoluteFill style={captionSpace > 0 ? { WebkitMaskImage: fade, maskImage: fade } : undefined}>
       {/* the camera moves only the backdrop (stage, decor, fly-bys, icons): type under a scale / rotation / tremor shimmers and reads as shaking */}
       <AbsoluteFill style={{ transform: camPunch }}>
-        {big && <BigFx name={big} scene={scene} index={index} />}
+        {big && <div style={{ position: 'absolute', inset: 0, opacity: 0.55 }}><BigFx name={big} scene={scene} index={index} /></div>}
         <Stage scene={scene} name={visual} index={index} avail={room} />
         {!staged && <Ambient fx={fx} />}
         {!staged && <Decor scene={scene} index={index} total={total} />}
@@ -173,7 +173,7 @@ export const MotionGraphic: React.FC<MotionGraphicProps> = ({ scenes, theme = de
   const salt = `${title}|${lookName ?? ''}`;
   const reveals = pickSeries<Reveal>(scenes, REVEALS, `${salt}r`, 2, () => REVEALS);
   const moves = pickSeries<CameraMove>(scenes, CAMERA_MOVES, `${salt}c`, 4, () => CAMERA_MOVES);
-  const bigs = pickSeries<BigFxName>(scenes, BIG_FX, `${salt}b`, 5, (i) => (NO_EXTRAS.has(scenes[i].type) || i % 3 === 2 ? null : STAGE_SCENES.has(scenes[i].type) && visuals[i] ? BIG_FX_LIGHT : BIG_FX));
+  const bigs = pickSeries<BigFxName>(scenes, BIG_FX, `${salt}b`, 5, (i) => (NO_EXTRAS.has(scenes[i].type) || i % 3 !== 0 ? null : STAGE_SCENES.has(scenes[i].type) && visuals[i] ? BIG_FX_LIGHT : BIG_FX));
   const isLight = (sc: MotionScene) => look.light || !!sc.light; // a light look is light everywhere; otherwise a scene may ask for the light variant
   const light = isLight(scenes[current]);
   const flash = scenes[current].type === 'flash';
