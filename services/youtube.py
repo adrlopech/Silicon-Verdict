@@ -211,18 +211,26 @@ class YouTubeService:
         return video_url
 
 
+    @staticmethod
+    def make_thumbnail(image_path: str, out_path: Optional[str] = None) -> Path:
+        """Builds a 1280x720 (16:9) thumbnail from the vertical cover: a full-width band of the top part (title and the start of the artwork),
+        scaled to fill the frame. A bare 9:16 image makes YouTube pad it with a blurred, cropped copy of itself."""
+        from PIL import Image
+        src = Image.open(image_path).convert("RGB")
+        band_h = round(src.width * 9 / 16)
+        top = min(max(0, round(src.height * 0.16)), src.height - band_h)
+        thumb = src.crop((0, top, src.width, top + band_h)).resize((1280, 720), Image.LANCZOS)
+        out = Path(out_path) if out_path else Path(image_path).with_name(Path(image_path).stem + "_thumb.jpg")
+        thumb.save(out, quality=90)
+        return out
+
     def set_thumbnail(self, video_id: str, image_path: str) -> None:
-        """Sets the custom thumbnail (cover) of an uploaded video; a PNG/JPEG under 2 MB."""
+        """Sets the custom thumbnail of an uploaded video: the vertical cover laid on a 16:9 canvas (see make_thumbnail), a JPEG under 2 MB."""
         img = Path(image_path)
         if not img.is_file():
             raise FileNotFoundError(f"Cover image does not exist: {image_path}")
-        if img.stat().st_size > 2 * 1024 * 1024:  # the API refuses bigger files: re-encode as a JPEG
-            from PIL import Image
-            jpg = img.with_suffix(".jpg")
-            Image.open(img).convert("RGB").save(jpg, quality=88)
-            img = jpg
-        mime = "image/png" if img.suffix.lower() == ".png" else "image/jpeg"
-        self.get_authenticated_client().thumbnails().set(videoId=video_id, media_body=MediaFileUpload(str(img), mimetype=mime)).execute()
+        thumb = self.make_thumbnail(str(img))
+        self.get_authenticated_client().thumbnails().set(videoId=video_id, media_body=MediaFileUpload(str(thumb), mimetype="image/jpeg")).execute()
         logger.info("Thumbnail set for %s", video_id)
 
 
