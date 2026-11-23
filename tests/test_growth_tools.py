@@ -4,7 +4,6 @@ import sys
 from datetime import date, timedelta
 from types import SimpleNamespace
 
-import pytest
 
 from services import comments, prices, yt_analytics
 from services.motion_pipeline import cover_style
