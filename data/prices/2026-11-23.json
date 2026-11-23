@@ -1,0 +1,156 @@
+{
+ "date": "2026-11-23",
+ "source": "pccomponentes.com (cheapest listing of the standalone part, sorted by price)",
+ "currency": "EUR",
+ "prices": {
+  "ryzen7:5700X": {
+   "price": 194,
+   "name": ""
+  },
+  "ryzen7:5800X": {
+   "price": 216.26,
+   "name": ""
+  },
+  "ryzen7:5800XT": {
+   "price": 281.32,
+   "name": ""
+  },
+  "ryzen7:5700X3D": {
+   "price": null
+  },
+  "ryzen7:5800X3D": {
+   "price": 364,
+   "name": ""
+  },
+  "ryzen7:7700": {
+   "price": 320.67,
+   "name": ""
+  },
+  "ryzen7:7700X": {
+   "price": 250.07,
+   "name": ""
+  },
+  "ryzen7:7800X3D": {
+   "price": 335.99,
+   "name": ""
+  },
+  "ryzen7:9700X": {
+   "price": 298.99,
+   "name": ""
+  },
+  "ryzen7:9800X3D": {
+   "price": 444.17,
+   "name": ""
+  },
+  "intel_i7:11700KF": {
+   "price": 590,
+   "name": ""
+  },
+  "intel_i7:12700KF": {
+   "price": 263.99,
+   "name": ""
+  },
+  "intel_i7:12700K": {
+   "price": 304.3,
+   "name": ""
+  },
+  "intel_i7:13700KF": {
+   "price": 355.1,
+   "name": ""
+  },
+  "intel_i7:14700KF": {
+   "price": 359.9,
+   "name": ""
+  },
+  "intel_i7:14700K": {
+   "price": 403.55,
+   "name": ""
+  },
+  "intel_i7:265KF": {
+   "price": 356.99,
+   "name": ""
+  },
+  "intel_i7:10700K": {
+   "price": null
+  },
+  "intel_i7:9700K": {
+   "price": null
+  },
+  "rtx:5060": {
+   "price": 599.99,
+   "name": ""
+  },
+  "rtx:5060Ti8": {
+   "price": 619.99,
+   "name": ""
+  },
+  "rtx:5060Ti16": {
+   "price": 929.99,
+   "name": ""
+  },
+  "rtx:5070": {
+   "price": 1463.99,
+   "name": ""
+  },
+  "rtx:5070Ti": {
+   "price": 1795,
+   "name": ""
+  },
+  "rtx:5080": {
+   "price": 1849.99,
+   "name": ""
+  },
+  "rtx:5090": {
+   "price": 8717.2,
+   "name": ""
+  },
+  "rtx:4070S": {
+   "price": null
+  },
+  "rtx:4080S": {
+   "price": null
+  },
+  "radeon:7600": {
+   "price": 428.9,
+   "name": ""
+  },
+  "radeon:9060XT8": {
+   "price": 549.99,
+   "name": ""
+  },
+  "radeon:9060XT16": {
+   "price": 729.94,
+   "name": ""
+  },
+  "radeon:9070GRE": {
+   "price": 749.99,
+   "name": ""
+  },
+  "radeon:9070": {
+   "price": 999.99,
+   "name": ""
+  },
+  "radeon:9070XT": {
+   "price": 1049,
+   "name": ""
+  },
+  "radeon:7600XT": {
+   "price": null
+  },
+  "radeon:7700XT": {
+   "price": null
+  },
+  "radeon:7800XT": {
+   "price": null
+  },
+  "radeon:7900GRE": {
+   "price": null
+  },
+  "radeon:7900XT": {
+   "price": null
+  },
+  "radeon:7900XTX": {
+   "price": null
+  }
+ }
+}

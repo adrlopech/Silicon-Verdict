@@ -24,7 +24,7 @@ import re
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
@@ -81,6 +81,39 @@ def pick_formats(stats: Dict[str, Dict[str, float]], rng: random.Random, n: int 
         add(f, "weighted draw")
         rest.remove(f)
     return chosen[:n]
+
+
+EVERY_MAX_AGE_DAYS = 3  # an "Every X at today's price" video needs prices collected within this many days (guide/prices.md)
+
+
+def every_pick(picks: List[Dict[str, Any]], today: Optional[date] = None) -> tuple:
+    """One slot of the batch goes to a product-intent "Every X at today's price" video (what search traffic looks for) when fresh prices exist.
+    Builds the script of the family used longest ago from data/products + data/prices and returns (pick, note); (None, reason) when it cannot.
+    The pick replaces a `tier` pick if there is one, else the last pick."""
+    from scripts.build_every_script import build, validate
+    from services.prices import age_days, families, latest_prices_file, load_prices
+    path = latest_prices_file()
+    if path is None:
+        return None, "no price file in data/prices/"
+    prices = load_prices(path)
+    age = age_days(prices, today)
+    if age > EVERY_MAX_AGE_DAYS:
+        return None, f"the newest prices are {age} days old (limit {EVERY_MAX_AGE_DAYS}): collect new ones, guide/prices.md"
+    last: Dict[str, str] = {}
+    for e in (json.loads(LOG.read_text()) if LOG.is_file() else []):
+        if e.get("family"):
+            last[e["family"]] = max(last.get(e["family"], ""), e.get("date", ""))
+    for fam in sorted(families(), key=lambda f: last.get(f, "")):  # the family not shown for longest first
+        try:
+            data = build(fam, prices)
+        except ValueError:
+            continue
+        if validate(data):
+            continue
+        out = BASE_DIR / "data" / "scripts" / f"every_{fam}.json"
+        out.write_text(json.dumps(data, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+        return {"format": "tier", "script": f"data/scripts/{out.name}", "family": fam, "why": f"Every {data['screen_title'].replace(' Tier List', '')} at today's price (prices of {prices['date']})"}, ""
+    return None, "no product family could be built from the newest prices"
 
 
 def ranked_slots() -> List[str]:
@@ -214,6 +247,7 @@ def main() -> int:
     ap.add_argument("--seed", type=int, default=None)
     ap.add_argument("--public-first", action="store_true", help="the first video of the plan (its slot already passed) is uploaded PUBLIC right away instead of scheduled")
     ap.add_argument("--avoid", default="", help="comma-separated formats to leave out (e.g. the ones of the previous day)")
+    ap.add_argument("--no-every", action="store_true", help="do not give one slot to an 'Every X at today's price' video (they need prices collected in the last 3 days)")
     ap.add_argument("--out", default=None, help="where to write the batch manifest (default data/batch_latest.json)")
     ap.add_argument("--topics", default=None, help="JSON file with the 4 videos to make instead of the data-picked formats: [{format, topic, source (path to a text file), why}]; "
                                                   "format 'classic' = the classic explainer. Slots are assigned in file order (first = best slot)")
@@ -226,6 +260,13 @@ def main() -> int:
     else:
         stats = format_stats()
         picks = pick_formats(stats, random.Random(args.seed), avoid=[x for x in args.avoid.split(",") if x])
+        if not args.no_every:
+            every, note = every_pick(picks)
+            if every:
+                at = next((i for i, x in enumerate(picks) if x["format"] == "tier"), len(picks) - 1)
+                picks[at] = every
+            else:
+                print(f"  (no 'Every X' video: {note})")
     slots = ranked_slots()
     plan = []
     for pick, slot in zip(picks, slots):  # the best formats take the best-ranked slots (a topics file may pin a slot with "slot": "HH:MM")
@@ -258,7 +299,7 @@ def main() -> int:
         out.write_text(json.dumps(done, ensure_ascii=False, indent=1))  # saved after every video
         if entry["video_id"]:
             log = json.loads(LOG.read_text()) if LOG.is_file() else []
-            LOG.write_text(json.dumps(log + [{"video_id": entry["video_id"], "slot": entry["slot"], "format": entry["format"], "date": str(day)}], indent=1))
+            LOG.write_text(json.dumps(log + [{"video_id": entry["video_id"], "slot": entry["slot"], "format": entry["format"], "date": str(day), **({"family": entry["family"]} if entry.get("family") else {})}], indent=1))
 
     run_plan(plan, lambda item: prepare_with_fallback(item, plan), lambda prep: finish_motion_video(prep, export_only=True), publish, args.public_first)
     failed = len(plan) - len(done)

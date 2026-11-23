@@ -1,0 +1,110 @@
+{
+ "family": "radeon",
+ "screen_title": "Radeon Tier List",
+ "cat": "Radeon",
+ "short": "Radeon",
+ "title_name": "Radeon on Sale at Today's Price",
+ "hashtags": [
+  "radeon",
+  "gpu"
+ ],
+ "tags": [
+  "siliconverdict",
+  "radeon",
+  "rx 9070 xt",
+  "amd",
+  "gpu",
+  "gaming",
+  "tier list"
+ ],
+ "hook": "Every Radeon on sale at today's price, ranked by gaming value.",
+ "criterion": "By gaming value",
+ "loop": "Stay to the end, one card is the clear pick.",
+ "gone": {
+  "ids": [
+   "7600XT",
+   "7700XT",
+   "7800XT",
+   "7900GRE",
+   "7900XT",
+   "7900XTX"
+  ],
+  "text": "7000 series gone",
+  "accent": "inside PCs",
+  "narration": "The RX 7700 XT, 7800 XT and 7900 cards are gone: they only come inside full PCs."
+ },
+ "takeaway": {
+  "text": "The XT wins",
+  "accent": "buy the XT",
+  "narration": "Pay a little more for the XT, and skip eight gigabytes."
+ },
+ "vote": [
+  "9060 XT",
+  "9070 XT"
+ ],
+ "items": [
+  {
+   "id": "7600",
+   "label": "RX 7600",
+   "tier": "F",
+   "line": "The RX 7600 costs {price} and has eight old gigabytes.",
+   "query": "rx 7600",
+   "match": "RX 7600(?! ?XT)",
+   "kind": "gpu"
+  },
+  {
+   "id": "9060XT8",
+   "label": "RX 9060 XT 8GB",
+   "tier": "D",
+   "line": "The 9060 XT with eight gigabytes is {price}. Not enough memory.",
+   "query": "rx 9060 xt",
+   "match": "RX 9060 XT.*8 ?GB",
+   "kind": "gpu"
+  },
+  {
+   "id": "9060XT16",
+   "label": "RX 9060 XT 16GB",
+   "tier": "A",
+   "line": "The sixteen gigabyte 9060 XT costs {price}, the sweet spot.",
+   "query": "rx 9060 xt 16gb",
+   "match": "RX 9060 XT.*16 ?GB",
+   "kind": "gpu"
+  },
+  {
+   "id": "9070GRE",
+   "label": "RX 9070 GRE",
+   "tier": "D",
+   "line": "The RX 9070 GRE has twelve gigabytes for {price}, barely less than a 16 GB card.",
+   "query": "rx 9070 gre",
+   "match": "RX 9070 GRE",
+   "kind": "gpu"
+  },
+  {
+   "id": "9070",
+   "label": "RX 9070",
+   "tier": "B",
+   "line": "The RX 9070 costs {price} with sixteen gigabytes.",
+   "query": "rx 9070",
+   "match": "RX 9070(?! ?(XT|GRE))",
+   "kind": "gpu"
+  },
+  {
+   "id": "9070XT",
+   "label": "RX 9070 XT",
+   "tier": "S",
+   "line": "And the RX 9070 XT is {price}, only a little more. The clear pick.",
+   "query": "rx 9070 xt",
+   "match": "RX 9070 XT",
+   "kind": "gpu"
+  },
+  {
+   "id": "7800XT",
+   "label": "RX 7800 XT",
+   "tier": "A",
+   "line": "The RX 7800 XT costs {price}.",
+   "query": "rx 7800 xt",
+   "match": "RX 7800 XT",
+   "kind": "gpu"
+  }
+ ]
+}

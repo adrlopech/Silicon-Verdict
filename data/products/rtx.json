@@ -1,0 +1,124 @@
+{
+ "family": "rtx",
+ "screen_title": "RTX 40 and 50 Tier List",
+ "cat": "RTX 40 and 50",
+ "short": "RTX 40/50",
+ "title_name": "RTX 40 and 50 Card at Today's Price",
+ "hashtags": [
+  "rtx",
+  "gpu"
+ ],
+ "tags": [
+  "siliconverdict",
+  "rtx",
+  "rtx 5080",
+  "rtx 5090",
+  "nvidia",
+  "gpu",
+  "tier list"
+ ],
+ "hook": "Every RTX 40 and 50 card at today's price, ranked by value.",
+ "criterion": "By gaming value",
+ "loop": "Stay to the end, one card is a bargain.",
+ "gone": {
+  "ids": [
+   "4070S",
+   "4080S"
+  ],
+  "text": "40 series gone",
+  "accent": "almost",
+  "narration": "The RTX 40 series is nearly gone: no 4070 Super or 4080 Super cards are listed."
+ },
+ "takeaway": {
+  "text": "The 5080 bargain",
+  "accent": "check prices",
+  "narration": "Right now the 5080 beats the 5070 Ti on value. Check prices before you buy."
+ },
+ "vote": [
+  "5060 Ti",
+  "5080"
+ ],
+ "items": [
+  {
+   "id": "5060",
+   "label": "5060",
+   "tier": "C",
+   "line": "The RTX 5060 costs {price} and has eight gigabytes.",
+   "query": "rtx 5060",
+   "match": "RTX 5060(?! ?Ti)",
+   "kind": "gpu"
+  },
+  {
+   "id": "5060Ti8",
+   "label": "5060 Ti 8GB",
+   "tier": "B",
+   "line": "The 5060 Ti with eight gigabytes costs {price}, little more than the plain 5060.",
+   "query": "rtx 5060 ti",
+   "match": "RTX 5060 ?Ti.*8 ?GB",
+   "kind": "gpu"
+  },
+  {
+   "id": "5060Ti16",
+   "label": "5060 Ti 16GB",
+   "tier": "A",
+   "line": "The sixteen gigabyte 5060 Ti is {price}, the sweet spot for memory.",
+   "query": "rtx 5060 ti 16gb",
+   "match": "RTX 5060 ?Ti.*16 ?GB",
+   "kind": "gpu"
+  },
+  {
+   "id": "5070",
+   "label": "5070",
+   "tier": "D",
+   "line": "The RTX 5070 costs {price} for twelve gigabytes. Hard to justify.",
+   "query": "rtx 5070",
+   "match": "RTX 5070(?! ?Ti)",
+   "kind": "gpu"
+  },
+  {
+   "id": "5070Ti",
+   "label": "5070 Ti",
+   "tier": "B",
+   "line": "The RTX 5070 Ti is {price}, with sixteen gigabytes.",
+   "query": "rtx 5070 ti",
+   "match": "RTX 5070 ?Ti",
+   "kind": "gpu"
+  },
+  {
+   "id": "5080",
+   "label": "5080",
+   "tier": "S",
+   "line": "The RTX 5080 is {price}, only a little more than the 5070 Ti. That is the bargain.",
+   "query": "rtx 5080",
+   "match": "RTX 5080",
+   "kind": "gpu"
+  },
+  {
+   "id": "5090",
+   "label": "5090",
+   "tier": "F",
+   "line": "The RTX 5090 costs {price}. The fastest card, at absurd value.",
+   "query": "rtx 5090",
+   "match": "RTX 5090",
+   "kind": "gpu"
+  },
+  {
+   "id": "4070S",
+   "label": "4070 Super",
+   "tier": "A",
+   "line": "The RTX 4070 Super costs {price}.",
+   "query": "rtx 4070 super",
+   "match": "RTX 4070 Super",
+   "kind": "gpu"
+  },
+  {
+   "id": "4080S",
+   "label": "4080 Super",
+   "tier": "B",
+   "line": "The RTX 4080 Super costs {price}.",
+   "query": "rtx 4080 super",
+   "match": "RTX 4080 Super",
+   "kind": "gpu"
+  }
+ ]
+}

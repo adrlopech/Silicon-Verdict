@@ -1,0 +1,120 @@
+{
+ "family": "intel_i7",
+ "screen_title": "Core i7 Tier List",
+ "cat": "Core i7",
+ "short": "Core i7",
+ "title_name": "Intel Core i7 at Today's Price",
+ "hashtags": [
+  "intel",
+  "cpu"
+ ],
+ "tags": [
+  "siliconverdict",
+  "intel",
+  "core i7",
+  "cpu",
+  "gaming",
+  "14700k",
+  "tier list"
+ ],
+ "hook": "Every Core i7 at today's price, ranked by gaming value.",
+ "criterion": "By gaming value",
+ "loop": "Stay to the end, one price is absurd.",
+ "extra": {
+  "text": "K and F",
+  "accent": "the variants",
+  "narration": "One last thing: K means unlocked, F means no integrated graphics, and the F is always cheaper."
+ },
+ "takeaway": {
+  "text": "Skip the graphics",
+  "accent": "save money",
+  "narration": "Buy the F version and a graphics card, and save a little."
+ },
+ "vote": [
+  "12700KF",
+  "13700KF"
+ ],
+ "items": [
+  {
+   "id": "12700KF",
+   "label": "12700KF",
+   "tier": "A",
+   "line": "The Core i7 12700KF costs {price} and has twelve cores.",
+   "query": "intel core i7-12700kf",
+   "match": "Core i7-12700KF",
+   "kind": "cpu"
+  },
+  {
+   "id": "12700K",
+   "label": "12700K",
+   "tier": "B",
+   "line": "The 12700K adds integrated graphics and costs {price}.",
+   "query": "intel core i7-12700k",
+   "match": "Core i7-12700K(?!F)",
+   "kind": "cpu"
+  },
+  {
+   "id": "13700KF",
+   "label": "13700KF",
+   "tier": "S",
+   "line": "The Core i7 13700KF has sixteen cores for {price}, the best value here.",
+   "query": "intel core i7-13700kf",
+   "match": "Core i7-13700KF",
+   "kind": "cpu"
+  },
+  {
+   "id": "265KF",
+   "label": "Ultra 7 265KF",
+   "tier": "C",
+   "line": "The Core Ultra 7 265KF costs {price}, yet often trails older chips in games.",
+   "query": "intel core ultra 7 265kf",
+   "match": "Core Ultra 7 265KF",
+   "kind": "cpu"
+  },
+  {
+   "id": "14700KF",
+   "label": "14700KF",
+   "tier": "A",
+   "line": "The Core i7 14700KF has twenty cores for {price}.",
+   "query": "intel core i7-14700kf",
+   "match": "Core i7-14700KF",
+   "kind": "cpu"
+  },
+  {
+   "id": "14700K",
+   "label": "14700K",
+   "tier": "B",
+   "line": "The 14700K with graphics is {price}, more than the KF.",
+   "query": "intel core i7-14700k",
+   "match": "Core i7-14700K(?!F)",
+   "kind": "cpu"
+  },
+  {
+   "id": "11700KF",
+   "label": "11700KF",
+   "tier": "F",
+   "line": "And the absurd one: the Core i7 11700KF costs {price} for eight old cores.",
+   "query": "intel core i7-11700kf",
+   "match": "Core i7-11700KF",
+   "kind": "cpu"
+  },
+  {
+   "id": "10700K",
+   "label": "10700K",
+   "tier": "D",
+   "line": "The Core i7 10700K costs {price}, an old eight-core chip.",
+   "query": "intel core i7-10700k",
+   "match": "Core i7-10700K",
+   "kind": "cpu"
+  },
+  {
+   "id": "9700K",
+   "label": "9700K",
+   "tier": "D",
+   "line": "The Core i7 9700K costs {price}, eight cores and no hyperthreading.",
+   "query": "intel core i7-9700k",
+   "match": "Core i7-9700K",
+   "kind": "cpu"
+  }
+ ]
+}

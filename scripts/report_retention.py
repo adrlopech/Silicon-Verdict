@@ -31,6 +31,22 @@ def _norm(title: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", re.sub(r"#\w+", "", title).lower()).strip()
 
 
+TITLE_PATTERNS = [
+    ("Every X (prices)", r"\bEvery\b.*(Today's Price|on Sale)"), ("Spec Duel", r"^Spec Duel"), ("Myth or Fact", r"^Myth or Fact"), ("Decoded", r"^Decoded"), ("Fix It Now", r"^Fix It Now"),
+    ("Silicon Files", r"^Silicon Files"), ("Everyday Tech", r"^Everyday Tech"), ("Tier List", r"^Tier List"), ("Evolution", r"Evolution #|Years of .* in \d+ Seconds"), ("What If", r"^What If"),
+    ("Top 5", r"^Top 5"), ("Why ...?", r"^Why\b"), ("How ...", r"^How\b"), ("What is ...", r"^What\b"),
+]
+
+
+def title_pattern(title: str) -> str:
+    """The recurring shape of a title, to compare hooks: "Every X at Today's Price", "Spec Duel", "What If", "Myth or Fact"... (the first word when none matches)."""
+    t = re.sub(r"#\w+", "", title).strip()
+    for name, pattern in TITLE_PATTERNS:
+        if re.search(pattern, t, re.I):
+            return name
+    return (re.findall(r"[A-Za-z']+", t) or ["?"])[0]
+
+
 def history_index() -> Dict[str, Dict[str, str]]:
     """video id and normalised title -> {format, look} from shorts_history."""
     init_db()
@@ -65,6 +81,7 @@ def build(days: int, min_views: int) -> Dict[str, Any]:
             "subs": int(r.get("subscribersGained", 0)), "likes": int(r.get("likes", 0)), "comments": int(r.get("comments", 0)),
             "r20": ya.retention_at(curve, 0.2), "r50": ya.retention_at(curve, 0.5), "r80": ya.retention_at(curve, 0.8),
             "format": info.get("format", ""), "look": info.get("look", ""),
+            "pattern": title_pattern(v["title"]), "hour_utc": v["published"][11:13] + ":00", "weekday": date.fromisoformat(v["published"][:10]).strftime("%a"),
         })
     return {"date": str(date.today()), "days": days, "channel": ch, "videos": rows, "traffic": ya.traffic_sources(days), "daily": ya.daily(14)}
 
@@ -78,7 +95,7 @@ def groups(rows: List[Dict[str, Any]], key: str) -> List[Dict[str, Any]]:
     out = []
     for name, rs in acc.items():
         w = sum(x["views"] for x in rs)
-        out.append({"name": name, "videos": len(rs), "views": w, "engaged": round(sum(x["engaged_pct"] * x["views"] for x in rs) / w, 1), "avg": round(sum(x["avg_view_pct"] * x["views"] for x in rs) / w, 1)})
+        out.append({"name": name, "videos": len(rs), "views": w, "per_video": round(w / len(rs)), "engaged": round(sum(x["engaged_pct"] * x["views"] for x in rs) / w, 1), "avg": round(sum(x["avg_view_pct"] * x["views"] for x in rs) / w, 1)})
     return sorted(out, key=lambda g: -g["avg"])
 
 
@@ -95,10 +112,10 @@ def render(rep: Dict[str, Any]) -> str:
     for r in rows:
         lines.append(f"| {r['views']} | {fmt(r['engaged_pct'])}% | {fmt(r['avg_view_pct'])} | {fmt(r['avg_seconds'])} / {r['length']} | {fmt(r['r20'] and r['r20'] * 100)} | {fmt(r['r50'] and r['r50'] * 100)} | "
                      f"{fmt(r['r80'] and r['r80'] * 100)} | {r['subs']} | {r['format'] or '?'} | {r['look'] or '-'} | {r['title'][:52]} |")
-    for key, name in (("format", "format"), ("look", "look")):
+    for key, name in (("format", "format"), ("look", "look"), ("pattern", "title pattern"), ("hour_utc", "publish hour (UTC)"), ("weekday", "weekday")):
         g = groups(rows, key)
         lines += ["", f"## By {name} (views-weighted)", ""]
-        lines += ["| " + name + " | videos | views | engaged | avg% |", "|--|--:|--:|--:|--:|"] + [f"| {x['name']} | {x['videos']} | {x['views']} | {x['engaged']}% | {x['avg']} |" for x in g] if g else ["Nothing yet: videos carry no " + name + " in the history."]
+        lines += ["| " + name + " | videos | views | views / video | engaged | avg% |", "|--|--:|--:|--:|--:|--:|"] + [f"| {x['name']} | {x['videos']} | {x['views']} | {x['per_video']} | {x['engaged']}% | {x['avg']} |" for x in g] if g else ["Nothing yet: videos carry no " + name + " in the history."]
     lines += ["", "## Traffic sources", "", "| source | views | avg% |", "|--|--:|--:|"] + [f"| {t['insightTrafficSourceType']} | {t['views']} | {t['averageViewPercentage']:.0f} |" for t in rep["traffic"]]
     lines += ["", "## Last days", "", "| day | views | minutes | avg% | subs |", "|--|--:|--:|--:|--:|"] + [f"| {d['day']} | {d['views']} | {d['estimatedMinutesWatched']} | {d['averageViewPercentage']:.0f} | {d['subscribersGained']} |" for d in rep["daily"][-7:]]
     return "\n".join(lines) + "\n"

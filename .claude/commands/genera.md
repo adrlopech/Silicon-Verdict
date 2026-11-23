@@ -7,6 +7,7 @@ Si el usuario pide "los de hoy", usa `--date` con la fecha UTC de hoy; si no, el
 y de TikTok (`tiktokstudio/content`) y resume qué funciona.
 
 0. Si la API de YouTube falla con `invalid_grant`, el token caducó o se revocó: pide permiso y renuévalo (`guide/publishing.md#youtube-oauth`).
+0. Precios: si el archivo más reciente de `data/prices/` tiene más de 2 días, recoge precios nuevos antes del plan (`guide/prices.md`); `genera_batch` reserva un hueco para un vídeo "Every X at today's price" cuando los precios tienen ≤3 días.
 1. Plan: `PYTHONPATH=. .venv/bin/python scripts/genera_batch.py --plan [--date AAAA-MM-DD] [--avoid formatos-de-ayer]`. Enséñalo en una tabla (hora UTC y Madrid, formato, motivo). Sale de YouTube Analytics + `data/batch_log.json`.
 2. Produce y programa YouTube: `PYTHONPATH=. .venv/bin/python scripts/genera_batch.py [--date ...] [--avoid ...]` en segundo plano (10-20 min; no sondees). Renderiza 4 formatos distintos, sube cada uno a YouTube (SiliconVerdictHQ, privado + `publishAt`) con su portada como miniatura y escribe `data/batch_latest.json` (título, `caption`, `hashtags`, `tiktok_copy`, `cover`, hora).
    Si un hueco falla (`FAILED (nothing uploaded for this slot)`), relánzalo con `--topics` y `"slot"` fijo, `--out data/batch_retry.json`, usando un formato que suele pasar (evolution, versus, myth, whatif, hardware, decode, fix) o un guion a mano (`"script"`).

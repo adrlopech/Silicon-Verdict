@@ -1,0 +1,128 @@
+{
+ "family": "ryzen7",
+ "screen_title": "Ryzen 7 Tier List",
+ "cat": "Ryzen 7",
+ "short": "Ryzen 7",
+ "title_name": "Ryzen 7 at Today's Price",
+ "hashtags": [
+  "ryzen",
+  "cpu"
+ ],
+ "tags": [
+  "siliconverdict",
+  "ryzen",
+  "ryzen 7",
+  "amd",
+  "cpu",
+  "gaming",
+  "tier list"
+ ],
+ "hook": "Every Ryzen 7 at today's price, ranked by gaming value.",
+ "criterion": "By gaming value",
+ "loop": "Stay to the end, one price makes no sense.",
+ "takeaway": {
+  "text": "Cache beats cores",
+  "accent": "price today",
+  "narration": "The pattern is simple: for games, cache beats cores. And old chips can cost more than new ones."
+ },
+ "vote": [
+  "7800X3D",
+  "9800X3D"
+ ],
+ "items": [
+  {
+   "id": "5700X",
+   "label": "5700X",
+   "tier": "B",
+   "line": "The Ryzen 7 5700X costs {price}, eight cores on AM4.",
+   "query": "ryzen 7 5700x",
+   "match": "Ryzen 7 5700X(?!3D)",
+   "kind": "cpu"
+  },
+  {
+   "id": "5800X",
+   "label": "5800X",
+   "tier": "D",
+   "line": "The Ryzen 7 5800X is {price} for nearly the same eight cores.",
+   "query": "ryzen 7 5800x",
+   "match": "Ryzen 7 5800X(?!3D)",
+   "kind": "cpu"
+  },
+  {
+   "id": "7700X",
+   "label": "7700X",
+   "tier": "B",
+   "line": "The Ryzen 7 7700X is only {price}, but it needs a separate cooler.",
+   "query": "ryzen 7 7700x",
+   "match": "Ryzen 7 7700X(?!3D)",
+   "kind": "cpu"
+  },
+  {
+   "id": "5800XT",
+   "label": "5800XT",
+   "tier": "F",
+   "line": "The 5800XT costs {price}, a slightly faster 5800X for more money.",
+   "query": "ryzen 7 5800xt",
+   "match": "Ryzen 7 5800XT",
+   "kind": "cpu"
+  },
+  {
+   "id": "9700X",
+   "label": "9700X",
+   "tier": "C",
+   "line": "The Ryzen 7 9700X is {price}, efficient but with no extra cache.",
+   "query": "ryzen 7 9700x",
+   "match": "Ryzen 7 9700X(?!3D)",
+   "kind": "cpu"
+  },
+  {
+   "id": "7700",
+   "label": "7700",
+   "tier": "C",
+   "line": "The Ryzen 7 7700 costs {price}, mostly for the included cooler.",
+   "query": "ryzen 7 7700",
+   "match": "Ryzen 7 7700(?![X0-9])",
+   "kind": "cpu"
+  },
+  {
+   "id": "7800X3D",
+   "label": "7800X3D",
+   "tier": "S",
+   "line": "The Ryzen 7 7800X3D is {price}, the best gaming value today.",
+   "query": "ryzen 7 7800x3d",
+   "match": "Ryzen 7 7800X3D",
+   "kind": "cpu"
+  },
+  {
+   "id": "5800X3D",
+   "label": "5800X3D",
+   "tier": "C",
+   "line": "The old 5800X3D costs {price} and still plays well on AM4.",
+   "query": "ryzen 7 5800x3d",
+   "match": "Ryzen 7 5800X3D",
+   "kind": "cpu",
+   "alt": {
+    "pricier_than": "7800X3D",
+    "line": "And the price that makes no sense: the old 5800X3D costs {price}, more than the 7800X3D."
+   }
+  },
+  {
+   "id": "9800X3D",
+   "label": "9800X3D",
+   "tier": "A",
+   "line": "The Ryzen 7 9800X3D is {price}, the fastest chip here.",
+   "query": "ryzen 7 9800x3d",
+   "match": "Ryzen 7 9800X3D",
+   "kind": "cpu"
+  },
+  {
+   "id": "5700X3D",
+   "label": "5700X3D",
+   "tier": "S",
+   "line": "The Ryzen 7 5700X3D adds big cache for {price}, an AM4 legend.",
+   "query": "5700x3d",
+   "match": "Ryzen 7 5700X3D",
+   "kind": "cpu"
+  }
+ ]
+}

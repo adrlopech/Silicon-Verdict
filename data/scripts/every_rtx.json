@@ -1,0 +1,148 @@
+{
+ "topic": "Every RTX 40/50 ranked by gaming value at the prices of 2026-11-23",
+ "screen_title": "RTX 40 and 50 Tier List",
+ "title": "Every RTX 40 and 50 Card at Today's Price #siliconverdict #rtx #gpu",
+ "description": "7 RTX 40/50 products ranked by gaming value at today's lowest PcComponentes prices (2026-11-23), from 600 to 8,717 euros. Prices change daily.",
+ "tags": [
+  "siliconverdict",
+  "rtx",
+  "rtx 5080",
+  "rtx 5090",
+  "nvidia",
+  "gpu",
+  "tier list"
+ ],
+ "pinned_comment": "5060 Ti or 5080? Reply with one word.",
+ "accent": "#00F0FF",
+ "kind": "curiosity",
+ "format": "tier",
+ "scenes": [
+  {
+   "type": "bigText",
+   "text": "Every RTX 40/50",
+   "accentText": "By gaming value",
+   "kicker": "tier list",
+   "narration": "Every RTX 40 and 50 card at today's price, ranked by value.",
+   "durationInFrames": 120
+  },
+  {
+   "type": "tier",
+   "text": "Ranking RTX 40 and 50",
+   "accentText": "By gaming value",
+   "kicker": "tier list",
+   "items": [
+    "C|5060"
+   ],
+   "narration": "The RTX 5060 costs six hundred euros and has eight gigabytes. Stay to the end, one card is a bargain.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "tier",
+   "text": "Ranking RTX 40 and 50",
+   "accentText": "By gaming value",
+   "kicker": "tier list",
+   "items": [
+    "C|5060",
+    "B|5060 Ti 8GB"
+   ],
+   "narration": "The 5060 Ti with eight gigabytes costs six hundred twenty euros, little more than the plain 5060.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "tier",
+   "text": "Ranking RTX 40 and 50",
+   "accentText": "By gaming value",
+   "kicker": "tier list",
+   "items": [
+    "C|5060",
+    "B|5060 Ti 8GB",
+    "A|5060 Ti 16GB"
+   ],
+   "narration": "The sixteen gigabyte 5060 Ti is nine hundred thirty euros, the sweet spot for memory.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "tier",
+   "text": "Ranking RTX 40 and 50",
+   "accentText": "By gaming value",
+   "kicker": "tier list",
+   "items": [
+    "C|5060",
+    "B|5060 Ti 8GB",
+    "A|5060 Ti 16GB",
+    "D|5070"
+   ],
+   "narration": "The RTX 5070 costs one thousand four hundred sixty-four euros for twelve gigabytes. Hard to justify.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "tier",
+   "text": "Ranking RTX 40 and 50",
+   "accentText": "By gaming value",
+   "kicker": "tier list",
+   "items": [
+    "C|5060",
+    "B|5060 Ti 8GB",
+    "A|5060 Ti 16GB",
+    "D|5070",
+    "B|5070 Ti"
+   ],
+   "narration": "The RTX 5070 Ti is one thousand seven hundred ninety-five euros, with sixteen gigabytes.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "tier",
+   "text": "Ranking RTX 40 and 50",
+   "accentText": "By gaming value",
+   "kicker": "tier list",
+   "items": [
+    "C|5060",
+    "B|5060 Ti 8GB",
+    "A|5060 Ti 16GB",
+    "D|5070",
+    "B|5070 Ti",
+    "S|5080"
+   ],
+   "narration": "The RTX 5080 is one thousand eight hundred fifty euros, only a little more than the 5070 Ti. That is the bargain.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "tier",
+   "text": "Ranking RTX 40 and 50",
+   "accentText": "By gaming value",
+   "kicker": "tier list",
+   "items": [
+    "C|5060",
+    "B|5060 Ti 8GB",
+    "A|5060 Ti 16GB",
+    "D|5070",
+    "B|5070 Ti",
+    "S|5080",
+    "F|5090"
+   ],
+   "narration": "The RTX 5090 costs eight thousand seven hundred seventeen euros. The fastest card, at absurd value.",
+   "durationInFrames": 170
+  },
+  {
+   "type": "textWithAccent",
+   "text": "40 series gone",
+   "accentText": "almost",
+   "narration": "The RTX 40 series is nearly gone: no 4070 Super or 4080 Super cards are listed.",
+   "durationInFrames": 150
+  },
+  {
+   "type": "textWithAccent",
+   "text": "The 5080 bargain",
+   "accentText": "check prices",
+   "narration": "Right now the 5080 beats the 5070 Ti on value. Check prices before you buy.",
+   "durationInFrames": 150
+  },
+  {
+   "type": "outro",
+   "text": "STAY CURIOUS",
+   "accentText": "Follow for more",
+   "narration": "Follow for more prices. Which would you buy, 5060 Ti or 5080?",
+   "durationInFrames": 120
+  }
+ ]
+}

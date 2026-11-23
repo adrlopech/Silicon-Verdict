@@ -40,3 +40,21 @@ A format counts as **proven** with at least one video and 100 views. The batch i
 
 ## Older tools
 
+
+## What the numbers say
+
+Read them with `scripts/report_retention.py`: besides format and look it groups the videos by **title pattern** ("Spec Duel", "What If", "Every X (prices)"...), **publish hour** and **weekday**, with views per video.
+Fewer than about ten videos per group is noise, so use the groups to decide what to test next, not to declare winners.
+
+Lessons of the reference channel analysed on 2026-11-23 (a tech account with 3 videos, 472K views on one of them and only 287 followers):
+
+- The hit was a **product-intent list** ("Every RTX 50 Series Graphics Card Explained": name, memory, launch price, use and games for each card, 98 s, 5,272 saves, 588 comments, 935 shares).
+  Search keeps feeding it weeks later. That is the shape of the "Every X at today's price" videos ([Prices](prices.md)).
+- **Comments:** people list the card they own or want, ask for the one that was left out ("where is the 5050?") and complain about prices; the left-out card's comment got 3,285 likes. A product list should leave out, or only mention,
+  the product people argue about, and the pinned comment should ask which one they own.
+- **Followers come from identity, not reach:** 472K views gave 0.06 % followers; the channel had no bio, a generic name and, in its third video, changed subject. Keep one niche, one series name on screen
+  (the title strip already does it), a bio that says what the channel does and an outro that names the series ("follow for every processor explained").
+- Their second video of the same kind got 17.6K (4 % of the first): reach belongs to the topic, so each product family is a new bet and the family that is searched most gets the first slot.
+
+Ideas that need the account owner (the API token cannot change them): the YouTube channel description and the TikTok bio, for example
+*"Every GPU, CPU and spec decoded in 60 seconds, with today's real prices. New videos daily."*

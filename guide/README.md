@@ -11,6 +11,7 @@ Everything you need to run, understand and change the studio. Start with the fir
 | [Motion engine](motion-engine.md) | change how videos look: scenes, looks, cursor, UI presets, stage visuals, captions |
 | [Game videos](games.md) | prepare footage and source dossiers for game videos |
 | [Voice](voice.md) | understand narrator rotation, ElevenLabs and the local backup voice |
+| [Prices](prices.md) | the "Every X at today's price" videos: product data, collecting prices, the builder |
 | [Publishing](publishing.md) | upload to YouTube and TikTok: OAuth, scheduling, covers, hashtags, TikTok Studio steps |
 | [Analytics](analytics.md) | read the channel numbers and see how `genera` picks formats and hours |
 | [Development](development.md) | run tests and CI, find a file, fix the usual failures |
