@@ -37,7 +37,7 @@ A refresh must keep the stored scopes: `services/youtube.py` loads the token wit
 
 ## TikTok
 
-There is no posting API in use. `services/tiktok.py` and `scripts/auth_tiktok.py` implement the Content Posting API but it is not part of the daily flow (see [Legacy](legacy.md)).
+There is no posting API in use.
 Videos are scheduled by hand in **TikTok Studio** (`https://www.tiktok.com/tiktokstudio/upload`), which the assistant drives with Claude in Chrome. Use the **<10 MB copy**
 (`output/tiktok_small/`, the upload tool caps one call at 10 MB) and the cover PNG.
 

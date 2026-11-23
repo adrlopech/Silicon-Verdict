@@ -23,8 +23,7 @@ from typing import List, Optional, Tuple
 
 
 from config.settings import settings
-from services.tts import get_audio_duration
-from services.voice import get_ffmpeg_bin
+from services.voice import get_audio_duration, get_ffmpeg_bin
 
 logger = logging.getLogger(__name__)
 

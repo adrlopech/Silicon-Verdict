@@ -19,8 +19,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from config.settings import settings
 from services.audio import normalize_phonetics_us_english
-from services.tts import get_audio_duration, resolve_active_voice_id
-from services.voice import get_ffmpeg_bin
+from services.voice import get_audio_duration, get_ffmpeg_bin, resolve_active_voice_id
 
 logger = logging.getLogger(__name__)
 

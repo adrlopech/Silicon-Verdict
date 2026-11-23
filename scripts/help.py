@@ -12,7 +12,6 @@ HELP_TEXT = """=================================================================
              TikTok Studio at the best hours. Add "de hoy" to publish today instead of tomorrow.
  limpieza    scripts/cleanup.py: wipes output/tiktok, output/youtube and temp/. Keeps data/, assets/, .env.
  help        This reference.
- corregir    Legacy audit of the old pipeline (not used for Motion videos): see guide/legacy.md.
 
 2. MAKING VIDEOS
 --------------------------------------------------------------------------------
@@ -20,13 +19,11 @@ HELP_TEXT = """=================================================================
  PYTHONPATH=. .venv/bin/python scripts/genera_batch.py [--date YYYY-MM-DD]
  PYTHONPATH=. .venv/bin/python scripts/genera_batch.py --topics retry.json --out data/batch_retry.json
 
- .venv/bin/python main.py --series motion --motion-format <format> [--export-only]
+ .venv/bin/python main.py --motion-format <format> [--export-only]
    formats: myth tier whatif easter evolution versus hardware simple fix decode
             top5 eli5 fails numbers quiz stop rumor review news priced any
- .venv/bin/python main.py --series motion --motion-kind curiosity --topic "How TRIM keeps SSDs fast"
- .venv/bin/python main.py --series motion --motion-kind game          # needs prepared game footage
- .venv/bin/python main.py --series hardware | --series simple          # shortcuts for those formats
- .venv/bin/python main.py --category 1|2|3|auto                        # old categories, told as Motion videos
+ .venv/bin/python main.py --motion-kind curiosity --topic "How TRIM keeps SSDs fast"
+ .venv/bin/python main.py --motion-kind game          # needs prepared game footage
 
 3. PUBLISHING
 --------------------------------------------------------------------------------

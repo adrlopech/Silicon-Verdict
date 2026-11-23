@@ -40,4 +40,3 @@ A format counts as **proven** with at least one video and 100 views. The batch i
 
 ## Older tools
 
-`scripts/analytics_sync.py` feeds `analytics_history` and `data/category_weights.json` for the old category rotation (the weights no longer steer `genera`). Its `--simulate` mode writes fake `sim_*` rows; do not use simulated rows as data.

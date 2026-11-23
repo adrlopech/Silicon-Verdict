@@ -17,6 +17,8 @@ import sys
 from pathlib import Path
 from typing import List, Optional, Set, Tuple
 
+import requests
+
 from config.settings import settings
 from services.history import get_last_used_voice
 
@@ -222,3 +224,79 @@ def get_next_voice(db_path: Optional[Path] = None) -> str:
         next_index + 1,
     )
     return selected_voice
+
+
+def get_audio_duration(file_path: str) -> float:
+    """Measures precise audio duration in seconds using ffprobe.
+
+    Args:
+        file_path: Path to the audio file.
+
+    Returns:
+        float: Duration in seconds.
+    """
+    cmd = [
+        "ffprobe",
+        "-v", "error",
+        "-show_entries", "format=duration",
+        "-of", "default=noprint_wrappers=1:nokey=1",
+        file_path,
+    ]
+    try:
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
+        return float(result.stdout.strip())
+    except Exception as exc:
+        # No ffprobe on this machine (only the bundled ffmpeg): read the real length from ffmpeg's header instead of guessing,
+        # because a wrong length makes scenes shorter than their narration and the voice runs over the next scene.
+        try:
+            import re
+            log = subprocess.run([get_ffmpeg_bin(), "-hide_banner", "-i", file_path], capture_output=True, text=True).stderr
+            m = re.search(r"Duration: (\d+):(\d+):([\d.]+)", log)
+            if m:
+                return int(m[1]) * 3600 + int(m[2]) * 60 + float(m[3])
+        except Exception:
+            pass
+        logger.warning("Could not read duration for %s (%s). Falling back to approximation.", file_path, exc)
+        return 5.0
+
+
+def resolve_active_voice_id(target_voice: Optional[str] = None) -> str:
+    """Verifies requested voice ID against ElevenLabs API or falls back to an available approved voice.
+    Permanently excludes any blacklisted voice (e.g. Roger / CwhRBWXzGAHq8TQ4Fs17).
+    """
+    target_id = target_voice or settings.ELEVENLABS_VOICE_ID or settings.ELEVENLABS_VOICE_1
+
+    # Immediate rejection if requested voice is blacklisted
+    if target_id in BLACKLISTED_VOICE_IDS:
+        logger.warning(
+            "Requested voice '%s' is in BLACKLISTED_VOICE_IDS! Barring usage and searching safe approved alternative.",
+            target_id,
+        )
+        target_id = "onwK4e9ZLuTAKqWW03F9"  # Daniel default
+
+    headers = {"xi-api-key": settings.ELEVENLABS_API_KEY}
+    try:
+        check = requests.get(f"https://api.elevenlabs.io/v1/voices/{target_id}", headers=headers, timeout=10)
+        if check.status_code == 200:
+            return target_id
+
+        # Fallback: query account voices excluding blacklisted
+        list_res = requests.get("https://api.elevenlabs.io/v1/voices", headers=headers, timeout=10)
+        if list_res.status_code == 200:
+            voices = list_res.json().get("voices", [])
+            # Filter out blacklisted voices and Roger specifically
+            safe_voices = [
+                v for v in voices
+                if v.get("voice_id") not in BLACKLISTED_VOICE_IDS and "roger" not in v.get("name", "").lower()
+            ]
+            if safe_voices:
+                fallback_id = safe_voices[0]["voice_id"]
+                logger.warning(
+                    "Configured Voice ID '%s' not found. Falling back to approved account voice '%s' (ID: %s)",
+                    target_id, safe_voices[0].get("name"), fallback_id
+                )
+                return fallback_id
+    except Exception as exc:
+        logger.warning("Could not probe ElevenLabs voices (%s). Attempting target ID: %s", exc, target_id)
+
+    return "onwK4e9ZLuTAKqWW03F9"

@@ -46,7 +46,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 cd remotion_studio && npm install && cd ..
 cp .env.example .env        # Gemini, ElevenLabs and YouTube credentials (required); Groq / Cloudflare are optional LLM fallbacks
 .venv/bin/python scripts/authenticate_yt.py
-.venv/bin/python main.py --series motion --motion-format myth --export-only   # a first video, nothing uploaded
+.venv/bin/python main.py --motion-format myth --export-only   # a first video, nothing uploaded
 ```
 
 ## Everyday commands
@@ -54,7 +54,7 @@ cp .env.example .env        # Gemini, ElevenLabs and YouTube credentials (requir
 ```bash
 PYTHONPATH=. .venv/bin/python scripts/genera_batch.py --plan     # plan four videos of four formats (add --date YYYY-MM-DD)
 PYTHONPATH=. .venv/bin/python scripts/genera_batch.py            # produce them and schedule them on YouTube; then schedule TikTok (see the guide)
-.venv/bin/python main.py --series motion --motion-format any     # one video of a weighted random format
+.venv/bin/python main.py --motion-format any     # one video of a weighted random format
 .venv/bin/python scripts/upload_existing.py "<video.mp4>"        # upload a rendered video (sets its cover as thumbnail)
 .venv/bin/python scripts/report_retention.py                     # real YouTube retention by video, format and look
 .venv/bin/python scripts/cleanup.py                              # wipe generated output ("limpieza")
@@ -77,9 +77,8 @@ All the documentation lives in [`guide/`](guide/README.md):
 | [Publishing](guide/publishing.md) | YouTube OAuth and uploads, TikTok Studio steps, hours, hashtags |
 | [Analytics](guide/analytics.md) | Reading the numbers, how `genera` chooses formats and hours |
 | [Development](guide/development.md) | Tests, CI, repository map, troubleshooting |
-| [Legacy](guide/legacy.md) | The old pipeline that is still in the repository |
 
-Instructions for the AI assistants that operate the repository: [`CLAUDE.md`](CLAUDE.md) (Claude Code) and [`GEMINI.md`](GEMINI.md).
+Instructions for the AI assistant that operates the repository: [`CLAUDE.md`](CLAUDE.md) (Claude Code).
 
 ## Development
 

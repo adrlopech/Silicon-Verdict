@@ -6,7 +6,7 @@ render frames, temporary directories, and scratch cache.
 
 Preserves whitelist:
 - data/ (history.db, token.json, tiktok_token.json)
-- assets/ (fonts, schematics, permanent assets)
+- assets/ (fonts, audio, brand, permanent assets)
 - .env, client_secrets.json, logs/
 
 Usage:

@@ -135,9 +135,6 @@ def execute_comprehensive_cleanup(
 
             # Intermediate MP4 video clips in temp/
             for clip in temp_dir.glob("*.mp4"):
-                # Always preserve test_broll in assets/
-                if clip.name == "test_broll.mp4" and not (root / "assets" / "broll" / "test_broll.mp4").is_file():
-                    continue
                 try:
                     f_size = clip.stat().st_size
                     freed_bytes += f_size

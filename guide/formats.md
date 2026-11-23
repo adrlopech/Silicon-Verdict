@@ -7,11 +7,10 @@ and the [retention rules](motion-engine.md#retention-rules). The same fact-check
 Call one with `--motion-format <name>`:
 
 ```bash
-.venv/bin/python main.py --series motion --motion-format myth --export-only
-.venv/bin/python main.py --series motion --motion-format any      # weighted random pick, never news
+.venv/bin/python main.py --motion-format myth --export-only
+.venv/bin/python main.py --motion-format any      # weighted random pick, never news
 ```
 
-`--series hardware` and `--series simple` are shortcuts for `--motion-format hardware` / `simple`. `--category 1|2|3` still works and maps to hardware, a game video, or simple (see [Legacy](legacy.md)).
 
 ## Overview
 

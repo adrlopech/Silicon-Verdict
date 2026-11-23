@@ -1,6 +1,6 @@
 # Pipeline
 
-`run_motion_pipeline()` in `services/motion_pipeline.py` makes one video. `main.py` always calls it (the old categories are routed to Motion formats).
+`run_motion_pipeline()` in `services/motion_pipeline.py` makes one video. `main.py` is its command-line entry point.
 
 ```
 format + topic ─► script (story bank, else LLM) ─► validators ─► fact-check ─► voice ─► Remotion render ─► sound mix ─► QA gate ─► cover ─► files ─► YouTube
@@ -91,4 +91,3 @@ with `--privacy` (default `public`). The run is recorded in `data/history.db` (`
 ## Other flags of `main.py`
 
 `--dry-run` (everything but the upload), `--privacy public|unlisted|private`, `--from-bank` (take a banked script), `--topic`, `--motion-kind`, `--motion-format`, `--export-only`.
-The rest (`--format`, `--preset`, `--category`, `--choice`, `--interactive`, `--audit-latest`, `--apply-fixes`, `--benchmark`) belong to the old pipeline; see [Legacy](legacy.md).

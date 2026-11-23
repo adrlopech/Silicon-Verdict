@@ -88,9 +88,9 @@ A table with video, format, Madrid hour and YouTube link, and a note of anything
 
 | Task | Command |
 |---|---|
-| One video by hand | `.venv/bin/python main.py --series motion --motion-format <format> --export-only` (omit `--export-only` to upload as well) |
+| One video by hand | `.venv/bin/python main.py --motion-format <format> --export-only` (omit `--export-only` to upload as well) |
 | Upload a rendered video | `.venv/bin/python scripts/upload_existing.py "<video.mp4>" [--privacy private --publish-at 2026-11-17T13:00:00Z]` |
-| Today's headlines video | `.venv/bin/python main.py --series motion --motion-format news` |
+| Today's headlines video | `.venv/bin/python main.py --motion-format news` |
 | Top up the story bank | `.venv/bin/python scripts/refill_story_bank.py --series motion --format <format>` |
 | Clean generated output (`limpieza`) | `.venv/bin/python scripts/cleanup.py` (`--dry-run` to preview) |
 | Retention report | `.venv/bin/python scripts/report_retention.py` |

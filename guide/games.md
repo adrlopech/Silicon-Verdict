@@ -3,11 +3,11 @@
 A **game video** (`--motion-kind game`, or the `easter` format) tells one engineering fact about a game over real footage. It is the only kind that needs prepared media and a source dossier.
 
 ```bash
-.venv/bin/python main.py --series motion --motion-kind game --export-only
-.venv/bin/python main.py --series motion --motion-format easter --export-only   # a hidden detail, always a game video
+.venv/bin/python main.py --motion-kind game --export-only
+.venv/bin/python main.py --motion-format easter --export-only   # a hidden detail, always a game video
 ```
 
-If no game has unused footage the run stops and says so (`--category 2` falls back to a hardware video). All game videos use the Liam voice.
+If no game has unused footage the run stops and says so. All game videos use the Liam voice.
 
 ## One-time preparation
 

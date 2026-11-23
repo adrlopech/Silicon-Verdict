@@ -10,7 +10,6 @@ este archivo resume cómo operar el repositorio. El operador habla español; los
 | `genera` (o `/genera`) | Flujo automático de 4 vídeos, **sin preguntar** (el operador ya autorizó publicar). Pasos exactos en `.claude/commands/genera.md`; explicación en `guide/daily-workflow.md` |
 | `limpieza` | Ejecutar al instante `.venv/bin/python scripts/cleanup.py` y mostrar el balance (vídeos, carpetas temporales y MB liberados). Es lo único que vacía `output/tiktok/` |
 | `help` / `ayuda` | Responder con la guía de comandos: este archivo, `guide/README.md` o `.venv/bin/python main.py help` |
-| `corregir` | Heredado del pipeline antiguo (`--audit-latest`, `--apply-fixes`); no revisa vídeos Motion. Ver `guide/legacy.md`. El control de calidad actual es `qa_motion()` |
 
 "Los vídeos de hoy" significa `genera` con `--date` de hoy (fecha UTC) en lugar de mañana.
 
@@ -31,7 +30,7 @@ este archivo resume cómo operar el repositorio. El operador habla español; los
 PYTHONPATH=. .venv/bin/python scripts/genera_batch.py --plan [--date AAAA-MM-DD] [--avoid fmt1,fmt2]
 PYTHONPATH=. .venv/bin/python scripts/genera_batch.py [--date AAAA-MM-DD]        # producir y programar en YouTube (tarda 10-20 min, ejecutar en segundo plano)
 PYTHONPATH=. .venv/bin/python scripts/genera_batch.py --topics reintento.json --out data/batch_retry.json   # rellenar un hueco que falló
-.venv/bin/python main.py --series motion --motion-format <formato> [--export-only]
+.venv/bin/python main.py --motion-format <formato> [--export-only]
 .venv/bin/python scripts/upload_existing.py "<video.mp4>" [--privacy private --publish-at 2026-11-17T13:00:00Z]
 .venv/bin/python scripts/report_retention.py
 .venv/bin/python -m pytest && .venv/bin/ruff check . && (cd remotion_studio && npx tsc --noEmit -p .)
@@ -44,7 +43,7 @@ Los guiones nuevos de formatos recientes (`fails`, `eli5`, `rumor`) a menudo no 
 
 `main.py` (CLI, todo se produce como Motion) · `services/motion_generator.py` (esquema, prompts, validadores) · `services/motion_pipeline.py` (voz, render, portada, sonido, QA, subida) ·
 `remotion_studio/src/motion/` (el vídeo) · `scripts/genera_batch.py` (lote de 4) · `services/youtube.py`, `yt_analytics.py` · `data/` (bases, manifiestos `batch_*.json`, guiones a mano) ·
-`docs/` (portal público en GitHub Pages) · `guide/` (documentación) · `notes/` (notas privadas, no se versionan). Lo viejo (`core/`, `engine/`, scheduler, `qa_inspector`) está explicado en `guide/legacy.md`.
+`docs/` (portal público en GitHub Pages) · `guide/` (documentación) · `notes/` (notas privadas, no se versionan).
 
 ## Memoria y herramientas del operador
 

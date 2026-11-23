@@ -1,6 +1,5 @@
 import logging
 from pathlib import Path
-from typing import Optional
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -60,38 +59,11 @@ class Settings(BaseSettings):
     MLX_TTS_URL: str = "http://127.0.0.1:3901"
 
 
-    # Media APIs (Pixabay preferred, Pexels optional fallback)
-    PIXABAY_API_KEY: str = ""
-    PEXELS_API_KEY: Optional[str] = ""
-
     # YouTube OAuth & Upload
     YOUTUBE_TOKEN_PATH: str = "token.json"
     YOUTUBE_CLIENT_SECRETS_PATH: str = "client_secrets.json"
     YOUTUBE_PRIVACY_STATUS: str = "public"  # "public", "private", "unlisted"
     YOUTUBE_CATEGORY_ID: str = "28"  # 28: Science & Technology
-
-    # TikTok Content Posting API Settings
-    TIKTOK_ACCESS_TOKEN: str = ""
-    TIKTOK_CLIENT_KEY: str = ""
-    TIKTOK_CLIENT_SECRET: str = ""
-    TIKTOK_TOKEN_PATH: str = "data/tiktok_token.json"
-    TIKTOK_PRIVACY_LEVEL: str = "PUBLIC_TO_EVERYONE"  # "SELF_ONLY" (Draft), "PUBLIC_TO_EVERYONE"
-
-    # Notifications (Discord or Telegram)
-    DISCORD_WEBHOOK_URL: Optional[str] = None
-    TELEGRAM_BOT_TOKEN: Optional[str] = None
-    TELEGRAM_CHAT_ID: Optional[str] = None
-
-    # Scheduling & Execution
-    PUBLISH_TIME: str = "14:00"  # Target UTC or local execution time (HH:MM)
-
-    # Video Rendering Settings
-    VIDEO_FPS: int = 30
-    VIDEO_WIDTH: int = 1920
-    VIDEO_HEIGHT: int = 1080
-    SHORT_WIDTH: int = 1080
-    SHORT_HEIGHT: int = 1920
-    FONT_PATH: str = "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf"
 
     def resolve_token_path(self) -> Path:
         """Resolves token.json location checking data/ first, then root and tokens/."""
@@ -125,23 +97,6 @@ class Settings(BaseSettings):
                     return fb
         return p
 
-    def resolve_tiktok_token_path(self) -> Path:
-        """Resolves tiktok_token.json location checking data/ first, then root and tokens/."""
-        p = Path(self.TIKTOK_TOKEN_PATH)
-        if not p.is_absolute():
-            p = self.BASE_DIR / p
-        if not p.is_file():
-            alt1 = self.BASE_DIR / "data" / "tiktok_token.json"
-            if alt1.is_file():
-                return alt1
-            alt2 = self.BASE_DIR / "tiktok_token.json"
-            if alt2.is_file():
-                return alt2
-            alt3 = self.BASE_DIR / "tokens" / "tiktok_token.json"
-            if alt3.is_file():
-                return alt3
-        return p
-
     def validate_required_keys(self) -> dict:
         """Validates critical API keys and logs warnings for any missing credentials."""
         status = {}
@@ -156,12 +111,6 @@ class Settings(BaseSettings):
             status["ELEVENLABS_API_KEY"] = False
         else:
             status["ELEVENLABS_API_KEY"] = True
-
-        if not self.PIXABAY_API_KEY and not self.PEXELS_API_KEY:
-            logger.warning("Neither PIXABAY_API_KEY nor PEXELS_API_KEY is configured. Stock B-roll acquisition may fail.")
-            status["MEDIA_API_KEY"] = False
-        else:
-            status["MEDIA_API_KEY"] = True
 
         return status
 

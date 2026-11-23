@@ -39,7 +39,7 @@ Authorize YouTube once (see [Publishing](publishing.md#youtube-oauth)):
 Render only, nothing is uploaded:
 
 ```bash
-.venv/bin/python main.py --series motion --motion-format myth --export-only
+.venv/bin/python main.py --motion-format myth --export-only
 ```
 
 The result is `output/youtube/<title>/<date-time>.mp4` plus a copy and a `.txt` with metadata in `output/tiktok/<title>/`.
@@ -48,8 +48,8 @@ Some more first commands:
 
 ```bash
 .venv/bin/python main.py help                                   # command reference
-.venv/bin/python main.py --series motion --motion-format any    # a weighted random format
-.venv/bin/python main.py --series motion --motion-kind curiosity --topic "How TRIM keeps SSDs fast"
+.venv/bin/python main.py --motion-format any    # a weighted random format
+.venv/bin/python main.py --motion-kind curiosity --topic "How TRIM keeps SSDs fast"
 .venv/bin/python scripts/render_silent_preview.py data/scripts/sample_top5.json --out /tmp/preview   # silent preview, no voice credits
 ```
 

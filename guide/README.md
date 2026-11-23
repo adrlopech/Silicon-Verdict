@@ -14,7 +14,6 @@ Everything you need to run, understand and change the studio. Start with the fir
 | [Publishing](publishing.md) | upload to YouTube and TikTok: OAuth, scheduling, covers, hashtags, TikTok Studio steps |
 | [Analytics](analytics.md) | read the channel numbers and see how `genera` picks formats and hours |
 | [Development](development.md) | run tests and CI, find a file, fix the usual failures |
-| [Legacy](legacy.md) | know which old code is still in the repository and why you can ignore it |
 
 ## The studio in one paragraph
 

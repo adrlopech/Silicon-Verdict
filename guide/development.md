@@ -10,7 +10,7 @@ cd remotion_studio && npx tsc --noEmit -p .     # type-check the Remotion projec
 python3 docs/check_portal.py                    # every local link, script and #anchor of the web portal exists
 ```
 
-`tests/` covers the Motion validators (including every format and every banked script), the story bank, the game registry, subtitles, output layout and the database connection.
+`tests/` covers the Motion validators (including every format and every banked script), the story bank, the game registry, output layout and the database connection.
 `tests/test_motion_validators.py` also runs two ffmpeg tests of the audio mix, so ffmpeg must be installed.
 
 **CI** (`.github/workflows/ci.yml`) runs on every push to `main` and every pull request, in three jobs: *python* (installs ffmpeg and all of `requirements.txt` plus `requirements-dev.txt`, then `ruff check .` and `pytest`),
@@ -21,7 +21,7 @@ A second workflow, `latest-video.yml`, runs every 15 minutes, reads the channel'
 
 | Path | Purpose |
 |---|---|
-| `main.py` | CLI entry point; `run_master_video_pipeline` routes everything to Motion |
+| `main.py` | Command-line entry point for one video (calls `run_motion_pipeline`) |
 | `config/settings.py` | All settings (read from `.env`): keys, models, voices, token path, video sizes |
 | `services/motion_generator.py` | Schema (`MotionProject`, `MotionSceneModel`), prompts, `FORMATS`, validators, fact-check, cursor and UI rules |
 | `services/motion_pipeline.py` | `run_motion_pipeline`: voice, render, cover, sound, QA, files, upload |
