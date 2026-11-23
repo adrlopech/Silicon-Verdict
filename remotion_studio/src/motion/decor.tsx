@@ -35,6 +35,29 @@ export const Decor: React.FC<{ scene: MotionScene; index: number; total: number 
       </AbsoluteFill>
     );
   }
+  if (look.decor === 'bars') {
+    // an equalizer in the empty lower-right corner
+    return (
+      <AbsoluteFill style={{ pointerEvents: 'none', opacity: p }}>
+        {Array.from({ length: 14 }).map((_, i) => {
+          const h = 40 + (0.5 + 0.5 * Math.sin(frame / 6 + i * 0.8) * Math.cos(frame / 13 + i * 0.5)) * 210;
+          return <div key={i} style={{ position: 'absolute', left: 560 + i * 34, bottom: bottom - 10, width: 20, height: h, borderRadius: 8, background: i % 3 ? theme.accent : theme.accent2 ?? theme.accent, opacity: 0.24 }} />;
+        })}
+      </AbsoluteFill>
+    );
+  }
+  if (look.decor === 'arcs') {
+    // quarter arcs growing out of the lower-left corner, slowly turning
+    return (
+      <AbsoluteFill style={{ pointerEvents: 'none', opacity: p }}>
+        <svg width={1080} height={HEIGHT} style={{ position: 'absolute', left: 0, top: 0 }}>
+          {[170, 290, 410, 530].map((r, i) => (
+            <path key={r} d={`M ${-10} ${HEIGHT - bottom - r} A ${r} ${r} 0 0 1 ${r - 10} ${HEIGHT - bottom}`} fill="none" stroke={i % 2 ? theme.accent2 ?? theme.accent : theme.accent} strokeWidth={5 - i} opacity={0.34 - i * 0.06} strokeDasharray={`${40 + i * 30} ${24}`} strokeDashoffset={-frame * (1 + i * 0.6)} />
+          ))}
+        </svg>
+      </AbsoluteFill>
+    );
+  }
   // dimension: a technical drawing's dimension line with the scene counter
   const y = HEIGHT - bottom - 40;
   const c = light ? 'rgba(10,18,32,0.55)' : 'rgba(255,255,255,0.55)';

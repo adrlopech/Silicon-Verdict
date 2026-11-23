@@ -42,7 +42,7 @@ Remotion, mixes the sound, runs a quality gate and uploads it. Videos last 62-90
 ```
 main.py                    CLI entry point (always produces Motion videos)
 services/motion_*.py       script generator, validators, pipeline (voice, render, sound, QA, upload)
-services/looks.py          chooses one of the 8 looks per video
+services/looks.py          chooses one of the 14 looks per video
 services/series.py         names and numbers each format ("Fix It Now #7")
 services/tech_news.py      today's headlines for the news format
 services/youtube.py        YouTube upload and thumbnails

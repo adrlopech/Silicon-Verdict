@@ -169,6 +169,104 @@ export const BigFx: React.FC<{ name: BigFxName; scene: MotionScene; index: numbe
       </svg>
     );
   }
+  if (name === 'hexes') {
+    // a honeycomb of hexagons around the centre, each pulsing in a wave that travels outwards
+    const hex = (r: number) => Array.from({ length: 6 }, (_, k) => `${r * Math.cos((Math.PI / 3) * k + Math.PI / 6)},${r * Math.sin((Math.PI / 3) * k + Math.PI / 6)}`).join(' ');
+    const R = 92;
+    const cells: [number, number][] = [[0, 0]];
+    for (let ring = 1; ring <= 3; ring++) for (let k = 0; k < 6 * ring; k++) {
+      const ang = (Math.PI / 3) * Math.floor(k / ring) + Math.PI / 6;
+      const next = ang + Math.PI / 3;
+      const f = (k % ring) / ring;
+      cells.push([ring * R * 1.73 * (Math.cos(ang) * (1 - f) + Math.cos(next) * f), ring * R * 1.73 * (Math.sin(ang) * (1 - f) + Math.sin(next) * f)]);
+    }
+    return (
+      <svg style={{ ...fill, opacity: 0.95 * enter }}>
+        {cells.map(([x, y], n) => {
+          const w = 0.5 + 0.5 * Math.sin(Math.hypot(x, y) / 90 - frame / 7);
+          return <polygon key={n} points={hex(R - 8)} transform={`translate(${cx + x} ${cy + y})`} fill={w > 0.8 ? a : 'none'} fillOpacity={0.25} stroke={n % 2 ? b : a} strokeWidth={3} opacity={0.2 + 0.6 * w} />;
+        })}
+      </svg>
+    );
+  }
+  if (name === 'orbitDots') {
+    // three tilted orbits with a dot travelling on each, like an atom
+    return (
+      <svg style={{ ...fill, opacity: 1 * enter }}>
+        {[0, 1, 2].map((i) => {
+          const rx = 420 - i * 60;
+          const ry = 150 + i * 20;
+          const tilt = i * 60 - 30;
+          const t = frame / (34 + i * 10) + i * 2;
+          return (
+            <g key={i} transform={`translate(${cx} ${cy}) rotate(${tilt})`}>
+              <ellipse rx={rx} ry={ry} fill="none" stroke={i % 2 ? b : a} strokeWidth={3} opacity={0.4} />
+              <circle cx={Math.cos(t) * rx} cy={Math.sin(t) * ry} r={15} fill={a} style={{ filter: `drop-shadow(0 0 12px ${a})` }} />
+            </g>
+          );
+        })}
+        <circle cx={cx} cy={cy} r={26} fill={b} opacity={0.6} />
+      </svg>
+    );
+  }
+  if (name === 'equalizer') {
+    // an audio equalizer along the lower part of the frame
+    const bars = 26;
+    return (
+      <svg style={{ ...fill, opacity: 0.85 * enter }}>
+        {Array.from({ length: bars }).map((_, i) => {
+          const h = 50 + (0.5 + 0.5 * Math.sin(frame / 5 + i * 0.9) * Math.cos(frame / 11 + i * 0.37)) * 340;
+          return <rect key={i} x={40 + i * 38} y={1450 - h} width={24} height={h} rx={10} fill={i % 3 ? a : b} opacity={0.35 + 0.4 * (h / 390)} />;
+        })}
+      </svg>
+    );
+  }
+  if (name === 'radar') {
+    // a radar: rings, a sweeping beam and blips that light up as it passes
+    const ang = (frame * 4) % 360;
+    return (
+      <svg style={{ ...fill, opacity: 1 * enter }}>
+        {[160, 280, 400].map((r) => <circle key={r} cx={cx} cy={cy} r={r} fill="none" stroke={a} strokeWidth={2} opacity={0.4} />)}
+        <path d={`M ${cx - 440} ${cy} H ${cx + 440} M ${cx} ${cy - 440} V ${cy + 440}`} stroke={a} strokeWidth={1.5} opacity={0.3} />
+        <g transform={`rotate(${ang} ${cx} ${cy})`}>
+          <path d={`M ${cx} ${cy} L ${cx + 410} ${cy} A 410 410 0 0 0 ${cx + 410 * Math.cos(-0.6)} ${cy + 410 * Math.sin(-0.6)} Z`} fill={a} opacity={0.25} />
+          <line x1={cx} y1={cy} x2={cx + 410} y2={cy} stroke={a} strokeWidth={5} style={{ filter: `drop-shadow(0 0 10px ${a})` }} />
+        </g>
+        {[0, 1, 2, 3].map((i) => {
+          const th = seed(`ba${i}`) * 360;
+          const r = 120 + seed(`br${i}`) * 270;
+          const lit = ((ang - th + 360) % 360) < 140 ? 1 - ((ang - th + 360) % 360) / 140 : 0;
+          return <circle key={i} cx={cx + r * Math.cos((th * Math.PI) / 180)} cy={cy + r * Math.sin((th * Math.PI) / 180)} r={12} fill={b} opacity={0.15 + 0.85 * lit} />;
+        })}
+      </svg>
+    );
+  }
+  if (name === 'comets') {
+    // diagonal comets with long tails crossing the frame
+    return (
+      <AbsoluteFill style={{ pointerEvents: 'none', opacity: 1 * enter }}>
+        {Array.from({ length: 6 }).map((_, i) => {
+          const sp = 18 + seed(`cs${i}`) * 20;
+          const t = ((frame * sp + seed(`ct${i}`) * 3000) % 3400) - 700;
+          const y0 = 360 + seed(`cy${i}`) * 900;
+          return <div key={i} style={{ position: 'absolute', left: t, top: y0 + t * 0.35, width: 380, height: 6, borderRadius: 6, background: `linear-gradient(90deg, transparent, ${i % 2 ? b : a})`, boxShadow: `0 0 18px ${a}`, transform: 'rotate(19deg)', transformOrigin: '100% 50%' }} />;
+        })}
+      </AbsoluteFill>
+    );
+  }
+  if (name === 'ripples') {
+    // ripples spreading from three points, like drops on water
+    return (
+      <svg style={{ ...fill, opacity: 0.95 * enter }}>
+        {[[330, 640], [760, 980], [470, 1280]].map(([x, y], k) =>
+          [0, 1, 2].map((i) => {
+            const t = ((frame + k * 26 + i * 22) % 78) / 78;
+            return <circle key={`${k}${i}`} cx={x} cy={y} r={30 + t * 330} fill="none" stroke={(k + i) % 2 ? b : a} strokeWidth={5 * (1 - t) + 1} opacity={0.7 * (1 - t)} />;
+          }),
+        )}
+      </svg>
+    );
+  }
   // frameDraw: a double border that draws itself around the screen
   const per = 2 * (900 + 1380);
   const p = interpolate(frame, [0, 34], [0, 1], { ...clamp, easing: EASE_OUT });

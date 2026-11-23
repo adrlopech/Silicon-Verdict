@@ -4,17 +4,17 @@ import type { MotionScene } from './types';
  * The ARSENAL: how the text of a scene is revealed, how the camera moves and which big element is added to the picture. Each is picked per scene, deterministically from the
  * scene's own words, never the same as the previous scenes, so a video never repeats itself and the same script always renders the same video.
  */
-export type Reveal = 'pop' | 'type' | 'draw' | 'scramble' | 'mask' | 'drop' | 'wave' | 'blur' | 'slice';
+export type Reveal = 'pop' | 'type' | 'draw' | 'scramble' | 'mask' | 'drop' | 'wave' | 'blur' | 'slice' | 'rise' | 'focus' | 'flip';
 /** The reveals picked by default are the calm ones; scramble, drop and slice are implemented (reveal.tsx) but kept out of the pool because they read as too intense. */
-export const REVEALS: Reveal[] = ['pop', 'type', 'draw', 'mask', 'wave', 'blur'];
+export const REVEALS: Reveal[] = ['pop', 'type', 'draw', 'mask', 'wave', 'blur', 'rise', 'focus', 'flip'];
 
-export type CameraMove = 'pushIn' | 'pullOut' | 'panLeft' | 'panRight' | 'tiltUp' | 'tiltDown' | 'dolly' | 'orbit' | 'crane' | 'punch';
-export const CAMERA_MOVES: CameraMove[] = ['pushIn', 'pullOut', 'panLeft', 'panRight', 'tiltUp', 'tiltDown', 'dolly', 'orbit', 'crane', 'punch'];
+export type CameraMove = 'pushIn' | 'pullOut' | 'panLeft' | 'panRight' | 'tiltUp' | 'tiltDown' | 'dolly' | 'orbit' | 'crane' | 'punch' | 'rollIn' | 'slideDiag' | 'breathe';
+export const CAMERA_MOVES: CameraMove[] = ['pushIn', 'pullOut', 'panLeft', 'panRight', 'tiltUp', 'tiltDown', 'dolly', 'orbit', 'crane', 'punch', 'rollIn', 'slideDiag', 'breathe'];
 
-export type BigFxName = 'rings' | 'rays' | 'scribble' | 'arrow' | 'giantIcon' | 'brackets' | 'laser' | 'speed' | 'stars' | 'diamonds' | 'pie' | 'crosshair' | 'dotwave' | 'frameDraw';
-export const BIG_FX: BigFxName[] = ['rings', 'rays', 'scribble', 'arrow', 'giantIcon', 'brackets', 'laser', 'speed', 'stars', 'diamonds', 'pie', 'crosshair', 'dotwave', 'frameDraw'];
+export type BigFxName = 'rings' | 'rays' | 'scribble' | 'arrow' | 'giantIcon' | 'brackets' | 'laser' | 'speed' | 'stars' | 'diamonds' | 'pie' | 'crosshair' | 'dotwave' | 'frameDraw' | 'hexes' | 'orbitDots' | 'equalizer' | 'radar' | 'comets' | 'ripples';
+export const BIG_FX: BigFxName[] = ['rings', 'rays', 'scribble', 'arrow', 'giantIcon', 'brackets', 'laser', 'speed', 'stars', 'diamonds', 'pie', 'crosshair', 'dotwave', 'frameDraw', 'hexes', 'orbitDots', 'equalizer', 'radar', 'comets', 'ripples'];
 /** The ones that are quiet enough to sit next to a stage visual. */
-export const BIG_FX_LIGHT: BigFxName[] = ['rays', 'speed', 'stars', 'frameDraw', 'dotwave'];
+export const BIG_FX_LIGHT: BigFxName[] = ['rays', 'speed', 'stars', 'frameDraw', 'dotwave', 'comets', 'ripples'];
 
 export const hash = (s: string): number => {
   let h = 2166136261;

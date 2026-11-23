@@ -421,7 +421,7 @@ def test_python_and_remotion_agree_on_the_looks():
 
 
 def test_every_format_has_valid_affinities():
-    assert all(set(v) <= set(LOOKS) for v in AFFINITY.values()) and len(LOOKS) == 8
+    assert all(set(v) <= set(LOOKS) for v in AFFINITY.values()) and len(LOOKS) == 14
 
 
 def test_a_look_is_not_reused_within_the_last_videos():
@@ -696,3 +696,25 @@ def test_priced_format_and_new_scene_types():
     assert make_validator(fmt="versus", retention=True)(MotionProject.model_validate(d2)) == []
     d2["format"] = "myth"
     assert any("split scenes belong" in x for x in make_validator(fmt="myth", retention=True)(MotionProject.model_validate(d2)))
+
+
+def test_every_visual_option_a_look_asks_for_is_implemented():
+    """A look names a background, caption style, decor and transitions; each must have code behind it, or the video would silently fall back to the default."""
+    src = LOOKS_TS.read_text(encoding="utf-8")
+    motion = LOOKS_TS.parent
+    read = lambda name: (motion / name).read_text(encoding="utf-8")  # noqa: E731
+    for bg in set(re.findall(r"bg: '(\w+)'", src)) - {"glow"}:
+        assert f"look.bg === '{bg}'" in read("primitives.tsx"), bg
+    for cap in set(re.findall(r"captions: '(\w+)'", src)) - {"plain", "oneword", "twotone"}:
+        assert f"style === '{cap}'" in read("captions.tsx"), cap
+    for decor in set(re.findall(r"decor: '(\w+)'", src)) - {"none", "dimension"}:
+        assert f"look.decor === '{decor}'" in read("decor.tsx"), decor
+    trans = read("transitions.ts")
+    for name in {t for group in re.findall(r"transitions: \[([^\]]*)\]", src, re.S) for t in re.findall(r"'(\w+)'", group)}:
+        assert f"  {name}: (p" in trans, name
+    for fx in re.findall(r"'(\w+)'", re.search(r"BIG_FX: BigFxName\[\] = \[([^\]]*)\]", read("anim.ts")).group(1)):
+        assert f"name === '{fx}'" in read("bigfx.tsx") or fx == "frameDraw", fx
+    for rv in re.findall(r"'(\w+)'", re.search(r"REVEALS: Reveal\[\] = \[([^\]]*)\]", read("anim.ts")).group(1)):
+        assert f"mode === '{rv}'" in read("reveal.tsx") or rv == "pop", rv
+    for mv in re.findall(r"'(\w+)'", re.search(r"CAMERA_MOVES: CameraMove\[\] = \[([^\]]*)\]", read("anim.ts")).group(1)):
+        assert f"{mv}: `" in read("MotionGraphic.tsx"), mv

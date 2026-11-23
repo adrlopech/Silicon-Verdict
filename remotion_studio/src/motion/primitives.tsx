@@ -68,6 +68,99 @@ export const Background: React.FC<{ light: boolean; background: string; accent: 
       </AbsoluteFill>
     );
   }
+  if (look.bg === 'stripes') {
+    // neon sign: slanted light stripes sliding across, a hot band sweeping through them
+    const slide = (frame * 0.9) % 84;
+    const band = ((frame * 5) % 3200) - 700;
+    return (
+      <AbsoluteFill style={{ background: base }}>
+        <AbsoluteFill style={{ backgroundImage: `repeating-linear-gradient(115deg, ${accent}1F 0px, ${accent}1F 3px, transparent 3px, transparent 84px)`, backgroundPosition: `${slide}px 0`, backgroundSize: '100% 100%' }} />
+        <AbsoluteFill style={{ background: `linear-gradient(115deg, transparent ${band / 32 - 10}%, ${a2}40 ${band / 32}%, transparent ${band / 32 + 10}%)` }} />
+        <AbsoluteFill style={{ background: `radial-gradient(ellipse 80% 38% at 50% 100%, ${a2}77 0%, transparent 72%)` }} />
+        {vignette}
+      </AbsoluteFill>
+    );
+  }
+  if (look.bg === 'bokeh') {
+    // out-of-focus lights drifting upward at different speeds
+    return (
+      <AbsoluteFill style={{ background: `linear-gradient(180deg, ${base}, #08143A)` }}>
+        {Array.from({ length: 11 }).map((_, i) => {
+          const d = 150 + random(`bk-d${i}`) * 330;
+          const x = random(`bk-x${i}`) * 110 - 5 + Math.sin(frame / (90 + i * 13) + i) * 4;
+          const y = ((random(`bk-y${i}`) * 140 - frame * (0.015 + random(`bk-s${i}`) * 0.03) * 10 / 10 * 1) % 130 + 130) % 130 - 15;
+          return <div key={i} style={{ position: 'absolute', left: `${x}%`, top: `${y}%`, width: d, height: d, marginLeft: -d / 2, marginTop: -d / 2, borderRadius: '50%', background: `radial-gradient(circle, ${i % 3 ? accent : a2}${i % 2 ? '55' : '33'} 0%, ${a2}22 55%, transparent 72%)`, filter: 'blur(6px)' }} />;
+        })}
+        {vignette}
+      </AbsoluteFill>
+    );
+  }
+  if (look.bg === 'circuit') {
+    // a circuit board: a trace grid with pulses running along the lines
+    const cell = 120;
+    const pulse = (i: number) => {
+      const row = Math.floor(random(`cp-r${i}`) * 15) + 1;
+      const x = (((frame * (7 + (i % 4) * 3) + random(`cp-x${i}`) * 1400) % 1500) - 200);
+      const horizontal = i % 2 === 0;
+      return <div key={i} style={{ position: 'absolute', left: horizontal ? x : row * cell - 3, top: horizontal ? row * cell - 3 : x + 300, width: horizontal ? 190 : 6, height: horizontal ? 6 : 190, borderRadius: 4, background: `linear-gradient(${horizontal ? 90 : 180}deg, transparent, ${accent})`, boxShadow: `0 0 18px ${accent}` }} />;
+    };
+    return (
+      <AbsoluteFill style={{ background: `linear-gradient(170deg, ${base}, #0B1B33)` }}>
+        <AbsoluteFill style={{ backgroundImage: `linear-gradient(${accent}1A 2px, transparent 2px), linear-gradient(90deg, ${accent}1A 2px, transparent 2px)`, backgroundSize: `${cell}px ${cell}px` }} />
+        <AbsoluteFill style={{ backgroundImage: `radial-gradient(circle, ${accent}55 5px, transparent 6px)`, backgroundSize: `${cell}px ${cell}px`, backgroundPosition: '-0px -0px' }} />
+        {Array.from({ length: 8 }).map((_, i) => pulse(i))}
+        <AbsoluteFill style={{ background: `radial-gradient(ellipse 70% 40% at 50% 100%, ${a2}55 0%, transparent 70%)` }} />
+        {vignette}
+      </AbsoluteFill>
+    );
+  }
+  if (look.bg === 'waves') {
+    // layered sine waves of light rolling across the lower half
+    const wave = (k: number, y: number, amp: number, c: string, o: number) => {
+      let d = `M 0 ${y}`;
+      for (let x = 0; x <= 1080; x += 40) d += ` L ${x} ${y + Math.sin(x / (150 + k * 60) + frame / (22 + k * 9) + k * 2) * amp}`;
+      d += ' L 1080 1920 L 0 1920 Z';
+      return <path key={k} d={d} fill={c} opacity={o} />;
+    };
+    return (
+      <AbsoluteFill style={{ background: `linear-gradient(180deg, ${base}, #05123F)` }}>
+        <svg width={1080} height={1920} style={{ position: 'absolute', left: 0, top: 0 }}>
+          {wave(0, 1250, 46, a2, 0.34)}
+          {wave(1, 1380, 56, accent, 0.2)}
+          {wave(2, 1500, 40, a2, 0.4)}
+          {wave(3, 1640, 32, accent, 0.18)}
+        </svg>
+        {vignette}
+      </AbsoluteFill>
+    );
+  }
+  if (look.bg === 'spotlight') {
+    // a cold cone of light swinging slowly from above, with dust drifting in it
+    const sway = Math.sin(frame / 80) * 6;
+    return (
+      <AbsoluteFill style={{ background: base }}>
+        <AbsoluteFill style={{ background: `conic-gradient(from ${180 - 20 + sway}deg at 50% -6%, transparent 0deg, ${accent}30 20deg, ${accent}55 20deg, transparent 40deg)`, WebkitMaskImage: 'linear-gradient(180deg, #000 0%, transparent 80%)', maskImage: 'linear-gradient(180deg, #000 0%, transparent 80%)', opacity: 0.8 }} />
+        {Array.from({ length: 16 }).map((_, i) => <div key={i} style={{ position: 'absolute', left: `${22 + random(`sp-x${i}`) * 56 + Math.sin(frame / 60 + i) * 2}%`, top: `${((random(`sp-y${i}`) * 100 + frame * 0.06 * (1 + (i % 3))) % 100)}%`, width: 5, height: 5, borderRadius: '50%', background: accent, opacity: 0.35 }} />)}
+        <AbsoluteFill style={{ background: `radial-gradient(ellipse 80% 24% at 50% 100%, ${a2}55 0%, transparent 70%)` }} />
+        {vignette}
+      </AbsoluteFill>
+    );
+  }
+  if (look.bg === 'rain') {
+    // streaks of light falling through dark water
+    return (
+      <AbsoluteFill style={{ background: `linear-gradient(180deg, ${base}, #03233F)` }}>
+        {Array.from({ length: 26 }).map((_, i) => {
+          const len = 180 + random(`rn-l${i}`) * 420;
+          const sp = 6 + random(`rn-s${i}`) * 14;
+          const y = ((frame * sp + random(`rn-y${i}`) * 2600) % (1920 + len * 2)) - len;
+          return <div key={i} style={{ position: 'absolute', left: 20 + (i / 26) * 1040 + random(`rn-x${i}`) * 26, top: y, width: 3 + random(`rn-w${i}`) * 3, height: len, borderRadius: 3, background: `linear-gradient(180deg, transparent, ${i % 4 ? accent : a2})`, opacity: 0.12 + random(`rn-o${i}`) * 0.3 }} />;
+        })}
+        <AbsoluteFill style={{ background: `radial-gradient(ellipse 80% 30% at 50% 100%, ${a2}66 0%, transparent 70%)` }} />
+        {vignette}
+      </AbsoluteFill>
+    );
+  }
   if (look.bg === 'dots') {
     const dot = light ? 'rgba(10,18,32,0.14)' : `${accent}33`;
     return (

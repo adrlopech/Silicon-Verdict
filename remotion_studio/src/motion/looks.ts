@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { JAKARTA, MANROPE, OUTFIT, SANS, SORA, SPACE } from './fonts';
+import { JAKARTA, LEXEND, MANROPE, OUTFIT, SANS, SORA, SPACE, SYNE, URBANIST } from './fonts';
 import { MotionScene } from './types';
 import { TransitionName } from './transitions';
 import type { Reveal } from './anim';
@@ -9,12 +9,12 @@ import type { Reveal } from './anim';
  * Every look is BLUE: the channel's colour in eight tonalities (cyan, ocean, indigo, cobalt, glass, paper, ice, blueprint), so the channel is recognisable
  * but two videos in a row never look alike. The pipeline picks one per video (services/looks.py) and passes its name in the props.
  */
-export type BgStyle = 'glow' | 'aurora' | 'mesh' | 'orbs' | 'dots' | 'blueprint' | 'mono';
+export type BgStyle = 'glow' | 'aurora' | 'mesh' | 'orbs' | 'dots' | 'blueprint' | 'mono' | 'stripes' | 'bokeh' | 'circuit' | 'waves' | 'spotlight' | 'rain';
 export type HudStyle = 'mono' | 'story' | 'brackets' | 'ticks';
 export type CameraStyle = 'drift' | 'push' | 'orbit' | 'handheld' | 'still';
-export type CaptionStyle = 'pill' | 'plain' | 'underline' | 'mono' | 'oneword' | 'twotone' | 'wordpill';
+export type CaptionStyle = 'pill' | 'plain' | 'underline' | 'mono' | 'oneword' | 'twotone' | 'wordpill' | 'karaoke' | 'box' | 'bounce';
 export type ParticleStyle = 'dots' | 'squares' | 'none';
-export type DecorStyle = 'none' | 'number' | 'ring' | 'dimension';
+export type DecorStyle = 'none' | 'number' | 'ring' | 'dimension' | 'bars' | 'arcs';
 
 export interface Look {
   name: string;
@@ -62,6 +62,25 @@ export const LOOKS: Record<string, Look> = {
   // a technical drawing: white lines on blueprint blue
   blueprint: { name: 'blueprint', accent: '#A6DCFF', accent2: '#2F6BFF', background: '#0A2A66', text: '#FFFFFF', light: false, bg: 'blueprint', floorGrid: false, particles: 'none', hud: 'ticks', align: 'left', upper: true, sans: SPACE, camera: 'drift',
     transitions: ['wipe', 'blinds', 'pushLeft', 'diagonal', 'fade'], captions: 'mono', scale: 1.06, decor: 'dimension' },
+  // NEW (Nov 2026): six more blues, each with its own background, typeface, caption style and decor
+  // neon sign: diagonal light stripes sweeping over near-black blue, capitals
+  neon: { name: 'neon', accent: '#5CF2FF', accent2: '#1E6BFF', background: '#04060F', text: '#FFFFFF', light: false, bg: 'stripes', floorGrid: false, particles: 'squares', hud: 'brackets', align: 'center', upper: true, sans: LEXEND, camera: 'handheld',
+    transitions: ['whip', 'pushDown', 'shutter', 'glitch', 'diagonal', 'cornerIris'], captions: 'bounce', scale: 1.08, decor: 'bars' },
+  // midnight bokeh: out-of-focus lights drifting, soft and cinematic
+  midnight: { name: 'midnight', accent: '#9CC4FF', accent2: '#2B5BFF', background: '#030617', text: '#FFFFFF', light: false, bg: 'bokeh', floorGrid: false, particles: 'dots', hud: 'story', align: 'left', upper: false, sans: URBANIST, camera: 'push',
+    transitions: ['fade', 'curtain', 'zoomOut', 'cornerIris', 'pushDown'], captions: 'karaoke', scale: 1.1, decor: 'arcs' },
+  // steel circuit board: traces and travelling pulses on gunmetal blue
+  steel: { name: 'steel', accent: '#6FB7FF', accent2: '#3A5F8F', background: '#07101C', text: '#F2F8FF', light: false, bg: 'circuit', floorGrid: false, particles: 'none', hud: 'ticks', align: 'left', upper: true, sans: SYNE, camera: 'drift',
+    transitions: ['shutter', 'wipe', 'pushLeft', 'curtain', 'blinds'], captions: 'box', scale: 1.04, decor: 'bars' },
+  // electric: rolling waves of saturated blue light
+  electric: { name: 'electric', accent: '#2DA8FF', accent2: '#0B3BFF', background: '#02061E', text: '#FFFFFF', light: false, bg: 'waves', floorGrid: false, particles: 'dots', hud: 'mono', align: 'center', upper: false, sans: OUTFIT, camera: 'orbit',
+    transitions: ['zoomThrough', 'curtain', 'spin', 'pushDown', 'iris', 'whip'], captions: 'wordpill', scale: 1.12, decor: 'arcs' },
+  // frost: a cold spotlight cone from above on dark slate blue
+  frost: { name: 'frost', accent: '#BFE3FF', accent2: '#5C8DE8', background: '#0A1426', text: '#F4F9FF', light: false, bg: 'spotlight', floorGrid: false, particles: 'none', hud: 'brackets', align: 'center', upper: false, sans: JAKARTA, camera: 'still',
+    transitions: ['fade', 'curtain', 'iris', 'cornerIris', 'zoomOut'], captions: 'box', scale: 1.06, decor: 'none' },
+  // deep sea: vertical streaks of cyan light falling through dark water
+  deepsea: { name: 'deepsea', accent: '#35D0FF', accent2: '#0A5AA8', background: '#021426', text: '#FFFFFF', light: false, bg: 'rain', floorGrid: false, particles: 'dots', hud: 'mono', align: 'left', upper: false, sans: SPACE, camera: 'push',
+    transitions: ['pushUp', 'shutter', 'zoomThrough', 'pushDown', 'glitch'], captions: 'karaoke', scale: 1.08, decor: 'bars' },
 };
 
 export const LOOK_NAMES = Object.keys(LOOKS);

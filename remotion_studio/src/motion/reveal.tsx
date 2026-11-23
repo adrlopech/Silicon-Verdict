@@ -68,6 +68,34 @@ export const RevealWord: React.FC<{ word: string; mode: Reveal; index: number; d
     );
   }
 
+  if (mode === 'rise') {
+    // each letter floats up a short way while fading in: calm and readable
+    return (
+      <span style={wrap}>
+        {chars.map((c, k) => {
+          const g = f - k * 1.1;
+          const p = spring({ frame: g, fps, config: { damping: 18, stiffness: 120, mass: 0.8 } });
+          const done = g > 40 || p >= 0.999;
+          return <span key={k} style={{ display: 'inline-block', opacity: done ? undefined : Math.min(1, Math.max(0, p * 1.4)), transform: done ? undefined : `translateY(${(1 - p) * size * 0.45}px)` }}>{c}</span>;
+        })}
+      </span>
+    );
+  }
+
+  if (mode === 'focus') {
+    // the word starts wide and out of focus and tightens into place
+    const p = spring({ frame: f, fps, config: { damping: 22, stiffness: 100, mass: 1 } });
+    if (p >= 0.999) return <span style={{ display: 'inline-block' }}>{word}</span>;
+    return <span style={{ display: 'inline-block', opacity: Math.min(1, p * 1.6), letterSpacing: `${(1 - p) * 0.35}em`, filter: `blur(${(1 - p) * 18}px)` }}>{word}</span>;
+  }
+
+  if (mode === 'flip') {
+    // the word flips up from the baseline like a split-flap board
+    const p = spring({ frame: f, fps, config: { damping: 15, stiffness: 150, mass: 0.8 } });
+    if (p >= 0.999) return <span style={{ display: 'inline-block' }}>{word}</span>;
+    return <span style={{ display: 'inline-block', opacity: Math.min(1, p * 2), transform: `perspective(700px) rotateX(${(1 - p) * -88}deg)`, transformOrigin: '50% 100%' }}>{word}</span>;
+  }
+
   if (mode === 'mask') {
     const p = spring({ frame: f, fps, config: { damping: 18, stiffness: 140, mass: 0.8 } });
     return (

@@ -101,6 +101,9 @@ const SceneShell: React.FC<{ scene: MotionScene; index: number; total: number; r
     dolly: `scale(${1.03 + 0.07 * amp * e}) translate(${dir * (e - 0.5) * 36 * amp}px, ${(0.5 - e) * 26 * amp}px)`,
     orbit: `scale(${1.04 + 0.03 * e}) rotate(${dir * (e - 0.5) * 2 * amp}deg) translate(${dir * (e - 0.5) * 30 * amp}px, 0px)`,
     crane: `scale(${1.05 + 0.04 * amp * e}) translate(0px, ${(1 - e) * 48 * amp}px)`,
+    rollIn: `scale(${1.08 + 0.02 * e}) rotate(${dir * (0.5 - e) * 3.2 * amp}deg)`,
+    slideDiag: `scale(1.09) translate(${dir * (e - 0.5) * 54 * amp}px, ${(0.5 - e) * 54 * amp}px)`,
+    breathe: `scale(${1.035 + 0.035 * amp * Math.sin(e * Math.PI)})`,
     punch: `scale(${1 + 0.09 * amp * interpolate(frame, [0, 9], [1, 0], { ...clamp, easing: EASE_OUT }) + 0.03 * amp * e})`,
   }[move];
   const camPunch = `${cam} ${punch > 0.001 ? `scale(${1 + 0.035 * punch})` : ''} ${jump > 0 ? `scale(${1 + 0.05 * jump})` : ''}`;

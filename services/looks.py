@@ -1,36 +1,36 @@
 """Visual looks of the Motion videos: which one a video gets.
 
 A look (remotion_studio/src/motion/looks.ts) is a whole visual identity: palette, background, headline typeface, alignment, HUD, camera, transitions and caption style.
-The audit of Nov 2026 found every video drawn with the same obsidian-and-cyan look, centred, with the same icons: they read as one video. Now each video gets one of eight looks,
-chosen by the format's affinities, never one of the last few used, and varied by a hash of the topic. All eight are blue (cyan, ocean, indigo, cobalt, glass, paper, ice, blueprint).
+The audit of Nov 2026 found every video drawn with the same obsidian-and-cyan look, centred, with the same icons: they read as one video. Now each video gets one of fourteen looks,
+chosen by the format's affinities, never one of the last few used, and varied by a hash of the topic. All are blue (cyan, ocean, indigo, cobalt, glass, paper, ice, blueprint, neon, midnight, steel, electric, frost, deepsea).
 """
 import hashlib
 from typing import List, Optional
 
-LOOKS = ("obsidian", "ocean", "indigo", "cobalt", "glass", "paper", "ice", "blueprint")  # all blue: the channel colour in eight tonalities
+LOOKS = ("obsidian", "ocean", "indigo", "cobalt", "glass", "paper", "ice", "blueprint", "neon", "midnight", "steel", "electric", "frost", "deepsea")  # all blue: the channel colour in fourteen tonalities
 
 # what each format looks best in (most fitting first); every look is allowed for the classic explainer
 AFFINITY = {
-    "fix": ("glass", "paper", "obsidian", "ocean"),
-    "decode": ("blueprint", "ice", "indigo", "paper"),
-    "whatif": ("indigo", "ocean", "ice", "glass"),
-    "versus": ("cobalt", "indigo", "obsidian", "ocean"),
-    "evolution": ("ocean", "ice", "blueprint", "cobalt"),
-    "myth": ("cobalt", "obsidian", "glass", "ice"),
-    "tier": ("ocean", "indigo", "cobalt", "paper"),
-    "hardware": ("blueprint", "obsidian", "glass", "ocean"),
+    "fix": ("glass", "paper", "steel", "obsidian", "ocean"),
+    "decode": ("blueprint", "steel", "ice", "frost", "indigo", "paper"),
+    "whatif": ("indigo", "midnight", "ocean", "deepsea", "ice", "glass"),
+    "versus": ("cobalt", "neon", "indigo", "electric", "obsidian", "ocean"),
+    "evolution": ("ocean", "deepsea", "ice", "midnight", "blueprint", "cobalt"),
+    "myth": ("cobalt", "neon", "obsidian", "frost", "glass", "ice"),
+    "tier": ("ocean", "electric", "indigo", "neon", "cobalt", "paper"),
+    "hardware": ("blueprint", "steel", "obsidian", "glass", "ocean"),
     "simple": ("paper", "ocean", "glass", "ice"),
-    "easter": ("indigo", "cobalt", "ocean", "obsidian"),
-    "top5": ("cobalt", "indigo", "ocean", "obsidian"),
+    "easter": ("indigo", "midnight", "cobalt", "ocean", "obsidian"),
+    "top5": ("cobalt", "neon", "electric", "indigo", "ocean", "obsidian"),
     "eli5": ("paper", "glass", "ocean", "ice"),
-    "fails": ("obsidian", "indigo", "cobalt", "blueprint"),
-    "numbers": ("blueprint", "ice", "cobalt", "ocean"),
-    "quiz": ("indigo", "cobalt", "glass", "ocean"),
+    "fails": ("obsidian", "neon", "indigo", "cobalt", "blueprint"),
+    "numbers": ("blueprint", "steel", "ice", "cobalt", "ocean"),
+    "quiz": ("indigo", "neon", "electric", "cobalt", "glass", "ocean"),
     "stop": ("cobalt", "obsidian", "glass", "paper"),
-    "rumor": ("glass", "ice", "indigo", "obsidian"),
+    "rumor": ("glass", "midnight", "ice", "frost", "indigo", "obsidian"),
     "review": ("paper", "obsidian", "ocean", "glass"),
-    "news": ("ocean", "ice", "blueprint", "glass"),
-    "priced": ("cobalt", "obsidian", "indigo", "ocean"),
+    "news": ("ocean", "frost", "ice", "blueprint", "glass"),
+    "priced": ("cobalt", "neon", "obsidian", "electric", "indigo", "ocean"),
     None: LOOKS,
 }
 AVOID_LAST = 3  # a look is not used again until three other videos have been made

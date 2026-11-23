@@ -18,7 +18,7 @@ The generator can never choose another accent colour. All text auto-fits: a long
 | `scenes3.tsx` | `split` and `units` |
 | `anim.ts`, `reveal.tsx`, `bigfx.tsx` | The animation arsenal: picker, text reveals, big on-screen elements |
 | `visuals.tsx` | The **stage**: 13 animated visuals behind text scenes |
-| `looks.ts` | The 8 looks |
+| `looks.ts` | The 14 looks |
 | `decor.tsx` | Decoration of the look, callouts and the shock effects |
 | `ambient.tsx` | Effects picked from what the narration names (a plane, lightning, snow...) |
 | `cursor.tsx` | The mouse pointer layer |
@@ -144,3 +144,18 @@ All 241 banked scripts (`docs/generated_scripts/bank/` and the unused `story_ban
 - `scripts/render_silent_preview.py`: renders a script with no narration (no ElevenLabs, no upload, no history) to check a design or a script.
 - `scripts/analyze_motion.py <video> --cuts 60,170`: measures pops and jitter per shot without watching.
 - `scripts/render_cover.mjs <props.json> <out.png> [publicDir] [frame]`: the cover still.
+
+## Visual options added in Nov 2026 (33)
+
+All are picked automatically; nothing needs to be set per video (the checks in `tests/test_motion_validators.py` fail if a look names an option without code behind it).
+
+- **6 looks** (all blue): `neon` (slanted light stripes, capitals), `midnight` (bokeh lights), `steel` (circuit board), `electric` (rolling waves), `frost` (spotlight cone), `deepsea` (falling light streaks). Each has its own typeface (Lexend, Urbanist, Rubik) and format affinities in `services/looks.py`.
+- **6 backgrounds** behind them: `stripes`, `bokeh`, `circuit`, `waves`, `spotlight`, `rain`.
+- **6 big effects** (`bigfx.tsx`): `hexes`, `orbitDots`, `equalizer`, `radar`, `comets`, `ripples` (the last two are light enough for stage scenes).
+- **3 camera moves** (backdrop only, never the text): `rollIn`, `slideDiag`, `breathe`.
+- **4 transitions**: `pushDown`, `curtain`, `cornerIris`, `shutter`.
+- **3 text reveals**: `rise`, `focus`, `flip` (they end untransformed, so settled text never shimmers).
+- **3 caption styles**: `karaoke` (colour sweeps through the spoken word), `box` (marker box on the word), `bounce`.
+- **2 decors** for the empty lower part of text scenes: `bars` (equalizer), `arcs` (turning quarter arcs).
+
+A neon-look test video renders in about 78 s (the obsidian benchmark takes 55 s on a quiet machine; the machine was busy), so these add no heavy layer. Check one new look with `scripts/render_cover.mjs <props> <png> "" <frame> <scene>` before changing its numbers.

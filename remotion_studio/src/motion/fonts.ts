@@ -19,3 +19,11 @@ export const SORA = loadSora('normal', { weights: ['600', '800'], subsets: ['lat
 export const OUTFIT = loadOutfit('normal', { weights: ['600', '800'], subsets: ['latin'] }).fontFamily;
 export const JAKARTA = loadJakarta('normal', { weights: ['600', '800'], subsets: ['latin'] }).fontFamily;
 export const MANROPE = loadManrope('normal', { weights: ['500', '800'], subsets: ['latin'] }).fontFamily;
+
+import { loadFont as loadLexend } from '@remotion/google-fonts/Lexend';
+import { loadFont as loadUrbanist } from '@remotion/google-fonts/Urbanist';
+import { loadFont as loadSyne } from '@remotion/google-fonts/Rubik';
+
+export const LEXEND = loadLexend('normal', { weights: ['600', '800'], subsets: ['latin'] }).fontFamily;
+export const URBANIST = loadUrbanist('normal', { weights: ['700', '800'], subsets: ['latin'] }).fontFamily;
+export const SYNE = loadSyne('normal', { weights: ['500', '800'], subsets: ['latin'] }).fontFamily;
