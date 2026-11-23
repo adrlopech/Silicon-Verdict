@@ -63,11 +63,11 @@ export const Captions: React.FC<{ chunks: Chunk[]; scene: MotionScene | undefine
     if (style === 'karaoke') {
       // a colour fill that sweeps through the word as it is spoken: spoken words stay in the accent colour
       const pr = Math.max(0, Math.min(1, (frame - w.s) / Math.max(1, w.e - w.s + 2)));
-      if (frame > w.e + 2) return { color: theme.accent };
-      return { color: 'transparent', backgroundImage: `linear-gradient(90deg, ${theme.accent} ${pr * 100}%, ${base} ${pr * 100}%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', transform: on ? 'scale(1.05)' : 'none' };
+      if (frame > w.e + 2) return { color: theme.accent, padding: '0 6px' };
+      return { padding: '0 6px', color: 'transparent', backgroundImage: `linear-gradient(90deg, ${theme.accent} ${pr * 100}%, ${base} ${pr * 100}%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', transform: on ? 'scale(1.05)' : 'none' };
     }
     if (style === 'box') return { color: on ? '#05070C' : base, background: on ? theme.accent : 'transparent', padding: '0 12px', borderRadius: 6, transform: on ? 'rotate(-2deg) scale(1.05)' : 'none', boxShadow: on ? `6px 6px 0 ${theme.accent2 ?? theme.accent}` : 'none' };
-    if (style === 'bounce') return { color: on ? theme.accent : base, transform: on ? `translateY(${-14 * Math.max(0, Math.sin(Math.min(1, (frame - w.s) / 6) * Math.PI))}px) scale(1.12)` : 'none', textShadow: on ? `0 0 22px ${theme.accent}99` : undefined };
+    if (style === 'bounce') return { padding: '0 10px', color: on ? theme.accent : base, transform: on ? `translateY(${-14 * Math.max(0, Math.sin(Math.min(1, (frame - w.s) / 6) * Math.PI))}px) scale(1.08)` : 'none', textShadow: on ? `0 0 22px ${theme.accent}99` : undefined };
     if (style === 'underline') return { color: on || key(w) ? theme.accent : base, borderBottom: `5px solid ${on ? theme.accent : 'transparent'}` };
     if (style === 'mono') return { color: on ? theme.accent : base, textShadow: on ? `0 0 18px ${theme.accent}` : 'none' };
     return { color: on ? theme.accent : base, transform: on ? 'scale(1.08)' : 'none' };

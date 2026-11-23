@@ -51,10 +51,10 @@ export const EXIT: Record<TransitionName, Styler> = {
   glitch: (p, s) => ({ opacity: p > 0.85 ? 0 : 1, transform: `translate(${jitter(s + 5, p) * 110 * p}px, ${jitter(s + 7, p) * 30 * p}px) skewX(${jitter(s + 1, p) * 18 * p}deg)`, filter: `hue-rotate(${p * 200 * jitter(s + 2, p)}deg) saturate(${1 + p * 2.4})` }),
   spin: (p) => ({ opacity: 1 - out(p), transform: `rotate(${out(p) * 12}deg) scale(${1 + 0.3 * out(p)})` }),
   diagonal: (p) => ({ opacity: 1 - io(p) * 0.4 }),
-  pushDown: (p) => ({ transform: `translateY(${io(p) * H * 0.5}px)`, opacity: 1 - io(p) * 0.6 }),
-  curtain: (p) => ({ opacity: 1 - io(p) * 0.5, transform: `scale(${1 - io(p) * 0.05})` }),
-  cornerIris: (p) => ({ opacity: 1 - io(p) * 0.4 }),
-  shutter: (p) => ({ opacity: 1 - io(p) * 0.5 }),
+  pushDown: (p) => ({ transform: `translateY(${io(p) * H * 0.5}px)`, opacity: Math.max(0, 1 - io(p) * 1.8) }),
+  curtain: (p) => ({ opacity: Math.max(0, 1 - io(p) * 1.8), transform: `scale(${1 - io(p) * 0.05})` }),
+  cornerIris: (p) => ({ opacity: Math.max(0, 1 - io(p) * 1.8) }),
+  shutter: (p) => ({ opacity: Math.max(0, 1 - io(p) * 1.8) }),
 };
 
 /** Deterministic pick that never repeats the previous transition and cycles through the whole set. */
