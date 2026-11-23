@@ -213,19 +213,15 @@ class YouTubeService:
 
     @staticmethod
     def make_thumbnail(image_path: str, out_path: Optional[str] = None) -> Path:
-        """Builds a 1280x720 (16:9) thumbnail from the vertical cover: a full-width band of the top part (title and the start of the artwork),
-        scaled to fill the frame. A bare 9:16 image makes YouTube pad it with a blurred, cropped copy of itself."""
+        """The thumbnail of a Short is its own vertical cover (9:16, 1080x1920) as a JPEG under 2 MB. Do not turn it into 16:9: YouTube Studio and the Shorts shelves show a vertical
+        slot, and a 16:9 image is cropped to its centre there (checked in Studio on 2026-11-23: "EVERY RADEON" became "ADEON E AT S PRICE"). Where a 16:9 slot is needed YouTube pads the vertical image itself."""
         from PIL import Image
-        src = Image.open(image_path).convert("RGB")
-        band_h = round(src.width * 9 / 16)
-        top = min(max(0, round(src.height * 0.16)), src.height - band_h)
-        thumb = src.crop((0, top, src.width, top + band_h)).resize((1280, 720), Image.LANCZOS)
         out = Path(out_path) if out_path else Path(image_path).with_name(Path(image_path).stem + "_thumb.jpg")
-        thumb.save(out, quality=90)
+        Image.open(image_path).convert("RGB").save(out, quality=90)
         return out
 
     def set_thumbnail(self, video_id: str, image_path: str) -> None:
-        """Sets the custom thumbnail of an uploaded video: the vertical cover laid on a 16:9 canvas (see make_thumbnail), a JPEG under 2 MB."""
+        """Sets the custom thumbnail of an uploaded video: its vertical cover (see make_thumbnail)."""
         img = Path(image_path)
         if not img.is_file():
             raise FileNotFoundError(f"Cover image does not exist: {image_path}")

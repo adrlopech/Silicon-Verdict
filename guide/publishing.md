@@ -13,7 +13,7 @@ Official channels: YouTube [@SiliconVerdictHQ](https://www.youtube.com/@SiliconV
 ```
 
 - Title, description and hashtags come from the `.txt` next to the TikTok copy. A scheduled upload is always `private` with `publishAt` (RFC 3339, UTC); YouTube publishes it at that time.
-- **Thumbnail:** if `<video>.png` exists (the [cover](pipeline.md#7-cover)), `upload_existing.py` sets it with `thumbnails().set` after the upload. A failure is reported, never fatal.
+- **Thumbnail:** if `<video>.png` exists (the [cover](pipeline.md#7-cover)), `upload_existing.py` sets it with `thumbnails().set` after the upload. A failure is reported, never fatal. The thumbnail is the vertical cover as it is (JPEG, 9:16): Studio crops a 16:9 image to its centre, so never convert it.
 - The API cannot delete videos with the stored scopes (403). Delete in YouTube Studio: the video's menu, Delete, tick the box, confirm.
 - Uploads can be refused for a daily limit (`uploadLimitExceeded`): `scripts/retry_youtube_uploads.py <manifest>` resends the missing ones.
 
