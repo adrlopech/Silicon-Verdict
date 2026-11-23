@@ -31,6 +31,7 @@ A second workflow, `latest-video.yml`, runs every 15 minutes, reads the channel'
 | `services/game_*.py` | Game footage, one-use ledger, 14-day blacklist, source dossiers |
 | `services/story_bank.py`, `services/history.py` | The script bank and `data/history.db` (history, registry, bank) |
 | `services/youtube.py`, `services/yt_analytics.py` | Upload and thumbnails; Analytics reader |
+| `services/notify.py`, `scripts/health_check.py` | macOS/webhook notifications (`NOTIFY_WEBHOOK`); pre-batch health check |
 | `services/voice.py`, `voice_synthesizer.py`, `local_tts.py` | ElevenLabs and the local backup |
 | `services/output_layout.py`, `services/cleaner.py` | Folders per video; the `limpieza` cleaner |
 | `remotion_studio/src/motion/` | The video (see [Motion engine](motion-engine.md)) |

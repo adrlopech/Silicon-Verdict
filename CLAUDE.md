@@ -33,6 +33,7 @@ PYTHONPATH=. .venv/bin/python scripts/genera_batch.py --topics reintento.json --
 .venv/bin/python main.py --motion-format <formato> [--export-only]
 .venv/bin/python scripts/upload_existing.py "<video.mp4>" [--privacy private --publish-at 2026-11-17T13:00:00Z]
 .venv/bin/python scripts/report_retention.py
+PYTHONPATH=. .venv/bin/python scripts/health_check.py [--notify]   # token, voice credits, bank, prices, disk (genera_batch runs it and notifies when it ends)
 .venv/bin/python -m pytest && .venv/bin/ruff check . && (cd remotion_studio && npx tsc --noEmit -p .)
 ```
 

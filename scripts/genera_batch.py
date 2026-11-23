@@ -280,6 +280,13 @@ def main() -> int:
     if args.plan:
         return 0
 
+    from scripts.health_check import FAIL, run as health
+    from services.notify import notify
+    blockers = [f"{n}: {d}" for st, n, d in health() if st == FAIL]
+    if blockers:  # a batch that cannot finish (dead token, no voice credits) is better stopped now than 15 minutes in
+        print("Health check failed:", *blockers, sep="\n  - ")
+        notify("Silicon Verdict: batch not started", "; ".join(blockers)[:200])
+        return 1
     from services.motion_pipeline import finish_motion_video
     done: List[Dict[str, Any]] = []
     out = Path(args.out) if args.out else LATEST
@@ -303,6 +310,7 @@ def main() -> int:
 
     run_plan(plan, lambda item: prepare_with_fallback(item, plan), lambda prep: finish_motion_video(prep, export_only=True), publish, args.public_first)
     failed = len(plan) - len(done)
+    notify("Silicon Verdict: batch " + ("finished" if not failed else "finished with gaps"), f"{len(done)} of {len(plan)} videos scheduled on YouTube for {day}" + (" - rerun the failed ones" if failed else " - TikTok is next"))
     print(f"\nYouTube is scheduled ({len(done)} of {len(plan)}{'; rerun the failed ones with --topics and a pinned slot' if failed else ''}). TikTok: finish in TikTok Studio from {out} (caption, hashtags picked from the dropdown, Programación at each slot).")
     return 0
 
