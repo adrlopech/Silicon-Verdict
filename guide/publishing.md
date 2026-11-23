@@ -43,19 +43,22 @@ Videos are scheduled by hand in **TikTok Studio** (`https://www.tiktok.com/tikto
 
 ### TikTok Studio step by step
 
-Per entry of `data/batch_latest.json` (`caption`, `hashtags`, `tiktok_copy`, `cover`, `madrid` hour):
+Per entry of `data/batch_latest.json` (`caption`, `hashtags`, `tiktok_copy`, `cover`, `madrid` hour). The page-side work is in `scripts/tiktok_studio.js`, which finds every element by class, role or text: no screen coordinates
+(they broke whenever the window size changed). Paste that file's body into the page once per load (`javascript_tool`); it defines `tt`.
 
 1. Open `/tiktokstudio/upload`, `find` "file input" and `file_upload` the `tiktok_copy`. Wait about 10 seconds for the form.
-2. **Description:** click the box (about x=700, y=380), `cmd+a`, `Delete`, type the `caption`. Then for **every hashtag**: type ` #tag`, wait about 4 s, click the first row of the dropdown (about x=380, y=556), wait 1 s.
-   A hashtag typed but not picked stays plain text. Check with JS: `[...document.querySelectorAll('.mention')].map(e=>e.innerText)` must list all of them.
-   If a tag shows no dropdown at all (for example `#pcbuilding`), delete it and use a common one (`#pcbuild`).
-3. **Cover:** `find` "Editar portada", scroll to it and click, `find` "Cargar portada file input" and `file_upload` the cover PNG, then **Guardar** (top right of the dialog; its position depends on the window height: take a screenshot).
-4. **Schedule:** `find` the radio "Programación" and click it. The date defaults to today. Open the time picker: it starts at the current time. The hour wheel moves about three hours per scroll tick; scroll,
-   then click the target hour. For minutes click the `00` row (scroll the minute wheel up if it is out of view). Close the picker by clicking an empty area. The time zone shows **Hora local**, the computer's zone: **(GMT+1)** in Madrid, so use the Madrid hour of the plan; if the computer is elsewhere (it showed GMT+0 in Lisbon) convert from the UTC hour. Verify the date, the hour and the zone before continuing.
-5. Press **Programar** (find the button by name and scroll to it). If a dialog "¿Seguir con la publicación?" appears (TikTok is still reviewing the content), press **Publicar ahora**: it continues the *scheduled* post.
-6. Check `/tiktokstudio/content`: the new posts show "16 nov, 20:00 (GMT+1) Madrid" style times.
+2. **Description:** `tt.focusCaption()`, then real keystrokes (`computer`): `cmd+a`, `Delete`, type the `caption`. The editor ignores programmatic edits and **crashes the page** on `execCommand`, so never edit it from JavaScript.
+   For **every hashtag**: type ` #tag` with `computer`, wait about 3 s, then `await tt.pickHashtag('#tag')` (it clicks the exact option; it returns `{ok, suggestions}`).
+   A hashtag typed but not picked stays plain text: `tt.state().hashtags` must list all of them. If `ok` is false the exact tag is not offered (for example `#steamdeck`); delete it and use one of the `suggestions`.
+3. **Cover:** `find` "Editar portada", click it, `find` "Cargar portada file input" and `file_upload` the cover PNG, then press **Guardar** (`await tt.press('Guardar')`).
+4. **Schedule:** `await tt.schedule({date: '2026-11-24', time: '20:00'})` (minutes in steps of 5). It selects "Programación", walks the calendar to the right month, picks the day and the hour and returns `{ok, value}`: check `ok`.
+   The time zone shows **Hora local**, the computer's zone: **(GMT+1)** in Madrid, so use the Madrid hour of the plan; if the computer is elsewhere (it showed GMT+0 in Lisbon) convert from the UTC hour.
+5. `await tt.press('Programar')`. If the dialog "¿Seguir con la publicación?" appears (TikTok is still reviewing the content), `await tt.confirmReview()` ("Publicar ahora" continues the *scheduled* post).
+   For a video that must go out right now, leave the radio on "Ahora" and `await tt.press('Publicar')`.
+6. Check `/tiktokstudio/content`: the new posts show "16 nov, 20:00 (GMT+1) Madrid" style times (the list can take a few seconds to show the new post: reload).
 
-Delete a post: the "..." menu of its row, Eliminar, confirm.
+To throw an upload away: `await tt.press('Descartar')` and confirm the red "Descartar" of the dialog. Delete a published post: the "..." menu of its row, Eliminar, confirm.
+If TikTok changes its page, the selectors to fix are the ones at the top of `tiktok_studio.js` (`.Picker__*`, `.TimePicker__*`, `.DatePicker__*`, `.mention`, `[role=option]`); `tt.state()` shows what the page offers.
 
 ### TikTok rules
 
