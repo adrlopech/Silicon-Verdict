@@ -64,7 +64,7 @@ Assets of the portal come from `scripts/make_portal_assets.py` and `scripts/make
 
 | Symptom | Cause and fix |
 |---|---|
-| `invalid_grant: Token has been expired or revoked` | The OAuth token expires every 7 days in Testing mode. Renew it: [Publishing](publishing.md#youtube-oauth) |
+| `invalid_grant: Token has been expired or revoked` | The OAuth token was revoked or expired (the app is in Production since 2026-11-23, so this should be rare). Renew it: [Publishing](publishing.md#youtube-oauth) |
 | A `genera` slot says `FAILED (nothing uploaded for this slot)` | Gemini 503/504, Groq "prompt too large" and validator rejections. Retry with a topics file, a proven format or a hand-written script: [Daily workflow](daily-workflow.md#when-a-slot-fails) |
 | `FileNotFoundError: .../bin/ffmpeg` | ffmpeg is not installed where `get_ffmpeg_bin()` looks. Install it (CI installs it with apt) |
 | YouTube `uploadLimitExceeded` | Daily upload limit. Wait about 24 hours, then `scripts/retry_youtube_uploads.py <manifest>` |

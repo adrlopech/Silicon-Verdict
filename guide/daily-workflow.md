@@ -97,7 +97,7 @@ A table with video, format, Madrid hour and YouTube link, and a note of anything
 | Top up the story bank | `.venv/bin/python scripts/refill_story_bank.py --series motion --format <format>` |
 | Clean generated output (`limpieza`) | `.venv/bin/python scripts/cleanup.py` (`--dry-run` to preview) |
 | Retention report | `.venv/bin/python scripts/report_retention.py` |
-| Renew the YouTube token (weekly) | see [Publishing](publishing.md#youtube-oauth) |
+| Renew the YouTube token (only after `invalid_grant`) | see [Publishing](publishing.md#youtube-oauth) |
 
 `limpieza` empties `output/tiktok/`, `output/tiktok_small/`, `output/youtube/` and `temp/`; it keeps `data/`, `assets/`, `.env`, credentials and logs. Nothing deletes `output/tiktok/` automatically, because
 the TikTok copies wait there for manual upload until you ask.

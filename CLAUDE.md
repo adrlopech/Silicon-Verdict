@@ -20,7 +20,7 @@ este archivo resume cómo operar el repositorio. El operador habla español; los
 - Canales oficiales: YouTube `@SiliconVerdictHQ` (subcanal de la cuenta de Google NotChego) y TikTok `@siliconverdict`. **Nunca** el canal de YouTube `@siliconverdict` ("Frame Floor").
 - Cambios de código: commit y push directos a `main`, sin ramas. No tocar los archivos ajenos a la tarea que ya estén modificados (`docs/.taste-skill/`, `skills-lock.json`, skills instaladas, `data/batch_*.json`).
 - Cada vídeo lleva su portada: `render_cover` la crea, YouTube la recibe como miniatura y la de TikTok se sube a mano en TikTok Studio.
-- El token de YouTube caduca cada 7 días (app en modo prueba). Si falla con `invalid_grant`, renovar con `scripts/authenticate_yt.py` (cuenta NotChego, subcanal Silicon Verdict): `guide/publishing.md`. Pedir permiso al operador cada vez.
+- La app de YouTube está en producción desde el 2026-11-23 (el token ya no debería caducar cada 7 días). Si falla con `invalid_grant`, renovar con `scripts/authenticate_yt.py` (cuenta NotChego, subcanal Silicon Verdict): `guide/publishing.md`. Pedir permiso al operador cada vez.
 - Texto de la cámara: nunca aplicar transformaciones de cámara a la capa de texto (hace vibrar el texto).
 - Evitar decimales en escenas `counter` (se redondean).
 

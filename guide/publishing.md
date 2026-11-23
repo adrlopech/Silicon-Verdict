@@ -19,9 +19,9 @@ Official channels: YouTube [@SiliconVerdictHQ](https://www.youtube.com/@SiliconV
 
 ### YouTube OAuth
 
-The Google Cloud app "Silicon Verdict Uploader" is in **Testing** mode, so the refresh token dies **every 7 days** (`invalid_grant: Token has been expired or revoked`). The pipeline then cannot upload or read analytics.
-
-Renew:
+The Google Cloud app "Silicon Verdict Uploader" (project `silicon-verdict-bot`) was published to **Production** on 2026-11-23, so its refresh token no longer dies every 7 days (that limit applies only to apps in Testing; the app stays "unverified", which only shows a warning at login).
+The token of 2026-11-23 is the first one issued in Production: if it still fails with `invalid_grant: Token has been expired or revoked` after a week, Production did not take effect: check the status in Google Cloud Console > Google Auth Platform > Público.
+A token also stops working if the Google account password changes or the access is revoked in the Google account settings; then renew it:
 
 ```bash
 BROWSER=true .venv/bin/python scripts/authenticate_yt.py      # prints the Google URL and listens on localhost:8080
@@ -32,7 +32,7 @@ press Continuar past "Google no ha verificado esta aplicación" (it is your own 
 The script writes `data/token.json`, `token.json` and `tokens/token.json` (and keeps the old one in `data/token_backups/`). Check with
 `.venv/bin/python -c "from services.yt_analytics import channel; print(channel())"`.
 
-The permanent fix is to publish the OAuth consent screen to **Production** in Google Cloud Console (the user's decision).
+To publish an app again (or for a new project): Google Auth Platform > Información de la marca needs the app name, support email, homepage, privacy and terms URLs (`https://adrlopech.github.io/Silicon-Verdict/`, `privacy.html`, `terms.html`) and that domain as an authorized domain; then Público > Publicar app.
 A refresh must keep the stored scopes: `services/youtube.py` loads the token without passing scopes for that reason.
 
 ## TikTok

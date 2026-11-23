@@ -29,7 +29,7 @@ HELP_TEXT = """=================================================================
 --------------------------------------------------------------------------------
  .venv/bin/python scripts/upload_existing.py "<video.mp4>" [--privacy private --publish-at 2026-11-17T13:00:00Z]
  .venv/bin/python scripts/retry_youtube_uploads.py data/batch_<date>.json
- .venv/bin/python scripts/authenticate_yt.py                           # renew the YouTube token (expires every 7 days)
+ .venv/bin/python scripts/authenticate_yt.py                           # renew the YouTube token (only if it fails with invalid_grant)
 
 4. BANKS, FOOTAGE, ANALYTICS
 --------------------------------------------------------------------------------

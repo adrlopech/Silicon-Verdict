@@ -8,7 +8,7 @@
 | **YouTube Data API** | `videos().list(part="statistics")` | Views, likes, comments right now (no retention) |
 | **TikTok Studio** | Browser, `https://www.tiktok.com/tiktokstudio/content` | Views, likes, comments per post (no API here). The list loads lazily: scroll to see older posts |
 
-The token needs `youtube.upload`, `youtube.readonly` and `yt-analytics.readonly`. It expires every 7 days while the Google Cloud app is in Testing mode; see [Publishing](publishing.md#youtube-oauth).
+The token needs `youtube.upload`, `youtube.readonly` and `yt-analytics.readonly`. The Google Cloud app is in Production, so it does not expire weekly; to renew it see [Publishing](publishing.md#youtube-oauth).
 
 ## The retention report
 
