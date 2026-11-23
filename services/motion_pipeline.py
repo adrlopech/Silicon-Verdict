@@ -538,8 +538,9 @@ def _draw_any_format() -> tuple:
     return kind, fmt
 
 
-def _select_source(kind: str, fmt: str, topic: Optional[str], facts: Optional[str], script: Optional[Any]) -> tuple:
+def _select_source(kind: str, fmt: str, topic: Optional[str], facts: Optional[str], script: Optional[Any], bank_only: bool = False) -> tuple:
     """Decides what the video is about and where its script comes from: a game (with footage) or a curiosity, a banked script, a hand-written one, or a new one from the LLM.
+    With bank_only=True the LLM is never called: a format without a banked script raises RuntimeError.
     Returns (project, game, facts, catalog, banked_game, kind)."""
     import random
     from services.game_facts import get_game_facts
@@ -575,6 +576,8 @@ def _select_source(kind: str, fmt: str, topic: Optional[str], facts: Optional[st
         project = pop_story("motion", lambda p: p.format == format_name and p.kind == "curiosity" and p.topic.strip().lower() not in recent)
     if script is not None:  # a script written by hand (data/scripts/*.json): used as it is, no model involved
         project = script
+    if project is None and bank_only:
+        raise RuntimeError(f"no banked script for format {format_name or 'auto'}")
     if project is None:
         project = generate_motion_project(topic, avoid_topics=get_recently_used_topics_safe(), kind="game" if game else "curiosity", game=game, catalog=catalog, facts=facts, fmt=format_name)
     return project, game, facts, catalog, banked_game, kind
@@ -653,9 +656,10 @@ class PreparedVideo:
     started: float
 
 
-def prepare_motion_video(topic: Optional[str] = None, kind: str = "auto", fmt: str = "auto", source_text: Optional[str] = None, script: Optional[Any] = None) -> PreparedVideo:
+def prepare_motion_video(topic: Optional[str] = None, kind: str = "auto", fmt: str = "auto", source_text: Optional[str] = None, script: Optional[Any] = None, bank_only: bool = False) -> PreparedVideo:
     """First half of the pipeline (network work, no CPU-heavy rendering): chooses the subject, gets the script (bank, hand-written or LLM + fact-check), stages the footage and records the narration.
-    Because it does not render, the next video of a batch can be prepared while the previous one renders. The arguments are those of `run_motion_pipeline`."""
+    Because it does not render, the next video of a batch can be prepared while the previous one renders. The arguments are those of `run_motion_pipeline`;
+    bank_only=True takes a banked script of the format or fails (never asks the LLM)."""
     from services.motion_generator import FORMATS
 
     started = time.time()
@@ -675,7 +679,7 @@ def prepare_motion_video(topic: Optional[str] = None, kind: str = "auto", fmt: s
         topic = topic or f"Tech briefing of {datetime.now(timezone.utc).strftime('%d %B %Y')}"
     facts = source_text if (source_text and topic and kind == "curiosity") else None
 
-    project, game, facts, catalog, banked_game, kind = _select_source(kind, fmt, topic, facts, script)
+    project, game, facts, catalog, banked_game, kind = _select_source(kind, fmt, topic, facts, script, bank_only)
     logger.info("Motion Graphics (%s%s%s): '%s' (%d scenes)", project.kind, f", {game}" if game else "", f", format {format_name}" if format_name else "", project.title, len(project.scenes))
     work = Path(settings.TMP_DIR) / f"run_motion_{run_id}"
     public = work / "public"

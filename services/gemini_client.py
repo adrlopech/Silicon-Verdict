@@ -286,13 +286,14 @@ def _user_content(text: str, images):
     return [{"type": "text", "text": text}] + [{"type": "image_url", "image_url": {"url": "data:image/jpeg;base64," + base64.b64encode(b).decode()}} for b in images]
 
 
-def _compatible_one_model(prov: tuple, model: str, prompt, system, schema, temperature, validate, max_output_tokens, attempts: int = 2, images=None):
+def _compatible_one_model(prov: tuple, model: str, prompt, system, schema, temperature, validate, max_output_tokens, attempts: int = 3, images=None):
     """One model of an OpenAI-compatible API. Raises _ProviderBusy (rate/size limit: try another model), GeminiUnavailable (fatal for the provider)
     or ValueError (this model cannot produce a valid answer)."""
     import requests
     name, url, key_attr, _m = prov
     headers = {"Authorization": f"Bearer {_provider_key(key_attr)}", "Content-Type": "application/json"}
     feedback, last_error, use_temperature, use_json_mode = "", "no attempt made", True, True
+    convo: list = []  # the model's rejected answers and why, so it repairs its own draft instead of starting from scratch
     room = min(max_output_tokens or PROVIDER_MAX_OUTPUT, PROVIDER_MAX_OUTPUT)
     if name in PROVIDER_TPM:  # size the output reserve so prompt + reserve always fits the per-minute limit (a 413 can then never happen)
         room = min(room, PROVIDER_TPM[name] - int((len(system) + len(prompt)) / 3.0) - 300)
@@ -300,7 +301,7 @@ def _compatible_one_model(prov: tuple, model: str, prompt, system, schema, tempe
             raise ValueError(f"prompt too large for {name}'s per-minute limit")
     for attempt in range(1, attempts + 1):
         body = {"model": model, "max_completion_tokens": room,
-                "messages": [{"role": "system", "content": system}, {"role": "user", "content": _user_content(prompt + feedback, images)}]}
+                "messages": [{"role": "system", "content": system}, {"role": "user", "content": _user_content(prompt + feedback, images)}, *convo]}
         if use_json_mode:
             body["response_format"] = {"type": "json_object"}
         if use_temperature:
@@ -341,6 +342,7 @@ def _compatible_one_model(prov: tuple, model: str, prompt, system, schema, tempe
         if r.status_code != 200:
             raise GeminiUnavailable(f"{name} error {r.status_code}: {r.text[:200]}")
         data = r.json()
+        text = ""
         try:
             text = data["choices"][0]["message"]["content"] or ""
             if not use_json_mode:  # plain-text answer: drop code fences / chatter around the JSON object
@@ -348,14 +350,17 @@ def _compatible_one_model(prov: tuple, model: str, prompt, system, schema, tempe
             obj = schema.model_validate_json(text) if schema is not None else json.loads(text)
         except Exception as exc:
             last_error = f"invalid answer: {str(exc)[:160]}"
-            feedback = f"\n\nYour previous answer was invalid ({last_error}). Return a corrected, complete JSON object."
+            if text:
+                convo = (convo + [{"role": "assistant", "content": text}, {"role": "user", "content": f"That answer was invalid ({last_error}). Return the complete, corrected JSON object."}])[-4:]
+            else:
+                feedback = f"\n\nYour previous answer was invalid ({last_error}). Return a corrected, complete JSON object."
             continue
         if validate:
             problems = validate(obj)
             if problems:
                 last_error = f"rejected by validator: {problems}"
                 logger.warning("%s/%s response rejected: %s", name, model, problems)
-                feedback = "\n\nYour previous answer was rejected for these reasons, fix ALL of them: " + "; ".join(map(str, problems))
+                convo = (convo + [{"role": "assistant", "content": text}, {"role": "user", "content": "That answer was rejected for these reasons. Fix ALL of them and return the complete corrected JSON object: " + "; ".join(map(str, problems))}])[-4:]
                 continue
         usage = data.get("usage") or {}
         return obj, (usage.get("prompt_tokens", 0), usage.get("completion_tokens", 0)), f"{name}:{model}"

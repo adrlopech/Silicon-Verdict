@@ -139,6 +139,39 @@ def prepare(p: Dict[str, Any]) -> Any:
     return prepare_motion_video(fmt=p["format"])
 
 
+FALLBACK_ORDER = ["versus", "myth", "whatif", "evolution", "decode", "tier", "hardware", "fix", "simple"]  # proven formats first; the ones the channel's numbers like best
+
+
+def choose_fallback(plan: List[Dict[str, Any]], failed: str, stock: Dict[str, int]) -> List[str]:
+    """Formats that can take over a slot whose script could not be made: the banked ones (stock > 0) that are not already in the plan, best first."""
+    taken = {p["format"] for p in plan} - {failed}
+    return [f for f in FALLBACK_ORDER if stock.get(f, 0) > 0 and f not in taken and f != failed]
+
+
+def prepare_with_fallback(p: Dict[str, Any], plan: List[Dict[str, Any]]) -> Any:
+    """`prepare`, and if the script cannot be made (every LLM saturated, validators rejecting everything) the slot is filled with a banked script of another format
+    instead of being lost. The plan item is updated so the manifest and the hour log show the format that was really made."""
+    from services.motion_pipeline import prepare_motion_video
+    from services.story_bank import ready_by_format
+    try:
+        return prepare(p)
+    except Exception as exc:
+        if p.get("script"):  # a hand-written script does not depend on any model: its problem is its own
+            raise
+        original = p["format"]
+        print(f"  {original}: script not possible ({str(exc)[:160]}). Looking for a banked script to fill the slot...")
+        for fmt in choose_fallback(plan, original, ready_by_format("motion")):
+            try:
+                prep = prepare_motion_video(fmt=fmt, bank_only=True)
+            except Exception as bank_exc:  # the bank was emptied meanwhile, or the script failed in voice / footage
+                print(f"  banked {fmt} failed: {str(bank_exc)[:120]}")
+                continue
+            p["format"], p["why"] = fmt, f"fallback for {original} (no script available): banked {fmt}"
+            print(f"  slot filled with a banked {fmt} script")
+            return prep
+        raise
+
+
 def can_prefetch(p: Dict[str, Any]) -> bool:
     """The next video can be prepared while this one renders unless it may pick game footage (the footage ledger is only updated when a video is finished)."""
     from services.motion_generator import FORMATS
@@ -227,7 +260,7 @@ def main() -> int:
             log = json.loads(LOG.read_text()) if LOG.is_file() else []
             LOG.write_text(json.dumps(log + [{"video_id": entry["video_id"], "slot": entry["slot"], "format": entry["format"], "date": str(day)}], indent=1))
 
-    run_plan(plan, prepare, lambda prep: finish_motion_video(prep, export_only=True), publish, args.public_first)
+    run_plan(plan, lambda item: prepare_with_fallback(item, plan), lambda prep: finish_motion_video(prep, export_only=True), publish, args.public_first)
     failed = len(plan) - len(done)
     print(f"\nYouTube is scheduled ({len(done)} of {len(plan)}{'; rerun the failed ones with --topics and a pinned slot' if failed else ''}). TikTok: finish in TikTok Studio from {out} (caption, hashtags picked from the dropdown, Programación at each slot).")
     return 0

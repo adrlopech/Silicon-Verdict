@@ -74,6 +74,17 @@ def count_ready(series: str, fmt: Optional[str] = None) -> int:
         return n
 
 
+def ready_by_format(series: str = "motion") -> Dict[str, int]:
+    """Unused scripts of a series per content format ('auto' = the classic explainer)."""
+    _ensure()
+    out: Dict[str, int] = {}
+    with get_db_connection() as conn:
+        for row in conn.execute("SELECT payload FROM story_bank WHERE series = ? AND used_at IS NULL", (series,)):
+            fmt = json.loads(row["payload"]).get("format") or "auto"
+            out[fmt] = out.get(fmt, 0) + 1
+    return out
+
+
 def pop_story(series: str, accept=None) -> Optional[Any]:
     """Returns the oldest unused banked story (and marks it used), or None.
     With `accept(story) -> bool`, stories it rejects are skipped and stay in the bank (e.g. a game blacklisted for now)."""
