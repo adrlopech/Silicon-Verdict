@@ -87,6 +87,34 @@ def video_report(days: int = 90) -> Dict[str, Dict[str, Any]]:
     return {r["video"]: r for r in _rows(res)}
 
 
+EARLY_DAYS = 3  # a video's first three days: the same window for every video, so a new video and an old one can be compared
+
+
+def early_report(vids: List[Dict[str, Any]], cache_path: Optional[Any] = None) -> Dict[str, Dict[str, Any]]:
+    """Views, engaged views and average view percentage of each video over its first EARLY_DAYS days (publish day included), for the videos at least that old.
+    A finished window never changes, so it is cached in `cache_path` (default data/early_stats.json) and only new videos cost an API call."""
+    import json
+    from pathlib import Path
+
+    path = Path(cache_path) if cache_path else Path(__file__).resolve().parent.parent / "data" / "early_stats.json"
+    cache: Dict[str, Dict[str, Any]] = json.loads(path.read_text()) if path.is_file() else {}
+    _, an = _services()
+    today = date.today()
+    changed = False
+    for v in vids:
+        vid, pub = v["video_id"], date.fromisoformat(v["published"][:10])
+        if vid in cache or v.get("privacy") != "public" or (today - pub).days < EARLY_DAYS + 1:
+            continue
+        res = an.reports().query(ids="channel==MINE", startDate=str(pub), endDate=str(pub + timedelta(days=EARLY_DAYS - 1)), metrics="views,engagedViews,averageViewPercentage",
+                                 dimensions="video", filters=f"video=={vid}").execute()
+        rows = _rows(res)
+        cache[vid] = {k: rows[0].get(k, 0) for k in ("views", "engagedViews", "averageViewPercentage")} if rows else {"views": 0, "engagedViews": 0, "averageViewPercentage": 0}
+        changed = True
+    if changed:
+        path.write_text(json.dumps(cache, indent=1))
+    return cache
+
+
 def retention_curve(video_id: str, days: int = 90) -> List[float]:
     """Audience watch ratio at 1 % steps of the video (the first point is above 1 when people replay a loop). Empty if YouTube has no curve yet."""
     _, an = _services()

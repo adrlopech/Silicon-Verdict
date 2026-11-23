@@ -28,11 +28,13 @@ este archivo resume cómo operar el repositorio. El operador habla español; los
 
 ```bash
 PYTHONPATH=. .venv/bin/python scripts/genera_batch.py --plan [--date AAAA-MM-DD] [--avoid fmt1,fmt2]
-PYTHONPATH=. .venv/bin/python scripts/genera_batch.py [--date AAAA-MM-DD]        # producir y programar en YouTube (tarda 10-20 min, ejecutar en segundo plano)
+PYTHONPATH=. .venv/bin/python scripts/genera_batch.py [--date AAAA-MM-DD] [--count 1-4]        # producir y programar en YouTube (tarda 10-20 min, ejecutar en segundo plano)
 PYTHONPATH=. .venv/bin/python scripts/genera_batch.py --topics reintento.json --out data/batches/retry.json   # rellenar un hueco que falló
 .venv/bin/python main.py --motion-format <formato> [--export-only]
 .venv/bin/python scripts/upload_existing.py "<video.mp4>" [--privacy private --publish-at 2026-11-17T13:00:00Z]
 .venv/bin/python scripts/report_retention.py
+PYTHONPATH=. .venv/bin/python scripts/comments.py [--post]   # comentarios sin responder + respuesta sugerida (necesita el permiso force-ssl)
+.venv/bin/python scripts/price_drops.py                   # movimientos de precio entre los dos últimos archivos de data/prices/
 PYTHONPATH=. .venv/bin/python scripts/health_check.py [--notify]   # token, voice credits, bank, prices, disk (genera_batch runs it and notifies when it ends)
 .venv/bin/python -m pytest && .venv/bin/ruff check . && (cd remotion_studio && npx tsc --noEmit -p .)
 ```

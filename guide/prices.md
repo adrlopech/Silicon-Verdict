@@ -35,3 +35,7 @@ replaces the `tier` pick, or the last pick. `--no-every` turns it off. With stal
 ## Adding a family
 
 Copy a file in `data/products/`, list 6-9 items with their lines, then collect prices for the new ids. Titles and hashtags come from the file (`title_name`, `hashtags`); the video's title always starts with "Every".
+
+## Price moves
+
+Every `data/prices/<date>.json` is also the history. `python scripts/price_drops.py [--min 10]` lists the moves between the two newest files, `--history rtx:5070` shows one product day by day, and `genera_batch.py` mentions in its plan when 8% moves exist (a good day for an "Every X" video). The only source today is PcComponentes read through Chrome; an affiliate feed would need an affiliate account first.

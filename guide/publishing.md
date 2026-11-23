@@ -83,3 +83,7 @@ Never put two videos on the same hour.
 - Titles end with joined-word hashtags (`#siliconverdict #pcbuild #gpu`); `joined_hashtag()` removes spaces.
 - The description of a game video lists the footage credits.
 - `pinned_comment` is the two-option vote of the outro ("A or B? Reply with one word."). It must be posted by hand; the API flow does not post comments.
+
+## Comments
+
+`python scripts/comments.py` lists the comments of the last days that the channel has not answered, with a suggested reply each (written to `notes/comments_<date>.md`); `--post` asks y / n / your own text for every one and posts only the approved ones. It needs the `youtube.force-ssl` scope, which also allows deleting a video: re-run `scripts/authenticate_yt.py` once (NotChego account, Silicon Verdict channel) and approve it. Without it the script says so and does nothing.

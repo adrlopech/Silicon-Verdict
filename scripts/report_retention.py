@@ -63,10 +63,21 @@ def history_index() -> Dict[str, Dict[str, str]]:
     return out
 
 
+def cover_styles() -> Dict[str, str]:
+    """video id -> cover style ("a"/"b") from the batch log (videos made before the test have none)."""
+    path = BASE_DIR / "data" / "batches" / "log.json"
+    try:
+        return {e["video_id"]: e["cover_style"] for e in json.loads(path.read_text()) if e.get("cover_style")}
+    except (OSError, ValueError):
+        return {}
+
+
 def build(days: int, min_views: int) -> Dict[str, Any]:
     ch = ya.channel()
     vids = ya.videos()
     rep = ya.video_report(days)
+    early = ya.early_report(vids)
+    styles = cover_styles()
     hist = history_index()
     rows: List[Dict[str, Any]] = []
     for v in vids:
@@ -74,7 +85,10 @@ def build(days: int, min_views: int) -> Dict[str, Any]:
         views = int(r.get("views", 0))
         info = hist.get(v["video_id"]) or hist.get(_norm(v["title"])) or {}
         curve = ya.retention_curve(v["video_id"], days) if views >= min_views else []
+        e = early.get(v["video_id"])
         rows.append({
+            "cover_style": styles.get(v["video_id"], ""), "early_views": int(e["views"]) if e else None, "early_engaged_pct": round(100 * e["engagedViews"] / e["views"], 1) if e and e["views"] else None,
+            "early_avg_pct": round(e["averageViewPercentage"], 1) if e and e["views"] else None,
             "video_id": v["video_id"], "title": v["title"], "published": v["published"][:10], "length": v["seconds"], "privacy": v["privacy"], "views": views,
             "engaged_pct": round(100 * r.get("engagedViews", 0) / views, 1) if views else None,
             "avg_view_pct": round(r.get("averageViewPercentage", 0), 1) if views else None, "avg_seconds": r.get("averageViewDuration"),
@@ -99,6 +113,16 @@ def groups(rows: List[Dict[str, Any]], key: str) -> List[Dict[str, Any]]:
     return sorted(out, key=lambda g: -g["avg"])
 
 
+def early_groups(rows: List[Dict[str, Any]], key: str) -> List[Dict[str, Any]]:
+    """Per field value: videos with a finished first-3-day window, their mean views in it, and the mean of their early average view % (the fair comparison between old and new videos)."""
+    acc: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+    for r in rows:
+        if r[key] and r.get("early_views") is not None:
+            acc[r[key]].append(r)
+    out = [{"name": n, "videos": len(rs), "early_per_video": round(sum(x["early_views"] for x in rs) / len(rs)), "early_avg": round(sum(x["early_avg_pct"] or 0 for x in rs) / len(rs), 1)} for n, rs in acc.items()]
+    return sorted(out, key=lambda g: -g["early_per_video"])
+
+
 def fmt(v: Optional[float], nd: int = 0) -> str:
     return "-" if v is None else f"{v:.{nd}f}"
 
@@ -116,6 +140,10 @@ def render(rep: Dict[str, Any]) -> str:
         g = groups(rows, key)
         lines += ["", f"## By {name} (views-weighted)", ""]
         lines += ["| " + name + " | videos | views | views / video | engaged | avg% |", "|--|--:|--:|--:|--:|--:|"] + [f"| {x['name']} | {x['videos']} | {x['views']} | {x['per_video']} | {x['engaged']}% | {x['avg']} |" for x in g] if g else ["Nothing yet: videos carry no " + name + " in the history."]
+    for key, name in (("format", "format"), ("pattern", "title pattern"), ("cover_style", "cover style (a = cold open, b = second scene)")):
+        g = early_groups(rows, key)
+        if g:
+            lines += ["", f"## First 3 days by {name} (same window for every video)", "", "| " + name + " | videos | views in 3 days / video | avg% |", "|--|--:|--:|--:|"] + [f"| {x['name']} | {x['videos']} | {x['early_per_video']} | {x['early_avg']} |" for x in g]
     lines += ["", "## Traffic sources", "", "| source | views | avg% |", "|--|--:|--:|"] + [f"| {t['insightTrafficSourceType']} | {t['views']} | {t['averageViewPercentage']:.0f} |" for t in rep["traffic"]]
     lines += ["", "## Last days", "", "| day | views | minutes | avg% | subs |", "|--|--:|--:|--:|--:|"] + [f"| {d['day']} | {d['views']} | {d['estimatedMinutesWatched']} | {d['averageViewPercentage']:.0f} | {d['subscribersGained']} |" for d in rep["daily"][-7:]]
     return "\n".join(lines) + "\n"

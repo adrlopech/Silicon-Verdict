@@ -54,14 +54,24 @@ def render_motion(props: dict, out_mp4: Path, public_dir: Optional[Path] = None)
     return out_mp4
 
 
-def render_cover(props: dict, out_png: Path, public_dir: Optional[Path] = None) -> Optional[Path]:
-    """The cover (thumbnail) of a video: a still of its cold open without subtitles (scripts/render_cover.mjs). Best effort: None when it cannot be made, the video never waits on it."""
+COVER_STYLES = {"a": (0, 42), "b": (1, 100)}  # style -> (scene index, frame in it): "a" the cold open (the claim), "b" the second scene once its first element is in place
+
+
+def cover_style(title: str) -> str:
+    """The cover style of a video, fixed by its title so a rerun gives the same cover; the two halves of the videos are compared in scripts/report_retention.py (cover style table)."""
+    import zlib
+    return "ab"[zlib.crc32(title.encode("utf-8")) % 2]
+
+
+def render_cover(props: dict, out_png: Path, public_dir: Optional[Path] = None, style: str = "a") -> Optional[Path]:
+    """The cover (thumbnail) of a video: a still without subtitles (scripts/render_cover.mjs) of its cold open (style "a") or of its second scene (style "b").
+    Best effort: None when it cannot be made, the video never waits on it."""
     import json
     out_png = Path(out_png).resolve()
     props_path = out_png.with_suffix(".props.json")
     try:
         props_path.write_text(json.dumps(props, ensure_ascii=False), encoding="utf-8")
-        cmd = ["node", str(settings.BASE_DIR / "scripts" / "render_cover.mjs"), str(props_path), str(out_png)] + ([str(public_dir)] if public_dir else [])
+        cmd = ["node", str(settings.BASE_DIR / "scripts" / "render_cover.mjs"), str(props_path), str(out_png), str(public_dir or ""), str(COVER_STYLES.get(style, COVER_STYLES["a"])[1]), str(COVER_STYLES.get(style, COVER_STYLES["a"])[0])]
         proc = subprocess.run(cmd, cwd=str(settings.BASE_DIR), capture_output=True, text=True, timeout=300)
         if proc.returncode != 0 or not out_png.is_file():
             logger.warning("Cover not rendered: %s", (proc.stdout + proc.stderr)[-300:])
@@ -704,7 +714,8 @@ def finish_motion_video(prep: PreparedVideo, export_only: bool = False, dry_run:
     project, work, run_id = prep.project, prep.work, prep.run_id
     try:
         raw = render_motion(project.to_props(), work / "raw.mp4", prep.public)
-        cover = render_cover(project.to_props(), work / "cover.png", prep.public)
+        style = cover_style(project.title)
+        cover = render_cover(project.to_props(), work / "cover.png", prep.public, style)
         starts, acc = [], 0
         for sc in project.scenes:
             starts.append(acc)
@@ -739,7 +750,7 @@ def finish_motion_video(prep: PreparedVideo, export_only: bool = False, dry_run:
         logger.info("Motion Graphics video ready in %.0fs: %s", time.time() - prep.started, out["tiktok"])
         return {"kind": project.kind, "format": project.format, "game": project.game, "youtube_video": str(out["youtube"]), "youtube_url": youtube_url, "tiktok_video": str(out["tiktok"]), "tiktok_metadata": str(meta),
                 "title": project.title, "topic": project.topic, "qa_failures": fails, "uploaded": not export_only and not dry_run,
-                "duration": project.total_frames / FPS, "tiktok_cover": str(out["tiktok"].with_suffix(".png")) if cover else ""}
+                "duration": project.total_frames / FPS, "tiktok_cover": str(out["tiktok"].with_suffix(".png")) if cover else "", "cover_style": style}
     except BaseException:
         from services.story_bank import release_story
         release_story(project)

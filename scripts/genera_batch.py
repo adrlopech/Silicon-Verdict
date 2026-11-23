@@ -41,7 +41,7 @@ FORMAT_ALIASES = {"hardware deep dive": "hardware", "everyday curiosities": "cla
 def format_stats() -> Dict[str, Dict[str, float]]:
     """format -> {videos, views, score} from YouTube Analytics; {} when analytics are unavailable."""
     try:
-        from scripts.report_retention import build, groups
+        from scripts.report_retention import build, early_groups, groups
         rep = build(90, 10 ** 9)  # no retention curves needed here
     except Exception as exc:  # token missing, offline...
         print(f"  (analytics unavailable: {exc}; using the format weights)")
@@ -55,6 +55,12 @@ def format_stats() -> Dict[str, Dict[str, float]]:
         prev["score"] = (prev["score"] * prev["views"] + score * g["views"]) / tot if tot else score
         prev["videos"] += g["videos"]
         prev["views"] = tot
+    for g in early_groups(rep["videos"], "format"):  # the fair comparison: views in each video's first 3 days, whatever its age
+        name = FORMAT_ALIASES.get(g["name"], g["name"])
+        prev = out.setdefault(name, {"videos": 0, "views": 0, "score": 0.0})
+        n0, e0 = prev.get("early_videos", 0), prev.get("early_per_video", 0.0)
+        prev["early_videos"] = n0 + g["videos"]
+        prev["early_per_video"] = (e0 * n0 + g["early_per_video"] * g["videos"]) / prev["early_videos"]
     return out
 
 
@@ -67,9 +73,10 @@ def pick_formats(stats: Dict[str, Dict[str, float]], rng: random.Random, n: int 
         if fmt not in [c["format"] for c in chosen]:
             chosen.append({"format": fmt, "why": why})
 
-    proven = sorted([f for f in pool if stats.get(f, {}).get("videos", 0) >= 1 and stats[f]["views"] >= 100], key=lambda f: -stats[f]["score"])
+    proven = sorted([f for f in pool if stats.get(f, {}).get("videos", 0) >= 1 and stats[f]["views"] >= 100], key=lambda f: (-stats[f].get("early_per_video", 0.0), -stats[f]["score"]))
     for f in proven[:2]:
-        add(f, f"proven: {stats[f]['score']:.0f} points over {stats[f]['videos']} video(s), {stats[f]['views']:.0f} views")
+        early = f", {stats[f]['early_per_video']:.0f} views per video in 3 days (n={stats[f]['early_videos']})" if stats[f].get("early_videos") else ""
+        add(f, f"proven: {stats[f]['score']:.0f} points over {stats[f]['videos']} video(s), {stats[f]['views']:.0f} views{early}")
     explore = sorted(pool, key=lambda f: (stats.get(f, {}).get("videos", 0), -FORMAT_WEIGHTS.get(f, 1)))
     for f in explore:
         if len(chosen) >= 3:
@@ -247,6 +254,7 @@ def main() -> int:
     ap.add_argument("--seed", type=int, default=None)
     ap.add_argument("--public-first", action="store_true", help="the first video of the plan (its slot already passed) is uploaded PUBLIC right away instead of scheduled")
     ap.add_argument("--avoid", default="", help="comma-separated formats to leave out (e.g. the ones of the previous day)")
+    ap.add_argument("--count", type=int, default=4, choices=range(1, 5), metavar="1-4", help="how many videos to make (default 4); fewer take the best-ranked slots")
     ap.add_argument("--no-every", action="store_true", help="do not give one slot to an 'Every X at today's price' video (they need prices collected in the last 3 days)")
     ap.add_argument("--out", default=None, help="where to write the batch manifest (default data/batches/latest.json)")
     ap.add_argument("--topics", default=None, help="JSON file with the 4 videos to make instead of the data-picked formats: [{format, topic, source (path to a text file), why}]; "
@@ -259,8 +267,8 @@ def main() -> int:
         picks = json.loads(Path(args.topics).read_text(encoding="utf-8"))
     else:
         stats = format_stats()
-        picks = pick_formats(stats, random.Random(args.seed), avoid=[x for x in args.avoid.split(",") if x])
-        if not args.no_every:
+        picks = pick_formats(stats, random.Random(args.seed), n=args.count, avoid=[x for x in args.avoid.split(",") if x])
+        if not args.no_every and args.count >= 2:  # a single video is the best format, not a price list
             every, note = every_pick(picks)
             if every:
                 at = next((i for i, x in enumerate(picks) if x["format"] == "tier"), len(picks) - 1)
@@ -277,6 +285,13 @@ def main() -> int:
     print(f"\nPlan for {day} (UTC; Madrid = UTC+1):")
     for p in plan:
         print(f"  {p['slot']} UTC / {p['madrid']} Madrid  {p['format']:<10} {p['why']}")
+    try:
+        from services.prices import moves
+        big = moves(8.0)
+        if big:
+            print(f"\nPrice moves of 8% or more since the previous price file: {len(big)} (scripts/price_drops.py) - a good day for an 'Every X' video.")
+    except Exception:  # noqa: BLE001 - informative only
+        pass
     if args.plan:
         return 0
 
@@ -302,13 +317,13 @@ def main() -> int:
         if not m:
             print("  YouTube upload failed:", (up.stdout + up.stderr)[-300:])
         small = small_copy(res["tiktok_video"], SMALL_DIR / f"{Path(video).parent.name[:40].replace(' ', '_')}.mp4")
-        entry = {**p, **({"public_now": True} if now else {}), "title": res["title"], **tiktok_caption(res["title"]), "video": video, "tiktok_copy": str(small), "cover": res.get("tiktok_cover") or None, "video_id": m[1] if m else None}
+        entry = {**p, **({"public_now": True} if now else {}), "title": res["title"], **tiktok_caption(res["title"]), "video": video, "tiktok_copy": str(small), "cover": res.get("tiktok_cover") or None, "cover_style": res.get("cover_style"), "video_id": m[1] if m else None}
         done.append(entry)
         print(f"  {res['title']}\n  YouTube: {m[0] if m else 'FAILED'}  | TikTok copy: {small}")
         out.write_text(json.dumps(done, ensure_ascii=False, indent=1))  # saved after every video
         if entry["video_id"]:
             log = json.loads(LOG.read_text()) if LOG.is_file() else []
-            LOG.write_text(json.dumps(log + [{"video_id": entry["video_id"], "slot": entry["slot"], "format": entry["format"], "date": str(day), **({"family": entry["family"]} if entry.get("family") else {})}], indent=1))
+            LOG.write_text(json.dumps(log + [{"video_id": entry["video_id"], "slot": entry["slot"], "format": entry["format"], "cover_style": entry.get("cover_style"), "date": str(day), **({"family": entry["family"]} if entry.get("family") else {})}], indent=1))
 
     run_plan(plan, lambda item: prepare_with_fallback(item, plan), lambda prep: finish_motion_video(prep, export_only=True), publish, args.public_first)
     failed = len(plan) - len(done)

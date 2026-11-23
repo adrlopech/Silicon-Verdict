@@ -74,3 +74,32 @@ def spoken_euros(amount: float) -> str:
 
 def clean_listing(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
+
+
+def price_files() -> list:
+    return sorted(PRICES_DIR.glob("????-??-??.json"))
+
+
+def history(key: str) -> list:
+    """[(date, price)] of '<family>:<item id>' over every stored price file, oldest first (days without a listing are left out)."""
+    out = []
+    for path in price_files():
+        entry = json.loads(path.read_text(encoding="utf-8")).get("prices", {}).get(key)
+        if entry and entry.get("price"):
+            out.append((path.stem, float(entry["price"])))
+    return out
+
+
+def moves(min_pct: float = 5.0) -> list:
+    """Price changes between the two newest price files: [{key, before, after, pct}] with |pct| >= min_pct, the biggest drops first.
+    Items missing from either day are ignored. [] when fewer than two files exist."""
+    files = price_files()
+    if len(files) < 2:
+        return []
+    old, new = (json.loads(p.read_text(encoding="utf-8")).get("prices", {}) for p in files[-2:])
+    out = []
+    for key, entry in new.items():
+        a, b = (old.get(key) or {}).get("price"), (entry or {}).get("price")
+        if a and b and abs(b / a - 1) * 100 >= min_pct:
+            out.append({"key": key, "before": float(a), "after": float(b), "pct": round((b / a - 1) * 100, 1)})
+    return sorted(out, key=lambda m: m["pct"])

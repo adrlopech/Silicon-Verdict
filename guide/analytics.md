@@ -58,3 +58,8 @@ Lessons of the reference channel analysed on 2026-11-23 (a tech account with 3 v
 
 Ideas that need the account owner (the API token cannot change them): the YouTube channel description and the TikTok bio, for example
 *"Every GPU, CPU and spec decoded in 60 seconds, with today's real prices. New videos daily."*
+
+## First-three-days numbers and the cover test
+
+- **Same window for every video.** `services/yt_analytics.early_report` reads each public video's views and average view % over its first three days (cached in `data/early_stats.json`, so only new videos cost a call). `report_retention.py` prints them by format, title pattern and cover style, and `genera_batch.py` ranks "proven" formats by views per video in those three days (the plan reason shows `n=`; fewer than ~5 videos is still a hint, not a result).
+- **Cover styles.** The cover of each video is style `a` (the cold open, as before) or `b` (the second scene), chosen by a hash of the title, so half of the videos of each format get each. `cover_style` is recorded in `data/batches/log.json`; the report compares both styles. Judge it only after 15+ videos per style. YouTube allows changing a thumbnail later, so a losing style costs nothing to drop.

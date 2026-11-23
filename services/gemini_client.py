@@ -416,7 +416,7 @@ def generate_structured(
     strict_provider: bool = False,
 ) -> Tuple[Any, Tuple[int, int], str]:
     """Gemini first; if no Gemini model can serve the request, each configured fallback provider is tried in order.
-    `provider_first="groq"` tries that provider before Gemini (e.g. a stronger model for fact-checking); `provider_models` restricts that provider to those
+    `provider_first="cloudflare"` tries that provider before Gemini (e.g. a stronger model for fact-checking); `provider_models` restricts that provider to those
     models only (no weaker fallback within it); `strict_provider=True` raises instead of falling back to Gemini or other providers when it fails.
     Returns (parsed_object, (input_tokens, output_tokens), model_name). Raises GeminiUnavailable if every provider fails."""
     if provider_first:
