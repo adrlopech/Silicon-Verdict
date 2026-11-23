@@ -29,7 +29,7 @@ change the dataset when a price move makes a letter or a claim false (a "bargain
 
 ## In the daily batch
 
-`genera_batch.py` gives one slot to an "Every X" video when the newest price file is at most 3 days old: it builds the script of the family shown longest ago (`data/batch_log.json` remembers `family`) and
+`genera_batch.py` gives one slot to an "Every X" video when the newest price file is at most 3 days old: it builds the script of the family shown longest ago (`data/batches/log.json` remembers `family`) and
 replaces the `tier` pick, or the last pick. `--no-every` turns it off. With stale prices it prints why and carries on without. So `genera` starts with: *if the newest `data/prices/` file is older than 2 days, collect new prices first*.
 
 ## Adding a family

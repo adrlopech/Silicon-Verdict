@@ -38,7 +38,7 @@ A second workflow, `latest-video.yml`, runs every 15 minutes, reads the channel'
 | `scripts/genera_batch.py` | The four-videos-a-day command |
 | `services/prices.py`, `scripts/build_every_script.py`, `scripts/save_prices.py`, `scripts/pccomponentes_prices.js`, `data/products/`, `data/prices/` | Product datasets, price files and the "Every X at today's price" builder ([Prices](prices.md)) |
 | `scripts/` (others) | Upload, bank, footage, analytics, auth, previews, brand assets, portal tools (see `main.py help`) |
-| `data/` | `history.db`, manifests (`batch_*.json`), `scripts/` (hand-written MotionProjects), `topic_facts/` (source texts), `game_facts/`, `games_catalog.json`, token (git-ignored) |
+| `data/` | `history.db`, manifests (`batches/`, git-ignored), `scripts/` (hand-written MotionProjects), `topic_facts/` (source texts), `game_facts/`, `games_catalog.json`, token (git-ignored) |
 | `assets/` | Fonts, audio beds and effects, voice references, game footage, brand art |
 | `docs/` | The public portal (GitHub Pages from `/docs`), terms and privacy pages, the banked scripts in `docs/generated_scripts/` |
 | `guide/` | This documentation |

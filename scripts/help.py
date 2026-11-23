@@ -17,7 +17,7 @@ HELP_TEXT = """=================================================================
 --------------------------------------------------------------------------------
  PYTHONPATH=. .venv/bin/python scripts/genera_batch.py --plan [--date YYYY-MM-DD] [--avoid a,b]
  PYTHONPATH=. .venv/bin/python scripts/genera_batch.py [--date YYYY-MM-DD]
- PYTHONPATH=. .venv/bin/python scripts/genera_batch.py --topics retry.json --out data/batch_retry.json
+ PYTHONPATH=. .venv/bin/python scripts/genera_batch.py --topics retry.json --out data/batches/retry.json
 
  .venv/bin/python main.py --motion-format <format> [--export-only]
    formats: myth tier whatif easter evolution versus hardware simple fix decode
@@ -28,7 +28,7 @@ HELP_TEXT = """=================================================================
 3. PUBLISHING
 --------------------------------------------------------------------------------
  .venv/bin/python scripts/upload_existing.py "<video.mp4>" [--privacy private --publish-at 2026-11-17T13:00:00Z]
- .venv/bin/python scripts/retry_youtube_uploads.py data/batch_<date>.json
+ .venv/bin/python scripts/retry_youtube_uploads.py data/batches/<date>.json
  .venv/bin/python scripts/authenticate_yt.py                           # renew the YouTube token (only if it fails with invalid_grant)
 
 4. BANKS, FOOTAGE, ANALYTICS
@@ -51,8 +51,8 @@ HELP_TEXT = """=================================================================
  output/youtube/<title>/<date-time>.mp4 and .png      video and cover
  output/tiktok/<title>/<date-time>.mp4 .png .txt      TikTok copy, cover and metadata (title, hashtags, pinned comment)
  output/tiktok_small/<title>.mp4                      <10 MB copy for the TikTok upload
- data/batch_latest.json                               manifest of the last genera batch
- data/batch_log.json                                  slot of every scheduled video (ranks the hours)
+ data/batches/latest.json                               manifest of the last genera batch
+ data/batches/log.json                                  slot of every scheduled video (ranks the hours)
  data/history.db                                      history, story bank, game registry
  data/scripts/                                        hand-written scripts (MotionProject JSON)
 ================================================================================

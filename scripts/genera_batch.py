@@ -9,10 +9,10 @@ What it does
  1. Formats: scores every format with the YouTube Analytics numbers (average % viewed 60 %, engaged views 40 %, views-weighted, joined with
     shorts_history); formats with no data yet count as "unknown" and keep their FORMAT_WEIGHTS prior. The batch is 4 DIFFERENT formats:
     the 2 best proven ones, 1 exploration (the format with the fewest published videos) and 1 weighted draw. No data at all = weighted draws.
- 2. Hours (UTC): data/batch_log.json remembers the slot of every scheduled video; once a slot has 2+ videos with views, slots are ranked by average views.
+ 2. Hours (UTC): data/batches/log.json remembers the slot of every scheduled video; once a slot has 2+ videos with views, slots are ranked by average views.
     Until then the default slots below are used (English-speaking tech/gaming audience: US morning/lunch/evening and EU evening).
  3. Renders each video with the normal Motion pipeline (export only), uploads it to YouTube as private + publishAt (scripts/upload_existing.py) and writes
-    data/batch_latest.json: title, joined hashtags, TikTok caption, a <10 MB copy for the TikTok upload and the slot in UTC and in Madrid time.
+    data/batches/latest.json: title, joined hashtags, TikTok caption, a <10 MB copy for the TikTok upload and the slot in UTC and in Madrid time.
  TikTok has no API here: the assistant finishes it in TikTok Studio (see .claude/commands/genera.md): upload the copy, caption + each hashtag picked from the dropdown,
  "Programación" at the slot (TikTok Studio shows GMT+0 Lisbon = UTC).
 """
@@ -32,8 +32,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 
 DEFAULT_SLOTS_UTC = ["13:00", "16:00", "19:00", "22:00"]  # 8-9 am / noon / 3 pm / 6 pm New York; 2 pm / 5 pm / 8 pm / 11 pm Madrid
-LOG = BASE_DIR / "data" / "batch_log.json"
-LATEST = BASE_DIR / "data" / "batch_latest.json"
+LOG = BASE_DIR / "data" / "batches" / "log.json"
+LATEST = BASE_DIR / "data" / "batches" / "latest.json"
 SMALL_DIR = BASE_DIR / "output" / "tiktok_small"
 FORMAT_ALIASES = {"hardware deep dive": "hardware", "everyday curiosities": "classic"}
 
@@ -248,7 +248,7 @@ def main() -> int:
     ap.add_argument("--public-first", action="store_true", help="the first video of the plan (its slot already passed) is uploaded PUBLIC right away instead of scheduled")
     ap.add_argument("--avoid", default="", help="comma-separated formats to leave out (e.g. the ones of the previous day)")
     ap.add_argument("--no-every", action="store_true", help="do not give one slot to an 'Every X at today's price' video (they need prices collected in the last 3 days)")
-    ap.add_argument("--out", default=None, help="where to write the batch manifest (default data/batch_latest.json)")
+    ap.add_argument("--out", default=None, help="where to write the batch manifest (default data/batches/latest.json)")
     ap.add_argument("--topics", default=None, help="JSON file with the 4 videos to make instead of the data-picked formats: [{format, topic, source (path to a text file), why}]; "
                                                   "format 'classic' = the classic explainer. Slots are assigned in file order (first = best slot)")
     args = ap.parse_args()
@@ -290,6 +290,8 @@ def main() -> int:
     from services.motion_pipeline import finish_motion_video
     done: List[Dict[str, Any]] = []
     out = Path(args.out) if args.out else LATEST
+    out.parent.mkdir(parents=True, exist_ok=True)
+    LOG.parent.mkdir(parents=True, exist_ok=True)
 
     def publish(p: Dict[str, Any], res: Dict[str, Any], now: bool) -> None:
         """Uploads one finished video to YouTube, makes its TikTok copy and saves the manifest. Runs in a worker thread while the next video renders."""

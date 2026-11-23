@@ -65,3 +65,6 @@ data/analytics_report.json
 # game logos of the portal (downloaded from the Steam store pages)
 !docs/assets/games/*.png
 !docs/assets/latest/*.jpg
+
+# Batch manifests and slot log (local state)
+data/batches/

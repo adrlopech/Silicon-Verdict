@@ -18,7 +18,7 @@ one exploration (the format with the fewest published videos) and one weighted d
 With no analytics available the four are weighted draws. Pass `--avoid fix,top5` to leave out the formats of the previous day.
 
 **How hours are chosen:** the default slots are 13:00, 16:00, 19:00 and 22:00 UTC (8-9 am, noon, 3 pm and 6 pm in New York; 14:00, 17:00, 20:00 and 23:00 in Madrid, which is UTC+1).
-`data/batch_log.json` remembers the slot of every scheduled video; once two or more slots have at least two videos with views, slots are ranked by average views.
+`data/batches/log.json` remembers the slot of every scheduled video; once two or more slots have at least two videos with views, slots are ranked by average views.
 The best formats get the best slots.
 
 ## 2. Produce and schedule on YouTube
@@ -28,7 +28,7 @@ PYTHONPATH=. .venv/bin/python scripts/genera_batch.py --date 2026-11-17 > /tmp/g
 ```
 
 It takes ten to twenty minutes and nothing needs watching. For every slot it renders the video with the normal pipeline (export only), uploads it to YouTube as **private with `publishAt`**
-(YouTube publishes it at that time), sets the cover as the thumbnail, makes a copy under 10 MB for TikTok, and appends the entry to `data/batch_latest.json`:
+(YouTube publishes it at that time), sets the cover as the thumbnail, makes a copy under 10 MB for TikTok, and appends the entry to `data/batches/latest.json`:
 title, TikTok caption, hashtags, TikTok copy, cover, slot and YouTube id. The manifest is saved after every video, so a crash loses nothing.
 
 Options: `--seed`, `--avoid`, `--out FILE` (manifest path), `--topics FILE` (see below), `--public-first` (the first video of the plan, whose slot has already passed, is uploaded public right away instead of scheduled; its TikTok copy is published with "Ahora").
@@ -37,7 +37,7 @@ Options: `--seed`, `--avoid`, `--out FILE` (manifest path), `--topics FILE` (see
 
 The LLM layer sometimes cannot give a script that passes the validators (Gemini 503 or 504, Groq prompt too large, validator rejections), especially for the newer formats
 (`fails`, `eli5`, `rumor`). **The batch fills such a slot by itself**: it takes a banked script of a proven format that is not already in the plan (order: versus, myth, whatif, evolution, decode, tier,
-hardware, fix, simple) and prints `slot filled with a banked <format> script`; the manifest and `data/batch_log.json` record the format that was really made. Keep the bank stocked
+hardware, fix, simple) and prints `slot filled with a banked <format> script`; the manifest and `data/batches/log.json` record the format that was really made. Keep the bank stocked
 (`scripts/refill_story_bank.py`, `count_ready` in `services/story_bank.py`): a slot is only lost when no banked script is left. A hand-written script is never replaced.
 If a slot is still lost (`FAILED (nothing uploaded for this slot)`), fill the gap with a topics file:
 
@@ -50,7 +50,7 @@ If a slot is still lost (`FAILED (nothing uploaded for this slot)`), fill the ga
 ```
 
 ```bash
-PYTHONPATH=. .venv/bin/python scripts/genera_batch.py --date 2026-11-17 --topics /tmp/retry.json --out data/batch_retry.json
+PYTHONPATH=. .venv/bin/python scripts/genera_batch.py --date 2026-11-17 --topics /tmp/retry.json --out data/batches/retry.json
 ```
 
 Each entry takes `format` (use `classic` for the explainer), optionally `slot` (UTC `HH:MM`), `topic` and `source` (a text file the script must be grounded on), or `script`
@@ -72,7 +72,7 @@ EOF
 
 ## 4. Schedule on TikTok
 
-TikTok has no API access here, so the assistant drives TikTok Studio in the browser with Claude in Chrome, one entry of `data/batch_latest.json` at a time:
+TikTok has no API access here, so the assistant drives TikTok Studio in the browser with Claude in Chrome, one entry of `data/batches/latest.json` at a time:
 upload `tiktok_copy`, write `caption`, pick every hashtag from the dropdown, upload `cover`, choose "Programación" and the hour, press "Programar".
 The exact clicks and the traps are in [Publishing](publishing.md#tiktok-studio-step-by-step). Finally check `tiktokstudio/content`: all four must appear with their hour.
 

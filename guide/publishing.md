@@ -43,7 +43,7 @@ Videos are scheduled by hand in **TikTok Studio** (`https://www.tiktok.com/tikto
 
 ### TikTok Studio step by step
 
-Per entry of `data/batch_latest.json` (`caption`, `hashtags`, `tiktok_copy`, `cover`, `madrid` hour). The page-side work is in `scripts/tiktok_studio.js`, which finds every element by class, role or text: no screen coordinates
+Per entry of `data/batches/latest.json` (`caption`, `hashtags`, `tiktok_copy`, `cover`, `madrid` hour). The page-side work is in `scripts/tiktok_studio.js`, which finds every element by class, role or text: no screen coordinates
 (they broke whenever the window size changed). Paste that file's body into the page once per load (`javascript_tool`); it defines `tt`.
 
 1. Open `/tiktokstudio/upload`, `find` "file input" and `file_upload` the `tiktok_copy`. Wait about 10 seconds for the form.

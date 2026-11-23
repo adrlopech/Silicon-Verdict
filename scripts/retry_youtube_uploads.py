@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Uploads again the videos of a genera batch manifest that YouTube refused (uploadLimitExceeded: a daily limit on uploads that frees up after about 24 hours).
 
-  python scripts/retry_youtube_uploads.py data/batch_2026-11-11.json
+  python scripts/retry_youtube_uploads.py data/batches/2026-11-11.json
 
 Each entry without a video_id is sent with its publishAt (title, description and hashtags come from the manifest, so no .txt next to the file is needed);
 the manifest is updated with the new ids. Exit code 1 if something is still refused."""
