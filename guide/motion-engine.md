@@ -159,3 +159,16 @@ All are picked automatically; nothing needs to be set per video (the checks in `
 - **2 decors** for the empty lower part of text scenes: `bars` (equalizer), `arcs` (turning quarter arcs).
 
 A neon-look test video renders in about 78 s (the obsidian benchmark takes 55 s on a quiet machine; the machine was busy), so these add no heavy layer. Check one new look with `scripts/render_cover.mjs <props> <png> "" <frame> <scene>` before changing its numbers.
+
+## Polish pass (Nov 2026)
+
+`remotion_studio/src/motion/polish.tsx` holds the finishing touches; the rest are small edits in the files named here.
+
+- **Tier scenes**: bigger chips and a *product card* under the board: a drawn icon (cpu, gpu, ram, ssd or generic chip, picked from the name), the chip that just landed and its tier. When the scene carries `value` + `unit` (the "Every X" scripts set the rounded price and `€`) a counter runs up to it, with soft ticks in the sound.
+- **Outro**: when the closing line is "..., A or B?" (or `items` has two entries) two A/B cards and "vote in the comments" appear. They show only what the video says: no invented poll results.
+- **Accent phrases** get an underline that is drawn after the phrase lands.
+- **Film finish** (every scene except real footage): a soft vignette, faint moving grain (hides banding in dark gradients) and a short dip of the light just before a data reveal (counter, versus, verdict, timeline, units, split).
+- **Hook at frame 0**: the cold open is on screen immediately (it zooms in from 1.07) and its typed headline starts with the first letters already visible.
+- **Transitions by scene kind** (`PREFERRED` in transitions.ts): a ranking slides in like a list, data reveals arrive with weight; the look's own set still decides which are allowed.
+- **Safe margins**: content, captions and the tier board keep 96 px at the sides (TikTok's action buttons sit at the right edge); captions are 60 px.
+- Click ripples already existed (`cursor.tsx`); they only appear in scenes that have a `cursor` action.

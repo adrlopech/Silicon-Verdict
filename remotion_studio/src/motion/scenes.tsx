@@ -4,6 +4,7 @@ import { Accent, Burst, EASE_IO, EASE_OUT, Kicker, SafeBox, Words, clamp, fit, u
 import { useLook } from './looks';
 import { MONO, SANS } from './fonts';
 import { BRAND_BLUE, MotionScene, SAFE_BOTTOM, SAFE_TOP } from './types';
+import { VoteCards, voteOptions } from './polish';
 
 type P = { scene: MotionScene };
 
@@ -246,6 +247,7 @@ export const Flash: React.FC<P> = ({ scene }) => {
 };
 
 export const Outro: React.FC<P> = ({ scene }) => {
+  const vote = voteOptions(scene);
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const { theme } = useTheme();
@@ -257,7 +259,8 @@ export const Outro: React.FC<P> = ({ scene }) => {
       <Burst delay={8} color={theme.accent} cy={SAFE_TOP + 560} />
       <SafeBox gap={26}>
         <div style={{ fontFamily: SANS, fontWeight: 900, fontSize: outroSize, letterSpacing: -outroSize * 0.025, maxWidth: 940, lineHeight: 1.02, color: theme.text, textTransform: 'uppercase', transform: `scale(${0.7 + 0.3 * s})`, opacity: Math.min(1, s * 1.5), textShadow: `0 0 60px ${theme.accent}77` }}>{scene.text}</div>
-        <Accent text={scene.accentText} size={120} delay={16} />
+        <Accent text={scene.accentText} size={vote ? 96 : 120} delay={16} />
+        {vote && <VoteCards a={vote[0]} b={vote[1]} delay={26} />}
       </SafeBox>
     </>
   );

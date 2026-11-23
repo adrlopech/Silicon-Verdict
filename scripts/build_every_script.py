@@ -51,7 +51,7 @@ def build(name: str, prices: Dict[str, Any]) -> Dict[str, Any]:
     for n, (price, it) in enumerate(priced):
         board.append(f"{it['tier']}|{it['label']}")
         narration = _line(it, price, prices, name) + (f" {fam['loop']}" if n == 0 else "")
-        scenes.append(dict(type="tier", text=f"Ranking {fam['cat']}", accentText=fam["criterion"], kicker="tier list", items=list(board), narration=narration, durationInFrames=170))
+        scenes.append(dict(type="tier", text=f"Ranking {fam['cat']}", accentText=fam["criterion"], kicker="tier list", items=list(board), narration=narration, value=round(price), unit="€", durationInFrames=170))
     gone = fam.get("gone")
     if gone and all(price_of(prices, name, i) is None for i in gone["ids"]):
         scenes.append(dict(type="textWithAccent", text=gone["text"], accentText=gone["accent"], narration=gone["narration"], durationInFrames=150))

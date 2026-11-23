@@ -279,7 +279,7 @@ export const SafeBox: React.FC<{ children: React.ReactNode; gap?: number }> = ({
   const { captionSpace } = useSceneCtx(); // the caption strip takes room from the bottom of the scene when it is shown
   const left = look.align === 'left';
   return (
-    <div data-safebox="1" style={{ position: 'absolute', left: 64, right: 64, top: SAFE_TOP + 130, bottom: SAFE_BOTTOM + captionSpace, display: 'flex', flexDirection: 'column', alignItems: left ? 'flex-start' : 'center', justifyContent: 'center', gap, textAlign: left ? 'left' : 'center' }}>
+    <div data-safebox="1" style={{ position: 'absolute', left: 96, right: 96, top: SAFE_TOP + 130, bottom: SAFE_BOTTOM + captionSpace, display: 'flex', flexDirection: 'column', alignItems: left ? 'flex-start' : 'center', justifyContent: 'center', gap, textAlign: left ? 'left' : 'center' }}>
       {children}
     </div>
   );
@@ -347,9 +347,12 @@ export const Accent: React.FC<{ text?: string; size: number; delay?: number }> =
   size = fit(size * look.scale, text.length, 900, 0.5, 44);
   const raw = spring({ frame: frame - delay, fps, config: { damping: 10, stiffness: 130, mass: 0.9 } });
   const s = Math.min(1, raw);
+  const ul = interpolate(frame, [delay + 16, delay + 32], [0, 1], { ...clamp, easing: EASE_OUT }); // the underline is drawn after the phrase lands
   return (
-    <div data-cursor="accent" style={{ maxWidth: 940, fontFamily: SERIF, fontStyle: 'italic', fontWeight: 400, fontSize: size, lineHeight: 1.0, color: theme.accent, opacity: s, transformOrigin: look.align === 'left' ? '0% 50%' : '50% 50%', transform: `translateY(${(1 - raw) * size * 0.5}px) scale(${(0.6 + 0.4 * raw) * (1 + 0.14 * pulse)}) rotate(${(1 - raw) * -5}deg)`, filter: `blur(${(1 - s) * 10}px)`, textShadow: light ? 'none' : `0 0 ${size * (0.35 + pulse * 0.5)}px ${theme.accent}${pulse > 0.05 ? 'CC' : '66'}` }}>
-      {['type', 'scramble', 'drop', 'wave', 'mask'].includes(reveal ?? '') ? text.split(/\s+/).map((w, k, arr) => <React.Fragment key={k}><RevealWord word={w} mode={reveal!} index={k} delay={delay + 4} stagger={4} size={size} accent={theme.accent} char0={arr.slice(0, k).reduce((n, x) => n + x.length, 0)} total={text.replace(/\s+/g, '').length} />{k < arr.length - 1 ? ' ' : ''}</React.Fragment>) : text}
+    <div data-cursor="accent" style={{ maxWidth: 888, fontFamily: SERIF, fontStyle: 'italic', fontWeight: 400, fontSize: size, lineHeight: 1.0, color: theme.accent, opacity: s, transformOrigin: look.align === 'left' ? '0% 50%' : '50% 50%', transform: `translateY(${(1 - raw) * size * 0.5}px) scale(${(0.6 + 0.4 * raw) * (1 + 0.14 * pulse)}) rotate(${(1 - raw) * -5}deg)`, filter: `blur(${(1 - s) * 10}px)`, textShadow: light ? 'none' : `0 0 ${size * (0.35 + pulse * 0.5)}px ${theme.accent}${pulse > 0.05 ? 'CC' : '66'}` }}>
+      <span style={{ backgroundImage: `linear-gradient(90deg, ${theme.accent}, ${theme.accent2 ?? theme.accent})`, backgroundRepeat: 'no-repeat', backgroundPosition: '0 100%', backgroundSize: `${ul * 100}% ${Math.max(3, Math.round(size * 0.04))}px`, paddingBottom: Math.round(size * 0.07), boxDecorationBreak: 'clone', WebkitBoxDecorationBreak: 'clone' }}>
+        {['type', 'scramble', 'drop', 'wave', 'mask'].includes(reveal ?? '') ? text.split(/\s+/).map((w, k, arr) => <React.Fragment key={k}><RevealWord word={w} mode={reveal!} index={k} delay={delay + 4} stagger={4} size={size} accent={theme.accent} char0={arr.slice(0, k).reduce((n, x) => n + x.length, 0)} total={text.replace(/\s+/g, '').length} />{k < arr.length - 1 ? ' ' : ''}</React.Fragment>) : text}
+      </span>
     </div>
   );
 };

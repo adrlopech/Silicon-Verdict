@@ -718,3 +718,10 @@ def test_every_visual_option_a_look_asks_for_is_implemented():
         assert f"mode === '{rv}'" in read("reveal.tsx") or rv == "pop", rv
     for mv in re.findall(r"'(\w+)'", re.search(r"CAMERA_MOVES: CameraMove\[\] = \[([^\]]*)\]", read("anim.ts")).group(1)):
         assert f"{mv}: `" in read("MotionGraphic.tsx"), mv
+
+
+def test_tier_scene_with_a_price_ticks_while_the_price_counts_up():
+    from services.motion_pipeline import sound_cues
+    plain = [c for c in sound_cues([0], ["tier"], [{"cursor": None, "dur": 170, "price": False}]) if c[2] == "tick"]
+    priced = [c for c in sound_cues([0], ["tier"], [{"cursor": None, "dur": 170, "price": True}]) if c[2] == "tick"]
+    assert not plain and len(priced) == 4

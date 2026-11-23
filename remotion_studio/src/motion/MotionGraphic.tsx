@@ -2,6 +2,7 @@ import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { AbsoluteFill, Sequence, interpolate, useCurrentFrame } from 'remotion';
 import { Background, Hud, ThemeCtx, clamp } from './primitives';
 import { ENTER, EXIT, pickTransition } from './transitions';
+import { FilmFinish } from './polish';
 import { Grid, Impact, Particles } from './fx';
 import { PropField, pickIcons } from './props';
 import { BigText, Card, CodeBlock, Counter, Curve, Flash, Footage, ListScene, Outro, ProgressBar, TextWithAccent } from './scenes';
@@ -77,11 +78,12 @@ const SceneShell: React.FC<{ scene: MotionScene; index: number; total: number; r
   const lift = staged && box ? Math.max(0, Math.min(box.bottom - STAGE_TEXT_MAX_BOTTOM, box.top - STAGE_TEXT_MIN_TOP)) : 0;
   const room = staged ? (box ? stageRoom(box.bottom - lift, captionSpace) : 460) : 0;
   const hard = look.transitions.find((t) => t === 'whip' || t === 'glitch' || t === 'zoomThrough') ?? look.transitions[0];
-  const name = index === 0 ? 'zoomThrough' : rehook ? hard : pickTransition(index, scene.transition, look.transitions);
-  const exitName = pickTransition(index + 1, next?.transition, look.transitions); // the exit always matches the NEXT scene's entrance
+  const name = index === 0 ? 'zoomThrough' : rehook ? hard : pickTransition(index, scene.transition, look.transitions, scene.type);
+  const exitName = pickTransition(index + 1, next?.transition, look.transitions, next?.type); // the exit always matches the NEXT scene's entrance
   const pin = interpolate(frame, [0, OVERLAP], [0, 1], clamp);
   const pout = interpolate(frame, [scene.durationInFrames, scene.durationInFrames + OVERLAP], [0, 1], clamp);
-  const style: React.CSSProperties = !last && pout > 0 ? EXIT[exitName](pout, index + 1) : ENTER[name](pin, index);
+  const coldOpen = index === 0 ? { transform: `scale(${interpolate(frame, [0, 10], [1.07, 1], { ...clamp, easing: EASE_OUT })})` } : null; // the hook is on screen at frame 0
+  const style: React.CSSProperties = !last && pout > 0 ? EXIT[exitName](pout, index + 1) : coldOpen && pin < 1 ? coldOpen : ENTER[name](pin, index);
   // slow push-in with a sideways drift that alternates direction, so a static scene never sits still
   const prog = frame / Math.max(1, scene.durationInFrames);
   const dir = index % 2 === 0 ? 1 : -1;
@@ -215,6 +217,7 @@ export const MotionGraphic: React.FC<MotionGraphicProps> = ({ scenes, theme = de
               </Sequence>
             );
           })}
+          {!flash && <FilmFinish scenes={scenes} starts={starts} current={current} />}
           {!flash && <Captions chunks={chunks} scene={scenes[current]} />}
           <LoopTease text={scenes[0].text} total={start} />
           {!flash && <CursorLayer scenes={scenes} starts={starts} current={current} accent={th.accent} />}

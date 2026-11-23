@@ -58,8 +58,19 @@ export const EXIT: Record<TransitionName, Styler> = {
 };
 
 /** Deterministic pick that never repeats the previous transition and cycles through the whole set. */
-export const pickTransition = (index: number, explicit?: string, pool: TransitionName[] = TRANSITIONS): TransitionName => {
+/** What each kind of scene prefers to enter with (the first ones that the look also uses): a ranking slides in like a list, a data reveal arrives with weight, text scenes keep the whole set. */
+const PREFERRED: Record<string, TransitionName[]> = {
+  tier: ['pushUp', 'wipe', 'curtain', 'blinds', 'pushLeft'],
+  counter: ['zoomThrough', 'iris', 'cornerIris', 'glitch', 'flip'],
+  versus: ['whip', 'flip', 'iris', 'zoomThrough'],
+  verdict: ['zoomThrough', 'glitch', 'iris', 'cornerIris'],
+  outro: ['fade', 'zoomOut', 'iris', 'cornerIris'],
+};
+
+export const pickTransition = (index: number, explicit?: string, pool: TransitionName[] = TRANSITIONS, kind?: string): TransitionName => {
   if (explicit && (explicit as TransitionName) in ENTER) return explicit as TransitionName;
+  const pref = kind ? (PREFERRED[kind] ?? []).filter((t) => pool.includes(t)) : [];
+  if (pref.length) return pref[(index * 3 + Math.floor(random(`tk${index}`) * pref.length)) % pref.length];
   const base = Math.floor(random(`tr${index}`) * pool.length);
   return pool[(base + index * 5) % pool.length]; // the look decides which transitions it uses
 };

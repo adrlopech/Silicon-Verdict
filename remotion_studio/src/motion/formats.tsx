@@ -3,6 +3,7 @@ import { interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
 import { Accent, EASE_IO, EASE_OUT, Kicker, SafeBox, Words, clamp, fit, useTheme } from './primitives';
 import { MONO, SANS } from './fonts';
 import { BRAND_BLUE, MotionScene, TIER_DROP, TIER_GRAB } from './types';
+import { ProductCard } from './polish';
 
 /** Scenes of the content formats: tier list, versus, myth-vs-fact verdict and timeline. Same data-only contract as the rest of the engine. */
 type P = { scene: MotionScene };
@@ -33,18 +34,19 @@ export const Tier: React.FC<P> = ({ scene }) => {
   const drag = scene.cursor === 'drag'; // the pointer carries the new chip from the tray (below the board) into its row
   const pop = drag ? spring({ frame: frame - TIER_DROP, fps, config: { damping: 12, stiffness: 190 } }) : spring({ frame: frame - 16, fps, config: { damping: 11, stiffness: 150 } });
   const carry = drag ? interpolate(frame, [TIER_GRAB, TIER_DROP], [0, 1], { ...clamp, easing: EASE_IO }) : 1; // 0 = in the tray, 1 = in its row
-  const rowH = 104;
+  const rowH = 94;
+  const last = entries[newest];
   return (
     <SafeBox gap={30}>
       <Kicker text={scene.kicker ?? 'tier list'} />
       <Words text={scene.text} size={88} />
       <Accent text={scene.accentText} size={104} delay={8} />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: 952, marginTop: 8 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 9, width: 888, marginTop: 4 }}>
         {TIERS.map((t) => {
           const color = TIER_COLORS[t];
           return (
             <div key={t} style={{ display: 'flex', alignItems: 'stretch', minHeight: rowH, borderRadius: 20, overflow: drag ? 'visible' : 'hidden', background: light ? 'rgba(10,18,32,0.07)' : 'rgba(255,255,255,0.06)', border: `1px solid ${color}33` }}>
-              <div style={{ width: rowH, flex: '0 0 auto', borderRadius: '20px 0 0 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: color, fontFamily: SANS, fontWeight: 900, fontSize: 68, color: '#05070C' }}>{t}</div>
+              <div style={{ width: rowH, flex: '0 0 auto', borderRadius: '20px 0 0 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: color, fontFamily: SANS, fontWeight: 900, fontSize: 62, color: '#05070C' }}>{t}</div>
               <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', alignContent: 'center', gap: 10, padding: '10px 16px' }}>
                 {entries.map((e, i) => {
                   if (e.tier !== t) return null;
@@ -58,11 +60,11 @@ export const Tier: React.FC<P> = ({ scene }) => {
                       key={i}
                       data-cursor={isNew ? 'newitem' : undefined}
                       style={{
-                        padding: '10px 20px',
-                        borderRadius: 14,
+                        padding: '8px 22px',
+                        borderRadius: 16,
                         fontFamily: SANS,
                         fontWeight: 800,
-                        fontSize: fit(34, e.label.length, 400, 0.56, 22),
+                        fontSize: fit(44, e.label.length, 380, 0.56, 26),
                         whiteSpace: 'nowrap',
                         color: isNew ? '#05070C' : light ? '#0A1220' : theme.text,
                         background: isNew ? color : light ? 'rgba(10,18,32,0.1)' : 'rgba(255,255,255,0.12)',
@@ -84,6 +86,7 @@ export const Tier: React.FC<P> = ({ scene }) => {
           );
         })}
       </div>
+      {last && <ProductCard scene={scene} label={last.label} tier={last.tier} tierColor={TIER_COLORS[last.tier]} delay={drag ? TIER_DROP + 6 : 24} />}
     </SafeBox>
   );
 };

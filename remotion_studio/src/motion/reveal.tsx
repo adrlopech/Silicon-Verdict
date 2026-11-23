@@ -14,7 +14,7 @@ export const RevealWord: React.FC<{ word: string; mode: Reveal; index: number; d
   if (mode === 'type') {
     const per = Math.min(2.2, 34 / Math.max(1, total));
     const start = delay + 2;
-    const last = Math.floor((frame - start) / per) - char0; // index (within this word) of the last typed character
+    const last = Math.floor((frame - start) / per) + 5 - char0; // index (within this word) of the last typed character
     const typing = frame - start < total * per + 8;
     return (
       <span style={wrap}>

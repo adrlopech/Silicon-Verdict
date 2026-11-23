@@ -47,7 +47,7 @@ export const Captions: React.FC<{ chunks: Chunk[]; scene: MotionScene | undefine
   const pop = spring({ frame: frame - chunk.s, fps, config: { damping: 14, stiffness: 220, mass: 0.6 } });
   const fade = interpolate(frame, [chunk.e + 4, chunk.e + 10], [1, 0], clamp);
   const style = look.captions;
-  const size = style === 'mono' ? 46 : style === 'twotone' ? 60 : 56;
+  const size = style === 'mono' ? 46 : style === 'twotone' ? 60 : 60;
   const base = light ? '#0A1220' : '#FFFFFF';
   const hot = (w: CaptionWord) => frame >= w.s - 1 && frame <= w.e + 2;
   const accentWords = new Set(`${scene.accentText ?? ''} ${scene.text ?? ''}`.toLowerCase().split(/\s+/).map((x) => x.replace(/[^a-z0-9]/g, '')).filter((x) => x.length > 3));
@@ -103,7 +103,7 @@ export const Captions: React.FC<{ chunks: Chunk[]; scene: MotionScene | undefine
     );
   }
   return (
-    <div style={{ position: 'absolute', left: 64, right: 64, top, height: CAPTION_SPACE - 52, display: 'flex', alignItems: 'center', justifyContent: look.align === 'left' && style !== 'pill' && style !== 'wordpill' ? 'flex-start' : 'center', opacity: fade, transform: `translateY(${(1 - Math.min(1, pop)) * 18}px) scale(${0.94 + 0.06 * Math.min(1, pop)})`, pointerEvents: 'none' }}>
+    <div style={{ position: 'absolute', left: 96, right: 96, top, height: CAPTION_SPACE - 52, display: 'flex', alignItems: 'center', justifyContent: look.align === 'left' && style !== 'pill' && style !== 'wordpill' ? 'flex-start' : 'center', opacity: fade, transform: `translateY(${(1 - Math.min(1, pop)) * 18}px) scale(${0.94 + 0.06 * Math.min(1, pop)})`, pointerEvents: 'none' }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 14px', justifyContent: 'center', padding: style === 'pill' ? '14px 26px' : '0 4px', borderRadius: 26, background: style === 'pill' ? (light ? 'rgba(255,255,255,0.88)' : 'rgba(5,10,22,0.72)') : style === 'mono' ? 'rgba(0,0,0,0.5)' : 'transparent', border: style === 'pill' ? `1px solid ${theme.accent}44` : 'none', fontFamily: font, fontWeight: style === 'mono' ? 500 : 800, fontSize: size, lineHeight: 1.12, letterSpacing: style === 'mono' ? 0 : -1, textShadow: style === 'plain' ? '0 3px 14px rgba(0,0,0,0.85), 0 0 3px rgba(0,0,0,0.9)' : undefined }}>
         {style === 'mono' && <span style={{ color: theme.accent }}>&gt;</span>}
         {chunk.words.map((w, i) => (

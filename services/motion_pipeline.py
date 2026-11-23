@@ -344,7 +344,8 @@ def pointer_moment(scene_type: str, cursor: Optional[str], dur: int, cue: Option
 def scene_audio_info(scenes: list) -> list:
     """What the sound design needs to know about each scene (see sound_cues)."""
     return [{"cursor": s.cursor, "dur": s.durationInFrames, "cue": getattr(s, "cursorCue", None), "verdict": getattr(s, "verdict", None),
-             "callout_at": getattr(s, "calloutCue", None) if getattr(s, "callout", None) else None} for s in scenes]
+             "callout_at": getattr(s, "calloutCue", None) if getattr(s, "callout", None) else None,
+             "price": bool(getattr(s, "value", None)) and s.type == "tier"} for s in scenes]
 
 
 # Mean level (dB, ffmpeg volumedetect) of each effect file, and the mean level each kind of cue is brought to. The old flat multipliers left sfx_whoosh (mean -5.9 dB) louder than the voice;
@@ -394,6 +395,8 @@ def sound_cues(scene_starts: list, kinds: Optional[list], info: Optional[list] =
                 cues.append({"click": ("sfx_click.wav", when, "click"), "toggle": ("sfx_click.wav", when, "click"), "select": ("sfx_swish.wav", when, "select"), "drag": ("sfx_pop.wav", when, "grab")}[act])
             elif kind == "tier":
                 cues.append(("sfx_pop.wav", at + 0.55, "pop"))
+                if sc.get("price"):  # the price card counts up under the board
+                    cues += [("sfx_tick.wav", at + 0.95 + k * 0.1, "tick") for k in range(4)]
             if sc.get("callout_at") is not None:
                 cues.append(("sfx_pop.wav", at + sc["callout_at"], "pop"))
             if kind == "verdict":
