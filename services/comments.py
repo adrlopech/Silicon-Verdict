@@ -62,9 +62,10 @@ def suggest_reply(comment: str, video_title: str) -> str:
     from services.gemini_client import generate_structured
 
     system = ("You answer comments for a small tech Shorts channel (Silicon Verdict: PC hardware, prices, explainers). Warm, direct, one or two short sentences, no hashtags, no emojis spam, "
-              "never invent specs or prices, never promise future videos you were not told about. Answer a question if you are sure of the answer, else thank them and ask what they would like to see. "
+              "never invent specs or prices, never promise future videos you were not told about, never point to a pinned comment, link or description you cannot see. Answer a question only if the comment and the video title are enough to be sure of the answer; "
+              "otherwise thank them and ask one short question to understand (for a vague 'how to fix this': which device and what happens). "
               "Return an empty reply for spam, insults and links.")
-    obj, _tokens, _model = generate_structured(prompt=f"Video: {video_title}\nComment: {comment[:500]}", system_instruction=system, schema=_Reply, temperature=0.5, max_output_tokens=300)
+    obj, _tokens, _model = generate_structured(prompt=f"Video: {video_title}\nComment: {comment[:500]}", system_instruction=system, schema=_Reply, temperature=0.5, max_output_tokens=300, provider_first="cloudflare", provider_models=["@cf/meta/llama-3.3-70b-instruct-fp8-fast"])  # short answer: the quick model first, Gemini if it fails
     return obj.reply.strip()
 
 
