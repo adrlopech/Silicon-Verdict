@@ -44,7 +44,7 @@ Details of every format: [guide/formats.md](guide/formats.md).
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 cd remotion_studio && npm install && cd ..
-cp .env.example .env        # Gemini, ElevenLabs and YouTube credentials (required); Groq / Cloudflare are optional LLM fallbacks
+cp .env.example .env        # Gemini, ElevenLabs and YouTube credentials (required); Cloudflare Workers AI is the optional LLM fallback
 .venv/bin/python scripts/authenticate_yt.py
 .venv/bin/python main.py --motion-format myth --export-only   # a first video, nothing uploaded
 ```

@@ -35,7 +35,7 @@ Options: `--seed`, `--avoid`, `--out FILE` (manifest path), `--topics FILE` (see
 
 ### When a slot fails
 
-The LLM layer sometimes cannot give a script that passes the validators (Gemini 503 or 504, Groq prompt too large, validator rejections), especially for the newer formats
+The LLM layer sometimes cannot give a script that passes the validators (Gemini 503 or 504, validator rejections), especially for the newer formats
 (`fails`, `eli5`, `rumor`). **The batch fills such a slot by itself**: it takes a banked script of a proven format that is not already in the plan (order: versus, myth, whatif, evolution, decode, tier,
 hardware, fix, simple) and prints `slot filled with a banked <format> script`; the manifest and `data/batches/log.json` record the format that was really made. Keep the bank stocked
 (`scripts/refill_story_bank.py`, `count_ready` in `services/story_bank.py`): a slot is only lost when no banked script is left. A hand-written script is never replaced.

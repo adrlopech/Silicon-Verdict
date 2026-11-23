@@ -25,7 +25,7 @@ A second workflow, `latest-video.yml`, runs every 15 minutes, reads the channel'
 | `config/settings.py` | All settings (read from `.env`): keys, models, voices, token path, video sizes |
 | `services/motion_generator.py` | Schema (`MotionProject`, `MotionSceneModel`), prompts, `FORMATS`, validators, fact-check, cursor and UI rules |
 | `services/motion_pipeline.py` | `prepare_motion_video` (script, footage, voice) and `finish_motion_video` (render, cover, sound, QA, files, upload); `run_motion_pipeline` runs both |
-| `services/gemini_client.py` | The single LLM entry point: Gemini, Groq, Cloudflare, cooldowns, batching, images |
+| `services/gemini_client.py` | The single LLM entry point: Gemini, Cloudflare, cooldowns, batching, images |
 | `services/looks.py`, `services/series.py` | Look choice; series names and numbers |
 | `services/tech_news.py` | RSS headlines for the news format |
 | `services/game_*.py` | Game footage, one-use ledger, 14-day blacklist, source dossiers |
@@ -67,7 +67,7 @@ Assets of the portal come from `scripts/make_portal_assets.py` and `scripts/make
 | Symptom | Cause and fix |
 |---|---|
 | `invalid_grant: Token has been expired or revoked` | The OAuth token was revoked or expired (the app is in Production since 2026-11-23, so this should be rare). Renew it: [Publishing](publishing.md#youtube-oauth) |
-| A `genera` slot says `FAILED (nothing uploaded for this slot)` | Gemini 503/504, Groq "prompt too large" and validator rejections. Retry with a topics file, a proven format or a hand-written script: [Daily workflow](daily-workflow.md#when-a-slot-fails) |
+| A `genera` slot says `FAILED (nothing uploaded for this slot)` | Gemini 503/504 and validator rejections. Retry with a topics file, a proven format or a hand-written script: [Daily workflow](daily-workflow.md#when-a-slot-fails) |
 | `FileNotFoundError: .../bin/ffmpeg` | ffmpeg is not installed where `get_ffmpeg_bin()` looks. Install it (CI installs it with apt) |
 | YouTube `uploadLimitExceeded` | Daily upload limit. Wait about 24 hours, then `scripts/retry_youtube_uploads.py <manifest>` |
 | Text in a video vibrates | A camera transform reached the text layer. It belongs on the backdrop only |

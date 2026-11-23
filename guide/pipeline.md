@@ -25,9 +25,9 @@ format + topic ─► script (story bank, else LLM) ─► validators ─► fac
 
 - **Story bank first.** For curiosity videos the pipeline takes a banked script of the requested format from the `motion` bank (SQLite `story_bank`) before asking an LLM.
   The bank is filled by hand with `scripts/refill_story_bank.py --series hardware|simple|motion --format ...`; it is never filled automatically. Taking a script is only final once a video was produced (a failure releases it).
-- **LLM layer.** `services/gemini_client.py` is the single entry point for every call. Gemini first, with quota-aware cooldowns kept in `data/gemini_state.json`; then Groq and Cloudflare Workers AI
-  as automatic fallbacks (models are listed in `.env`). Answers are structured JSON, validated and retried; a fallback model that breaks a rule is shown its own rejected draft and the reasons (up to 3 attempts), which
-  is what makes Cloudflare's gpt-oss-120b usable for scripts. Groq's free tier (8,000 tokens per minute) cannot fit a script prompt and is skipped at once; it still serves the smaller fact-check calls. A request that carries images goes to a vision model.
+- **LLM layer.** `services/gemini_client.py` is the single entry point for every call. Gemini first, with quota-aware cooldowns kept in `data/gemini_state.json`; then Cloudflare Workers AI
+  as the automatic fallback (models are listed in `.env`). Answers are structured JSON, validated and retried; a fallback model that breaks a rule is shown its own rejected draft and the reasons (up to 3 attempts), which
+  is what makes Cloudflare's gpt-oss-120b usable for scripts. Groq was removed (its free tier cannot fit a script prompt); the fact-check's strong reviewer is Cloudflare's gpt-oss-120b. A request that carries images goes to a vision model.
 - **Validators** (`make_validator`) reject a script that breaks a rule. They check structure (13-19 scenes, a hook first, an outro last, no two consecutive scenes of the same type unless it is a format's own type),
   text length (7 words per scene, 4 for `bigText`, accent 3), narration length (17 words per scene, 150-190 words in all, estimated at 61 s or more), English only, the format's own rules
   (see [Formats](formats.md#what-each-validator-demands)) and the [retention rules](motion-engine.md#retention-rules).

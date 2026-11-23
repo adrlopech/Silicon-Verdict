@@ -235,13 +235,12 @@ def _gemini_structured(
 # To add a provider: add its key / model-list fields to config/settings.py and one line here. Order = fallback order after Gemini.
 PROVIDERS = [
     # (name, base url, settings attribute with the key, settings attribute with comma-separated models in preference order)
-    ("groq", "https://api.groq.com/openai/v1", "GROQ_API_KEY", "GROQ_MODELS"),
     # {CLOUDFLARE_ACCOUNT_ID} in a URL is replaced with that setting; the provider stays disabled while it is empty
     ("cloudflare", "https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/v1", "CLOUDFLARE_API_TOKEN", "CLOUDFLARE_MODELS"),
 ]
-PROVIDER_TPM = {"groq": 7600}  # per-minute token ceilings of the free tiers (prompt + reserved output); providers not listed are unlimited here
+PROVIDER_TPM: dict = {}  # per-minute token ceilings of a free tier (prompt + reserved output), by provider name; providers not listed are unlimited here
 PROVIDER_MIN_OUTPUT = 1200    # a request that cannot reserve at least this many output tokens is skipped instead of failing with a 413
-PROVIDER_MAX_OUTPUT = 6500   # free tiers meter tokens per minute (Groq: 8000 for prompt + reserved output), so the reserve must stay small
+PROVIDER_MAX_OUTPUT = 6500   # free tiers meter tokens per minute (prompt + reserved output), so the reserve must stay small
 _provider_dead: set = set()
 
 

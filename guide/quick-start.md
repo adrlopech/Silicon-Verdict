@@ -4,7 +4,7 @@
 
 - macOS on Apple Silicon is the reference machine (an M2 MacBook Air). The local backup voice only runs there; everything else is portable.
 - Python 3.11 or newer, Node.js 20, and ffmpeg (the virtual environment ships its own at `.venv/bin/ffmpeg`; it is not on your `PATH`).
-- Accounts and keys: Gemini (required), ElevenLabs (required for the main voice), YouTube OAuth client (required to upload). Groq and Cloudflare Workers AI are optional LLM fallbacks.
+- Accounts and keys: Gemini (required), ElevenLabs (required for the main voice), YouTube OAuth client (required to upload). Cloudflare Workers AI is the optional LLM fallback.
 
 ## Install
 
@@ -19,7 +19,6 @@ Fill `.env`. The variables that matter:
 | Variable | Purpose |
 |---|---|
 | `GEMINI_API_KEY`, `GEMINI_MODEL` | Scripts and fact-check. First choice of the LLM layer |
-| `GROQ_API_KEY`, `GROQ_MODELS` | Optional fallback provider |
 | `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_MODELS` | Optional fallback provider (Workers AI) |
 | `ELEVENLABS_API_KEY`, `ELEVENLABS_VOICE_1..3` | Narration. Voice 1 is Daniel (retired from rotation), 2 is Adam, 3 is Liam |
 | `MOTION_VOICE_ROTATION` | `true` rotates the narrator by format, `false` always uses Liam |

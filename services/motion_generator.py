@@ -19,7 +19,7 @@ from pydantic import BaseModel, Field
 from services.game_facts import figures_in
 from services.gemini_client import GeminiUnavailable, generate_structured
 
-STRONG_REVIEWERS = ["openai/gpt-oss-120b"]  # game claims are checked only by the strongest reviewer; if it is unavailable the video is held, not published
+STRONG_REVIEWERS = ["@cf/openai/gpt-oss-120b"]  # game claims are checked only by the strongest reviewer; if it is unavailable the video is held, not published
 
 logger = logging.getLogger(__name__)
 
@@ -997,7 +997,7 @@ def fact_check(p: MotionProject, catalog: Optional[Dict[str, dict]] = None, fact
     kw = dict(prompt=prompt, system_instruction=system, schema=_Review, temperature=0.1, max_output_tokens=2500)  # small: the free tier meters prompt + reserved output per minute
     for attempt in (1, 2):
         try:
-            review, _t, model = generate_structured(**kw, provider_first="groq", provider_models=STRONG_REVIEWERS, strict_provider=True)
+            review, _t, model = generate_structured(**kw, provider_first="cloudflare", provider_models=STRONG_REVIEWERS, strict_provider=True)
             bad = [e for e in review.errors if e.definitely_wrong]
             logger.info("Fact-check via %s: %d blocking issue(s).", model, len(bad))
             return bad
@@ -1007,8 +1007,7 @@ def fact_check(p: MotionProject, catalog: Optional[Dict[str, dict]] = None, fact
                 time.sleep(25)
     merged: Dict[tuple, _Issue] = {}
     answered: List[str] = []
-    panel = [dict(provider_first="groq", provider_models=["openai/gpt-oss-20b"], strict_provider=True),
-             dict(provider_first="cloudflare", provider_models=["@cf/openai/gpt-oss-120b"], strict_provider=True),
+    panel = [dict(provider_first="cloudflare", provider_models=["@cf/meta/llama-3.3-70b-instruct-fp8-fast"], strict_provider=True),
              dict()]  # last: the default chain (Gemini first)
     for opts in panel:
         try:
