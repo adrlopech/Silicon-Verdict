@@ -96,7 +96,7 @@ def _retention_project(narrations, types=None, pinned="Team A or team B? Reply w
 
 def _narrs(**override):
     base = [_COLD, "Five of them stack up, and that changes the picture quite a lot.", _LOOP, "Each step adds a little more to the pile of evidence here.",
-            "Together they explain why the number on the box is misleading.", "Here is the label broken down into its parts for you.", "Is it team A or team B? Tell me below."]
+            "Together they explain why the number on the box is misleading.", "Here is the label broken down into its parts for you.", "Is it team A or team B?"]
     for k, v in override.items():
         base[int(k[1:])] = v
     return base
@@ -734,3 +734,19 @@ def test_vote_options_come_from_the_pinned_comment():
     assert vote_options("Would you prefer seamless worlds or short loads?") is None
     assert vote_options("Do you use wireless headphones for gaming calls, or do you switch to a wired mic?") is None
     assert vote_options("") is None
+
+
+def test_accent_that_repeats_the_headline_is_taken_out_of_the_headline():
+    from types import SimpleNamespace as NS
+    from services.motion_generator import fix_duplicate_accents
+    scenes = [NS(type="textWithAccent", text="Check before you believe", accentText="believe"), NS(type="textWithAccent", text="Always state units", accentText="always"),
+              NS(type="textWithAccent", text="Cache beats cores", accentText="for gaming"), NS(type="bigText", text="Servers", accentText="servers")]
+    fix_duplicate_accents(scenes)
+    assert [s.text for s in scenes] == ["Check before you", "state units", "Cache beats cores", "Servers"]
+
+
+def test_generic_closing_vote_is_rejected_by_the_style_check():
+    from services.motion_generator import GENERIC_CLOSER, BAD_OPENER
+    assert GENERIC_CLOSER.search("Did that surprise you, or did you know it? Tell me below, and follow for more.")
+    assert not GENERIC_CLOSER.search("Follow for more tech. Team DDR4 or team DDR5?")
+    assert BAD_OPENER.search("Let us test five beliefs.") and not BAD_OPENER.search("Five beliefs, one is wrong.")

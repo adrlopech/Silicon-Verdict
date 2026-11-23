@@ -189,6 +189,22 @@ def add_vote_items(project: Any) -> None:
         outro.items = opts
 
 
+def fix_duplicate_accents(scenes) -> None:
+    """The headline and its accent phrase are drawn one under the other, so an accent that repeats the first or last words of the headline reads as a stutter
+    ("Check before you believe" + "believe"): the repeated words are taken out of the headline (the accent keeps them)."""
+    for s in scenes:
+        acc = (s.accentText or "").strip()
+        if len(acc) < 3 or s.type not in ("bigText", "textWithAccent", "tier", "headline"):
+            continue
+        words, a_words = s.text.split(), acc.split()
+        k = len(a_words)
+        norm = lambda ws: [re.sub(r"[^a-z0-9]", "", w.lower()) for w in ws]  # noqa: E731
+        if len(words) > k and norm(words[-k:]) == norm(a_words):
+            s.text = " ".join(words[:-k]).rstrip(" ,;:-")
+        elif len(words) > k and norm(words[:k]) == norm(a_words):
+            s.text = " ".join(words[k:]).lstrip(" ,;:-")
+
+
 def sanitize_cursors(scenes, fmt: Optional[str]) -> None:
     """Drops every pointer action that would mean nothing (an older script's tab, hover, busy or idle; a click on a headline; a drag on a list) and enforces the budget and spacing."""
     for i, sc in enumerate(scenes):
@@ -382,7 +398,10 @@ RETENTION RULES (they decide whether people keep watching; the validator checks 
 - PATTERN BREAK. Never more than two headline scenes (bigText / textWithAccent) in a row: break the rhythm with a card, counter, list, codeBlock, progressBar, curve, flash or footage scene at least every third scene.
 - PACE. No scene narration is longer than 16 words (about 6 seconds): when a thought needs more, split it across two scenes so something on screen changes at least every 5 seconds. The video must still last MORE than 60 seconds (monetisation), so keep the whole script at 150-190 words: use more scenes of 8-16 words, never fewer words.
 - VOTE. The outro narration ends with a TWO-OPTION question the viewer can answer in one word ("Would you buy it, or skip it?", "Team DDR4 or team DDR5?") and `pinned_comment` repeats the SAME choice
-  as "A or B? Reply with one word." (at most 120 characters). Never an open question such as "What do you think?"."""
+  as "A or B? Reply with one word." (at most 120 characters). Never an open question such as "What do you think?".
+  The two options are NAMED in the question and belong to THIS video ("Team 7800X3D or team 9800X3D?"): never the generic "Did that surprise you or did you know it?" nor "Tell me below and follow for more", which every video used to end with.
+- HOOK. Scene 1 opens with a number, a concrete claim or a tension ("One of these seven cards is worth its price."), never "Let us", "Let's", "What if" (unless the format is whatif) or "Did you know".
+- ACCENT. `accentText` adds words that are NOT in `text` (the headline and the accent are drawn one under the other): never repeat the headline's last word in the accent."""
 
 def ui_rules() -> str:
     """Prompt block for the `ui` scene: the catalogue of drawn interfaces and how each one takes its data."""
@@ -845,7 +864,8 @@ def _format_problems(p: MotionProject, fmt: Optional[str]) -> List[str]:
     return out
 
 
-BAD_OPENER = re.compile(r"^\W*(so\b|welcome|hey\b|hi\b|hello|today|in this video|did you know|have you ever|do you know|let'?s|ever wonder)", re.I)
+BAD_OPENER = re.compile(r"^\W*(so\b|welcome|hey\b|hi\b|hello|today|in this video|did you know|have you ever|do you know|let(?:'?s| us)|ever wonder)", re.I)
+GENERIC_CLOSER = re.compile(r"surprise you or|tell me below|know it or|did you know it|do you agree with this", re.I)  # the closers 9 in 10 scripts shared: a vote must name this video's own two options
 OPEN_LOOP = re.compile(
     r"\b(wait for|stay (?:to|till|until|for|with)|by the end|until the end|in a moment|in a second|before we (?:finish|end)|later on|catch|twist|nobody|no one|most people|secret|"
     r"gets (?:worse|weirder|stranger|better)|the (?:last|final|third|second|next) (?:one|reason|part|step|round|rule|trick)|you will not believe|that is not even|that is not the)\b", re.I)
@@ -869,6 +889,8 @@ def retention_problems(p: MotionProject) -> List[str]:
         out.append("scenes 2-5 need an open loop: one narration line that promises a later payoff (for example \"And the last step is the one most people skip.\" or \"Stay to the end, the catch comes last.\")")
     if not re.search(r"\bor\b[^?]*\?", p.scenes[-1].narration):
         out.append("the outro narration must end with a two-option vote (\"A or B?\"), not an open question")
+    if GENERIC_CLOSER.search(p.scenes[-1].narration + " " + p.pinned_comment):
+        out.append("the closing vote is the generic one (\"did that surprise you or did you know it\", \"tell me below\"): ask a question about THIS video's own two options, named in the question (\"Team DDR4 or team DDR5?\")")
     if not (re.search(r"\bor\b", p.pinned_comment) and "?" in p.pinned_comment) or len(p.pinned_comment) > 120:
         out.append("pinned_comment must be the same two-option vote (\"A or B? Reply with one word.\"), at most 120 characters")
     cap = 24 if any(s.type in ("tier", "versus") for s in p.scenes) else SCENE_MAX_WORDS  # scenes of the table formats carry two figures, so they may be wordier
@@ -926,6 +948,7 @@ def make_validator(catalog: Optional[Dict[str, dict]] = None, facts: Optional[st
         for sc_ in p.scenes:  # an unknown effect is simply dropped, the scene stays
             fx_ = (sc_.fx or "").strip().lower()
             sc_.fx = fx_ if fx_ in FX_NAMES else None
+        fix_duplicate_accents(p.scenes)
         sanitize_cursors(p.scenes, fmt)  # actions that mean nothing (a tab, a hover, a click on a headline...) are dropped; the budget and spacing are enforced
         cursor_acts = [sc_.cursor for sc_ in p.scenes if sc_.cursor]
         if fmt == "fix" and len(cursor_acts) < 2:

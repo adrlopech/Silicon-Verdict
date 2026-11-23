@@ -19,7 +19,7 @@ from typing import Any, Dict, List
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 
-from services.prices import age_days, families, load_family, load_prices, price_of, spoken_euros  # noqa: E402
+from services.prices import age_days, families, load_family, load_prices, num_to_words, price_of, spoken_euros  # noqa: E402
 
 MAX_ITEMS = 9
 
@@ -46,12 +46,15 @@ def build(name: str, prices: Dict[str, Any]) -> Dict[str, Any]:
     priced.sort(key=lambda x: x[0])
     if not 6 <= len(priced) <= MAX_ITEMS:
         raise ValueError(f"{name}: {len(priced)} items have a price (a tier list needs 6-{MAX_ITEMS}): edit data/products/{name}.json or the price file")
-    scenes: List[Dict[str, Any]] = [dict(type="bigText", text=f"Every {fam['short']}", accentText=fam["criterion"], kicker="tier list", narration=fam["hook"], durationInFrames=120)]
+    scenes: List[Dict[str, Any]] = [dict(type="bigText", text=f"Every {fam['short']}", accentText=fam["criterion"], kicker="tier list", narration=fam["hook"].format(count=num_to_words(len(priced)).capitalize()), durationInFrames=120)]
     board: List[str] = []
     for n, (price, it) in enumerate(priced):
         board.append(f"{it['tier']}|{it['label']}")
-        narration = _line(it, price, prices, name) + (f" {fam['loop']}" if n == 0 else "")
-        scenes.append(dict(type="tier", text=f"Ranking {fam['cat']}", accentText=fam["criterion"], kicker="tier list", items=list(board), narration=narration, value=round(price), unit="€", durationInFrames=170))
+        narration = _line(it, price, prices, name)
+        if n >= 1 and "more than" not in narration and len(narration.split()) <= 12 and price - priced[n - 1][0] >= 20:
+            narration += f" That is {spoken_euros(price - priced[n - 1][0])} more than the {priced[n - 1][1]['label']}."  # a true comparison from the two prices, so the lines stop sounding the same
+        narration += f" {fam['loop']}" if n == 0 else ""
+        scenes.append(dict(type="tier", text=f"Ranking {fam['cat']}", accentText=fam["criterion"], kicker=f"{n + 1} of {len(priced)}", items=list(board), narration=narration, value=round(price), unit="€", durationInFrames=170))
     gone = fam.get("gone")
     if gone and all(price_of(prices, name, i) is None for i in gone["ids"]):
         scenes.append(dict(type="textWithAccent", text=gone["text"], accentText=gone["accent"], narration=gone["narration"], durationInFrames=150))

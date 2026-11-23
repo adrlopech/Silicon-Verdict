@@ -599,11 +599,12 @@ def _select_source(kind: str, fmt: str, topic: Optional[str], facts: Optional[st
 def _prepare_project(project: Any) -> None:
     """Cleans a script and gives it its identity: no markers, sane cursors, a look and a series number."""
     from services.looks import choose_look
-    from services.motion_generator import add_vote_items, assign_cursors, sanitize_cursors, strip_markers
+    from services.motion_generator import add_vote_items, assign_cursors, fix_duplicate_accents, sanitize_cursors, strip_markers
     from services.series import apply_series
     strip_markers(project)  # *asterisks* around the accent word (a habit of the models) would be drawn and spoken literally
     sanitize_cursors(project.scenes, project.format)  # scripts written by hand (the banks) predate the rules: no tab, no hover, only pointer moments that mean something
     assign_cursors(project.scenes, project.format)
+    fix_duplicate_accents(project.scenes)
     add_vote_items(project)  # the outro draws the two options of the vote as A / B cards
     if not project.look:
         project.look = choose_look(project.format, project.topic)  # a whole visual identity per video, never one of the last three used

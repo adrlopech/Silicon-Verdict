@@ -17,7 +17,7 @@
   "gpu",
   "tier list"
  ],
- "hook": "Every RTX 40 and 50 card at today's price, ranked by value.",
+ "hook": "{count} RTX cards, each with its own price. Which one is worth it today?",
  "criterion": "By gaming value",
  "loop": "Stay to the end, one card is a bargain.",
  "gone": {
@@ -88,7 +88,7 @@
    "id": "5080",
    "label": "5080",
    "tier": "S",
-   "line": "The RTX 5080 is {price}, only a little more than the 5070 Ti. That is the bargain.",
+   "line": "The RTX 5080 is {price}, only a little more than the 5070 Ti.",
    "query": "rtx 5080",
    "match": "RTX 5080",
    "kind": "gpu"

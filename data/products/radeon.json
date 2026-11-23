@@ -17,7 +17,7 @@
   "gaming",
   "tier list"
  ],
- "hook": "Every Radeon on sale at today's price, ranked by gaming value.",
+ "hook": "{count} Radeon cards, each with its own price. Which one is actually worth it today?",
  "criterion": "By gaming value",
  "loop": "Stay to the end, one card is the clear pick.",
  "gone": {

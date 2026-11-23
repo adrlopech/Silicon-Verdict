@@ -30,7 +30,7 @@
   },
   {
    "type": "textWithAccent",
-   "text": "Three games, one trend",
+   "text": "Three games",
    "narration": "Here is how three open worlds grew, and the last number is the one nobody expected.",
    "durationInFrames": 110,
    "accentText": "one trend"
@@ -119,7 +119,7 @@
   },
   {
    "type": "textWithAccent",
-   "text": "Scale is the story",
+   "text": "Scale is",
    "narration": "From fifty-five thousand animations to over six hundred thousand in just two generations.",
    "durationInFrames": 110,
    "accentText": "the story"

@@ -17,7 +17,7 @@
   "gaming",
   "tier list"
  ],
- "hook": "Every Ryzen 7 at today's price, ranked by gaming value.",
+ "hook": "{count} Ryzen 7 chips, and one of today's prices makes no sense.",
  "criterion": "By gaming value",
  "loop": "Stay to the end, one price makes no sense.",
  "takeaway": {

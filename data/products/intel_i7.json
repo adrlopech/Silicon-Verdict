@@ -17,7 +17,7 @@
   "14700k",
   "tier list"
  ],
- "hook": "Every Core i7 at today's price, ranked by gaming value.",
+ "hook": "{count} Core i7 chips, and one of today's prices is absurd.",
  "criterion": "By gaming value",
  "loop": "Stay to the end, one price is absurd.",
  "extra": {

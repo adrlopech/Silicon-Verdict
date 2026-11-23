@@ -101,7 +101,7 @@
   },
   {
    "type": "textWithAccent",
-   "text": "Always state units",
+   "text": "state units",
    "narration": "The lesson is simple: a number without a unit is only half a number.",
    "durationInFrames": 110,
    "accentText": "always"

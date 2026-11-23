@@ -22,14 +22,14 @@
    "text": "Every Core i7",
    "accentText": "By gaming value",
    "kicker": "tier list",
-   "narration": "Every Core i7 at today's price, ranked by gaming value.",
+   "narration": "Seven Core i7 chips, and one of today's prices is absurd.",
    "durationInFrames": 120
   },
   {
    "type": "tier",
    "text": "Ranking Core i7",
    "accentText": "By gaming value",
-   "kicker": "tier list",
+   "kicker": "1 of 7",
    "items": [
     "A|12700KF"
    ],
@@ -42,12 +42,12 @@
    "type": "tier",
    "text": "Ranking Core i7",
    "accentText": "By gaming value",
-   "kicker": "tier list",
+   "kicker": "2 of 7",
    "items": [
     "A|12700KF",
     "B|12700K"
    ],
-   "narration": "The 12700K adds integrated graphics and costs three hundred four euros.",
+   "narration": "The 12700K adds integrated graphics and costs three hundred four euros. That is forty euros more than the 12700KF.",
    "value": 304,
    "unit": "€",
    "durationInFrames": 170
@@ -56,7 +56,7 @@
    "type": "tier",
    "text": "Ranking Core i7",
    "accentText": "By gaming value",
-   "kicker": "tier list",
+   "kicker": "3 of 7",
    "items": [
     "A|12700KF",
     "B|12700K",
@@ -71,7 +71,7 @@
    "type": "tier",
    "text": "Ranking Core i7",
    "accentText": "By gaming value",
-   "kicker": "tier list",
+   "kicker": "4 of 7",
    "items": [
     "A|12700KF",
     "B|12700K",
@@ -87,7 +87,7 @@
    "type": "tier",
    "text": "Ranking Core i7",
    "accentText": "By gaming value",
-   "kicker": "tier list",
+   "kicker": "5 of 7",
    "items": [
     "A|12700KF",
     "B|12700K",
@@ -104,7 +104,7 @@
    "type": "tier",
    "text": "Ranking Core i7",
    "accentText": "By gaming value",
-   "kicker": "tier list",
+   "kicker": "6 of 7",
    "items": [
     "A|12700KF",
     "B|12700K",
@@ -122,7 +122,7 @@
    "type": "tier",
    "text": "Ranking Core i7",
    "accentText": "By gaming value",
-   "kicker": "tier list",
+   "kicker": "7 of 7",
    "items": [
     "A|12700KF",
     "B|12700K",

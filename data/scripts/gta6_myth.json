@@ -142,7 +142,7 @@
   {
    "type": "list",
    "text": "Ruled out at launch",
-   "narration": "Rockstar also confirmed there is no generative AI in the game.",
+   "narration": "That is two confirmed points, straight from Rockstar.",
    "durationInFrames": 130,
    "items": [
     "No microtransactions",
@@ -165,7 +165,7 @@
   },
   {
    "type": "textWithAccent",
-   "text": "Check before you believe",
+   "text": "Check before you",
    "narration": "Most people never check the source, so check before you share the next myth.",
    "durationInFrames": 110,
    "accentText": "believe"

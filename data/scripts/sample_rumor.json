@@ -96,7 +96,7 @@
   },
   {
    "type": "textWithAccent",
-   "text": "Know the limits",
+   "text": "Know",
    "narration": "Know a tool's limits, and it becomes useful instead of misleading.",
    "durationInFrames": 110,
    "accentText": "the limits"

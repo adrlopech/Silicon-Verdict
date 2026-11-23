@@ -172,3 +172,11 @@ A neon-look test video renders in about 78 s (the obsidian benchmark takes 55 s 
 - **Transitions by scene kind** (`PREFERRED` in transitions.ts): a ranking slides in like a list, data reveals arrive with weight; the look's own set still decides which are allowed.
 - **Safe margins**: content, captions and the tier board keep 96 px at the sides (TikTok's action buttons sit at the right edge); captions are 60 px.
 - Click ripples already existed (`cursor.tsx`); they only appear in scenes that have a `cursor` action.
+
+## Script style rules added in Nov 2026
+
+- **Closing vote**: it names this video's own two options ("Team 7800X3D or team 9800X3D?"); the generic "Did that surprise you or did you know it? Tell me below" is rejected by `retention_problems` (`GENERIC_CLOSER`). The outro's A/B cards come from the pinned comment (`add_vote_items`).
+- **Hook**: a number, a concrete claim or a tension; "Let us", "Let's", "So", "Today", "Did you know" are rejected (`BAD_OPENER`).
+- **Accent**: the accent phrase must not repeat the headline's first or last words; `fix_duplicate_accents` removes the repeat from the headline (runs in the validator and when a script is prepared).
+- **"Every X" scripts**: hooks live in `data/products/<family>.json` and use `{count}` for the number of priced items; each tier scene shows `n of N` and, when the line is short, a true price comparison with the previous item.
+- `scripts/rewrite_bank_closers.py` brought the unused banked scripts up to these rules (275 closers, 29 hooks, 32 accents; copy of the database first); `--files` syncs the git-ignored mirror in `docs/generated_scripts/bank/`.

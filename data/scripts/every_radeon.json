@@ -22,14 +22,14 @@
    "text": "Every Radeon",
    "accentText": "By gaming value",
    "kicker": "tier list",
-   "narration": "Every Radeon on sale at today's price, ranked by gaming value.",
+   "narration": "Six Radeon cards, each with its own price. Which one is actually worth it today?",
    "durationInFrames": 120
   },
   {
    "type": "tier",
    "text": "Ranking Radeon",
    "accentText": "By gaming value",
-   "kicker": "tier list",
+   "kicker": "1 of 6",
    "items": [
     "F|RX 7600"
    ],
@@ -42,7 +42,7 @@
    "type": "tier",
    "text": "Ranking Radeon",
    "accentText": "By gaming value",
-   "kicker": "tier list",
+   "kicker": "2 of 6",
    "items": [
     "F|RX 7600",
     "D|RX 9060 XT 8GB"
@@ -56,7 +56,7 @@
    "type": "tier",
    "text": "Ranking Radeon",
    "accentText": "By gaming value",
-   "kicker": "tier list",
+   "kicker": "3 of 6",
    "items": [
     "F|RX 7600",
     "D|RX 9060 XT 8GB",
@@ -71,7 +71,7 @@
    "type": "tier",
    "text": "Ranking Radeon",
    "accentText": "By gaming value",
-   "kicker": "tier list",
+   "kicker": "4 of 6",
    "items": [
     "F|RX 7600",
     "D|RX 9060 XT 8GB",
@@ -87,7 +87,7 @@
    "type": "tier",
    "text": "Ranking Radeon",
    "accentText": "By gaming value",
-   "kicker": "tier list",
+   "kicker": "5 of 6",
    "items": [
     "F|RX 7600",
     "D|RX 9060 XT 8GB",
@@ -95,7 +95,7 @@
     "D|RX 9070 GRE",
     "B|RX 9070"
    ],
-   "narration": "The RX 9070 costs one thousand euros with sixteen gigabytes.",
+   "narration": "The RX 9070 costs one thousand euros with sixteen gigabytes. That is two hundred fifty euros more than the RX 9070 GRE.",
    "value": 1000,
    "unit": "€",
    "durationInFrames": 170
@@ -104,7 +104,7 @@
    "type": "tier",
    "text": "Ranking Radeon",
    "accentText": "By gaming value",
-   "kicker": "tier list",
+   "kicker": "6 of 6",
    "items": [
     "F|RX 7600",
     "D|RX 9060 XT 8GB",
