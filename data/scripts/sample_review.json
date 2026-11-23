@@ -107,7 +107,11 @@
    "text": "Verdict",
    "narration": "Follow for more tech. Will you buy it, or skip it?",
    "durationInFrames": 100,
-   "accentText": "Follow for more"
+   "accentText": "Follow for more",
+   "items": [
+    "Buy",
+    "Skip"
+   ]
   }
  ]
 }

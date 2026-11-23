@@ -102,7 +102,11 @@
    "text": "Cache",
    "narration": "Follow for more tech. Would you call it a shelf, or a pantry?",
    "durationInFrames": 100,
-   "accentText": "Follow for more"
+   "accentText": "Follow for more",
+   "items": [
+    "Shelf",
+    "Pantry"
+   ]
   }
  ]
 }

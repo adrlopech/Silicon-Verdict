@@ -111,7 +111,11 @@
    "text": "Fails",
    "narration": "Follow for more tech. Was it a software bug, or a people problem?",
    "durationInFrames": 100,
-   "accentText": "Follow for more"
+   "accentText": "Follow for more",
+   "items": [
+    "Software",
+    "People"
+   ]
   }
  ]
 }

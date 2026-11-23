@@ -34,6 +34,8 @@
     "B|5700X"
    ],
    "narration": "The Ryzen 7 5700X costs one hundred ninety-four euros, eight cores on AM4. Stay to the end, one price makes no sense.",
+   "value": 194,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -46,6 +48,8 @@
     "D|5800X"
    ],
    "narration": "The Ryzen 7 5800X is two hundred sixteen euros for nearly the same eight cores.",
+   "value": 216,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -59,6 +63,8 @@
     "B|7700X"
    ],
    "narration": "The Ryzen 7 7700X is only two hundred fifty euros, but it needs a separate cooler.",
+   "value": 250,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -73,6 +79,8 @@
     "F|5800XT"
    ],
    "narration": "The 5800XT costs two hundred eighty-one euros, a slightly faster 5800X for more money.",
+   "value": 281,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -88,6 +96,8 @@
     "C|9700X"
    ],
    "narration": "The Ryzen 7 9700X is two hundred ninety-nine euros, efficient but with no extra cache.",
+   "value": 299,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -104,6 +114,8 @@
     "C|7700"
    ],
    "narration": "The Ryzen 7 7700 costs three hundred twenty-one euros, mostly for the included cooler.",
+   "value": 321,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -121,6 +133,8 @@
     "S|7800X3D"
    ],
    "narration": "The Ryzen 7 7800X3D is three hundred thirty-six euros, the best gaming value today.",
+   "value": 336,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -139,6 +153,8 @@
     "C|5800X3D"
    ],
    "narration": "And the price that makes no sense: the old 5800X3D costs three hundred sixty-four euros, more than the 7800X3D.",
+   "value": 364,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -158,6 +174,8 @@
     "A|9800X3D"
    ],
    "narration": "The Ryzen 7 9800X3D is four hundred forty-four euros, the fastest chip here.",
+   "value": 444,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -172,6 +190,10 @@
    "text": "STAY CURIOUS",
    "accentText": "Follow for more",
    "narration": "Follow for more prices. Which would you buy, 7800X3D or 9800X3D?",
+   "items": [
+    "7800X3D",
+    "9800X3D"
+   ],
    "durationInFrames": 120
   }
  ]

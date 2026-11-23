@@ -337,7 +337,10 @@
    "kicker": null,
    "value": null,
    "unit": null,
-   "items": null,
+   "items": [
+    "9800X3D",
+    "9950X3D"
+   ],
    "left": null,
    "right": null,
    "leftValue": null,

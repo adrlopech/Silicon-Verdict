@@ -108,7 +108,11 @@
    "text": "Smooth",
    "narration": "Follow for more tech. Which hurts more, heat or low memory?",
    "durationInFrames": 100,
-   "accentText": "Follow for more"
+   "accentText": "Follow for more",
+   "items": [
+    "Heat",
+    "Memory"
+   ]
   }
  ]
 }

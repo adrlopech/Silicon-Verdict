@@ -121,7 +121,11 @@
    "text": "Priced in PS5s",
    "narration": "Follow for more. Which price shocked you most: the stand or the Mac Pro?",
    "durationInFrames": 110,
-   "accentText": "Follow for more"
+   "accentText": "Follow for more",
+   "items": [
+    "Stand",
+    "Mac Pro"
+   ]
   }
  ]
 }

@@ -129,7 +129,11 @@
    "text": "Evolved",
    "narration": "Follow for more tech. Does GTA VI need to be bigger or deeper?",
    "durationInFrames": 100,
-   "accentText": "Follow for more"
+   "accentText": "Follow for more",
+   "items": [
+    "Bigger",
+    "Deeper"
+   ]
   }
  ]
 }

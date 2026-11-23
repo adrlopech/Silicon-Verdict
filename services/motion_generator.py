@@ -12,7 +12,7 @@ import difflib
 import logging
 import re
 import time
-from typing import Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -152,6 +152,41 @@ def limit_cursor(scenes, fmt: Optional[str]) -> None:
     for i, sc in enumerate(scenes):
         if i not in keep:
             sc.cursor, sc.toggle = None, None
+
+
+_QUESTION_START = re.compile(r"^(would|do|does|did|will|which|is|are|can|could|should|have|has|what|how|why|who)\b", re.I)
+
+
+def vote_options(pinned: str) -> Optional[List[str]]:
+    """The two short options of a pinned-comment vote ("5060 Ti or 5080? Reply with one word." -> ["5060 Ti", "5080"]; "Reply SURPRISED or KNEW IT." -> ["Surprised", "Knew it"]),
+    or None when the question does not name two short things (the outro then simply has no A / B cards)."""
+    text = (pinned or "").strip()
+    m = re.search(r"\breply\s+(.{1,24}?)\s+or\s+(.{1,24}?)\s*[.!?]*$", text, re.I)
+    if not m and not _QUESTION_START.match(text):
+        m = re.match(r"^(.{2,28}?),?\s+or\s+(.{2,28}?)\s*\?", text, re.I)
+    if not m:
+        return None
+    out = []
+    for raw in m.groups():
+        t = re.sub(r"^(the|a|an)\s+", "", raw.strip(" ,.?!"), flags=re.I)
+        if not t or len(t.split()) > 3:
+            return None
+        if re.search(r"\d", t) and re.search(r"[A-Za-z]", t) and " " not in t:
+            t = t.upper()  # a model name: "9800x3d" -> "9800X3D", "ddr4" -> "DDR4"
+        elif t.isupper() and len(t) > 5:
+            t = t.capitalize()
+        out.append(t[0].upper() + t[1:])
+    return out
+
+
+def add_vote_items(project: Any) -> None:
+    """Gives the outro its two vote options (drawn as A / B cards) from the pinned comment, which repeats the same choice the narration ends with. Existing items are kept."""
+    outro = project.scenes[-1] if project.scenes else None
+    if outro is None or outro.type != "outro" or outro.items:
+        return
+    opts = vote_options(getattr(project, "pinned_comment", "") or "")
+    if opts:
+        outro.items = opts
 
 
 def sanitize_cursors(scenes, fmt: Optional[str]) -> None:

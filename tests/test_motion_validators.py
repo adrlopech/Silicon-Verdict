@@ -725,3 +725,12 @@ def test_tier_scene_with_a_price_ticks_while_the_price_counts_up():
     plain = [c for c in sound_cues([0], ["tier"], [{"cursor": None, "dur": 170, "price": False}]) if c[2] == "tick"]
     priced = [c for c in sound_cues([0], ["tier"], [{"cursor": None, "dur": 170, "price": True}]) if c[2] == "tick"]
     assert not plain and len(priced) == 4
+
+
+def test_vote_options_come_from_the_pinned_comment():
+    from services.motion_generator import vote_options
+    assert vote_options("5060 Ti or 5080? Reply with one word.") == ["5060 Ti", "5080"]
+    assert vote_options("Did that surprise you? Reply SURPRISED or KNEW IT.") == ["Surprised", "Knew it"]
+    assert vote_options("Would you prefer seamless worlds or short loads?") is None
+    assert vote_options("Do you use wireless headphones for gaming calls, or do you switch to a wired mic?") is None
+    assert vote_options("") is None

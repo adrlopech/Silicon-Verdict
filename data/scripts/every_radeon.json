@@ -34,6 +34,8 @@
     "F|RX 7600"
    ],
    "narration": "The RX 7600 costs four hundred twenty-nine euros and has eight old gigabytes. Stay to the end, one card is the clear pick.",
+   "value": 429,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -46,6 +48,8 @@
     "D|RX 9060 XT 8GB"
    ],
    "narration": "The 9060 XT with eight gigabytes is five hundred fifty euros. Not enough memory.",
+   "value": 550,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -59,6 +63,8 @@
     "A|RX 9060 XT 16GB"
    ],
    "narration": "The sixteen gigabyte 9060 XT costs seven hundred thirty euros, the sweet spot.",
+   "value": 730,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -73,6 +79,8 @@
     "D|RX 9070 GRE"
    ],
    "narration": "The RX 9070 GRE has twelve gigabytes for seven hundred fifty euros, barely less than a 16 GB card.",
+   "value": 750,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -88,6 +96,8 @@
     "B|RX 9070"
    ],
    "narration": "The RX 9070 costs one thousand euros with sixteen gigabytes.",
+   "value": 1000,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -104,6 +114,8 @@
     "S|RX 9070 XT"
    ],
    "narration": "And the RX 9070 XT is one thousand forty-nine euros, only a little more. The clear pick.",
+   "value": 1049,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -125,6 +137,10 @@
    "text": "STAY CURIOUS",
    "accentText": "Follow for more",
    "narration": "Follow for more prices. Which would you buy, 9060 XT or 9070 XT?",
+   "items": [
+    "9060 XT",
+    "9070 XT"
+   ],
    "durationInFrames": 120
   }
  ]

@@ -103,7 +103,11 @@
    "text": "Stop",
    "narration": "Follow for more tech. Which habit are you changing first, heat or charge?",
    "durationInFrames": 100,
-   "accentText": "Follow for more"
+   "accentText": "Follow for more",
+   "items": [
+    "Heat",
+    "Charge"
+   ]
   }
  ]
 }

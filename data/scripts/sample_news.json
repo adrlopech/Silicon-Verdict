@@ -407,7 +407,10 @@
    "kicker": null,
    "value": null,
    "unit": null,
-   "items": null,
+   "items": [
+    "Nvidia probes",
+    "SpaceX catch"
+   ],
    "left": null,
    "right": null,
    "leftValue": null,

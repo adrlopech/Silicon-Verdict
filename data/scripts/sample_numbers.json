@@ -104,7 +104,11 @@
    "text": "Numbers",
    "narration": "Follow for more tech. Is that impressive, or just old?",
    "durationInFrames": 100,
-   "accentText": "Follow for more"
+   "accentText": "Follow for more",
+   "items": [
+    "Impressive",
+    "Old"
+   ]
   }
  ]
 }

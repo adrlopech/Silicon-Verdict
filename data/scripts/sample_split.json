@@ -132,7 +132,11 @@
    "text": "DDR4 or DDR5?",
    "narration": "Follow for more. Are you team DDR4 or team DDR5?",
    "durationInFrames": 100,
-   "accentText": "Follow for more"
+   "accentText": "Follow for more",
+   "items": [
+    "DDR4",
+    "DDR5"
+   ]
   }
  ]
 }

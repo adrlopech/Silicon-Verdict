@@ -34,6 +34,8 @@
     "C|5060"
    ],
    "narration": "The RTX 5060 costs six hundred euros and has eight gigabytes. Stay to the end, one card is a bargain.",
+   "value": 600,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -46,6 +48,8 @@
     "B|5060 Ti 8GB"
    ],
    "narration": "The 5060 Ti with eight gigabytes costs six hundred twenty euros, little more than the plain 5060.",
+   "value": 620,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -59,6 +63,8 @@
     "A|5060 Ti 16GB"
    ],
    "narration": "The sixteen gigabyte 5060 Ti is nine hundred thirty euros, the sweet spot for memory.",
+   "value": 930,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -73,6 +79,8 @@
     "D|5070"
    ],
    "narration": "The RTX 5070 costs one thousand four hundred sixty-four euros for twelve gigabytes. Hard to justify.",
+   "value": 1464,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -88,6 +96,8 @@
     "B|5070 Ti"
    ],
    "narration": "The RTX 5070 Ti is one thousand seven hundred ninety-five euros, with sixteen gigabytes.",
+   "value": 1795,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -104,6 +114,8 @@
     "S|5080"
    ],
    "narration": "The RTX 5080 is one thousand eight hundred fifty euros, only a little more than the 5070 Ti. That is the bargain.",
+   "value": 1850,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -121,6 +133,8 @@
     "F|5090"
    ],
    "narration": "The RTX 5090 costs eight thousand seven hundred seventeen euros. The fastest card, at absurd value.",
+   "value": 8717,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -142,6 +156,10 @@
    "text": "STAY CURIOUS",
    "accentText": "Follow for more",
    "narration": "Follow for more prices. Which would you buy, 5060 Ti or 5080?",
+   "items": [
+    "5060 Ti",
+    "5080"
+   ],
    "durationInFrames": 120
   }
  ]

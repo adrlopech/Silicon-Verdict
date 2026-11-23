@@ -34,6 +34,8 @@
     "A|12700KF"
    ],
    "narration": "The Core i7 12700KF costs two hundred sixty-four euros and has twelve cores. Stay to the end, one price is absurd.",
+   "value": 264,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -46,6 +48,8 @@
     "B|12700K"
    ],
    "narration": "The 12700K adds integrated graphics and costs three hundred four euros.",
+   "value": 304,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -59,6 +63,8 @@
     "S|13700KF"
    ],
    "narration": "The Core i7 13700KF has sixteen cores for three hundred fifty-five euros, the best value here.",
+   "value": 355,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -73,6 +79,8 @@
     "C|Ultra 7 265KF"
    ],
    "narration": "The Core Ultra 7 265KF costs three hundred fifty-seven euros, yet often trails older chips in games.",
+   "value": 357,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -88,6 +96,8 @@
     "A|14700KF"
    ],
    "narration": "The Core i7 14700KF has twenty cores for three hundred sixty euros.",
+   "value": 360,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -104,6 +114,8 @@
     "B|14700K"
    ],
    "narration": "The 14700K with graphics is four hundred four euros, more than the KF.",
+   "value": 404,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -121,6 +133,8 @@
     "F|11700KF"
    ],
    "narration": "And the absurd one: the Core i7 11700KF costs five hundred ninety euros for eight old cores.",
+   "value": 590,
+   "unit": "€",
    "durationInFrames": 170
   },
   {
@@ -142,6 +156,10 @@
    "text": "STAY CURIOUS",
    "accentText": "Follow for more",
    "narration": "Follow for more prices. Which would you buy, 12700KF or 13700KF?",
+   "items": [
+    "12700KF",
+    "13700KF"
+   ],
    "durationInFrames": 120
   }
  ]

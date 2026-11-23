@@ -175,7 +175,11 @@
    "text": "Verdict",
    "narration": "Follow for more tech. Which shocked you more, the disc myth or the weapon limit?",
    "durationInFrames": 110,
-   "accentText": "Follow for more"
+   "accentText": "Follow for more",
+   "items": [
+    "Disc myth",
+    "Weapon limit"
+   ]
   }
  ]
 }

@@ -113,7 +113,11 @@
    "text": "Quiz over",
    "narration": "Follow for more tech. Which question was harder, one or two?",
    "durationInFrames": 100,
-   "accentText": "Follow for more"
+   "accentText": "Follow for more",
+   "items": [
+    "Question one",
+    "Question two"
+   ]
   }
  ]
 }
