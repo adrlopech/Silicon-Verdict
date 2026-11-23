@@ -8,7 +8,7 @@ este archivo resume cómo operar el repositorio. El operador habla español; los
 | Palabra | Qué hacer |
 |---|---|
 | `genera` (o `/genera`) | Flujo automático de 4 vídeos, **sin preguntar** (el operador ya autorizó publicar). Pasos exactos en `.claude/commands/genera.md`; explicación en `guide/daily-workflow.md` |
-| `limpieza` | Ejecutar al instante `.venv/bin/python scripts/cleanup.py` y mostrar el balance (vídeos, carpetas temporales y MB liberados). Es lo único que vacía `output/tiktok/` |
+| `limpieza` | Ejecutar al instante `.venv/bin/python scripts/cleanup.py` y mostrar el balance (vídeos, carpetas temporales y MB liberados). Es lo único que vacía `output/tiktok/` y `output/tiktok_small/` |
 | `help` / `ayuda` | Responder con la guía de comandos: este archivo, `guide/README.md` o `.venv/bin/python main.py help` |
 
 "Los vídeos de hoy" significa `genera` con `--date` de hoy (fecha UTC) en lugar de mañana.

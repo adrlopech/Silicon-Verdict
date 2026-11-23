@@ -20,7 +20,7 @@ def commits():
         if not chunk:
             continue
         h, d, a, subj, body = (chunk.split(SEP) + [""] * 5)[:5]
-        body = "\n".join(l for l in body.splitlines() if not l.startswith("Co-Authored-By"))
+        body = "\n".join(line for line in body.splitlines() if not line.startswith("Co-Authored-By"))
         yield h, d, subj, body.strip()
 
 

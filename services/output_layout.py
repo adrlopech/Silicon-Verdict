@@ -5,7 +5,7 @@ output/<platform>/<Video title>/<YYYY-MM-DD_HH-MM-SS>.mp4   (+ _cover.jpg, and .
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 from config.settings import settings
 
@@ -37,19 +37,6 @@ def video_dir(platform: str, title: str, create: bool = True) -> Path:
     if create:
         d.mkdir(parents=True, exist_ok=True)
     return d
-
-
-def all_videos(platform: str = "tiktok") -> List[Path]:
-    """Every rendered mp4 under output/<platform>/ (folders per video, plus legacy flat files)."""
-    base = OUTPUT_DIR / platform
-    if not base.is_dir():
-        return []
-    return [p for p in base.rglob("*.mp4") if not p.name.startswith(("fixed_", "audio_fixed_"))]
-
-
-def latest_video(platform: str = "tiktok") -> Optional[Path]:
-    vids = all_videos(platform)
-    return max(vids, key=lambda p: p.stat().st_mtime) if vids else None
 
 
 def mirror_path(video_path: Path, platform: str) -> Path:

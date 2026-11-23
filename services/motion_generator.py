@@ -199,17 +199,6 @@ def assign_cursors(scenes, fmt: Optional[str]) -> None:
     limit_cursor(scenes, fmt)
 
 
-def cursor_from_pose(pose: Optional[str], scene_type: str, index: int, total: int) -> Optional[str]:
-    """Which pointer action fits a scene that used to carry a mascot pose (used when old scripts are moved to the pointer)."""
-    if not pose or scene_type in ("flash", "footage", "outro") or index == 0:
-        return None
-    if scene_type in ("progressBar", "tier"):
-        return "drag"
-    if scene_type in ("codeBlock", "list"):
-        return "click"
-    return "select" if scene_type == "textWithAccent" and pose == "point" else None
-
-
 SceneType = Literal["bigText", "textWithAccent", "counter", "list", "codeBlock", "progressBar", "outro", "curve", "flash", "footage", "tier", "versus", "verdict", "timeline", "ui", "card", "rank", "quiz", "headline", "split", "units"]
 FORMATS = ("myth", "tier", "whatif", "easter", "evolution", "versus", "hardware", "simple", "fix", "decode", "top5", "eli5", "fails", "numbers", "quiz", "stop", "rumor", "review", "news", "priced")   # content formats on top of the two kinds (curiosity / game); "easter" is always a game video; "hardware" and "simple" are the old Hardware / Everyday-with-mascot categories, now told in the Motion style; "fix" and "decode" come from the Nov 2026 niche research (notes/niche_research_2026-11.md)
 TIER_LETTERS = ("S", "A", "B", "C", "D", "F")
@@ -613,11 +602,9 @@ def _spoken(s: MotionSceneModel) -> bool:
     return bool([w for w in re.findall(r"[a-z]+", text) if w in _NUM_WORDS] or teens)
 
 
-def _format_problems(p: MotionProject, fmt: Optional[str]) -> List[str]:
-    """Checks of the format's own scene types (tier boards, versus rounds, verdict stamps, timelines), whatever the format of the video."""
+def _tier_board_problems(tiers: list) -> List[str]:
+    """Every tier scene shows the board so far: the previous items in the same order plus exactly one new "S|label" item at the end."""
     out: List[str] = []
-    sc = p.scenes
-    tiers = [(i, s) for i, s in enumerate(sc, 1) if s.type == "tier"]
     prev: List[str] = []
     for i, s in tiers:
         items = s.items or []
@@ -628,150 +615,198 @@ def _format_problems(p: MotionProject, fmt: Optional[str]) -> List[str]:
         if prev and (len(items) != len(prev) + 1 or [x.strip() for x in items[:-1]] != [x.strip() for x in prev]):
             out.append(f"scene {i}: a tier scene must repeat the previous board in the same order and add exactly ONE item at the end")
         prev = items
-    for i, s in enumerate(sc, 1):
-        if s.type == "versus":
-            if not (s.left and s.right and len(s.left) <= 16 and len(s.right) <= 16):
-                out.append(f"scene {i}: versus needs `left` and `right` names of at most 16 characters")
-            if not (s.leftValue and s.rightValue and s.leftValue > 0 and s.rightValue > 0):
-                out.append(f"scene {i}: versus needs positive leftValue and rightValue")
-            elif not (_said(s.leftValue, s.narration) or _said(s.rightValue, s.narration)):
-                out.append(f"scene {i}: the versus figures must be said in that scene's narration (no decorative figures)")
-        elif s.type == "verdict":
-            if not s.verdict:
-                out.append(f"scene {i}: verdict scenes need `verdict` (myth, fact or partly)")
-            if not (s.accentText or "").strip():
-                out.append(f"scene {i}: a verdict scene needs accentText: the one-line truth shown under the stamp")
-            if s.accentText and len(s.accentText.split()) > 6:
-                out.append(f"scene {i}: a verdict's accentText is at most 6 words")
-        elif s.type == "timeline":
-            rows = [it.split("|", 1) for it in (s.items or []) if "|" in it]
-            years = [r[0].strip() for r in rows]
-            if not (3 <= len(s.items or []) <= 5) or len(rows) != len(s.items or []) or not all(re.fullmatch(r"\d{4}", y) for y in years):
-                out.append(f"scene {i}: timeline needs 3-5 \"year|label\" items with a four-digit year")
-            elif years != sorted(years):
-                out.append(f"scene {i}: timeline years must be in chronological order")
-            elif any(len(r[1].strip()) > 28 for r in rows):
-                out.append(f"scene {i}: timeline labels are at most 28 characters")
-    lefts = {(s.left or "").strip().lower() for s in sc if s.type == "versus"}
-    rights = {(s.right or "").strip().lower() for s in sc if s.type == "versus"}
-    if len(lefts) > 1 or len(rights) > 1:
-        out.append("the versus contenders must have the SAME names in every round")
-    count = lambda t: sum(1 for s in sc if s.type == t)
-    if fmt == "myth":
-        v = [s.verdict for s in sc if s.type == "verdict"]
-        if len(v) < 4:
-            out.append(f"myth format needs 4-5 verdict scenes, got {len(v)}")
-        if v.count("myth") < 2 or not (v.count("fact") + v.count("partly")):
-            out.append("mix the verdicts: at least 2 myths and at least 1 fact or partly")
-    elif fmt == "tier":
-        if not 6 <= len(tiers) <= 9:
-            out.append(f"tier format needs 6-9 tier scenes (one per item), got {len(tiers)}")
-        elif len({it.split("|", 1)[0].strip().upper() for it in (tiers[-1][1].items or []) if "|" in it}) < 4:
-            out.append("the final tier board must use at least 4 different tiers")
-    elif fmt == "evolution":
-        if count("timeline") < 2:
-            out.append("evolution format needs at least 2 timeline scenes")
-    elif fmt == "versus":
-        if not 3 <= count("versus") <= 5:
-            out.append(f"versus format needs 3-5 versus scenes (rounds), got {count('versus')}")
-    elif fmt == "whatif":
-        if sum(count(t) for t in ("counter", "progressBar", "curve", "list", "codeBlock")) < 3:
-            out.append("what-if format needs at least 3 consequence scenes (counter, progressBar, curve, list or codeBlock)")
-    if fmt in ("fix", "decode"):
-        if not count("codeBlock"):
-            out.append(f"{fmt} format needs a codeBlock scene ({'the exact menu path or command' if fmt == 'fix' else 'the label broken into its parts'})")
-        if not count("list"):
+    return out
+
+
+def _two_sided_problems(i: int, s: MotionSceneModel, noun: str) -> List[str]:
+    """versus and split scenes: two short names, two positive figures, at least one of them said aloud."""
+    out: List[str] = []
+    if not (s.left and s.right and len(s.left) <= 16 and len(s.right) <= 16):
+        out.append(f"scene {i}: {noun} needs `left` and `right` {'names' if noun == 'versus' else 'labels'} of at most 16 characters")
+    if not (s.leftValue and s.rightValue and s.leftValue > 0 and s.rightValue > 0):
+        out.append(f"scene {i}: {noun} needs positive leftValue and rightValue")
+    elif not (_said(s.leftValue, s.narration) or _said(s.rightValue, s.narration)):
+        out.append(f"scene {i}: the {noun} figures must be said in that scene's narration" + (" (no decorative figures)" if noun == "versus" else ""))
+    return out
+
+
+def _timeline_problems(i: int, s: MotionSceneModel) -> List[str]:
+    rows = [it.split("|", 1) for it in (s.items or []) if "|" in it]
+    years = [r[0].strip() for r in rows]
+    if not (3 <= len(s.items or []) <= 5) or len(rows) != len(s.items or []) or not all(re.fullmatch(r"\d{4}", y) for y in years):
+        return [f"scene {i}: timeline needs 3-5 \"year|label\" items with a four-digit year"]
+    if years != sorted(years):
+        return [f"scene {i}: timeline years must be in chronological order"]
+    if any(len(r[1].strip()) > 28 for r in rows):
+        return [f"scene {i}: timeline labels are at most 28 characters"]
+    return []
+
+
+def _verdict_problems(i: int, s: MotionSceneModel, fmt: Optional[str]) -> List[str]:
+    out: List[str] = []
+    if not s.verdict:
+        out.append(f"scene {i}: verdict scenes need `verdict` (myth, fact or partly)")
+    if not (s.accentText or "").strip():
+        out.append(f"scene {i}: a verdict scene needs accentText: the one-line truth shown under the stamp")
+    if s.accentText and len(s.accentText.split()) > 6:
+        out.append(f"scene {i}: a verdict's accentText is at most 6 words")
+    if fmt == "review" and s.verdict not in ("buy", "wait", "skip"):
+        out.append(f"scene {i}: in a review the verdict is buy, wait or skip")
+    elif fmt != "review" and s.verdict in ("buy", "wait", "skip"):
+        out.append(f"scene {i}: buy / wait / skip stamps belong only to the review format")
+    return out
+
+
+def _units_problems(i: int, s: MotionSceneModel) -> List[str]:
+    out: List[str] = []
+    if not (s.value is not None and 0 < s.value <= 200):
+        out.append(f"scene {i}: a units scene needs `value` = how many units (a positive number up to 200)")
+    if not (s.unit or "").strip():
+        out.append(f"scene {i}: a units scene needs `unit` = the unit's name")
+    elif s.value is not None and not _said(s.value, s.narration):
+        out.append(f"scene {i}: the units figure must be said in that scene's narration")
+    return out
+
+
+def _scene_problems(i: int, s: MotionSceneModel, fmt: Optional[str]) -> List[str]:
+    """The fields each format scene type needs (see the prompts), whatever the format of the video."""
+    t = s.type
+    if t == "versus":
+        return _two_sided_problems(i, s, "versus")
+    if t == "split":
+        demo = [] if (s.demo or "bars") in SPLIT_DEMOS else [f"scene {i}: split `demo` must be one of {', '.join(SPLIT_DEMOS)}"]
+        return demo + _two_sided_problems(i, s, "split")
+    if t == "verdict":
+        return _verdict_problems(i, s, fmt)
+    if t == "timeline":
+        return _timeline_problems(i, s)
+    if t == "units":
+        return _units_problems(i, s)
+    if t == "rank" and not (s.value and 1 <= s.value <= 9 and float(s.value).is_integer()):
+        return [f"scene {i}: a rank scene needs `value` = its position (5, 4, 3, 2, 1)"]
+    if t == "quiz":
+        out = [] if (s.items and len(s.items) == 3) else [f"scene {i}: a quiz scene needs exactly 3 options in `items`"]
+        return out + ([] if (s.value and int(s.value) in (1, 2, 3)) else [f"scene {i}: a quiz scene needs `value` = the correct option (1, 2 or 3)"])
+    if t == "headline" and not (s.kicker or "").strip():
+        return [f"scene {i}: a headline scene needs `kicker` = the outlet"]
+    return []
+
+
+# What each format demands of its own scenes: name -> function(scenes, count_of_type, tier_scenes) -> list of problems
+def _needs_myth(sc, n, tiers):
+    v = [s.verdict for s in sc if s.type == "verdict"]
+    out = [f"myth format needs 4-5 verdict scenes, got {len(v)}"] if len(v) < 4 else []
+    if v.count("myth") < 2 or not (v.count("fact") + v.count("partly")):
+        out.append("mix the verdicts: at least 2 myths and at least 1 fact or partly")
+    return out
+
+
+def _needs_tier(sc, n, tiers):
+    if not 6 <= len(tiers) <= 9:
+        return [f"tier format needs 6-9 tier scenes (one per item), got {len(tiers)}"]
+    if len({it.split("|", 1)[0].strip().upper() for it in (tiers[-1][1].items or []) if "|" in it}) < 4:
+        return ["the final tier board must use at least 4 different tiers"]
+    return []
+
+
+def _needs_codeblock_and_list(fmt: str, steps: str, parts: str):
+    def check(sc, n, tiers):
+        out = []
+        if not n("codeBlock"):
+            out.append(f"{fmt} format needs a codeBlock scene ({steps if fmt == 'fix' else parts})")
+        if not n("list"):
             out.append(f"{fmt} format needs a list scene ({'the steps' if fmt == 'fix' else 'what each part tells you'})")
+        return out
+    return check
+
+
+def _needs_review(sc, n, tiers):
+    out = []
+    if n("verdict") != 1 or sc[-2].type != "verdict" and not any(x.type == "verdict" for x in sc[-4:]):
+        out.append("review format needs ONE verdict scene near the end (buy, wait or skip)")
+    if n("list") < 2:
+        out.append("review format needs two list scenes (what you get, what it costs)")
+    return out
+
+
+def _needs_priced(sc, n, tiers):
+    units = [s.unit.strip().lower() for s in sc if s.type == "units" and s.unit]
+    if not 4 <= n("units") <= 6:
+        return [f"priced format needs 4-6 units scenes (one per thing), got {n('units')}"]
+    if len(set(units)) > 1:
+        return ["the unit must have the SAME name in every units scene"]
+    return []
+
+
+def _needs(condition_failed, message: str):
+    """A format rule of the form "needs X": `condition_failed(sc, n)` is True when the script breaks it."""
+    return lambda sc, n, tiers: [message] if condition_failed(sc, n) else []
+
+
+FORMAT_NEEDS = {
+    "myth": _needs_myth,
+    "tier": _needs_tier,
+    "evolution": _needs(lambda sc, n: n("timeline") < 2, "evolution format needs at least 2 timeline scenes"),
+    "versus": lambda sc, n, tiers: [f"versus format needs 3-5 versus scenes (rounds), got {n('versus')}"] if not 3 <= n("versus") <= 5 else [],
+    "whatif": _needs(lambda sc, n: sum(n(t) for t in ("counter", "progressBar", "curve", "list", "codeBlock")) < 3,
+                     "what-if format needs at least 3 consequence scenes (counter, progressBar, curve, list or codeBlock)"),
+    "fix": _needs_codeblock_and_list("fix", "the exact menu path or command", "the label broken into its parts"),
+    "decode": _needs_codeblock_and_list("decode", "the exact menu path or command", "the label broken into its parts"),
+    "top5": lambda sc, n, tiers: [f"top5 format needs five rank scenes with values 5, 4, 3, 2, 1 in that order, got {[s.value for s in sc if s.type == 'rank']}"]
+    if [s.value for s in sc if s.type == "rank"] != [5, 4, 3, 2, 1] else [],
+    "quiz": lambda sc, n, tiers: [f"quiz format needs 2-3 quiz scenes, got {n('quiz')}"] if not 2 <= n("quiz") <= 3 else [],
+    "news": lambda sc, n, tiers: [f"news format needs 3-4 headline scenes (one per story), got {n('headline')}"] if not 3 <= n("headline") <= 4 else [],
+    "review": _needs_review,
+    "fails": _needs(lambda sc, n: not n("timeline") or not (n("counter") or n("progressBar")), "fails format needs a timeline scene and a counter or progressBar scene"),
+    "numbers": _needs(lambda sc, n: n("counter") + n("progressBar") < 4, "numbers format needs at least 4 counter or progressBar scenes"),
+    "eli5": _needs(lambda sc, n: n("card") < 2 or not n("list"), "eli5 format needs at least 2 card scenes (the analogy) and a list scene (analogy = reality)"),
+    "stop": _needs(lambda sc, n: not n("list") or not (n("counter") or n("progressBar") or n("card")), "stop format needs a list scene and a counter, progressBar or card scene"),
+    "rumor": _needs(lambda sc, n: not n("progressBar") or n("card") + n("list") < 2, "rumor format needs a progressBar (plausibility) and at least 2 card or list scenes"),
+    "priced": _needs_priced,
+}
+
+# The scene types that belong to one format only, and the formats that may use the "format scenes" (tier, versus, verdict, timeline)
+OWN_SCENES = {"units": ("priced",), "rank": ("top5",), "quiz": ("quiz",), "headline": ("news",)}
+OWN_SCENE_MESSAGES = {"units": "units scenes belong only to the priced format", "rank": "rank scenes belong only to the top5 format", "quiz": "quiz scenes belong only to the quiz format",
+                      "headline": "headline scenes belong only to the news format"}
+FORMAT_SCENE_TYPES = ("tier", "versus", "verdict", "timeline")
+FORMAT_ONLY_SCENES = {  # format -> (the one kind of format scene it uses, message)
+    "myth": ("verdict", "a myth video uses only verdict scenes among the format scenes"),
+    "tier": ("tier", "a tier video uses only tier scenes among the format scenes"),
+    "versus": ("versus", "a versus video uses only versus scenes among the format scenes"),
+    "evolution": ("timeline", "an evolution video uses only timeline scenes among the format scenes"),
+    "review": ("verdict", "a review uses only a verdict scene among the format scenes"),
+    "fails": ("timeline", "a fails video uses only timeline scenes among the format scenes"),
+}
+
+
+def _format_problems(p: MotionProject, fmt: Optional[str]) -> List[str]:
+    """Checks of the format's own scene types (tier boards, versus rounds, verdict stamps, timelines...), whatever the format of the video, and of what each format demands."""
+    sc = p.scenes
+    tiers = [(i, s) for i, s in enumerate(sc, 1) if s.type == "tier"]
+
+    def n(t: str) -> int:
+        return sum(1 for s in sc if s.type == t)
+
+    out = _tier_board_problems(tiers)
     for i, s in enumerate(sc, 1):
-        if s.type == "units":
-            if not (s.value is not None and 0 < s.value <= 200):
-                out.append(f"scene {i}: a units scene needs `value` = how many units (a positive number up to 200)")
-            if not (s.unit or "").strip():
-                out.append(f"scene {i}: a units scene needs `unit` = the unit's name")
-            elif s.value is not None and not _said(s.value, s.narration):
-                out.append(f"scene {i}: the units figure must be said in that scene's narration")
-        elif s.type == "split":
-            if (s.demo or "bars") not in SPLIT_DEMOS:
-                out.append(f"scene {i}: split `demo` must be one of {', '.join(SPLIT_DEMOS)}")
-            if not (s.left and s.right and len(s.left) <= 16 and len(s.right) <= 16):
-                out.append(f"scene {i}: split needs `left` and `right` labels of at most 16 characters")
-            if not (s.leftValue and s.rightValue and s.leftValue > 0 and s.rightValue > 0):
-                out.append(f"scene {i}: split needs positive leftValue and rightValue")
-            elif not (_said(s.leftValue, s.narration) or _said(s.rightValue, s.narration)):
-                out.append(f"scene {i}: the split figures must be said in that scene's narration")
-        if s.type == "rank" and not (s.value and 1 <= s.value <= 9 and float(s.value).is_integer()):
-            out.append(f"scene {i}: a rank scene needs `value` = its position (5, 4, 3, 2, 1)")
-        elif s.type == "quiz":
-            if not (s.items and len(s.items) == 3):
-                out.append(f"scene {i}: a quiz scene needs exactly 3 options in `items`")
-            if not (s.value and int(s.value) in (1, 2, 3)):
-                out.append(f"scene {i}: a quiz scene needs `value` = the correct option (1, 2 or 3)")
-        elif s.type == "headline" and not (s.kicker or "").strip():
-            out.append(f"scene {i}: a headline scene needs `kicker` = the outlet")
-        elif s.type == "verdict" and fmt == "review" and s.verdict not in ("buy", "wait", "skip"):
-            out.append(f"scene {i}: in a review the verdict is buy, wait or skip")
-        elif s.type == "verdict" and fmt != "review" and s.verdict in ("buy", "wait", "skip"):
-            out.append(f"scene {i}: buy / wait / skip stamps belong only to the review format")
-    if fmt == "top5":
-        ranks = [s.value for s in sc if s.type == "rank"]
-        if ranks != [5, 4, 3, 2, 1]:
-            out.append(f"top5 format needs five rank scenes with values 5, 4, 3, 2, 1 in that order, got {ranks}")
-    elif fmt == "quiz":
-        if not 2 <= count("quiz") <= 3:
-            out.append(f"quiz format needs 2-3 quiz scenes, got {count('quiz')}")
-    elif fmt == "news":
-        if not 3 <= count("headline") <= 4:
-            out.append(f"news format needs 3-4 headline scenes (one per story), got {count('headline')}")
-    elif fmt == "review":
-        if count("verdict") != 1 or sc[-2].type != "verdict" and not any(x.type == "verdict" for x in sc[-4:]):
-            out.append("review format needs ONE verdict scene near the end (buy, wait or skip)")
-        if count("list") < 2:
-            out.append("review format needs two list scenes (what you get, what it costs)")
-    elif fmt == "fails":
-        if not count("timeline") or not (count("counter") or count("progressBar")):
-            out.append("fails format needs a timeline scene and a counter or progressBar scene")
-    elif fmt == "numbers":
-        if count("counter") + count("progressBar") < 4:
-            out.append("numbers format needs at least 4 counter or progressBar scenes")
-    elif fmt == "eli5":
-        if count("card") < 2 or not count("list"):
-            out.append("eli5 format needs at least 2 card scenes (the analogy) and a list scene (analogy = reality)")
-    elif fmt == "stop":
-        if not count("list") or not (count("counter") or count("progressBar") or count("card")):
-            out.append("stop format needs a list scene and a counter, progressBar or card scene")
-    elif fmt == "rumor":
-        if not count("progressBar") or count("card") + count("list") < 2:
-            out.append("rumor format needs a progressBar (plausibility) and at least 2 card or list scenes")
-    if fmt == "priced":
-        units = [s.unit.strip().lower() for s in sc if s.type == "units" and s.unit]
-        if not 4 <= count("units") <= 6:
-            out.append(f"priced format needs 4-6 units scenes (one per thing), got {count('units')}")
-        elif len(set(units)) > 1:
-            out.append("the unit must have the SAME name in every units scene")
-    if fmt != "priced" and count("units"):
-        out.append("units scenes belong only to the priced format")
-    if count("split") and fmt not in (None, "versus", "evolution", "whatif", "numbers", "fails", "hardware", "priced"):
+        out += _scene_problems(i, s, fmt)
+    if len({(s.left or "").strip().lower() for s in sc if s.type == "versus"}) > 1 or len({(s.right or "").strip().lower() for s in sc if s.type == "versus"}) > 1:
+        out.append("the versus contenders must have the SAME names in every round")
+    if fmt in FORMAT_NEEDS:
+        out += FORMAT_NEEDS[fmt](sc, n, tiers)
+    for scene_type, formats in OWN_SCENES.items():
+        if fmt not in formats and n(scene_type):
+            out.append(OWN_SCENE_MESSAGES[scene_type])
+    if n("split") and fmt not in (None, "versus", "evolution", "whatif", "numbers", "fails", "hardware", "priced"):
         out.append("split scenes belong only to versus, evolution, whatif, numbers, fails, hardware and priced videos")
-    if fmt != "top5" and count("rank"):
-        out.append("rank scenes belong only to the top5 format")
-    if fmt != "quiz" and count("quiz"):
-        out.append("quiz scenes belong only to the quiz format")
-    if fmt != "news" and count("headline"):
-        out.append("headline scenes belong only to the news format")
-    if fmt not in ("myth", "tier", "versus", "evolution", "review", "fails") and (tiers or count("versus") or count("verdict") or count("timeline")):
+    present = {t: n(t) for t in FORMAT_SCENE_TYPES}
+    if fmt not in ("myth", "tier", "versus", "evolution", "review", "fails") and any(present.values()):
         out.append("tier / versus / verdict / timeline scenes belong only to their own format")
-    if fmt == "review" and (tiers or count("versus") or count("timeline")):
-        out.append("a review uses only a verdict scene among the format scenes")
-    if fmt == "fails" and (tiers or count("versus") or count("verdict")):
-        out.append("a fails video uses only timeline scenes among the format scenes")
-    if fmt == "myth" and (tiers or count("versus") or count("timeline")):
-        out.append("a myth video uses only verdict scenes among the format scenes")
-    if fmt == "tier" and (count("versus") or count("verdict") or count("timeline")):
-        out.append("a tier video uses only tier scenes among the format scenes")
-    if fmt == "versus" and (tiers or count("verdict") or count("timeline")):
-        out.append("a versus video uses only versus scenes among the format scenes")
-    if fmt == "evolution" and (tiers or count("versus") or count("verdict")):
-        out.append("an evolution video uses only timeline scenes among the format scenes")
+    if fmt in FORMAT_ONLY_SCENES:
+        own, message = FORMAT_ONLY_SCENES[fmt]
+        if any(count for t, count in present.items() if t != own):
+            out.append(message)
     return out
 
 

@@ -4,6 +4,7 @@ Generation is told to use only this text for claims about the game, and the fact
 Dossiers are cached in data/game_facts/ so each game is fetched once.
 """
 import logging
+import contextlib
 import re
 import time
 from typing import Optional
@@ -123,10 +124,8 @@ def figures_in(text: str) -> set:
     """Every number written in the dossier (thousand separators removed), as floats."""
     out = set()
     for m in re.findall(r"\d[\d,]*(?:\.\d+)?", text):
-        try:
+        with contextlib.suppress(ValueError):
             out.add(float(m.replace(",", "")))
-        except ValueError:
-            pass
     for word in re.findall(r"[a-z]+", text.lower()):  # numbers written as words ("three times larger", "two primary firearms")
         if word in NUMBER_WORDS:
             out.add(float(NUMBER_WORDS[word]))

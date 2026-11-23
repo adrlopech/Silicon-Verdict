@@ -96,5 +96,5 @@ A table with video, format, Madrid hour and YouTube link, and a note of anything
 | Retention report | `.venv/bin/python scripts/report_retention.py` |
 | Renew the YouTube token (weekly) | see [Publishing](publishing.md#youtube-oauth) |
 
-`limpieza` empties `output/tiktok/`, `output/youtube/` and `temp/`; it keeps `data/`, `assets/`, `.env`, credentials and logs. Nothing deletes `output/tiktok/` automatically, because
+`limpieza` empties `output/tiktok/`, `output/tiktok_small/`, `output/youtube/` and `temp/`; it keeps `data/`, `assets/`, `.env`, credentials and logs. Nothing deletes `output/tiktok/` automatically, because
 the TikTok copies wait there for manual upload until you ask.

@@ -228,9 +228,10 @@ def caption_pending(limit: int = 200) -> int:
         game = thumbs[0][0]["game"]
         prompt = (f"These {len(thumbs)} images are official screenshots / trailer frames of the video game '{game}' (numbered 0..{len(thumbs) - 1} in order). "
                   "For EACH image return its index and a factual caption of what is visibly shown.")
+        need = len(thumbs)
         try:
             res, _tok, model = generate_structured(prompt, "You describe game images precisely and briefly.", Caps, temperature=0.2,
-                                                   validate=lambda r: [] if len(r.items) >= len(thumbs) else [f"need {len(thumbs)} captions"],
+                                                   validate=lambda r: [] if len(r.items) >= need else [f"need {need} captions"],
                                                    images=[b for _, b in thumbs])
         except GeminiUnavailable as exc:
             logger.warning("Captioning stopped (%s). %d item(s) captioned so far.", str(exc)[:140], done)

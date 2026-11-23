@@ -111,18 +111,6 @@ def record_short_history(
         return cursor.lastrowid
 
 
-def get_last_used_voice(db_path: Optional[Path] = None) -> Optional[str]:
-    """Queries the most recently used ElevenLabs voice ID from history."""
-    init_db(db_path)
-    with get_db_connection(db_path) as conn:
-        row = conn.execute(
-            "SELECT voice_id_used FROM shorts_history ORDER BY id DESC LIMIT 1"
-        ).fetchone()
-        if row:
-            return str(row["voice_id_used"])
-    return None
-
-
 def get_recently_used_topics_safe(limit: int = 25) -> list:
     """Titles of recently produced videos (best effort; empty list on any error)."""
     try:

@@ -5,6 +5,7 @@ import shutil
 import subprocess
 import time
 import uuid
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -184,6 +185,7 @@ def narrate_scenes(project: Any, work_dir: Path):
     Returns ([(scene_index, mp3, seconds)], continuous). With continuous=True each scene lasts exactly as long as its slice and the slices play back to back;
     if the alignment does not match the text, it falls back to one clip per scene (continuous=False)."""
     import math
+    from concurrent.futures import ThreadPoolExecutor
     from services import voice_synthesizer
     from services.audio import normalize_phonetics_us_english
     from services.voice import get_ffmpeg_bin
@@ -223,14 +225,16 @@ def narrate_scenes(project: Any, work_dir: Path):
         lasts.append(words[pos + c - 1]["end"])
         pos += c
     cuts = [0.0] + [(lasts[k] + firsts[k + 1]) / 2 for k in range(len(scenes) - 1)] + [total]  # every cut sits in the middle of the pause between two words
-    clips = []
-    for k in range(len(scenes)):
+    def cut(k: int):
         start, dur = cuts[k], max(0.2, cuts[k + 1] - cuts[k])
         out = work_dir / f"scene_{k:02d}.mp3"
         af = f"afade=t=in:d=0.006,afade=t=out:st={max(0.0, dur - 0.008):.3f}:d=0.008"
         subprocess.run([get_ffmpeg_bin(), "-y", "-ss", f"{start:.3f}", "-t", f"{dur:.3f}", "-i", str(full_path), "-af", af, "-c:a", "libmp3lame", "-b:a", "192k", str(out)],
                        check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        clips.append((k, out, dur))
+        return k, out, dur
+
+    with ThreadPoolExecutor(max_workers=4) as pool:  # the slices are independent ffmpeg runs
+        clips = list(pool.map(cut, range(len(scenes))))
     cursor_cues(project, words, counts, cuts)
     for k, _p, dur in clips:
         scenes[k].durationInFrames = max(scenes[k].durationInFrames, math.ceil(dur * FPS))
@@ -344,9 +348,6 @@ WHOOSH_TARGET_DB = -38
 def sfx_gain(fname: str, target_db: float, voiced: bool) -> float:
     """Linear gain that brings an effect file to `target_db` mean level (+6 dB when there is no narration)."""
     return 10 ** ((target_db + (0 if voiced else 6) - SFX_MEAN.get(fname, -18.0)) / 20)
-
-
-CUE_VOLUME = {"rehook": (0.34, 0.55), "first": (0.35, 0.5), "flash": (0.5, 0.7), "riser": (0.26, 0.45), "click": (0.3, 0.5), "select": (0.26, 0.45), "grab": (0.28, 0.45), "verdict": (0.28, 0.45), "outro": (0.3, 0.5), "tick": (0.12, 0.22), "pop": (0.24, 0.4)}
 
 
 def rehook_index(scene_starts: list, durations: list) -> int:
@@ -475,10 +476,8 @@ def _peak_db(path: Path) -> Optional[float]:
 
 
 def _duration(path: Path) -> float:
-    from services.voice import get_ffmpeg_bin
-    log = subprocess.run([get_ffmpeg_bin(), "-hide_banner", "-i", str(path)], capture_output=True, text=True).stderr
-    m = re.search(r"Duration: (\d+):(\d+):([\d.]+)", log)
-    return int(m[1]) * 3600 + int(m[2]) * 60 + float(m[3]) if m else 0.0
+    from services.voice import ffmpeg_duration
+    return ffmpeg_duration(path) or 0.0
 
 
 def qa_motion(path: Path) -> list:
@@ -520,53 +519,40 @@ def _last_motion_choice():
         return None
 
 
-def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, dry_run: bool = False, privacy: str = "public", kind: str = "auto", fmt: str = "auto",
-                        source_text: Optional[str] = None, script: Optional[Any] = None) -> Dict[str, Any]:
-    """kind: curiosity | game | auto (a game video when a game with unused footage is not blacklisted, otherwise a curiosity).
-    fmt: auto (the classic explainer) | myth | tier | whatif | easter | evolution | versus | any (a random format). `easter` is always a game video, the rest are curiosities.
-    source_text: with kind='curiosity' and a topic, the real text the script must stick to (claims, dates and figures are checked against it)."""
-    from services.history import get_recently_used_topics_safe, record_short_history
-    from services.motion_generator import generate_motion_project
-    from services.output_layout import timestamp_stem, video_dir
-
-    t0 = time.time()
-    run_id = uuid.uuid4().hex[:8]
+def _draw_any_format() -> tuple:
+    """`--motion-format any`: one of the topics of the Motion Graphics menu (classic, curiosity, game and every format), weighted, never the same as last time and never the news bulletin."""
     import random
-    from services.game_images import build_credits, commit_media, footage_catalog, stage_media
-
-    from services.game_facts import get_game_facts
     from services.game_images import available_games
+    from services.motion_generator import FORMAT_WEIGHTS, FORMATS
+    options = [("auto", "auto"), ("curiosity", "auto"), ("game", "auto")] + [("auto", f) for f in FORMATS if f != "news"]  # the news bulletin is a section of its own: never a random pick
+    if not available_games():
+        options = [o for o in options if o[0] != "game" and o[1] != "easter"]
+    last = _last_motion_choice()
+    pool = [o for o in options if o != last] or options
 
-    from services.motion_generator import FORMATS
-    if fmt == "any":  # automatic: one of the topics of the Motion Graphics menu (classic, curiosity, game and every format), never the same as last time
-        options = [("auto", "auto"), ("curiosity", "auto"), ("game", "auto")] + [("auto", f) for f in FORMATS if f != "news"]  # the news bulletin is a section of its own: never a random pick
-        if not available_games():
-            options = [o for o in options if o[0] != "game" and o[1] != "easter"]
-        last = _last_motion_choice()
-        pool = [o for o in options if o != last] or options
-        from services.motion_generator import FORMAT_WEIGHTS
-        weight = lambda o: FORMAT_WEIGHTS.get(o[1] if o[1] != "auto" else {"auto": "classic"}.get(o[0], o[0]), 1)  # ("auto","auto") is the classic explainer; kinds weigh as themselves
-        kind, fmt = random.choices(pool, weights=[weight(o) for o in pool])[0]
-        logger.info("Automatic Motion Graphics topic: kind=%s format=%s", kind, fmt)
-    if fmt not in ("auto",) + tuple(FORMATS):
-        raise ValueError(f"unknown format {fmt!r}: use auto, any or one of {FORMATS}")
-    if fmt == "easter":
-        kind = "game"
-    elif fmt != "auto":
-        kind = "curiosity"  # the other formats are told with motion graphics only
+    def weight(o: tuple) -> float:  # ("auto", "auto") is the classic explainer; kinds weigh as themselves
+        return FORMAT_WEIGHTS.get(o[1] if o[1] != "auto" else {"auto": "classic"}.get(o[0], o[0]), 1)
+
+    kind, fmt = random.choices(pool, weights=[weight(o) for o in pool])[0]
+    logger.info("Automatic Motion Graphics topic: kind=%s format=%s", kind, fmt)
+    return kind, fmt
+
+
+def _select_source(kind: str, fmt: str, topic: Optional[str], facts: Optional[str], script: Optional[Any]) -> tuple:
+    """Decides what the video is about and where its script comes from: a game (with footage) or a curiosity, a banked script, a hand-written one, or a new one from the LLM.
+    Returns (project, game, facts, catalog, banked_game, kind)."""
+    import random
+    from services.game_facts import get_game_facts
+    from services.game_images import available_games, footage_catalog
+    from services.history import get_recently_used_topics_safe
+    from services.motion_generator import generate_motion_project
+    from services.story_bank import pop_story
+
     format_name = None if fmt == "auto" else fmt
-    if fmt == "news":  # the bulletin reads today's headlines (public RSS feeds) as its SOURCE TEXT
-        from services.tech_news import build_source_text
-        source_text = source_text or build_source_text()
-        topic = topic or f"Tech briefing of {datetime.now(timezone.utc).strftime('%d %B %Y')}"
-    facts = source_text if (source_text and topic and kind == "curiosity") else None
-    game = None
-    project = None
-    banked_game = False
+    game, project, banked_game = None, None, False
     if fmt == "auto" and kind in ("game", "auto") and not topic and (kind == "game" or random.random() < 0.5):
         # game scripts written earlier (the old Gaming category, in the bank) go first: they are shown over the game's own screenshots, no footage ledger involved
         from services.game_images import legacy_images
-        from services.story_bank import pop_story
         project = pop_story("motion", lambda p: p.kind == "game" and bool(p.game) and len(legacy_images(p.game)) >= 5)
         if project is not None:
             banked_game, game, kind = True, project.game, "game"
@@ -585,84 +571,153 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
                            "(fetch more: scripts/fetch_game_images.py, scripts/fetch_game_clips.py, scripts/caption_game_media.py; blacklist: python -m services.game_registry).")
     catalog = footage_catalog(game) if game and not banked_game else None
     if not topic and not game:  # curiosity videos draw on the pre-written bank first (same format), then fall back to the LLM
-        from services.story_bank import pop_story
         recent = {t.strip().lower() for t in get_recently_used_topics_safe()}
         project = pop_story("motion", lambda p: p.format == format_name and p.kind == "curiosity" and p.topic.strip().lower() not in recent)
     if script is not None:  # a script written by hand (data/scripts/*.json): used as it is, no model involved
         project = script
     if project is None:
         project = generate_motion_project(topic, avoid_topics=get_recently_used_topics_safe(), kind="game" if game else "curiosity", game=game, catalog=catalog, facts=facts, fmt=format_name)
-    logger.info("Motion Graphics (%s%s%s): '%s' (%d scenes)", project.kind, f", {game}" if game else "", f", format {format_name}" if format_name else "", project.title, len(project.scenes))
+    return project, game, facts, catalog, banked_game, kind
 
-    from services.motion_generator import strip_markers
+
+def _prepare_project(project: Any) -> None:
+    """Cleans a script and gives it its identity: no markers, sane cursors, a look and a series number."""
+    from services.looks import choose_look
+    from services.motion_generator import assign_cursors, sanitize_cursors, strip_markers
+    from services.series import apply_series
     strip_markers(project)  # *asterisks* around the accent word (a habit of the models) would be drawn and spoken literally
-    from services.motion_generator import assign_cursors, sanitize_cursors
     sanitize_cursors(project.scenes, project.format)  # scripts written by hand (the banks) predate the rules: no tab, no hover, only pointer moments that mean something
     assign_cursors(project.scenes, project.format)
-    from services.looks import choose_look
     if not project.look:
         project.look = choose_look(project.format, project.topic)  # a whole visual identity per video, never one of the last three used
     logger.info("Look: %s", project.look)
-    from services.series import apply_series, joined_hashtag
     label = apply_series(project)  # "Fix It Now #7": the title, the first frame and a series hashtag repeat from video to video
     if label:
         logger.info("Series: %s", label)
 
+
+def _stage_footage(project: Any, catalog: Optional[dict], banked_game: bool, public: Path) -> list:
+    """Copies the footage a game video uses into the render's own public dir; returns the catalog entries used (and adds the credits to the description)."""
+    from services.game_images import build_credits, stage_legacy_footage, stage_media
+    used = []
+    for sc in project.scenes:
+        if sc.type == "footage" and catalog and sc.mediaId in catalog:
+            entry = catalog[sc.mediaId]
+            sc.mediaSrc, sc.mediaKind, sc.mediaSeconds = stage_media(entry, public), entry["kind"], float(entry.get("seconds", 3.0))
+            sc.credit = entry["game"]
+            used.append(entry)
+    if banked_game:
+        stage_legacy_footage(project, public)
+    if used:
+        project.description = project.description.rstrip() + "\n\nGame footage: " + "; ".join(build_credits(used)) + " (official Steam store media)."
+    return used
+
+
+def _write_outputs(project: Any, video: Path, cover: Optional[Path]) -> tuple:
+    """Copies the finished video (and its cover) into output/youtube/<title>/ and output/tiktok/<title>/ and writes the TikTok metadata file. Returns ({platform: mp4}, metadata path)."""
+    from services.output_layout import timestamp_stem, video_dir
+    from services.series import joined_hashtag
+    stem = timestamp_stem()
+    out = {}
+    for platform in ("youtube", "tiktok"):
+        d = video_dir(platform, project.title)
+        shutil.copyfile(video, d / f"{stem}.mp4")
+        out[platform] = d / f"{stem}.mp4"
+        if cover:  # the cover sits next to each copy: <stem>.png (YouTube thumbnail, TikTok cover)
+            shutil.copyfile(cover, d / f"{stem}.png")
+    tags = list(dict.fromkeys(joined_hashtag(t) for t in project.tags))  # hashtags are always one joined word ("#techexplained", never "#tech explained")
+    meta = out["tiktok"].with_suffix(".txt")
+    meta.write_text(
+        "=" * 80 + "\nSILICON VERDICT • MOTION GRAPHICS • TIKTOK & SHORTS METADATA\n"
+        f"Creation Date: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}\nVideo File: {out['tiktok'].name}\nTopic: {project.topic}\n" + "=" * 80
+        + f"\n\n[TITLE]\n{project.title}\n\n[DESCRIPTION]\n{project.description}\n\n[HASHTAGS]\n{' '.join(tags)}\n\n[PINNED COMMENT]\n{project.pinned_comment}\n\n[SCENES]\n"
+        + "\n".join(f"- {s.type}: {s.text} {s.accentText or ''}".rstrip() for s in project.scenes) + "\n",
+        encoding="utf-8",
+    )
+    return out, meta
+
+
+@dataclass
+class PreparedVideo:
+    """Everything that is decided before the render starts: the script, the footage and the narration. Made by `prepare_motion_video`, consumed by `finish_motion_video`."""
+    project: Any
+    game: Optional[str]
+    catalog: Optional[dict]
+    banked_game: bool
+    run_id: str
+    work: Path
+    public: Path
+    used_entries: list
+    clips: list
+    continuous: bool
+    started: float
+
+
+def prepare_motion_video(topic: Optional[str] = None, kind: str = "auto", fmt: str = "auto", source_text: Optional[str] = None, script: Optional[Any] = None) -> PreparedVideo:
+    """First half of the pipeline (network work, no CPU-heavy rendering): chooses the subject, gets the script (bank, hand-written or LLM + fact-check), stages the footage and records the narration.
+    Because it does not render, the next video of a batch can be prepared while the previous one renders. The arguments are those of `run_motion_pipeline`."""
+    from services.motion_generator import FORMATS
+
+    started = time.time()
+    run_id = uuid.uuid4().hex[:8]
+    if fmt == "any":
+        kind, fmt = _draw_any_format()
+    if fmt not in ("auto",) + tuple(FORMATS):
+        raise ValueError(f"unknown format {fmt!r}: use auto, any or one of {FORMATS}")
+    if fmt == "easter":
+        kind = "game"
+    elif fmt != "auto":
+        kind = "curiosity"  # the other formats are told with motion graphics only
+    format_name = None if fmt == "auto" else fmt
+    if fmt == "news":  # the bulletin reads today's headlines (public RSS feeds) as its SOURCE TEXT
+        from services.tech_news import build_source_text
+        source_text = source_text or build_source_text()
+        topic = topic or f"Tech briefing of {datetime.now(timezone.utc).strftime('%d %B %Y')}"
+    facts = source_text if (source_text and topic and kind == "curiosity") else None
+
+    project, game, facts, catalog, banked_game, kind = _select_source(kind, fmt, topic, facts, script)
+    logger.info("Motion Graphics (%s%s%s): '%s' (%d scenes)", project.kind, f", {game}" if game else "", f", format {format_name}" if format_name else "", project.title, len(project.scenes))
     work = Path(settings.TMP_DIR) / f"run_motion_{run_id}"
-    work.mkdir(parents=True, exist_ok=True)
     public = work / "public"
-    public.mkdir(exist_ok=True)
     try:
-        used_entries = []
-        for sc in project.scenes:  # footage scenes get their (already chosen) item copied into the render's own public dir
-            if sc.type == "footage" and catalog and sc.mediaId in catalog:
-                entry = catalog[sc.mediaId]
-                sc.mediaSrc, sc.mediaKind, sc.mediaSeconds = stage_media(entry, public), entry["kind"], float(entry.get("seconds", 3.0))
-                sc.credit = entry["game"]
-                used_entries.append(entry)
-        if banked_game:
-            from services.game_images import stage_legacy_footage
-            stage_legacy_footage(project, public)
-        if used_entries:
-            project.description = project.description.rstrip() + "\n\nGame footage: " + "; ".join(build_credits(used_entries)) + " (official Steam store media)."
-        clips, continuous = narrate_scenes(project, work / "voice")  # first: the narration decides how long each scene lasts
-        raw = render_motion(project.to_props(), work / "raw.mp4", public)
-        cover = render_cover(project.to_props(), work / "cover.png", public)
+        _prepare_project(project)
+        public.mkdir(parents=True, exist_ok=True)
+        used_entries = _stage_footage(project, catalog, banked_game, public)
+        clips, continuous = narrate_scenes(project, work / "voice")  # the narration decides how long each scene lasts
+    except BaseException:
+        from services.story_bank import release_story  # a script taken from the bank is only spent by a video that was actually produced
+        release_story(project)
+        shutil.rmtree(work, ignore_errors=True)
+        raise
+    return PreparedVideo(project, game, catalog, banked_game, run_id, work, public, used_entries, clips, continuous, started)
+
+
+def finish_motion_video(prep: PreparedVideo, export_only: bool = False, dry_run: bool = False, privacy: str = "public") -> Dict[str, Any]:
+    """Second half: render, cover, sound, QA, output folders, optional YouTube upload and history. Always removes the work folder; a failure gives the banked script back."""
+    from services.game_images import commit_media
+    from services.history import record_short_history
+
+    project, work, run_id = prep.project, prep.work, prep.run_id
+    try:
+        raw = render_motion(project.to_props(), work / "raw.mp4", prep.public)
+        cover = render_cover(project.to_props(), work / "cover.png", prep.public)
         starts, acc = [], 0
         for sc in project.scenes:
             starts.append(acc)
             acc += sc.durationInFrames
-        video = add_sound(raw, work / "motion_master.mp4", starts, clips, lead=0.0 if continuous else VOICE_LEAD, kinds=[sc.type for sc in project.scenes],
+        video = add_sound(raw, work / "motion_master.mp4", starts, prep.clips, lead=0.0 if prep.continuous else VOICE_LEAD, kinds=[sc.type for sc in project.scenes],
                          music_file=music_bed(project.format, project.topic), info=scene_audio_info(project.scenes))
 
         fails = qa_motion(video)
         if fails:
             logger.error("Video QA FAILED, it will not be uploaded: %s", "; ".join(fails))
+            export_only = True  # only an objective technical failure of the video itself holds it back
         if not project.fact_checked:
             logger.warning("No reviewer could fact-check the script: publishing anyway (the script was still grounded and validated).")
-        if fails:
-            export_only = True  # only an objective technical failure of the video itself holds it back
-        if used_entries and not fails:  # the footage is spent only when a finished, checked video exists: delete it, never reuse it, blacklist the game 14 days
-            commit_media([e["key"] for e in used_entries], game, project.title)
+        if prep.used_entries and not fails:  # the footage is spent only when a finished, checked video exists: delete it, never reuse it, blacklist the game 14 days
+            commit_media([e["key"] for e in prep.used_entries], prep.game, project.title)
 
-        stem = timestamp_stem()
-        out = {}
-        for platform in ("youtube", "tiktok"):
-            d = video_dir(platform, project.title)
-            shutil.copyfile(video, d / f"{stem}.mp4")
-            out[platform] = d / f"{stem}.mp4"
-            if cover:  # the cover sits next to each copy: <stem>.png (YouTube thumbnail, TikTok cover)
-                shutil.copyfile(cover, d / f"{stem}.png")
-        tags = list(dict.fromkeys(joined_hashtag(t) for t in project.tags))  # hashtags are always one joined word ("#techexplained", never "#tech explained")
-        meta = out["tiktok"].with_suffix(".txt")
-        meta.write_text(
-            "=" * 80 + "\nSILICON VERDICT • MOTION GRAPHICS • TIKTOK & SHORTS METADATA\n"
-            f"Creation Date: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}\nVideo File: {out['tiktok'].name}\nTopic: {project.topic}\n" + "=" * 80
-            + f"\n\n[TITLE]\n{project.title}\n\n[DESCRIPTION]\n{project.description}\n\n[HASHTAGS]\n{' '.join(tags)}\n\n[PINNED COMMENT]\n{project.pinned_comment}\n\n[SCENES]\n"
-            + "\n".join(f"- {s.type}: {s.text} {s.accentText or ''}".rstrip() for s in project.scenes) + "\n",
-            encoding="utf-8",
-        )
-
+        out, meta = _write_outputs(project, video, cover)
         youtube_url, yt_id = f"file://{out['youtube'].resolve()}", f"local_export_{run_id}"
         if not export_only and not dry_run:
             try:
@@ -677,13 +732,23 @@ def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, 
                                  title=project.title, video_id=yt_id, category=("MOTION GRAPHICS " + project.format.upper()) if project.format else "MOTION GRAPHICS", tone="kinetic_typography", preset=f"remotion_motion:{project.look or 'obsidian'}")
         except Exception as exc:
             logger.warning("History not recorded: %s", exc)
-        logger.info("Motion Graphics video ready in %.0fs: %s", time.time() - t0, out["tiktok"])
+        logger.info("Motion Graphics video ready in %.0fs: %s", time.time() - prep.started, out["tiktok"])
         return {"kind": project.kind, "format": project.format, "game": project.game, "youtube_video": str(out["youtube"]), "youtube_url": youtube_url, "tiktok_video": str(out["tiktok"]), "tiktok_metadata": str(meta),
                 "title": project.title, "topic": project.topic, "qa_failures": fails, "uploaded": not export_only and not dry_run,
                 "duration": project.total_frames / FPS, "tiktok_cover": str(out["tiktok"].with_suffix(".png")) if cover else ""}
     except BaseException:
-        from services.story_bank import release_story  # a script taken from the bank is only spent by a video that was actually produced
+        from services.story_bank import release_story
         release_story(project)
         raise
     finally:
         shutil.rmtree(work, ignore_errors=True)  # the render work dir (raw video, voice clips, staged footage) is never needed again
+
+
+def run_motion_pipeline(topic: Optional[str] = None, export_only: bool = False, dry_run: bool = False, privacy: str = "public", kind: str = "auto", fmt: str = "auto",
+                        source_text: Optional[str] = None, script: Optional[Any] = None) -> Dict[str, Any]:
+    """Makes one video, start to finish. kind: curiosity | game | auto (a game video when a game with unused footage is not blacklisted, otherwise a curiosity).
+    fmt: auto (the classic explainer) | any (a weighted random one) | one of FORMATS; `easter` is always a game video, the rest are curiosities.
+    source_text: with kind='curiosity' and a topic, the real text the script must stick to (claims, dates and figures are checked against it).
+    script: a MotionProject written by hand, used as it is (no model involved)."""
+    prep = prepare_motion_video(topic=topic, kind=kind, fmt=fmt, source_text=source_text, script=script)
+    return finish_motion_video(prep, export_only=export_only, dry_run=dry_run, privacy=privacy)

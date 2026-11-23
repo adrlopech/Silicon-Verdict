@@ -1,6 +1,8 @@
 # Pipeline
 
 `run_motion_pipeline()` in `services/motion_pipeline.py` makes one video. `main.py` is its command-line entry point.
+It is two halves: `prepare_motion_video()` (subject, script, fact-check, footage, narration: network work) and `finish_motion_video()` (render, cover, sound, QA, files, upload, history: CPU work).
+`scripts/genera_batch.py` overlaps them: while video N renders, video N+1 is prepared and video N-1 is uploaded. A video that may pick game footage is never prepared early (the footage ledger is only updated when a video is finished).
 
 ```
 format + topic ─► script (story bank, else LLM) ─► validators ─► fact-check ─► voice ─► Remotion render ─► sound mix ─► QA gate ─► cover ─► files ─► YouTube

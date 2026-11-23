@@ -20,7 +20,7 @@ from typing import Any, Callable, List, Optional, Tuple, Type
 
 from google import genai
 from google.genai import types
-from pydantic import BaseModel, create_model
+from pydantic import BaseModel
 
 from config.settings import settings
 
@@ -93,18 +93,6 @@ def _count_use(model: str) -> None:
         _save_state()
 
 
-def usage_today() -> dict:
-    with _lock:
-        return dict(_load_state()["usage"].get(time.strftime("%Y-%m-%d"), {}))
-
-
-def quota_status() -> dict:
-    """{model: seconds_until_available} for the models currently parked (diagnostics)."""
-    now = time.time()
-    with _lock:
-        return {m: round(t - now) for m, t in _load_state()["cooldown"].items() if t > now}
-
-
 def _fmt(seconds: float) -> str:
     seconds = int(seconds)
     return f"{seconds // 3600}h{seconds % 3600 // 60:02d}m" if seconds >= 3600 else f"{seconds // 60}m{seconds % 60:02d}s" if seconds >= 60 else f"{seconds}s"
@@ -159,7 +147,6 @@ def model_chain(client: genai.Client) -> List[str]:
     chain = [settings.GEMINI_MODEL] + PREFERRED_MODELS + _discover_models(client)
     ordered = list(dict.fromkeys(chain))
     return [m for m in ordered if m not in _dead_models]
-
 
 
 def _gemini_structured(
@@ -455,35 +442,3 @@ def generate_structured(
         raise GeminiUnavailable(" | ".join(errors)) from exc
 
 
-def generate_structured_list(
-    prompt: str,
-    system_instruction: str,
-    item_schema: Type[BaseModel],
-    count: int,
-    validate_item: Callable[[Any], List[str]],
-    temperature: float = 0.8,
-    **kwargs: Any,
-) -> Tuple[List[Any], Tuple[int, int], str]:
-    """Asks for `count` different items in ONE request (one quota unit instead of `count`) and keeps every item that passes
-    `validate_item`; the call only counts as failed when none is valid."""
-    Batch = create_model("Batch", items=(List[item_schema], ...))
-    kept: List[Any] = []
-
-    def _validate(batch: Any) -> List[str]:
-        kept.clear()
-        problems: List[str] = []
-        for item in batch.items:
-            p = validate_item(item)
-            if p:
-                problems.append(str(p)[:120])
-            else:
-                kept.append(item)
-        return [] if kept else (problems[:3] or ["empty batch"])
-
-    full_prompt = prompt + f"\nReturn a JSON object with `items`: a list of EXACTLY {count} different items (different topics), each matching the schema. Every item must be as long, complete and detailed as if it were the only one requested: do NOT shorten items because there are several."
-    _obj, tokens, model = generate_structured(
-        prompt=full_prompt, system_instruction=system_instruction, schema=Batch, temperature=temperature,
-        validate=_validate, max_output_tokens=kwargs.pop("max_output_tokens", 32768), **kwargs,
-    )
-    logger.info("Batch via %s: %d of %d items valid", model, len(kept), count)
-    return list(kept), tokens, model

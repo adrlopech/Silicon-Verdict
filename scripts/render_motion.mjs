@@ -33,6 +33,7 @@ console.log(`[motion] ${composition.durationInFrames} frames (${(composition.dur
 let last = -1;
 await renderMedia({
   composition, serveUrl, inputProps, codec: 'h264', pixelFormat: 'yuv420p', crf: 18, outputLocation: resolve(outPath),
+  x264Preset: 'veryfast', // ~10 % faster than the default 'medium' at the same CRF (the render, not the encode, is the bottleneck: measured Nov 2026)
   onProgress: ({ progress }) => {
     const pct = Math.floor(progress * 100);
     if (pct % 10 === 0 && pct !== last) { last = pct; console.log(`[motion] render ${pct}%`); }

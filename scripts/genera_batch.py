@@ -18,13 +18,15 @@ What it does
 """
 import argparse
 import json
+import os
 import random
 import re
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
@@ -33,7 +35,6 @@ DEFAULT_SLOTS_UTC = ["13:00", "16:00", "19:00", "22:00"]  # 8-9 am / noon / 3 pm
 LOG = BASE_DIR / "data" / "batch_log.json"
 LATEST = BASE_DIR / "data" / "batch_latest.json"
 SMALL_DIR = BASE_DIR / "output" / "tiktok_small"
-FFMPEG_DIR = BASE_DIR / "remotion_studio" / "node_modules" / "@remotion" / "compositor-darwin-arm64"
 FORMAT_ALIASES = {"hardware deep dive": "hardware", "everyday curiosities": "classic"}
 
 
@@ -103,12 +104,14 @@ def ranked_slots() -> List[str]:
 
 def small_copy(src: str, dst: Path) -> Path:
     """<10 MB copy for the TikTok upload tool (it caps one call at 10 MB)."""
+    from services.voice import get_ffmpeg_bin
     dst.parent.mkdir(parents=True, exist_ok=True)
-    p = subprocess.run(["./ffmpeg", "-i", src], cwd=FFMPEG_DIR, capture_output=True, text=True)
+    ffmpeg = get_ffmpeg_bin()
+    p = subprocess.run([ffmpeg, "-hide_banner", "-i", src], capture_output=True, text=True)
     m = re.search(r"Duration: (\d+):(\d+):([\d.]+)", p.stderr)
     secs = int(m[1]) * 3600 + int(m[2]) * 60 + float(m[3]) if m else 75.0
     kbps = int(8.0 * 8192 / secs) - 96  # 8 MB target
-    subprocess.run(["./ffmpeg", "-loglevel", "error", "-y", "-i", src, "-c:v", "libx264", "-b:v", f"{kbps}k", "-maxrate", f"{kbps + 100}k", "-bufsize", f"{2 * kbps}k", "-c:a", "aac", "-b:a", "96k", str(dst)], cwd=FFMPEG_DIR, check=True)
+    subprocess.run([ffmpeg, "-loglevel", "error", "-y", "-i", src, "-c:v", "libx264", "-b:v", f"{kbps}k", "-maxrate", f"{kbps + 100}k", "-bufsize", f"{2 * kbps}k", "-c:a", "aac", "-b:a", "96k", str(dst)], check=True)
     return dst
 
 
@@ -119,8 +122,9 @@ def tiktok_caption(title: str) -> Dict[str, Any]:
     return {"caption": text, "hashtags": ["#" + t for t in tags]}
 
 
-def produce(p: Dict[str, Any], run_motion_pipeline) -> Dict[str, Any]:
-    """Renders one video of the plan: a chosen subject with its own source text, or a data-picked format."""
+def prepare(p: Dict[str, Any]) -> Any:
+    """First half of a video of the plan (script, footage, narration): a chosen subject with its own source text, a hand-written script or a data-picked format."""
+    from services.motion_pipeline import prepare_motion_video
     if p.get("script"):  # a hand-written MotionProject (JSON), checked by the same validator as generated ones
         from services.motion_generator import MotionProject, make_validator
         script = MotionProject.model_validate_json((BASE_DIR / p["script"]).read_text(encoding="utf-8"))
@@ -128,11 +132,46 @@ def produce(p: Dict[str, Any], run_motion_pipeline) -> Dict[str, Any]:
         problems = make_validator(facts=facts, fmt=None if p["format"] == "classic" else p["format"], retention=True)(script)
         if problems:
             raise ValueError(f"the script {p['script']} does not pass the validator: {problems}")
-        return run_motion_pipeline(topic=script.topic, export_only=True, kind="curiosity", fmt="auto" if p["format"] == "classic" else p["format"], source_text=facts, script=script)
+        return prepare_motion_video(topic=script.topic, kind="curiosity", fmt="auto" if p["format"] == "classic" else p["format"], source_text=facts, script=script)
     if p.get("topic"):
         source = (BASE_DIR / p["source"]).read_text(encoding="utf-8") if p.get("source") else None
-        return run_motion_pipeline(topic=p["topic"], export_only=True, kind="curiosity", fmt="auto" if p["format"] == "classic" else p["format"], source_text=source)
-    return run_motion_pipeline(export_only=True, fmt=p["format"])
+        return prepare_motion_video(topic=p["topic"], kind="curiosity", fmt="auto" if p["format"] == "classic" else p["format"], source_text=source)
+    return prepare_motion_video(fmt=p["format"])
+
+
+def can_prefetch(p: Dict[str, Any]) -> bool:
+    """The next video can be prepared while this one renders unless it may pick game footage (the footage ledger is only updated when a video is finished)."""
+    from services.motion_generator import FORMATS
+    return p["format"] in FORMATS and p["format"] != "easter"
+
+
+def run_plan(plan: List[Dict[str, Any]], prepare_fn: Callable, finish_fn: Callable, publish_fn: Callable, public_first: bool = False, can_prefetch_fn: Callable = can_prefetch) -> None:
+    """Produces the videos of the plan in order. Three stages overlap: while video N renders (finish_fn), video N+1 is prepared (script, footage, voice: prepare_fn) and video N-1 is uploaded (publish_fn).
+    A video that fails in any stage is reported and skipped; the others carry on."""
+    with ThreadPoolExecutor(max_workers=1) as preparer, ThreadPoolExecutor(max_workers=1) as uploader:
+        prepared: Dict[int, Any] = {}
+
+        def kick(i: int) -> None:
+            if i < len(plan) and i not in prepared:
+                prepared[i] = preparer.submit(prepare_fn, plan[i])
+
+        uploads = []
+        kick(0)
+        for i, p in enumerate(plan):
+            print(f"\n== {p['format']} ==")
+            try:
+                prep = prepared[i].result()
+                if i + 1 < len(plan) and can_prefetch_fn(plan[i + 1]):
+                    kick(i + 1)
+                res = finish_fn(prep)
+            except Exception as exc:  # one failed script must not lose the videos already uploaded: carry on with the next
+                print(f"  FAILED (nothing uploaded for this slot): {str(exc)[:300]}")
+                kick(i + 1)
+                continue
+            uploads.append(uploader.submit(publish_fn, p, res, public_first and p is plan[0]))
+            kick(i + 1)
+        for u in uploads:
+            u.result()
 
 
 def main() -> int:
@@ -167,20 +206,15 @@ def main() -> int:
     if args.plan:
         return 0
 
-    from services.motion_pipeline import run_motion_pipeline
+    from services.motion_pipeline import finish_motion_video
     done: List[Dict[str, Any]] = []
     out = Path(args.out) if args.out else LATEST
-    for p in plan:
-        print(f"\n== {p['format']} ==")
-        try:
-            res = produce(p, run_motion_pipeline)
-        except Exception as exc:  # one failed script must not lose the videos already uploaded: carry on with the next
-            print(f"  FAILED (nothing uploaded for this slot): {str(exc)[:300]}")
-            continue
+
+    def publish(p: Dict[str, Any], res: Dict[str, Any], now: bool) -> None:
+        """Uploads one finished video to YouTube, makes its TikTok copy and saves the manifest. Runs in a worker thread while the next video renders."""
         video = res["youtube_video"]
-        now = args.public_first and p is plan[0]  # a slot that already passed: public now, no publishAt
-        flags = ["--privacy", "public"] if now else ["--publish-at", p["publish_at"]]
-        up = subprocess.run([sys.executable, str(BASE_DIR / "scripts" / "upload_existing.py"), video, *flags], cwd=BASE_DIR, capture_output=True, text=True, env={**__import__("os").environ, "PYTHONPATH": str(BASE_DIR)})
+        flags = ["--privacy", "public"] if now else ["--publish-at", p["publish_at"]]  # a slot that already passed: public now, no publishAt
+        up = subprocess.run([sys.executable, str(BASE_DIR / "scripts" / "upload_existing.py"), video, *flags], cwd=BASE_DIR, capture_output=True, text=True, env={**os.environ, "PYTHONPATH": str(BASE_DIR)})
         m = re.search(r"youtu\.be/([\w-]+)", up.stdout)
         if not m:
             print("  YouTube upload failed:", (up.stdout + up.stderr)[-300:])
@@ -192,6 +226,8 @@ def main() -> int:
         if entry["video_id"]:
             log = json.loads(LOG.read_text()) if LOG.is_file() else []
             LOG.write_text(json.dumps(log + [{"video_id": entry["video_id"], "slot": entry["slot"], "format": entry["format"], "date": str(day)}], indent=1))
+
+    run_plan(plan, prepare, lambda prep: finish_motion_video(prep, export_only=True), publish, args.public_first)
     failed = len(plan) - len(done)
     print(f"\nYouTube is scheduled ({len(done)} of {len(plan)}{'; rerun the failed ones with --topics and a pinned slot' if failed else ''}). TikTok: finish in TikTok Studio from {out} (caption, hashtags picked from the dropdown, Programación at each slot).")
     return 0

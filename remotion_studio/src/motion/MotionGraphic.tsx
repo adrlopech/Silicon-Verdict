@@ -154,31 +154,42 @@ export const MotionGraphic: React.FC<MotionGraphicProps> = ({ scenes, theme = de
   const look = lookFor(lookName);
   // the look sets the palette; a video without a look keeps the props' own theme (obsidian)
   const th = lookName ? { ...defaultTheme, ...theme, accent: look.accent, accent2: look.accent2, background: look.background, text: look.text } : { ...defaultTheme, ...theme };
-  // which scene is current (decides the light/dark variant of the shared background)
-  let start = 0;
-  let current = scenes.length - 1;
-  const starts: number[] = [];
-  scenes.forEach((s, i) => {
-    starts.push(start);
-    if (frame >= start && frame < start + s.durationInFrames) current = i;
-    start += s.durationInFrames;
-  });
   const chunks = useMemo(() => chunkCaptions(captions ?? []), [captions]);
-  const sceneIcons: string[][] = [];
-  // the Control Center panel and the caption strip take the place of the floating icon tiles
-  scenes.forEach((sc, i) => sceneIcons.push(sc.cursor === 'toggle' || captionSpaceFor(sc, chunks.length > 0) > 0 ? [] : pickIcons(sc, sceneIcons[i - 1] ?? [])));
-  const fxs = sceneFx(scenes);
-  const visuals = pickVisuals(scenes);
-  const NO_EXTRAS = new Set(['flash', 'footage', 'tier', 'ui', 'outro']);
-  const salt = `${title}|${lookName ?? ''}`;
-  const reveals = pickSeries<Reveal>(scenes, REVEALS, `${salt}r`, 2, () => REVEALS);
-  const moves = pickSeries<CameraMove>(scenes, CAMERA_MOVES, `${salt}c`, 4, () => CAMERA_MOVES);
-  const bigs = pickSeries<BigFxName>(scenes, BIG_FX, `${salt}b`, 5, (i) => (NO_EXTRAS.has(scenes[i].type) || i % 3 !== 0 ? null : STAGE_SCENES.has(scenes[i].type) && visuals[i] ? BIG_FX_LIGHT : BIG_FX));
+  const hasCaptions = chunks.length > 0;
+  // everything that depends only on the props (scene starts, icons, effects, visuals, reveals, camera moves) is computed once, not again on every one of the ~2000 frames
+  const plan = useMemo(() => {
+    let at = 0;
+    const starts: number[] = [];
+    scenes.forEach((s) => {
+      starts.push(at);
+      at += s.durationInFrames;
+    });
+    const sceneIcons: string[][] = [];
+    // the Control Center panel and the caption strip take the place of the floating icon tiles
+    scenes.forEach((sc, i) => sceneIcons.push(sc.cursor === 'toggle' || captionSpaceFor(sc, hasCaptions) > 0 ? [] : pickIcons(sc, sceneIcons[i - 1] ?? [])));
+    const fxs = sceneFx(scenes);
+    const visuals = pickVisuals(scenes);
+    const NO_EXTRAS = new Set(['flash', 'footage', 'tier', 'ui', 'outro']);
+    const salt = `${title}|${lookName ?? ''}`;
+    const reveals = pickSeries<Reveal>(scenes, REVEALS, `${salt}r`, 2, () => REVEALS);
+    const moves = pickSeries<CameraMove>(scenes, CAMERA_MOVES, `${salt}c`, 4, () => CAMERA_MOVES);
+    const bigs = pickSeries<BigFxName>(scenes, BIG_FX, `${salt}b`, 5, (i) => (NO_EXTRAS.has(scenes[i].type) || i % 3 !== 0 ? null : STAGE_SCENES.has(scenes[i].type) && visuals[i] ? BIG_FX_LIGHT : BIG_FX));
+    const segments = scenes.map((sc, i) => ({ start: starts[i], len: sc.durationInFrames }));
+    const rehookAt = rehookIndex(starts, scenes.map((sc) => sc.durationInFrames));
+    return { starts, total: at, sceneIcons, fxs, visuals, reveals, moves, bigs, segments, rehookAt };
+  }, [scenes, title, lookName, hasCaptions]);
+  const { starts, total: start, sceneIcons, fxs, visuals, reveals, moves, bigs, segments, rehookAt } = plan;
+  // which scene is current (decides the light/dark variant of the shared background)
+  let current = scenes.length - 1;
+  for (let i = 0; i < scenes.length; i++) {
+    if (frame >= starts[i] && frame < starts[i] + scenes[i].durationInFrames) {
+      current = i;
+      break;
+    }
+  }
   const isLight = (sc: MotionScene) => look.light || !!sc.light; // a light look is light everywhere; otherwise a scene may ask for the light variant
   const light = isLight(scenes[current]);
   const flash = scenes[current].type === 'flash';
-  const segments = scenes.map((sc, i) => ({ start: starts[i], len: sc.durationInFrames }));
-  const rehookAt = rehookIndex(starts, scenes.map((sc) => sc.durationInFrames));
   return (
     <LookCtx.Provider value={look}>
       <ThemeCtx.Provider value={{ theme: th, light }}>

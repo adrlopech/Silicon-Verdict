@@ -148,7 +148,7 @@ def main():
     # Print Table
     print(f"{'SERVICE / API':<24} | {'STATUS':<17} | DETAILS")
     print("-" * 75)
-    for name, status, details, passed in results:
+    for name, status, details, _passed in results:
         print(f"{name:<24} | {status} | {details}")
     print("-" * 75)
 

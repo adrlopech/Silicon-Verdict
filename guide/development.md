@@ -24,7 +24,7 @@ A second workflow, `latest-video.yml`, runs every 15 minutes, reads the channel'
 | `main.py` | Command-line entry point for one video (calls `run_motion_pipeline`) |
 | `config/settings.py` | All settings (read from `.env`): keys, models, voices, token path, video sizes |
 | `services/motion_generator.py` | Schema (`MotionProject`, `MotionSceneModel`), prompts, `FORMATS`, validators, fact-check, cursor and UI rules |
-| `services/motion_pipeline.py` | `run_motion_pipeline`: voice, render, cover, sound, QA, files, upload |
+| `services/motion_pipeline.py` | `prepare_motion_video` (script, footage, voice) and `finish_motion_video` (render, cover, sound, QA, files, upload); `run_motion_pipeline` runs both |
 | `services/gemini_client.py` | The single LLM entry point: Gemini, Groq, Cloudflare, cooldowns, batching, images |
 | `services/looks.py`, `services/series.py` | Look choice; series names and numbers |
 | `services/tech_news.py` | RSS headlines for the news format |
@@ -52,8 +52,7 @@ A second workflow, `latest-video.yml`, runs every 15 minutes, reads the channel'
 - Avoid decimals in counter scenes: the counter rounds them.
 - Use `requests` for HTTP (plain `urllib` fails with SSL certificates on this Mac).
 - Use Python (or the editor) to edit files in scripts: macOS `sed -i` needs a backup argument.
-- ffmpeg is `.venv/bin/ffmpeg` (found by `get_ffmpeg_bin()`), not on `PATH`. `scripts/genera_batch.py` makes the TikTok copy with the ffmpeg inside
-  `remotion_studio/node_modules/@remotion/compositor-darwin-arm64`: on another OS or CPU that path (`FFMPEG_DIR`) must change.
+- ffmpeg is `.venv/bin/ffmpeg` (found by `get_ffmpeg_bin()`), not on `PATH`; `scripts/genera_batch.py` uses the same one for the TikTok copy.
 
 ## The portal
 

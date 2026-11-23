@@ -10,7 +10,7 @@ HELP_TEXT = """=================================================================
  genera      Four videos of four different formats, picked from the channel's own numbers,
              rendered, uploaded to YouTube (private + publishAt, with cover) and scheduled on
              TikTok Studio at the best hours. Add "de hoy" to publish today instead of tomorrow.
- limpieza    scripts/cleanup.py: wipes output/tiktok, output/youtube and temp/. Keeps data/, assets/, .env.
+ limpieza    scripts/cleanup.py: wipes output/tiktok, output/tiktok_small, output/youtube and temp/. Keeps data/, assets/, .env.
  help        This reference.
 
 2. MAKING VIDEOS
