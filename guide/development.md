@@ -77,3 +77,8 @@ Assets of the portal come from `scripts/make_portal_assets.py` and `scripts/make
 | ElevenLabs out of credits | The local clone takes over on Apple Silicon ([Voice](voice.md)); otherwise top up credits |
 | A video has no cover | The cover is best effort (`render_cover`); render it by hand with `scripts/render_cover.mjs` and upload it |
 | CI email "Run failed" | Open the run with `gh run view <id> --log-failed` and fix the cause |
+
+## Render speed (measured 2026-11-23)
+
+A 75 s video renders in about 55 s (x264 `veryfast`). Switching off the BigFx layer or the Ambient layer changed nothing (53 s, 53 s and 54 s against 53-56 s), and neither did the bundle cache (bundling takes 0.9 s),
+the concurrency setting or memoising the scene plan. So those effects are not worth lightening: the time goes to Chrome painting the frames and to encoding. Measure with a temporary edit and the same props before touching them.
