@@ -373,5 +373,10 @@ a.glogo:focus-visible, a.logo:focus-visible { outline: 2px solid var(--cyan); ou
 .ico svg { width: 30px; height: 30px; stroke-width: 1.8; filter: drop-shadow(0 0 6px rgba(var(--ac), .45)); }
 .ico svg rect, .ico svg circle, .ico svg ellipse, .ico svg polygon { fill: rgba(var(--ac), .2); }
 
-/* ── Brand logos (YouTube, TikTok): the blue multi-tone files are shown as pictures, not as a one-colour mask ── */
-span.mono.brand { -webkit-mask: none; mask: none; background: var(--i) center / contain no-repeat; }
+/* ── TikTok logo in the icons' own colours: its three layers as masks, the main one in the same gradient as every other icon,
+      the two offset layers in the section's cyan and blue, so it changes with the look like the rest (YouTube is a plain .mono) ── */
+span.mono.brand.tt { -webkit-mask: none; mask: none; background: none; position: relative; }
+span.mono.brand.tt > i { position: absolute; inset: 0; -webkit-mask: var(--l) center / contain no-repeat; mask: var(--l) center / contain no-repeat; }
+span.mono.brand.tt > .l1 { --l: url(assets/icons/tiktok-l1.svg); background: var(--blue); opacity: .75; }
+span.mono.brand.tt > .l2 { --l: url(assets/icons/tiktok-l2.svg); background: linear-gradient(150deg, #FFFFFF -10%, var(--cyan) 35%, var(--blue2) 100%); }
+span.mono.brand.tt > .l3 { --l: url(assets/icons/tiktok-l3.svg); background: var(--cyan); opacity: .85; }
