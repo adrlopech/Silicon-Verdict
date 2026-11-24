@@ -18,7 +18,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 
-from services.motion_generator import WORDS_PER_SECOND, MotionProject, assign_cursors, sanitize_cursors  # noqa: E402
+from services.motion_generator import WORDS_PER_SECOND, MotionProject, add_vote_items, assign_cursors, sanitize_cursors  # noqa: E402
 from services.looks import choose_look  # noqa: E402
 from services.series import apply_series  # noqa: E402
 from services.motion_pipeline import FPS, MIN_VIDEO_SECONDS, VOICE_LEAD, add_sound, music_bed, qa_motion, render_motion, scene_audio_info, synthetic_captions  # noqa: E402
@@ -48,6 +48,7 @@ def render_one(path: Path, out_dir: Path, look: str = "") -> Path:
         project.look = look
     sanitize_cursors(project.scenes, project.format)
     assign_cursors(project.scenes, project.format)
+    add_vote_items(project)  # the outro asks for the pick with A / B cards, as in production
     apply_series(project, number=1)  # the title and the first-frame kicker as they will look in production (number 1 in the preview)
     time_scenes(project)
     if not project.look:

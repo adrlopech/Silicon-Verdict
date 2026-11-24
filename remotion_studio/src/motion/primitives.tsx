@@ -201,15 +201,13 @@ export const Background: React.FC<{ light: boolean; background: string; accent: 
 };
 
 /** HUD of the video: label, timecode and a progress indicator, drawn in the look's style (mono line, story segments, corner brackets, ruler ticks). */
-export const Hud: React.FC<{ index: number; total: number; label: string; series?: string; segments: { start: number; len: number }[] }> = ({ index, total, label, series, segments }) => {
+export const Hud: React.FC<{ index: number; total: number; label: string; series?: string; segments: { start: number; len: number }[] }> = ({ label, series, segments }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
   const { theme, light } = useTheme();
   const look = useLook();
-  const s = Math.floor(frame / fps);
-  const tc = `00:${String(s).padStart(2, '0')}:${String(frame % fps).padStart(2, '0')}`;
-  const color = light ? 'rgba(10,18,32,0.5)' : 'rgba(255,255,255,0.42)';
-  const row: React.CSSProperties = { position: 'absolute', top: SAFE_TOP + 14, fontFamily: MONO, fontSize: 27, letterSpacing: 2, color, textTransform: 'uppercase', whiteSpace: 'nowrap' };
+  // only what a viewer can use on a phone: the series and the topic, and the progress. No scene numbers, "FIG." labels or timecode (unreadable noise at phone size)
+  const color = light ? 'rgba(10,18,32,0.6)' : 'rgba(255,255,255,0.6)';
+  const row: React.CSSProperties = { position: 'absolute', top: SAFE_TOP + 10, fontFamily: MONO, fontSize: 32, letterSpacing: 2, color, textTransform: 'uppercase', whiteSpace: 'nowrap' };
   // the title strip stays on the whole video: the series in the accent colour, then the topic, so a viewer who scrolls in late still knows what this is
   const dup = !!series && label.toLowerCase().startsWith(series.toLowerCase().replace(/\s*#\d+$/, '').slice(0, 8));
   if (dup) series = undefined; // the topic already starts with the series name
@@ -247,8 +245,7 @@ export const Hud: React.FC<{ index: number; total: number; label: string; series
         {arm({ right: 40, top: SAFE_TOP - 6, borderRightWidth: 4, borderTopWidth: 4 })}
         {arm({ left: 40, bottom: 290, borderLeftWidth: 4, borderBottomWidth: 4 })}
         {arm({ right: 40, bottom: 290, borderRightWidth: 4, borderBottomWidth: 4 })}
-        <div style={{ ...row, left: 96 }}>[{String(index + 1).padStart(2, '0')}/{String(total).padStart(2, '0')}] {name}</div>
-        <div style={{ ...row, right: 96 }}>{tc}</div>
+        <div style={{ ...row, left: 96 }}>{name}</div>
         <div style={{ position: 'absolute', left: 96, right: 96, top: SAFE_TOP + 60, height: 3, background: track }}><div style={{ width: `${done * 100}%`, height: '100%', background: theme.accent }} /></div>
       </>
     );
@@ -256,7 +253,7 @@ export const Hud: React.FC<{ index: number; total: number; label: string; series
   if (look.hud === 'ticks') {
     return (
       <>
-        <div style={{ ...row, left: 64 }}>FIG. {String(index + 1).padStart(2, '0')} · {name}</div>
+        <div style={{ ...row, left: 64 }}>{name}</div>
         <div style={{ position: 'absolute', left: 64, right: 64, top: SAFE_TOP + 58, height: 22, backgroundImage: `repeating-linear-gradient(90deg, ${color} 0 2px, transparent 2px 14px)`, maskImage: 'linear-gradient(180deg, #000 50%, transparent 50%)', WebkitMaskImage: 'linear-gradient(180deg, #000 50%, transparent 50%)' }} />
         <div style={{ position: 'absolute', left: 64 + done * 952 - 2, top: SAFE_TOP + 52, width: 4, height: 34, background: theme.accent, boxShadow: `0 0 12px ${theme.accent}` }} />
       </>
@@ -265,9 +262,8 @@ export const Hud: React.FC<{ index: number; total: number; label: string; series
   return (
     <>
       <div style={{ ...row, left: 64 }}>
-        <span style={{ color: theme.accent }}>●</span> SC {String(index + 1).padStart(2, '0')}/{String(total).padStart(2, '0')} · {name}
+        <span style={{ color: theme.accent }}>●</span> {name}
       </div>
-      <div style={{ ...row, right: 64 }}>{tc}</div>
       <div style={{ position: 'absolute', left: 64, right: 64, top: SAFE_TOP + 56, height: 3, background: track }}><div style={{ width: `${done * 100}%`, height: '100%', background: theme.accent, boxShadow: `0 0 10px ${theme.accent}88` }} /></div>
     </>
   );
@@ -316,6 +312,15 @@ export const Words: React.FC<{ text: string; size: number; delay?: number; stagg
   return (
     <div data-cursor="text" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: look.align === 'left' ? 'flex-start' : 'center', columnGap: size * 0.28, rowGap: size * 0.06, fontFamily: look.sans, fontWeight: weight, fontSize: size, lineHeight: 1.04, letterSpacing: -size * 0.025, color: color ?? (light ? '#0A1220' : theme.text), textShadow: light ? 'none' : '0 4px 26px rgba(0,0,0,0.55)' }}>
       {words.map((w, i) => {
+        if (mode === 'slam') {
+          // the hook: every word is already on screen at frame 0 (nothing to wait for while the viewer decides to swipe) and lands with a punch from slightly larger
+          const raw = spring({ frame: frame - delay - i * 2, fps, config: { damping: 12, stiffness: 220, mass: 0.7 } });
+          return (
+            <span key={i} style={{ display: 'inline-block', transform: `scale(${1 + 0.22 * (1 - raw)})` }}>
+              {w}
+            </span>
+          );
+        }
         if (mode !== 'pop') {
           const char0 = words.slice(0, i).reduce((n, x) => n + x.length, 0);
           return <RevealWord key={i} word={w} mode={mode} index={i} delay={delay} stagger={stagger} size={size} accent={theme.accent} char0={char0} total={words.join('').length} />;

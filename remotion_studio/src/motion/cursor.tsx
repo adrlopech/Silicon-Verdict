@@ -8,7 +8,7 @@ import { CursorAction, FPS, HEIGHT, MotionScene, SAFE_BOTTOM, TIER_DROP, TIER_GR
 /**
  * The channel's character is a mouse pointer. It only appears when it DOES something that means something, never as decoration and never to introduce the topic:
  *   select - drags across the key phrase like selecting text, arriving when the narrator says it (scene.cursorCue)
- *   drag   - progress bar: grabs the knob at the end of the bar and pulls it to its value; tier list: carries the new chip into its row
+ *   drag   - progress bar: grabs the knob at the end of the bar and pulls it to its value; tier list: carries the new chip along its row into place
  *   click  - presses the setting or the step: the code panel of a fix, the first step of a list (ripple + a pulse on what it pressed)
  *   toggle - a macOS-style Control Center panel opens and the pointer flips a switch (Airplane Mode turns Wi-Fi and Bluetooth off)
  * Targets are measured from the DOM (elements tagged data-cursor), every frame, so the pointer always lands on what is really on screen.
@@ -272,7 +272,7 @@ export const CursorLayer: React.FC<Props> = ({ scenes, starts, current, accent }
       } else tip = leave(knob, release);
     } else shown = false;
   } else if (action === 'drag' && scene.type === 'tier') {
-    // carries the newest chip from the tray into its row (the scene moves the chip; the pointer holds it)
+    // carries the newest chip along its own row into place (the scene moves the chip; the pointer holds it)
     const chip = pick(['newitem']);
     if (chip) {
       const hold = { x: chip.x + Math.min(24, chip.w * 0.15), y: chip.y + chip.h * 0.62 };

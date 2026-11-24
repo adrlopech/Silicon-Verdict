@@ -734,6 +734,32 @@ def test_vote_options_come_from_the_pinned_comment():
     assert vote_options("Would you prefer seamless worlds or short loads?") is None
     assert vote_options("Do you use wireless headphones for gaming calls, or do you switch to a wired mic?") is None
     assert vote_options("") is None
+    assert vote_options("USB 3.2 or USB4? Reply with one word.") == ["USB 3.2", "USB4"]  # a model name with digits keeps its capitals
+
+
+def test_vote_outro_asks_for_the_pick_and_ends_on_the_question():
+    from types import SimpleNamespace as NS
+    from services.motion_generator import VOTE_ACCENT, VOTE_TITLE, add_vote_items
+    outro = NS(type="outro", text="STAY CURIOUS", accentText="Follow for more", items=None, narration="Follow for more tech. USB 3.2 or USB4?")
+    add_vote_items(NS(scenes=[outro], pinned_comment="USB 3.2 or USB4? Reply with one word."))
+    assert outro.items == ["USB 3.2", "USB4"] and (outro.text, outro.accentText) == (VOTE_TITLE, VOTE_ACCENT)
+    assert outro.narration == "USB 3.2 or USB4?"
+    plain = NS(type="outro", text="Stay curious", accentText="Follow for more", items=None, narration="Follow for more tech.")
+    add_vote_items(NS(scenes=[plain], pinned_comment="What do you think?"))
+    assert plain.text == "Stay curious" and plain.narration == "Follow for more tech."  # no vote: nothing changes
+
+
+def test_tier_scenes_need_the_figure_they_are_ranked_by():
+    from types import SimpleNamespace as NS
+    from services.motion_generator import _needs_tier
+    def tier(items, value, unit, narration):
+        return NS(type="tier", items=items, value=value, unit=unit, narration=narration)
+    letters = ["F", "D", "C", "B", "A", "S"]
+    boards = [[f"{letters[k]}|item {k}" for k in range(n + 1)] for n in range(6)]
+    good = [(i, tier(b, 480, "Mbps", "It tops out at four hundred eighty megabits.")) for i, b in enumerate(boards, 2)]
+    assert _needs_tier(None, None, good) == []
+    bare = [(i, tier(b, None, None, "It is slow.")) for i, b in enumerate(boards, 2)]
+    assert any("needs `value`" in p for p in _needs_tier(None, None, bare))
 
 
 def test_accent_that_repeats_the_headline_is_taken_out_of_the_headline():

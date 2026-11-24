@@ -8,7 +8,7 @@ import { HEIGHT, MotionScene, SAFE_BOTTOM, SAFE_TOP, WIDTH } from './types';
 /**
  * STAGE: a drawn, animated scene behind the text of a text scene (a crowd walking, memory cells filling, CPU cores under load, a network with packets...).
  * The audit of Nov 2026 found most scenes were a headline on a dark gradient with the lower half empty; every scene now also shows something that MOVES and that
- * illustrates what the narrator says. The visual is picked from the scene's words (or named by `scene.visual`), never the same one twice within three scenes.
+ * illustrates what the narrator says. The visual is picked from the scene's words (or named by `scene.visual`), never the same one twice in a video while others are left.
  */
 export type VisualName = 'crowd' | 'memory' | 'cores' | 'network' | 'bars' | 'wave' | 'gauge' | 'map' | 'city' | 'layers' | 'matrix' | 'radar' | 'orbit';
 export const VISUAL_NAMES: VisualName[] = ['crowd', 'memory', 'cores', 'network', 'bars', 'wave', 'gauge', 'map', 'city', 'layers', 'matrix', 'radar', 'orbit'];
@@ -32,7 +32,8 @@ const RULES: [RegExp, VisualName][] = [
 ];
 const FALLBACK: VisualName[] = ['orbit', 'bars', 'layers', 'radar', 'network'];
 
-/** The stage of every scene: what the words name first, but never the same one within the last three scenes, so the video keeps showing something new. */
+/** The stage of every scene: what the words name first, but never one the video already showed (a gauge behind the hook AND behind the takeaway reads as a template);
+ *  only when all of them have been used, the rule falls back to "not within the last three scenes". */
 export const pickVisuals = (scenes: MotionScene[]): (VisualName | null)[] => {
   const out: (VisualName | null)[] = [];
   scenes.forEach((s, i) => {
@@ -43,7 +44,7 @@ export const pickVisuals = (scenes: MotionScene[]): (VisualName | null)[] => {
     const hay = [s.text, s.accentText, s.kicker, s.narration, ...(s.items ?? [])].filter(Boolean).join(' ');
     const wanted = RULES.filter(([re]) => re.test(hay)).map(([, v]) => v);
     const pool = [...wanted, ...FALLBACK, ...VISUAL_NAMES];
-    out.push(pool.find((v) => !recent.includes(v)) ?? pool[0]);
+    out.push(pool.find((v) => !out.includes(v)) ?? pool.find((v) => !recent.includes(v)) ?? pool[0]);
   });
   return out;
 };

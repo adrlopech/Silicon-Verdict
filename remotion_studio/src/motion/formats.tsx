@@ -31,29 +31,33 @@ export const Tier: React.FC<P> = ({ scene }) => {
     return { tier: TIERS.includes(t.toUpperCase()) ? t.toUpperCase() : 'C', label };
   });
   const newest = entries.length - 1;
-  const drag = scene.cursor === 'drag'; // the pointer carries the new chip from the tray (below the board) into its row
+  const drag = scene.cursor === 'drag'; // the pointer carries the new chip in from the right edge of its own row (it never crosses the other rows and their chips)
   const pop = drag ? spring({ frame: frame - TIER_DROP, fps, config: { damping: 12, stiffness: 190 } }) : spring({ frame: frame - 16, fps, config: { damping: 11, stiffness: 150 } });
-  const carry = drag ? interpolate(frame, [TIER_GRAB, TIER_DROP], [0, 1], { ...clamp, easing: EASE_IO }) : 1; // 0 = in the tray, 1 = in its row
+  const carry = drag ? interpolate(frame, [TIER_GRAB, TIER_DROP], [0, 1], { ...clamp, easing: EASE_IO }) : 1; // 0 = at the right end of its row, 1 = in place
   const rowH = 94;
   const last = entries[newest];
+  // the moment the new chip lands: its row lights up and the board pushes in towards it for a second, so every tier scene has a visible beat instead of one static board
+  const land = drag ? TIER_DROP : 20;
+  const glow = interpolate(frame, [land - 2, land + 4, land + 34], [0, 1, 0], clamp);
+  const push = interpolate(frame, [land - 6, land + 4, land + 40, land + 58], [0, 1, 1, 0], { ...clamp, easing: EASE_IO });
+  const newRow = last ? TIERS.indexOf(last.tier) : 0;
   return (
     <SafeBox gap={30}>
       <Kicker text={scene.kicker ?? 'tier list'} />
       <Words text={scene.text} size={88} />
       <Accent text={scene.accentText} size={104} delay={8} />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 9, width: 888, marginTop: 4 }}>
-        {TIERS.map((t) => {
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 9, width: 888, marginTop: 4, transform: `scale(${1 + 0.06 * push})`, transformOrigin: `50% ${((newRow + 0.5) / TIERS.length) * 100}%` }}>
+        {TIERS.map((t, ti) => {
           const color = TIER_COLORS[t];
+          const lit = ti === newRow ? glow : 0;
           return (
-            <div key={t} style={{ display: 'flex', alignItems: 'stretch', minHeight: rowH, borderRadius: 20, overflow: drag ? 'visible' : 'hidden', background: light ? 'rgba(10,18,32,0.07)' : 'rgba(255,255,255,0.06)', border: `1px solid ${color}33` }}>
+            <div key={t} style={{ display: 'flex', alignItems: 'stretch', minHeight: rowH, borderRadius: 20, overflow: drag ? 'visible' : 'hidden', background: lit > 0 ? `${color}${Math.round(12 + lit * 40).toString(16).padStart(2, '0')}` : light ? 'rgba(10,18,32,0.07)' : 'rgba(255,255,255,0.06)', border: `${lit > 0.05 ? 2 : 1}px solid ${lit > 0.05 ? color : `${color}33`}`, boxShadow: lit > 0 ? `0 0 ${40 * lit}px ${color}88` : 'none' }}>
               <div style={{ width: rowH, flex: '0 0 auto', borderRadius: '20px 0 0 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: color, fontFamily: SANS, fontWeight: 900, fontSize: 62, color: '#05070C' }}>{t}</div>
               <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', alignContent: 'center', gap: 10, padding: '10px 16px' }}>
                 {entries.map((e, i) => {
                   if (e.tier !== t) return null;
                   const isNew = i === newest;
                   const s = isNew ? pop : 1;
-                  const rowIndex = TIERS.indexOf(t);
-                  const trayDy = (TIERS.length - rowIndex) * (rowH + 10) + 70; // from below the board up to its row
                   const flying = isNew && drag;
                   return (
                     <div
@@ -71,7 +75,7 @@ export const Tier: React.FC<P> = ({ scene }) => {
                         boxShadow: flying ? `0 18px 40px rgba(0,0,0,0.5), 0 0 34px ${color}aa` : isNew ? `0 0 34px ${color}aa` : 'none',
                         opacity: flying ? Math.min(1, frame / 6) : Math.min(1, s * 1.4),
                         transform: flying
-                          ? `translate(${(1 - carry) * 190}px, ${(1 - carry) * trayDy}px) rotate(${(1 - carry) * -3}deg) scale(${1.06 - 0.06 * carry + 0.1 * Math.max(0, s - 1)})`
+                          ? `translate(${(1 - carry) * 460}px, ${Math.sin(carry * Math.PI) * -18}px) rotate(${(1 - carry) * -3}deg) scale(${1.06 - 0.06 * carry + 0.1 * Math.max(0, s - 1)})`
                           : `scale(${0.4 + 0.6 * s}) translateY(${(1 - s) * -60}px)`,
                         position: flying ? 'relative' : undefined,
                         zIndex: flying ? 5 : undefined,

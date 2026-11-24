@@ -208,7 +208,7 @@ export const MotionGraphic: React.FC<MotionGraphicProps> = ({ scenes, theme = de
             return (
               <Sequence key={i} from={starts[i]} durationInFrames={scene.durationInFrames + (last ? 0 : OVERLAP)} layout="none">
                 <ThemeCtx.Provider value={{ theme: th, light: isLight(scene) }}>
-                  <SceneCtx.Provider value={{ scene, captionSpace: captionSpaceFor(scene, chunks.length > 0), reveal: i === 0 ? 'type' : reveals[i] ?? 'pop' }}>
+                  <SceneCtx.Provider value={{ scene, captionSpace: captionSpaceFor(scene, chunks.length > 0), reveal: i === 0 ? 'slam' : reveals[i] ?? 'pop' }}>
                     <SceneShell scene={scene} index={i} total={scenes.length} rehook={i === rehookAt} icons={sceneIcons[i]} fx={fxs[i]} visual={visuals[i]} move={moves[i] ?? 'pushIn'} big={bigs[i]} next={scenes[i + 1]} last={last}>
                       <C scene={scene} />
                     </SceneShell>

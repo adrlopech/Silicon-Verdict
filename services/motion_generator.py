@@ -173,20 +173,33 @@ def vote_options(pinned: str) -> Optional[List[str]]:
             return None
         if re.search(r"\d", t) and re.search(r"[A-Za-z]", t) and " " not in t:
             t = t.upper()  # a model name: "9800x3d" -> "9800X3D", "ddr4" -> "DDR4"
-        elif t.isupper() and len(t) > 5:
-            t = t.capitalize()
+        elif t.isupper() and len(t) > 5 and not re.search(r"\d", t):
+            t = t.capitalize()  # a shouted word ("SURPRISED", "KNEW IT"), never a model name with digits ("USB 3.2" stays as it is)
         out.append(t[0].upper() + t[1:])
     return out
 
 
+VOTE_TITLE, VOTE_ACCENT = "YOUR PICK?", "Vote below"
+_FOLLOW = re.compile(r"[^.!?]*\bfollow\b[^.!?]*[.!]\s*", re.I)
+
+
 def add_vote_items(project: Any) -> None:
-    """Gives the outro its two vote options (drawn as A / B cards) from the pinned comment, which repeats the same choice the narration ends with. Existing items are kept."""
+    """Gives the outro its two vote options (drawn as A / B cards) from the pinned comment, which repeats the same choice the narration ends with. Existing items are kept.
+    With a vote on screen the outro is about the vote: its headline asks for the pick (not "STAY CURIOUS / Follow for more" over the cards) and its narration drops the
+    "Follow for more" sentence, so the last thing said is the question."""
     outro = project.scenes[-1] if project.scenes else None
-    if outro is None or outro.type != "outro" or outro.items:
+    if outro is None or outro.type != "outro":
         return
-    opts = vote_options(getattr(project, "pinned_comment", "") or "")
-    if opts:
-        outro.items = opts
+    if not outro.items:
+        opts = vote_options(getattr(project, "pinned_comment", "") or "")
+        if opts:
+            outro.items = opts
+    if not outro.items or len(outro.items) != 2:
+        return
+    outro.text, outro.accentText = VOTE_TITLE, VOTE_ACCENT
+    rest = _FOLLOW.sub("", outro.narration or "").strip()
+    if rest.endswith("?") and len(rest.split()) >= 3:
+        outro.narration = rest
 
 
 def fix_duplicate_accents(scenes) -> None:
@@ -365,7 +378,7 @@ one big idea per scene, a single ACCENT word in electric cyan (italic serif), sm
 A NARRATOR speaks over the video. Each scene has a `narration` (what is said while that scene is on screen): natural spoken American English, 8-16 words,
 conversational and clear, explaining the idea the screen shows (the on-screen words are the headline, the narration is the explanation). Together the narration reads
 like one coherent story with a hook at the start, a build-up, a twist, and a closing line, 150-190 words in total (aim for about 11 words per scene). Spell numbers the way they are spoken
-(for example "sixteen point seven milliseconds"). The narrations are ONE continuous monologue, not separate captions: each line picks up from the previous one and flows into the next, opening with a connective such as "So", "And", "But", "Here's the thing", "That's why", "Now" or "Which means" (never a stand-alone fact, and never the same opener twice in a row), with questions answered in the following line. The last scene's narration ends with a short call to action such as "Follow for more tech."
+(for example "sixteen point seven milliseconds"). The narrations are ONE continuous monologue, not separate captions: each line picks up from the previous one and flows into the next, opening with a connective such as "So", "And", "But", "Here's the thing", "That's why", "Now" or "Which means" (never a stand-alone fact, and never the same opener twice in a row), with questions answered in the following line. The last scene's narration ends with the two-option vote question (see VOTE below), never with "Follow for more".
 
 LANGUAGE: everything (scene text, narration, title, description, tags, comment) MUST be natural American English. Never any other language.
 FACTS: only TRUE, verifiable statements; figures must be real and approximate (about / roughly) - never invent numbers.
@@ -377,7 +390,7 @@ STORY (11 to 19 scenes, aim for 13+, each 60-150 frames at 30 fps):
    - counter: caption text + accentText, value = a REAL final number > 0, optional unit.
    - list: heading text + 2-4 short items. codeBlock: 2-8 real, short code/shell lines + headline text. progressBar: caption + value 0-100 + unit.
    - curve: caption about acceleration / easing / growth. flash: ONE word on a full accent-coloured screen (use at most once, as a rhythm break).
-3. Last scene: type outro, text = a punchy 1-3 word closer, accentText = a short call to action (e.g. Follow for more).
+3. Last scene: type outro, text = a punchy 1-3 word closer, accentText = a short call to action (the pipeline replaces both with the vote when the outro asks one).
 Every scene except footage/flash/tier/timeline/versus/verdict floats 1-3 eye-catching `icons` (neon objects) that visually match what that scene is about
 (e.g. a scene on heat: thermometer, flame, fan; on speed: gauge, bolt). Always fill `icons` for scenes about a concrete thing.
 Rules: never repeat the same scene type back to back (footage scenes may follow each other); at most one scene with light=true; on-screen text is short and
@@ -470,6 +483,8 @@ FORMAT = TIER LIST. Rank 6 to 8 items of ONE category (kinds of RAM, SSD types, 
 (say it in the hook: "ranked by value for gaming").
 - The board fills up over consecutive `tier` scenes (one per item). EVERY tier scene repeats the items already placed, in the same order, and adds exactly ONE new item at the END of `items`.
   Item format "S|label": tier letter S, A, B, C, D or F, a bar, a SHORT label of at most 22 characters. `text` = the category ("Ranking SSDs"), `accentText` = the criterion, `kicker` = "tier list".
+- EVERY tier scene sets `value` and `unit` = the figure of the NEW item on the ranking's criterion (USB 2.0 ranked by speed: value 480, unit "Mbps"; a GPU ranked by price: value 629, unit "€"),
+  and its narration says that figure. It is drawn big next to the item, so the viewer sees WHY it lands in its tier; a ranking without numbers reads as an opinion.
 - The narration of each tier scene names the NEW item and justifies its tier with a TRUE, concrete reason (a figure or a mechanism). Use the full range: at least 4 different tiers in the final board.
 - Structure: hook (bigText), 6 to 8 tier scenes, one textWithAccent that gives the surprise or the lesson, outro.""",
     "whatif": FORMAT_COMMON + """
@@ -760,6 +775,12 @@ def _needs_tier(sc, n, tiers):
         return [f"tier format needs 6-9 tier scenes (one per item), got {len(tiers)}"]
     if len({it.split("|", 1)[0].strip().upper() for it in (tiers[-1][1].items or []) if "|" in it}) < 4:
         return ["the final tier board must use at least 4 different tiers"]
+    missing = [i for i, s in tiers if not (s.value and s.value > 0 and (s.unit or "").strip())]
+    if missing:
+        return [f"scenes {missing[:4]}: every tier scene needs `value` > 0 and `unit` (the new item's figure on the ranking's criterion, drawn next to it)"]
+    unsaid = [i for i, s in tiers if not _spoken(s)]
+    if unsaid:
+        return [f"scenes {unsaid[:4]}: the tier scene's value must be said in its narration"]
     return []
 
 

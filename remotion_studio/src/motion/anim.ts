@@ -4,7 +4,7 @@ import type { MotionScene } from './types';
  * The ARSENAL: how the text of a scene is revealed, how the camera moves and which big element is added to the picture. Each is picked per scene, deterministically from the
  * scene's own words, never the same as the previous scenes, so a video never repeats itself and the same script always renders the same video.
  */
-export type Reveal = 'pop' | 'type' | 'draw' | 'scramble' | 'mask' | 'drop' | 'wave' | 'blur' | 'slice' | 'rise' | 'focus' | 'flip';
+export type Reveal = 'pop' | 'slam' | 'type' | 'draw' | 'scramble' | 'mask' | 'drop' | 'wave' | 'blur' | 'slice' | 'rise' | 'focus' | 'flip';
 /** The reveals picked by default are the calm ones; scramble, drop and slice are implemented (reveal.tsx) but kept out of the pool because they read as too intense. */
 export const REVEALS: Reveal[] = ['pop', 'type', 'draw', 'mask', 'wave', 'blur', 'rise', 'focus', 'flip'];
 

@@ -64,7 +64,7 @@ def build(name: str, prices: Dict[str, Any]) -> Dict[str, Any]:
     tk = fam["takeaway"]
     scenes.append(dict(type="textWithAccent", text=tk["text"], accentText=tk["accent"], narration=tk["narration"], durationInFrames=150))
     a, b = fam["vote"]
-    scenes.append(dict(type="outro", text="STAY CURIOUS", accentText="Follow for more", narration=f"Follow for more prices. Which would you buy, {a} or {b}?", items=[a, b], durationInFrames=120))
+    scenes.append(dict(type="outro", text="YOUR PICK?", accentText="Vote below", narration=f"Prices change every day. Which would you buy, {a} or {b}?", items=[a, b], durationInFrames=120))
     tags = " ".join(f"#{t}" for t in ["siliconverdict", *fam["hashtags"]])
     return dict(
         topic=f"Every {fam['short']} ranked by gaming value at the prices of {prices['date']}",

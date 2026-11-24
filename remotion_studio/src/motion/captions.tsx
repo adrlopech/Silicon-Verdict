@@ -89,7 +89,7 @@ export const Captions: React.FC<{ chunks: Chunk[]; scene: MotionScene | undefine
     // a two-line headline: the first half of the phrase in the accent colour, the second in white
     const cut = Math.ceil(chunk.words.length / 2);
     const line = (ws: CaptionWord[], color: string, k: number) => (
-      <div key={k} style={{ display: 'flex', gap: 24, justifyContent: 'center', color }}>
+      <div key={k} style={{ display: 'flex', gap: Math.round(size * 0.34), justifyContent: 'center', color }}>
         {ws.map((w, i) => <span key={i} style={{ display: 'inline-block', transform: hot(w) ? 'scale(1.08)' : 'none', ...outline, WebkitTextStroke: `4px ${edge}` }}>{w.w}</span>)}
       </div>
     );
@@ -104,7 +104,7 @@ export const Captions: React.FC<{ chunks: Chunk[]; scene: MotionScene | undefine
   }
   return (
     <div style={{ position: 'absolute', left: 96, right: 96, top, height: CAPTION_SPACE - 52, display: 'flex', alignItems: 'center', justifyContent: look.align === 'left' && style !== 'pill' && style !== 'wordpill' ? 'flex-start' : 'center', opacity: fade, transform: `translateY(${(1 - Math.min(1, pop)) * 18}px) scale(${0.94 + 0.06 * Math.min(1, pop)})`, pointerEvents: 'none' }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 14px', justifyContent: 'center', padding: style === 'pill' ? '14px 26px' : '0 4px', borderRadius: 26, background: style === 'pill' ? (light ? 'rgba(255,255,255,0.88)' : 'rgba(5,10,22,0.72)') : style === 'mono' ? 'rgba(0,0,0,0.5)' : 'transparent', border: style === 'pill' ? `1px solid ${theme.accent}44` : 'none', fontFamily: font, fontWeight: style === 'mono' ? 500 : 800, fontSize: size, lineHeight: 1.12, letterSpacing: style === 'mono' ? 0 : -1, textShadow: style === 'plain' ? '0 3px 14px rgba(0,0,0,0.85), 0 0 3px rgba(0,0,0,0.9)' : undefined }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: `4px ${Math.round(size * 0.3)}px`, justifyContent: 'center', padding: style === 'pill' ? '14px 26px' : '0 4px', borderRadius: 26, background: style === 'pill' ? (light ? 'rgba(255,255,255,0.88)' : 'rgba(5,10,22,0.72)') : style === 'mono' ? 'rgba(0,0,0,0.5)' : 'transparent', border: style === 'pill' ? `1px solid ${theme.accent}44` : 'none', fontFamily: font, fontWeight: style === 'mono' ? 500 : 800, fontSize: size, lineHeight: 1.12, letterSpacing: style === 'mono' ? 0 : -1, textShadow: style === 'plain' ? '0 3px 14px rgba(0,0,0,0.85), 0 0 3px rgba(0,0,0,0.9)' : undefined }}>
         {style === 'mono' && <span style={{ color: theme.accent }}>&gt;</span>}
         {chunk.words.map((w, i) => (
           <span key={i} style={{ display: 'inline-block', ...wordStyle(w) }}>{w.w}</span>

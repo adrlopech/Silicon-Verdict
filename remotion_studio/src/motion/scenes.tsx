@@ -59,7 +59,7 @@ export const Counter: React.FC<P> = ({ scene }) => {
   const target = scene.value ?? 100;
   const p = spring({ frame: frame - 10, fps, config: { damping: 200, mass: 1.6 }, durationInFrames: Math.max(30, scene.durationInFrames - 26) });
   const shown = Math.round(target * p);
-  const digits = Math.max(4, String(Math.round(target)).length);
+  const digits = Math.max(1, Math.round(target).toLocaleString('en-US').length); // no zero padding: "0047 MB" read as a glitch
   const dots = 12;
   const numSize = fit(210, digits + (scene.unit ? scene.unit.length * 0.55 + 0.4 : 0), 900, 0.62, 80);
   return (
@@ -68,7 +68,7 @@ export const Counter: React.FC<P> = ({ scene }) => {
       <Words text={scene.text} size={104} />
       <Accent text={scene.accentText} size={132} delay={10} />
       <div data-cursor="number" style={{ fontFamily: MONO, fontWeight: 500, fontSize: numSize, letterSpacing: 6, color: light ? '#0A1220' : theme.text, textShadow: light ? 'none' : `0 0 40px ${theme.accent}55`, marginTop: 10 }}>
-        {String(shown).padStart(digits, '0')}
+        {shown.toLocaleString('en-US')}
         {scene.unit && <span style={{ fontSize: numSize * 0.38, color: theme.accent, marginLeft: 14 }}>{scene.unit}</span>}
       </div>
       <div style={{ display: 'flex', gap: 22 }}>
