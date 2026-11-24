@@ -66,6 +66,8 @@ data/analytics_report.json
 !docs/assets/games/*.png
 !docs/assets/latest/*.jpg
 !docs/assets/recent/*.jpg
+!docs/assets/formats/*.jpg
+!docs/assets/looks/*.jpg
 
 # Batch manifests and slot log (local state)
 data/batches/

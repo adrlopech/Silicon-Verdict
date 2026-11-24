@@ -6,7 +6,7 @@
     var icons = ['lock', 'eye-off', 'search-check', 'mic', 'folder-lock', 'clapperboard', 'key-round', 'message-square', 'sparkles', 'terminal', 'layers', 'palette'];
     var ui = function (n) { return '<span class="ui" style="--i:url(assets/icons/ui-' + n + '.svg)" aria-hidden="true"></span>'; };
 
-    // Each drawing shows the answer itself (what happens, with its labels), not a generic picture. The i* classes are styled in rework.css (.il .it, .itm, .iok...).
+    // Each drawing shows the answer itself (what happens, with its labels), not a generic picture. The i* classes are styled in site.css (.il .it, .itm, .iok...).
     var V = function (b, label) { return '<svg class="il" viewBox="0 0 360 150" role="img" aria-label="' + label + '">' + b + '</svg>'; };
     var T = function (x, y, c, t, mid) { return '<text class="' + c + '" x="' + x + '" y="' + y + '"' + (mid ? ' text-anchor="middle"' : '') + '>' + t + '</text>'; };
     var BOX = function (x, y, w, h, extra) { return '<rect class="s f' + (extra || '') + '" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="10"/>'; };

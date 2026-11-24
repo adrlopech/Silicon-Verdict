@@ -1,4 +1,4 @@
-/* The eight looks of the channel, blended as you scroll. The backdrop (looks.css) is one fixed mix of all of them; only its tint moves.
+/* The eight looks of the channel, blended as you scroll. The backdrop (site.css) is one fixed mix of all of them; only its tint moves.
    Each <section data-look="name"> has a look; the colour tokens glide between the looks of the sections around the middle of the viewport
    (continuous, eased twice: by position and by a slow follow), so there is never a visible switch. The light look (paper) stays out of the flow.
    Pages without tagged sections keep obsidian. ?look=name pins a look for checking a design (CSS tokens only, no blending). */

@@ -9,9 +9,7 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="looks.css">
-  <link rel="stylesheet" href="fixes.css">
+  <link rel="stylesheet" href="site.css">
   <script src="looks.js"></script>
 </head>
 <body>
@@ -19,12 +17,10 @@
   <div class="bg"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
   <header class="pill-wrap">
     <nav class="navpill" aria-label="Main">
-      <a href="index.html#top" class="brand"><img src="logo.svg" alt="" width="40" height="40"><span>Silicon<b>Verdict</b></span></a>
-      <ul class="pill-links">
-        <li><a href="index.html#pipeline">Pipeline</a></li><li><a href="index.html#series">Series</a></li><li><a href="index.html#games">Content</a></li><li><a href="index.html#brand">Brand</a></li>
-      </ul>
-      <button class="cmdk" type="button" data-cmdk aria-label="Open the jump menu" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span>Jump to…</span><kbd>⌘K</kbd></button>
-      <a class="cta-pill" href="https://www.youtube.com/@SiliconVerdictHQ" target="_blank" rel="noopener">Watch</a>
+      <a href="index.html" class="brand"><img src="logo.svg" alt="" width="40" height="40"><span>Silicon<b>Verdict</b></span></a>
+      <ul class="pill-links" id="menu"><li><a href="index.html#videos">Videos</a></li><li><a href="index.html#pipeline">How it’s made</a></li><li><a href="index.html#formats">Formats</a></li><li><a href="index.html#faq">FAQ</a></li><li><a href="how-it-works.html">Under the hood</a></li></ul>
+      <a class="cta-pill" href="https://www.youtube.com/@SiliconVerdictHQ/shorts" target="_blank" rel="noopener">Watch</a>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" aria-label="Open the menu"><span></span><span></span></button>
     </nav>
   </header>
   <main class="container"><section class="hero"><div class="hero-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></div><h1>404 — <span class="grad">signal lost</span></h1><p class="lead">This page does not exist or was moved.</p><div class="btns"><a class="btn btn-p" href="index.html">Back to the portal</a></div></section></main>

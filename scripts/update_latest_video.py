@@ -102,18 +102,19 @@ def update_wall(s: str, videos: list) -> str:
     return pat.sub(lambda mm: f"{mm.group(1)}\n          {wall(videos)}\n          {mm.group(2)}", s)
 
 
-def card(v: dict, tiktok_id: str | None) -> str:
+def card(v: dict, tiktok_id: str | None, fan: list = ()) -> str:
+    """The hero card: the latest cover, big, with the two previous covers fanned out behind it (from the 'Latest videos' wall)."""
     vid = v["id"]
     title = _clean_title(v["snippet"]["title"])
     day = _day(v)
     yt_url = f"https://www.youtube.com/shorts/{vid}"
     tt_url = f"https://www.tiktok.com/@siliconverdict/video/{tiktok_id}" if tiktok_id else "https://www.tiktok.com/@siliconverdict"
     mono = lambda n: f'<span class="mono" style="--i:url(assets/icons/{n}.svg)"></span>'  # noqa: E731
-    tiktok = '<span class="mono brand tt"><i class="l1"></i><i class="l2"></i><i class="l3"></i></span>'  # the TikTok logo's three layers, coloured like the other icons (docs/rework.css)
+    tiktok = '<span class="mono brand tt"><i class="l1"></i><i class="l2"></i><i class="l3"></i></span>'  # the TikTok logo's three layers, coloured like the other icons (docs/site.css)
     return f'''<div class="latest" data-vid="{vid}">
             <div class="lt-bar"><span class="lt-dot"></span><b>Latest video</b><em>{html.escape(day)}</em></div>
             <div class="lt-body">
-              <a class="lt-cover" href="{yt_url}" target="_blank" rel="noopener" aria-label="Watch {html.escape(title)} on YouTube"><img src="assets/latest/cover.jpg" alt="Cover of {html.escape(title)}" width="404" height="720"><span class="lt-play">{mono('ui-play')}</span></a>
+              <div class="lt-stack">{''.join(f'<img class="lt-fan f{k}" src="assets/recent/{f}.jpg" alt="" width="270" height="480" aria-hidden="true">' for k, f in enumerate(fan[:2], 1))}<a class="lt-cover" href="{yt_url}" target="_blank" rel="noopener" aria-label="Watch {html.escape(title)} on YouTube"><img src="assets/latest/cover.jpg" alt="Cover of {html.escape(title)}" width="404" height="720"><span class="lt-play">{mono('ui-play')}</span></a></div>
               <div class="lt-info">
                 <small>New on both channels</small>
                 <h3>{html.escape(title)}</h3>
@@ -141,14 +142,23 @@ def main() -> int:
         INDEX.write_text(walled, encoding="utf-8")
         s = walled
         print("latest videos wall refreshed")
-    if f'<div class="latest" data-vid="{v["id"]}"' in s and not args.tiktok_id:
+    pat = re.compile(r"(<!-- LATEST:start -->).*?(<!-- LATEST:end -->)", re.S)
+    m = pat.search(s)
+    if not m:
+        sys.exit("LATEST markers not found in docs/index.html")
+    same = f'<div class="latest" data-vid="{v["id"]}"' in m.group(0)
+    tiktok_id = args.tiktok_id
+    if same and not tiktok_id:  # keep a TikTok link pinned earlier with --tiktok-id
+        pinned = re.search(r"tiktok\.com/@siliconverdict/video/(\d+)", m.group(0))
+        tiktok_id = pinned.group(1) if pinned else None
+    fan = [x["id"] for x in feed if x["id"] != v["id"]][:2]
+    block = f"{m.group(1)}\n          {card(v, tiktok_id, fan)}\n          {m.group(2)}"
+    if block == m.group(0):
         print("already up to date:", v["id"])
         return 0
-    save_cover(v["id"])
-    pat = re.compile(r"(<!-- LATEST:start -->).*?(<!-- LATEST:end -->)", re.S)
-    if not pat.search(s):
-        sys.exit("LATEST markers not found in docs/index.html")
-    INDEX.write_text(pat.sub(lambda m: f"{m.group(1)}\n          {card(v, args.tiktok_id)}\n          {m.group(2)}", s), encoding="utf-8")
+    if not same:
+        save_cover(v["id"])
+    INDEX.write_text(s[:m.start()] + block + s[m.end():], encoding="utf-8")
     print(f"latest video: {v['snippet']['title'][:60]} ({v['id']})")
     return 0
 
