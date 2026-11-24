@@ -1,7 +1,7 @@
 name: Latest video on the portal
 
 # Every 15 minutes: reads the channel's public YouTube feed and, if a new PUBLIC video appeared,
-# updates the hero card (cover, title, links) and commits it to main. Scheduled (private) videos never show up in the feed.
+# updates the hero card (cover, title, links) and the 'Latest videos' wall, and commits them to main. Scheduled (private) videos never show up in the feed.
 on:
   schedule:
     - cron: "*/15 * * * *"
@@ -26,12 +26,13 @@ jobs:
       - run: python scripts/update_latest_video.py
       - name: Commit if the card changed
         run: |
-          if git diff --quiet -- docs/index.html docs/assets/latest; then
+          git add -N docs/assets/recent 2>/dev/null || true  # new covers count as changes
+          if git diff --quiet -- docs/index.html docs/assets/latest docs/assets/recent; then
             echo "nothing new"
           else
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add docs/index.html docs/assets/latest
+            git add -A docs/index.html docs/assets/latest docs/assets/recent
             git commit -m "docs(site): latest video card follows the newest public upload"
             git push
           fi

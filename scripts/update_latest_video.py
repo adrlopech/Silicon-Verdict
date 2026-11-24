@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Refreshes the 'Latest video' card of the portal hero (docs/index.html, between the LATEST markers) with the newest PUBLIC video of the YouTube channel:
 its cover (cropped from the thumbnail to 9:16, saved as docs/assets/latest/cover.jpg), title, date and links to YouTube and TikTok.
+It also refreshes the 'Latest videos' wall (between the RECENT markers): the next six public videos, their covers saved in docs/assets/recent/ (local copies,
+so the portal never loads anything from a third party and its "no tracking" promise holds).
 
   python scripts/update_latest_video.py                 # reads the channel's public feed (no login), the TikTok button opens the profile, whose first video is the newest
   python scripts/update_latest_video.py --tiktok-id N   # pins the TikTok button to one video (the number at the end of its URL)
@@ -31,14 +33,15 @@ COVER = BASE / "docs" / "assets" / "latest" / "cover.jpg"
 CHANNEL_ID = "UCm0Xb9KY_Hu12j1CijF2KHQ"
 
 
-def latest_from_feed() -> dict:
-    """Newest public video from the channel's Atom feed, in the same shape the API returns."""
+RECENT_DIR = BASE / "docs" / "assets" / "recent"
+RECENT_COUNT = 6
+
+
+def recent_from_feed() -> list:
+    """The public videos of the feed, newest first, in the API's shape."""
     xml = subprocess.run(["curl", "-sfL", f"https://www.youtube.com/feeds/videos.xml?channel_id={CHANNEL_ID}"], capture_output=True, check=True).stdout
     ns = {"a": "http://www.w3.org/2005/Atom", "yt": "http://www.youtube.com/xml/schemas/2015"}
-    e = ET.fromstring(xml).find("a:entry", ns)
-    if e is None:
-        sys.exit("the feed has no videos")
-    return {"id": e.find("yt:videoId", ns).text, "snippet": {"title": e.find("a:title", ns).text, "publishedAt": e.find("a:published", ns).text}}
+    return [{"id": e.find("yt:videoId", ns).text, "snippet": {"title": e.find("a:title", ns).text, "publishedAt": e.find("a:published", ns).text}} for e in ET.fromstring(xml).findall("a:entry", ns)]
 
 
 def latest_public() -> dict:
@@ -51,20 +54,58 @@ def latest_public() -> dict:
     return max(pub, key=lambda v: v["snippet"]["publishedAt"])
 
 
-def save_cover(vid: str) -> None:
+def save_cover(vid: str, out: Path = COVER, height: int = 0) -> None:
     raw = subprocess.run(["curl", "-sfL", f"https://i.ytimg.com/vi/{vid}/maxresdefault.jpg"], capture_output=True, check=True).stdout  # curl: the system certificates
     im = Image.open(BytesIO(raw)).convert("RGB")
     w, h = im.size
     cw = round(h * 9 / 16)  # Shorts thumbnails are 16:9 with the vertical frame in the middle
     x = (w - cw) // 2
-    COVER.parent.mkdir(parents=True, exist_ok=True)
-    im.crop((x, 0, x + cw, h)).save(COVER, quality=88, optimize=True)
+    im = im.crop((x, 0, x + cw, h))
+    if height and im.height > height:
+        im = im.resize((round(height * 9 / 16), height), Image.LANCZOS)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    im.save(out, quality=84, optimize=True, progressive=True)
+
+
+def _clean_title(t: str) -> str:
+    return re.sub(r"\s*#[A-Za-z]\w*", "", t).strip()
+
+
+def _day(v: dict) -> str:
+    return datetime.fromisoformat(v["snippet"]["publishedAt"].replace("Z", "+00:00")).strftime("%d %b %Y").lstrip("0")
+
+
+def wall(videos: list) -> str:
+    """The cards of the 'Latest videos' wall (9:16 covers that open the Short on YouTube)."""
+    cards = []
+    for v in videos:
+        vid, title = v["id"], html.escape(_clean_title(v["snippet"]["title"]))
+        cards.append(f'''<a class="vw-card" href="https://www.youtube.com/shorts/{vid}" target="_blank" rel="noopener" data-vid="{vid}"><span class="vw-cover"><img src="assets/recent/{vid}.jpg" alt="Cover of {title}" width="270" height="480" loading="lazy" decoding="async"></span><span class="vw-meta"><em>{html.escape(_day(v))}</em><b>{title}</b></span></a>''')
+    return "\n          ".join(cards)
+
+
+def update_wall(s: str, videos: list) -> str:
+    """Rewrites the RECENT block when its videos changed; keeps docs/assets/recent/ to exactly the covers it shows."""
+    pat = re.compile(r"(<!-- RECENT:start -->).*?(<!-- RECENT:end -->)", re.S)
+    m = pat.search(s)
+    if not m:
+        return s
+    ids = [v["id"] for v in videos]
+    if re.findall(r'data-vid="([^"]+)"', m.group(0)) == ids:
+        return s
+    for v in videos:
+        if not (RECENT_DIR / f"{v['id']}.jpg").exists():
+            save_cover(v["id"], RECENT_DIR / f"{v['id']}.jpg", height=480)
+    for f in RECENT_DIR.glob("*.jpg"):
+        if f.stem not in ids:
+            f.unlink()
+    return pat.sub(lambda mm: f"{mm.group(1)}\n          {wall(videos)}\n          {mm.group(2)}", s)
 
 
 def card(v: dict, tiktok_id: str | None) -> str:
     vid = v["id"]
-    title = re.sub(r"\s*#[A-Za-z]\w*", "", v["snippet"]["title"]).strip()
-    day = datetime.fromisoformat(v["snippet"]["publishedAt"].replace("Z", "+00:00")).strftime("%d %b %Y").lstrip("0")
+    title = _clean_title(v["snippet"]["title"])
+    day = _day(v)
     yt_url = f"https://www.youtube.com/shorts/{vid}"
     tt_url = f"https://www.tiktok.com/@siliconverdict/video/{tiktok_id}" if tiktok_id else "https://www.tiktok.com/@siliconverdict"
     mono = lambda n: f'<span class="mono" style="--i:url(assets/icons/{n}.svg)"></span>'  # noqa: E731
@@ -89,9 +130,17 @@ def main() -> int:
     ap.add_argument("--tiktok-id", default=None)
     ap.add_argument("--api", action="store_true", help="use the YouTube API instead of the public feed")
     args = ap.parse_args()
-    v = latest_public() if args.api else latest_from_feed()
+    feed = recent_from_feed()
+    if not feed:
+        sys.exit("the feed has no videos")
+    v = latest_public() if args.api else feed[0]
     s = INDEX.read_text(encoding="utf-8")
-    if f'data-vid="{v["id"]}"' in s and not args.tiktok_id:
+    walled = update_wall(s, [x for x in feed if x["id"] != v["id"]][:RECENT_COUNT])
+    if walled != s:
+        INDEX.write_text(walled, encoding="utf-8")
+        s = walled
+        print("latest videos wall refreshed")
+    if f'<div class="latest" data-vid="{v["id"]}"' in s and not args.tiktok_id:
         print("already up to date:", v["id"])
         return 0
     save_cover(v["id"])

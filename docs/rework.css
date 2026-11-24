@@ -319,3 +319,20 @@ a.glogo:focus-visible, a.logo:focus-visible { outline: 2px solid var(--cyan); ou
 .lt-btn:focus-visible, .lt-cover:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
 @media (max-width: 520px) { .lt-body { grid-template-columns: 1fr; } .lt-cover { max-width: 220px; margin: 0 auto; } }
 .lt-play { left: auto; top: auto; right: 12px; bottom: 12px; transform: none; width: 42px; height: 42px; } .lt-play .mono { width: 18px; height: 18px; }
+
+/* ── Latest videos wall (#videos): six 9:16 covers, refreshed by scripts/update_latest_video.py ── */
+.vwall { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 18px; margin-top: 34px; }
+.vw-card { display: flex; flex-direction: column; gap: 12px; color: inherit; text-decoration: none; min-width: 0; }
+.vw-cover { position: relative; display: block; aspect-ratio: 9 / 16; border-radius: 18px; overflow: hidden; border: 1px solid rgba(var(--wh), .14); background: rgba(var(--wh), .04); box-shadow: 0 30px 60px -36px rgba(0, 0, 0, .9); transition: transform .45s cubic-bezier(.22,1,.36,1), border-color .35s ease; }
+.vw-cover img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .6s cubic-bezier(.22,1,.36,1); }
+.vw-cover::after { content: ""; position: absolute; inset: auto 0 0 0; height: 38%; background: linear-gradient(0deg, rgba(5, 7, 12, .7), transparent); pointer-events: none; }
+.vw-card:hover .vw-cover { transform: translateY(-2px); border-color: rgba(var(--ac), .8); }
+.vw-card:hover .vw-cover img { transform: scale(1.03); }
+.vw-card:focus-visible { outline: none; }
+.vw-card:focus-visible .vw-cover { outline: 2px solid var(--cyan); outline-offset: 3px; }
+.vw-meta { display: flex; flex-direction: column; gap: 4px; }
+.vw-meta em { font-style: normal; font-size: .74rem; letter-spacing: .08em; text-transform: uppercase; opacity: .6; }
+.vw-meta b { font-size: .92rem; font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+@media (max-width: 1100px) { .vwall { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .vwall { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; } }
+@media (prefers-reduced-motion: reduce) { .vw-cover, .vw-cover img { transition: none; } .vw-card:hover .vw-cover, .vw-card:hover .vw-cover img { transform: none; } }
