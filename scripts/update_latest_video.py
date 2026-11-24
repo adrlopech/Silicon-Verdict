@@ -109,6 +109,7 @@ def card(v: dict, tiktok_id: str | None) -> str:
     yt_url = f"https://www.youtube.com/shorts/{vid}"
     tt_url = f"https://www.tiktok.com/@siliconverdict/video/{tiktok_id}" if tiktok_id else "https://www.tiktok.com/@siliconverdict"
     mono = lambda n: f'<span class="mono" style="--i:url(assets/icons/{n}.svg)"></span>'  # noqa: E731
+    brand = lambda n: f'<span class="mono brand" style="--i:url(assets/icons/{n}-blue.svg)"></span>'  # noqa: E731  (the blue YouTube / TikTok logos, shown in their own tones)
     return f'''<div class="latest" data-vid="{vid}">
             <div class="lt-bar"><span class="lt-dot"></span><b>Latest video</b><em>{html.escape(day)}</em></div>
             <div class="lt-body">
@@ -117,8 +118,8 @@ def card(v: dict, tiktok_id: str | None) -> str:
                 <small>New on both channels</small>
                 <h3>{html.escape(title)}</h3>
                 <div class="lt-links">
-                  <a class="lt-btn" href="{yt_url}" target="_blank" rel="noopener">{mono('m/youtube')}<span>Watch on YouTube</span>{mono('ui-arrow-right')}</a>
-                  <a class="lt-btn" href="{tt_url}" target="_blank" rel="noopener">{mono('tiktok')}<span>Watch on TikTok</span>{mono('ui-arrow-right')}</a>
+                  <a class="lt-btn" href="{yt_url}" target="_blank" rel="noopener">{brand('m/youtube')}<span>Watch on YouTube</span>{mono('ui-arrow-right')}</a>
+                  <a class="lt-btn" href="{tt_url}" target="_blank" rel="noopener">{brand('tiktok')}<span>Watch on TikTok</span>{mono('ui-arrow-right')}</a>
                 </div>
               </div>
             </div>

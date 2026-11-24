@@ -372,3 +372,6 @@ a.glogo:focus-visible, a.logo:focus-visible { outline: 2px solid var(--cyan); ou
 .ico { width: 58px; height: 58px; border-radius: 17px; box-shadow: inset 0 1px 0 rgba(var(--wh), .14), 0 10px 28px -14px rgba(var(--ac), .7); }
 .ico svg { width: 30px; height: 30px; stroke-width: 1.8; filter: drop-shadow(0 0 6px rgba(var(--ac), .45)); }
 .ico svg rect, .ico svg circle, .ico svg ellipse, .ico svg polygon { fill: rgba(var(--ac), .2); }
+
+/* ── Brand logos (YouTube, TikTok): the blue multi-tone files are shown as pictures, not as a one-colour mask ── */
+span.mono.brand { -webkit-mask: none; mask: none; background: var(--i) center / contain no-repeat; }
