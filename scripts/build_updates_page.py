@@ -91,7 +91,7 @@ def main():
   </main>
   <footer>
     <div class="container foot">
-      <div>&copy; 2026 Silicon Verdict. All rights reserved.<br><small>Independent hardware benchmark &amp; microarchitecture analysis pipeline.</small></div>
+      <div>&copy; 2026 Silicon Verdict. All rights reserved.<br><small>Automated vertical videos on PC hardware, gaming tech and computing.</small></div>
       <ul>
         <li><a href="index.html">Portal</a></li>
         <li><a href="terms.html">Terms of Service</a></li>
