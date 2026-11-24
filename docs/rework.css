@@ -183,7 +183,7 @@ small, .tagline { opacity: 1; }
 .llmx { align-items: center; }
 .rail { --row: 92px; --gap: 14px; --top: 78px; position: relative; padding: 24px 24px 24px 24px; border-radius: 28px; background: linear-gradient(180deg, rgba(var(--wh), .06), rgba(var(--wh), .02)); border: 1px solid rgba(var(--wh), .1); display: flex; flex-direction: column; gap: var(--gap); max-width: 520px; margin-left: auto; }
 .rail-head { display: flex; align-items: center; gap: 10px; height: 36px; padding-bottom: 14px; margin-bottom: 4px; border-bottom: 1px solid rgba(var(--wh), .1); } .rail-head b { color: #fff; font-size: 1rem; } .rail-head small { margin-left: auto; font: 500 .8rem var(--mono); color: var(--muted); } .rail-head .mono { width: 20px; height: 20px; }
-.rail-line { position: absolute; left: 42px; top: calc(var(--top) + var(--row) / 2); height: calc(2 * (var(--row) + var(--gap))); width: 2px; background: repeating-linear-gradient(180deg, rgba(var(--ac), .55) 0 6px, transparent 6px 12px); }
+.rail-line { position: absolute; left: 42px; top: calc(var(--top) + var(--row) / 2); height: calc(var(--row) + var(--gap)); /* from the first provider to the second: two rows, one hop */ width: 2px; background: repeating-linear-gradient(180deg, rgba(var(--ac), .55) 0 6px, transparent 6px 12px); }
 .tok { position: absolute; left: 34px; width: 18px; height: 18px; border-radius: 50%; background: var(--cyan); border: 3px solid rgba(255, 255, 255, .9); top: calc(var(--top) + var(--row) / 2 - 9px); animation: tokmove 9s ease-in-out infinite; z-index: 2; }
 .rrow { position: relative; display: grid; grid-template-columns: 38px 48px 1fr auto; align-items: center; gap: 12px; height: var(--row); padding: 0 18px 0 0; border-radius: 18px; background: rgba(var(--wh), .045); border: 1px solid rgba(var(--wh), .09); }
 .rdot { justify-self: center; width: 10px; height: 10px; border-radius: 50%; background: rgba(var(--ac), .5); }
@@ -336,3 +336,39 @@ a.glogo:focus-visible, a.logo:focus-visible { outline: 2px solid var(--cyan); ou
 @media (max-width: 1100px) { .vwall { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .vwall { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; } }
 @media (prefers-reduced-motion: reduce) { .vw-cover, .vw-cover img { transition: none; } .vw-card:hover .vw-cover, .vw-card:hover .vw-cover img { transform: none; } }
+
+/* ── Built with: centred cards; 11 tools = two rows of four and a last row of three that spans the same width ── */
+.logos { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+.logos .logo { grid-column: span 3; align-items: center; text-align: center; }
+.logos .logo:nth-child(n+9) { grid-column: span 4; }
+@media (max-width: 920px) {
+  .logos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .logos .logo, .logos .logo:nth-child(n+9) { grid-column: auto; }
+  .logos .logo:last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+
+/* ── Pipeline drawings: each one shows the result of its step (labels and values drawn in the SVG) ── */
+.il text { font-family: Inter, system-ui, -apple-system, sans-serif; font-size: 11.5px; font-weight: 600; fill: rgba(var(--wh), .9); letter-spacing: -.01em; }
+.il .itm { fill: var(--muted); font-weight: 500; font-size: 10.5px; }
+.il .itc, .il .itv { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 500; font-size: 10.5px; fill: rgba(var(--wh), .78); }
+.il .itv { fill: var(--cyan); }
+.il .itc.ismall { font-size: 9.5px; fill: var(--muted); }
+.il .it.ibig { font-size: 17px; font-weight: 700; fill: #fff; }
+.il .itk { font-size: 9.5px; font-weight: 800; fill: #05070C; }
+.il .it.istrike { fill: var(--muted); text-decoration: line-through; }
+.il .iok { fill: none; stroke: var(--cyan); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.il .ino { fill: none; stroke: #FF7A8A; stroke-width: 2.4; stroke-linecap: round; }
+.il .ihl { stroke: var(--cyan); fill: rgba(var(--ac), .16); }
+.il .iq { fill: none; stroke: var(--cyan); stroke-width: 1.4; stroke-dasharray: 3 2; }
+.il .igrid { stroke: rgba(var(--wh), .08); stroke-width: 1; }
+.il .isw { fill: rgb(var(--ac2)); }
+.il .ipassbox { stroke: var(--cyan); stroke-width: 3; fill: rgba(var(--ac), .12); }
+.il .istampt { font-size: 17px; font-weight: 900; fill: var(--cyan); letter-spacing: .06em; }
+
+/* ── Icons: a two-tone gradient instead of a flat fill, so they read as pictures, not glyphs ── */
+.mono { background: linear-gradient(150deg, #FFFFFF -10%, var(--cyan) 35%, var(--blue2) 100%); }
+.btn .mono, .cl-more .mono, .btn-p .mono, .ccopy .mono { background: currentColor; }
+.lt-play .mono { background: #fff; }
+.ico { width: 58px; height: 58px; border-radius: 17px; box-shadow: inset 0 1px 0 rgba(var(--wh), .14), 0 10px 28px -14px rgba(var(--ac), .7); }
+.ico svg { width: 30px; height: 30px; stroke-width: 1.8; filter: drop-shadow(0 0 6px rgba(var(--ac), .45)); }
+.ico svg rect, .ico svg circle, .ico svg ellipse, .ico svg polygon { fill: rgba(var(--ac), .2); }
