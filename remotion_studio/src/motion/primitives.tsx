@@ -211,6 +211,7 @@ export const Hud: React.FC<{ index: number; total: number; label: string; series
   // the title strip stays on the whole video: the series in the accent colour, then the topic, so a viewer who scrolls in late still knows what this is
   const dup = !!series && label.toLowerCase().startsWith(series.toLowerCase().replace(/\s*#\d+$/, '').slice(0, 8));
   if (dup) series = undefined; // the topic already starts with the series name
+  if (series) label = label.replace(new RegExp(`\\s*${series.replace(/\s*#\d+$/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`, 'i'), '') || label; // "RTX 50 Tier List" after "TIER LIST #1" says it twice
   const room = Math.max(10, 30 - (series ? Math.min(series.length, 18) + 3 : 0));
   const topic = label.length > room ? label.slice(0, room - 1) + '…' : label;
   const strong = light ? '#0A1220' : '#FFFFFF';

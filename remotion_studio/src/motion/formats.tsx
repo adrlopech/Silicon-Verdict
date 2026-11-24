@@ -16,7 +16,9 @@ const splitPipe = (it: string): [string, string] => {
 /* ───────────── TIER LIST ───────────── */
 
 const TIERS = ['S', 'A', 'B', 'C', 'D', 'F'];
-const TIER_COLORS: Record<string, string> = { S: '#7DF9FF', A: '#4DC3FF', B: '#3D93FF', C: '#4E6FF2', D: '#5B55E6', F: '#7A5CE0' };
+const TIER_COLORS: Record<string, string> = { S: '#7DF9FF', A: '#4DC3FF', B: '#3D93FF', C: '#4E6FF2', D: '#5B55E6', F: '#7A5CE0' }; // the channel's blue palette (tests: functional colours stay blue)
+/** The verdict stamped on the board when the best or the worst item lands. */
+const STAMPS: Record<string, string> = { S: 'TOP PICK', F: 'WORST' };
 
 /**
  * The board fills up over several consecutive tier scenes: every scene repeats the items already placed and adds ONE more at the end
@@ -36,17 +38,18 @@ export const Tier: React.FC<P> = ({ scene }) => {
   const carry = drag ? interpolate(frame, [TIER_GRAB, TIER_DROP], [0, 1], { ...clamp, easing: EASE_IO }) : 1; // 0 = at the right end of its row, 1 = in place
   const rowH = 94;
   const last = entries[newest];
-  // the moment the new chip lands: its row lights up and the board pushes in towards it for a second, so every tier scene has a visible beat instead of one static board
+  // the moment the new chip lands its row lights up (no zoom of the board: a camera move on text makes it shimmer, CLAUDE.md)
   const land = drag ? TIER_DROP : 20;
   const glow = interpolate(frame, [land - 2, land + 4, land + 34], [0, 1, 0], clamp);
-  const push = interpolate(frame, [land - 6, land + 4, land + 40, land + 58], [0, 1, 1, 0], { ...clamp, easing: EASE_IO });
   const newRow = last ? TIERS.indexOf(last.tier) : 0;
+  const stamp = last ? STAMPS[last.tier] : undefined;
+  const slam = spring({ frame: frame - land - 6, fps, config: { damping: 9, stiffness: 200, mass: 0.7 } });
   return (
     <SafeBox gap={30}>
       <Kicker text={scene.kicker ?? 'tier list'} />
       <Words text={scene.text} size={88} />
       <Accent text={scene.accentText} size={104} delay={8} />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 9, width: 888, marginTop: 4, transform: `scale(${1 + 0.06 * push})`, transformOrigin: `50% ${((newRow + 0.5) / TIERS.length) * 100}%` }}>
+      <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 9, width: 888, marginTop: 4 }}>
         {TIERS.map((t, ti) => {
           const color = TIER_COLORS[t];
           const lit = ti === newRow ? glow : 0;
@@ -85,10 +88,17 @@ export const Tier: React.FC<P> = ({ scene }) => {
                     </div>
                   );
                 })}
+                {t === 'S' && scene.tease && (
+                  // the open loop on screen: the pick is still covered, it is revealed in its own scene at the end
+                  <div style={{ padding: '6px 34px', borderRadius: 16, fontFamily: SANS, fontWeight: 900, fontSize: 48, color: light ? '#FFFFFF' : '#05070C', border: `3px dashed ${light ? '#FFFFFF' : '#05070C'}`, background: light ? theme.accent : color, opacity: 0.75 + 0.25 * Math.abs(Math.sin(frame / 14)), boxShadow: `0 0 ${18 + 16 * Math.abs(Math.sin(frame / 14))}px ${light ? theme.accent : color}88` }}>?</div>
+                )}
               </div>
             </div>
           );
         })}
+        {stamp && frame >= land + 6 && (
+          <div style={{ position: 'absolute', right: 24, top: `${((newRow + 0.5) / TIERS.length) * 100}%`, transform: `translateY(-50%) rotate(-8deg) scale(${1.7 - 0.7 * Math.min(1, slam)})`, opacity: Math.min(1, slam * 2), padding: '10px 26px', borderRadius: 14, border: `6px solid ${TIER_COLORS[last.tier]}`, color: TIER_COLORS[last.tier], fontFamily: SANS, fontWeight: 900, fontSize: 54, letterSpacing: 3, background: 'rgba(5,7,12,0.78)', boxShadow: `0 0 40px ${TIER_COLORS[last.tier]}77`, whiteSpace: 'nowrap', zIndex: 6 }}>{stamp}</div>
+        )}
       </div>
       {last && <ProductCard scene={scene} label={last.label} tier={last.tier} tierColor={TIER_COLORS[last.tier]} delay={drag ? TIER_DROP + 6 : 24} />}
     </SafeBox>

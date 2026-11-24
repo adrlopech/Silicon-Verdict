@@ -12,6 +12,7 @@ export interface MotionScene {
   kicker?: string; // small tracked-out label above the text
   value?: number; // counter: final number; progressBar: target percentage 0-100
   unit?: string; // counter / progressBar suffix, e.g. "%", "ms"
+  tease?: boolean; // tier: the S item is still to come, a covered "?" chip waits in the S row (set by the pipeline)
   items?: string[]; // list: 2-4 short items; tier: up to 10 "S|label" entries (S A B C D F); timeline: up to 5 "year|label" entries
   left?: string; // versus: name of the left contender
   right?: string; // versus: name of the right contender

@@ -30,7 +30,7 @@ def prices():
 def test_every_family_builds_a_script_that_passes_the_validator(family, prices):
     data = build(family, prices)
     assert validate(data) == []
-    assert data["format"] == "tier" and data["title"].startswith("Every ") and "#siliconverdict" in data["title"]
+    assert data["format"] == "tier" and data["title"].startswith("Which ") and "#siliconverdict" in data["title"]
     tiers = [s for s in data["scenes"] if s["type"] == "tier"]
     assert 6 <= len(tiers) <= 9
     assert len(tiers[-1]["items"]) == len(tiers)  # the last board holds every item once

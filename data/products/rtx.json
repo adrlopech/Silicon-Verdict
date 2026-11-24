@@ -34,6 +34,12 @@
   "accent": "check prices",
   "narration": "Right now the 5080 beats the 5070 Ti on value. Check prices before you buy."
  },
+ "now": {
+  "cat": "RTX 50",
+  "short": "RTX 50",
+  "screen_title": "RTX 50 Tier List",
+  "title_name": "RTX 50 Card at Today's Price"
+ },
  "vote": [
   "5060 Ti",
   "5080"

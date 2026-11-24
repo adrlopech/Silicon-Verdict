@@ -519,6 +519,20 @@ def qa_motion(path: Path) -> list:
     return fails
 
 
+STATIC_NOISE_DB, STATIC_SECONDS = -45, 3.0  # tuned on the Nov 24 RTX tier list: its 4-7 s stretches of an unchanged board are found, animated scenes are not
+
+
+def static_stretches(path: Path, seconds: float = STATIC_SECONDS) -> list:
+    """(start, end) of every stretch of at least `seconds` where the picture barely changes (ffmpeg freezedetect on a small copy). The viewer swipes away when nothing moves,
+    so this is reported after every render. A warning, not a failure: the captions still change during such a stretch."""
+    from services.voice import get_ffmpeg_bin
+    log = subprocess.run([get_ffmpeg_bin(), "-hide_banner", "-i", str(path), "-vf", f"scale=270:-1,freezedetect=n={STATIC_NOISE_DB}dB:d={seconds}", "-an", "-f", "null", "-"],
+                         capture_output=True, text=True).stderr
+    starts = [float(x) for x in re.findall(r"freeze_start: ([\d.]+)", log)]
+    ends = [float(x) for x in re.findall(r"freeze_end: ([\d.]+)", log)]
+    return [(round(a, 1), round(b, 1)) for a, b in zip(starts, ends + [_duration(path)] * (len(starts) - len(ends)))]
+
+
 def _last_motion_choice():
     """(kind, format) of the previous Motion Graphics video, from the history (best effort), so the automatic mode does not repeat it."""
     try:
@@ -599,13 +613,14 @@ def _select_source(kind: str, fmt: str, topic: Optional[str], facts: Optional[st
 def _prepare_project(project: Any) -> None:
     """Cleans a script and gives it its identity: no markers, sane cursors, a look and a series number."""
     from services.looks import choose_look
-    from services.motion_generator import add_vote_items, assign_cursors, fix_duplicate_accents, sanitize_cursors, strip_markers
+    from services.motion_generator import add_vote_items, assign_cursors, fix_duplicate_accents, mark_tier_teasers, sanitize_cursors, strip_markers
     from services.series import apply_series
     strip_markers(project)  # *asterisks* around the accent word (a habit of the models) would be drawn and spoken literally
     sanitize_cursors(project.scenes, project.format)  # scripts written by hand (the banks) predate the rules: no tab, no hover, only pointer moments that mean something
     assign_cursors(project.scenes, project.format)
     fix_duplicate_accents(project.scenes)
     add_vote_items(project)  # the outro draws the two options of the vote as A / B cards
+    mark_tier_teasers(project.scenes)  # a covered "?" waits in the S row until the S item is revealed
     if not project.look:
         project.look = choose_look(project.format, project.topic)  # a whole visual identity per video, never one of the last three used
     logger.info("Look: %s", project.look)
@@ -729,6 +744,9 @@ def finish_motion_video(prep: PreparedVideo, export_only: bool = False, dry_run:
                          music_file=music_bed(project.format, project.topic), info=scene_audio_info(project.scenes))
 
         fails = qa_motion(video)
+        still = static_stretches(video)
+        if still:
+            logger.warning("Static stretches (%d s or more with almost nothing moving): %s", STATIC_SECONDS, ", ".join(f"{a:.1f}-{b:.1f}s" for a, b in still))
         if fails:
             logger.error("Video QA FAILED, it will not be uploaded: %s", "; ".join(fails))
             export_only = True  # only an objective technical failure of the video itself holds it back

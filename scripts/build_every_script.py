@@ -35,6 +35,18 @@ def _line(item: Dict[str, Any], price: float, prices: Dict[str, Any], family: st
     return text.format(price=spoken_euros(price))
 
 
+def hook_line(fam: Dict[str, Any], priced: list) -> str:
+    """The first line: a conflict taken from today's data (the priciest item gets an F) when the board has an F, otherwise the family's own hook."""
+    count = num_to_words(len(priced)).capitalize()
+    noun = "cards" if priced and priced[0][1].get("kind") == "gpu" else "chips"
+    fails = [p for p in priced if p[1]["tier"] == "F"]
+    if fails and max(priced, key=lambda x: x[0]) in fails:
+        return f"{count} {fam['cat']} {noun} ranked by value, and the most expensive one gets an F."
+    if fails:
+        return f"{count} {fam['cat']} {noun} ranked by value, and one of them gets an F."
+    return fam["hook"].format(count=count)
+
+
 def build(name: str, prices: Dict[str, Any]) -> Dict[str, Any]:
     """The MotionProject dict of one family (not yet validated)."""
     fam = load_family(name)
@@ -43,10 +55,13 @@ def build(name: str, prices: Dict[str, Any]) -> Dict[str, Any]:
         p = price_of(prices, name, it["id"])
         if p is not None:
             priced.append((p, it))
-    priced.sort(key=lambda x: x[0])
+    priced.sort(key=lambda x: (x[1]["tier"] == "S", x[0]))  # cheapest first, but the S-tier pick lands last: the reveal is the climax, not an F
+    gone = fam.get("gone")
+    if gone and all(price_of(prices, name, i) is None for i in gone["ids"]) and fam.get("now"):
+        fam = {**fam, **fam["now"]}  # the older series is not on sale today: the video is named after what it really shows ("RTX 50", not "RTX 40 and 50")
     if not 6 <= len(priced) <= MAX_ITEMS:
         raise ValueError(f"{name}: {len(priced)} items have a price (a tier list needs 6-{MAX_ITEMS}): edit data/products/{name}.json or the price file")
-    scenes: List[Dict[str, Any]] = [dict(type="bigText", text=f"Every {fam['short']}", accentText=fam["criterion"], kicker="tier list", narration=fam["hook"].format(count=num_to_words(len(priced)).capitalize()), durationInFrames=120)]
+    scenes: List[Dict[str, Any]] = [dict(type="bigText", text=f"Every {fam['short']}", accentText=fam["criterion"], kicker="tier list", narration=hook_line(fam, priced), durationInFrames=120)]
     board: List[str] = []
     for n, (price, it) in enumerate(priced):
         board.append(f"{it['tier']}|{it['label']}")
@@ -55,7 +70,6 @@ def build(name: str, prices: Dict[str, Any]) -> Dict[str, Any]:
             narration += f" That is {spoken_euros(price - priced[n - 1][0])} more than the {priced[n - 1][1]['label']}."  # a true comparison from the two prices, so the lines stop sounding the same
         narration += f" {fam['loop']}" if n == 0 else ""
         scenes.append(dict(type="tier", text=f"Ranking {fam['cat']}", accentText=fam["criterion"], kicker=f"{n + 1} of {len(priced)}", items=list(board), narration=narration, value=round(price), unit="€", durationInFrames=170))
-    gone = fam.get("gone")
     if gone and all(price_of(prices, name, i) is None for i in gone["ids"]):
         scenes.append(dict(type="textWithAccent", text=gone["text"], accentText=gone["accent"], narration=gone["narration"], durationInFrames=150))
     extra = fam.get("extra")
@@ -69,7 +83,7 @@ def build(name: str, prices: Dict[str, Any]) -> Dict[str, Any]:
     return dict(
         topic=f"Every {fam['short']} ranked by gaming value at the prices of {prices['date']}",
         screen_title=fam["screen_title"],
-        title=f"Every {fam['title_name']} {tags}",
+        title=f"Which {fam['short']} Is Actually Worth It Today? {tags}",  # a question the viewer wants answered, not a catalogue line
         description=f"{len(priced)} {fam['short']} products ranked by gaming value at today's lowest PcComponentes prices ({prices['date']}), from {priced[0][0]:.0f} to {priced[-1][0]:,.0f} euros. Prices change daily.",
         tags=fam["tags"], pinned_comment=f"{a} or {b}? Reply with one word.", accent="#00F0FF", kind="curiosity", format="tier", scenes=scenes,
     )

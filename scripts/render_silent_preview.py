@@ -18,10 +18,10 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 
-from services.motion_generator import WORDS_PER_SECOND, MotionProject, add_vote_items, assign_cursors, sanitize_cursors  # noqa: E402
+from services.motion_generator import WORDS_PER_SECOND, MotionProject, add_vote_items, assign_cursors, mark_tier_teasers, sanitize_cursors  # noqa: E402
 from services.looks import choose_look  # noqa: E402
 from services.series import apply_series  # noqa: E402
-from services.motion_pipeline import FPS, MIN_VIDEO_SECONDS, VOICE_LEAD, add_sound, music_bed, qa_motion, render_motion, scene_audio_info, synthetic_captions  # noqa: E402
+from services.motion_pipeline import FPS, MIN_VIDEO_SECONDS, VOICE_LEAD, add_sound, music_bed, qa_motion, render_motion, scene_audio_info, static_stretches, synthetic_captions  # noqa: E402
 
 
 def time_scenes(project: MotionProject) -> None:
@@ -49,6 +49,7 @@ def render_one(path: Path, out_dir: Path, look: str = "") -> Path:
     sanitize_cursors(project.scenes, project.format)
     assign_cursors(project.scenes, project.format)
     add_vote_items(project)  # the outro asks for the pick with A / B cards, as in production
+    mark_tier_teasers(project.scenes)
     apply_series(project, number=1)  # the title and the first-frame kicker as they will look in production (number 1 in the preview)
     time_scenes(project)
     if not project.look:
@@ -63,6 +64,9 @@ def render_one(path: Path, out_dir: Path, look: str = "") -> Path:
             acc += sc.durationInFrames
         final = add_sound(raw, out_dir / f"{name}_silent.mp4", starts, None, kinds=[sc.type for sc in project.scenes], music_file=music_bed(project.format, project.topic), info=scene_audio_info(project.scenes))
     problems = qa_motion(final)
+    still = static_stretches(final)
+    if still:
+        print("  static stretches: " + ", ".join(f"{a:.1f}-{b:.1f}s" for a, b in still))
     print(f"{final}  ({project.total_frames / FPS:.1f} s){'  QA: ' + '; '.join(problems) if problems else '  QA ok'}")
     return final
 

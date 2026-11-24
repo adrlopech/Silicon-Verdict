@@ -202,6 +202,15 @@ def add_vote_items(project: Any) -> None:
         outro.narration = rest
 
 
+def mark_tier_teasers(scenes) -> None:
+    """Open loop on screen: while the final board has an S item that is not placed yet, every tier scene shows a covered "?" chip in the S row (it is revealed in its own scene)."""
+    tiers = [s for s in scenes if s.type == "tier"]
+    if not tiers or not any((it.split("|", 1)[0].strip().upper() == "S") for it in (tiers[-1].items or [])):
+        return
+    for s in tiers:
+        s.tease = not any(it.split("|", 1)[0].strip().upper() == "S" for it in (s.items or [])) or None
+
+
 def fix_duplicate_accents(scenes) -> None:
     """The headline and its accent phrase are drawn one under the other, so an accent that repeats the first or last words of the headline reads as a stutter
     ("Check before you believe" + "believe"): the repeated words are taken out of the headline (the accent keeps them)."""
@@ -303,6 +312,7 @@ class MotionSceneModel(BaseModel):
     callout: Optional[str] = Field(default=None, description="Set by the pipeline from the narration, never by the model: a short tag (a figure or a key term) that pops up in the middle of a long scene")
     calloutCue: Optional[float] = Field(default=None, description="Set by the pipeline from the voice timing, never by the model: seconds after the scene starts at which the narrator says the callout")
     accentCue: Optional[float] = Field(default=None, description="Set by the pipeline from the voice timing, never by the model: seconds after the scene starts at which the narrator says the accent phrase")
+    tease: Optional[bool] = Field(default=None, description="Set by the pipeline, never by the model: a tier scene shown before the S-tier item is placed draws a covered \"?\" chip in the S row")
     cursorCue: Optional[float] = Field(default=None, description="Set by the pipeline from the voice timing, never by the model: seconds after the scene starts at which the narrator says the phrase the pointer acts on")
     icons: Optional[List[str]] = Field(default=None, description="1-3 thematic objects floating around the text, chosen from: chip gpu ram battery bolt wifi globe cloud server disk lock key shield thermometer flame fan gauge clock code brain bulb dollar skull warning controller monitor phone camera wave planet rocket atom magnet droplet snow heart search check cross gear star net arrow. Pick what the scene is ABOUT; leave empty to let the renderer choose from the words")
     narration: str = Field(default="", description="What the narrator SAYS during this scene: one or two natural spoken sentences, 8-16 words, that explain the idea on screen")
@@ -389,7 +399,7 @@ STORY (11 to 19 scenes, aim for 13+, each 60-150 frames at 30 fps):
    - bigText: 1-4 words, huge. textWithAccent: a short white line (max 7 words) + accentText (1-3 words, the emotional/key word). card: the same fields as textWithAccent inside a framed glass card with a quote mark: use it for a key claim or the takeaway, it breaks a run of plain headlines.
    - counter: caption text + accentText, value = a REAL final number > 0, optional unit.
    - list: heading text + 2-4 short items. codeBlock: 2-8 real, short code/shell lines + headline text. progressBar: caption + value 0-100 + unit.
-   - curve: caption about acceleration / easing / growth. flash: ONE word on a full accent-coloured screen (use at most once, as a rhythm break).
+   - curve: caption about acceleration / easing / growth. flash: ONE word on a full accent-coloured screen (a rhythm break; use one or two per video, at least four scenes apart, on the key word of the story).
 3. Last scene: type outro, text = a punchy 1-3 word closer, accentText = a short call to action (the pipeline replaces both with the vote when the outro asks one).
 Every scene except footage/flash/tier/timeline/versus/verdict floats 1-3 eye-catching `icons` (neon objects) that visually match what that scene is about
 (e.g. a scene on heat: thermometer, flame, fan; on speed: gauge, bolt). Always fill `icons` for scenes about a concrete thing.
@@ -399,7 +409,7 @@ CURSOR (optional, use it SPARINGLY): the channel's character is a mouse pointer.
 Set `cursor` on a scene only for: select (a bigText or textWithAccent scene: it drags across the key phrase, as if selecting it, while the narrator says it), drag (a progressBar scene: it pulls the bar to its value; a tier scene: it carries the new chip into its row), click (a codeBlock or list scene: it presses the setting or the step the narrator names),
 toggle (ONLY the first scene and ONLY when the whole video is about a phone or computer setting such as airplane mode: it opens a macOS-style Control Center panel and flips the switch named in `toggle`: airplane, wifi, bluetooth or airdrop). Never on flash scenes. At most 3 scenes per video (4 in a fix video), never in two scenes in a row.
 VISUAL STAGE (optional): every text scene also shows an animated drawing behind the words. It is picked automatically from what the scene says; set `visual` only when you want a specific one: crowd (people, NPCs, teams), memory (RAM, storage, copies), cores (CPU, threads, load), network (online, servers, packets), bars (growth, comparisons), wave (sound, signals), gauge (speed, fps, latency), map (world, regions), city (streets, buildings), layers (rendering, pipelines, stacks), matrix (code, data, AI), radar (weather, scanning, tracking), orbit (a system of parts). Never ask for the same one in consecutive scenes.
-Metadata: title <= 80 characters + 2-3 hashtags (#siliconverdict first), description 2 sentences, 6-8 tags, pinned_comment = the two-option vote of the outro.
+Metadata: title <= 80 characters + 2-3 hashtags (#siliconverdict first); the title is a specific question or a duel ("What If a CPU Ran at 100 GHz?", "PS5 vs Xbox Series X"), never a catalogue line ("X Ranked From Worst to Best"), description 2 sentences, 6-8 tags, pinned_comment = the two-option vote of the outro.
 screen_title <= 24 characters. accent = always #00F0FF (channel electric cyan)."""
 
 RETENTION_RULES = """
@@ -414,6 +424,8 @@ RETENTION RULES (they decide whether people keep watching; the validator checks 
   as "A or B? Reply with one word." (at most 120 characters). Never an open question such as "What do you think?".
   The two options are NAMED in the question and belong to THIS video ("Team 7800X3D or team 9800X3D?"): never the generic "Did that surprise you or did you know it?" nor "Tell me below and follow for more", which every video used to end with.
 - HOOK. Scene 1 opens with a number, a concrete claim or a tension ("One of these seven cards is worth its price."), never "Let us", "Let's", "What if" (unless the format is whatif) or "Did you know".
+  It states a conflict or a verdict, not the topic: "Six USB generations ranked by speed" is a label; "That new USB-C cable might run at year-2000 speed" is a hook.
+- YOU. Speak to the viewer: say what each fact does to THEIR PC, money or time ("your SSD becomes the bottleneck"), not to "users" or "the system".
 - ACCENT. `accentText` adds words that are NOT in `text` (the headline and the accent are drawn one under the other): never repeat the headline's last word in the accent."""
 
 def ui_rules() -> str:
@@ -486,6 +498,10 @@ FORMAT = TIER LIST. Rank 6 to 8 items of ONE category (kinds of RAM, SSD types, 
 - EVERY tier scene sets `value` and `unit` = the figure of the NEW item on the ranking's criterion (USB 2.0 ranked by speed: value 480, unit "Mbps"; a GPU ranked by price: value 629, unit "€"),
   and its narration says that figure. It is drawn big next to the item, so the viewer sees WHY it lands in its tier; a ranking without numbers reads as an opinion.
 - The narration of each tier scene names the NEW item and justifies its tier with a TRUE, concrete reason (a figure or a mechanism). Use the full range: at least 4 different tiers in the final board.
+- Each tier line also carries an OPINION or a consequence for the viewer, never the same sentence shape twice ("Eight gigabytes in 2026? That's a trap for you.", "You'd pay double for ten percent more.").
+  Say long figures rounded ("about eighteen hundred euros"); the exact figure is on screen.
+- ORDER: the S-tier item is placed in the LAST tier scene (the reveal is the climax), and the hook names the conflict ("Seven cards, and the most expensive one gets an F."), never just the topic
+  ("USB ranked by speed" is a label, not a hook). Title: a question the video answers ("Which USB Is Actually Fast?"), never "X Ranked From Worst to Best".
 - Structure: hook (bigText), 6 to 8 tier scenes, one textWithAccent that gives the surprise or the lesson, outro.""",
     "whatif": FORMAT_COMMON + """
 FORMAT = WHAT IF. One absurd but physically meaningful hypothetical about computing ("What if your PC had no cache?", "What if an SSD never erased data?", "What if RAM was as slow as a hard drive?").
@@ -781,6 +797,9 @@ def _needs_tier(sc, n, tiers):
     unsaid = [i for i, s in tiers if not _spoken(s)]
     if unsaid:
         return [f"scenes {unsaid[:4]}: the tier scene's value must be said in its narration"]
+    last_new = ((tiers[-1][1].items or [""])[-1].split("|", 1)[0]).strip().upper()
+    if last_new != "S":
+        return ["the S-tier item must be the one placed in the LAST tier scene (the reveal is the climax)"]
     return []
 
 
@@ -962,8 +981,9 @@ def make_validator(catalog: Optional[Dict[str, dict]] = None, facts: Optional[st
             out.append("the last scene must be type outro")
         if p.scenes and p.scenes[0].type not in ("bigText", "textWithAccent"):
             out.append("the first scene must be bigText or textWithAccent")
-        if sum(1 for s in p.scenes if s.type == "flash") > 1:
-            out.append("at most one flash scene")
+        flashes = [i for i, s in enumerate(p.scenes) if s.type == "flash"]
+        if len(flashes) > 2 or any(b - a < 4 for a, b in zip(flashes, flashes[1:])):
+            out.append("at most two flash scenes, at least four scenes apart")
         if sum(1 for s in p.scenes if s.light) > 1:
             out.append("at most one light scene")
         for sc_ in p.scenes:  # an unknown effect is simply dropped, the scene stays

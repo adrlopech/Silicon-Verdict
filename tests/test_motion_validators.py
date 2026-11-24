@@ -776,3 +776,26 @@ def test_generic_closing_vote_is_rejected_by_the_style_check():
     assert GENERIC_CLOSER.search("Did that surprise you, or did you know it? Tell me below, and follow for more.")
     assert not GENERIC_CLOSER.search("Follow for more tech. Team DDR4 or team DDR5?")
     assert BAD_OPENER.search("Let us test five beliefs.") and not BAD_OPENER.search("Five beliefs, one is wrong.")
+
+
+def test_tier_s_item_must_be_revealed_last_and_teased_until_then():
+    from types import SimpleNamespace as NS
+    from services.motion_generator import _needs_tier, mark_tier_teasers
+    def tier(items):
+        return NS(type="tier", items=items, value=480, unit="Mbps", narration="About four hundred eighty megabits.", tease=None)
+    order = ["F|a", "D|b", "C|c", "B|d", "A|e", "S|f"]
+    good = [tier(order[:n + 1]) for n in range(6)]
+    assert _needs_tier(None, None, list(enumerate(good, 2))) == []
+    swapped = ["F|a", "D|b", "C|c", "B|d", "S|f", "A|e"]
+    bad = [tier(swapped[:n + 1]) for n in range(6)]
+    assert any("LAST tier scene" in p for p in _needs_tier(None, None, list(enumerate(bad, 2))))
+    mark_tier_teasers(good)
+    assert [s.tease for s in good] == [True] * 5 + [None]
+
+
+def test_every_x_hook_names_the_conflict_from_the_data():
+    from scripts.build_every_script import hook_line
+    fam = {"cat": "RTX 50", "hook": "{count} cards."}
+    priced = [(600, {"tier": "C", "kind": "gpu"}), (1850, {"tier": "S", "kind": "gpu"}), (8717, {"tier": "F", "kind": "gpu"})]
+    assert hook_line(fam, priced) == "Three RTX 50 cards ranked by value, and the most expensive one gets an F."
+    assert hook_line(fam, priced[:2]) == "Two cards."
