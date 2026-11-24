@@ -19,7 +19,7 @@
       // 1. not a public app: no sign-up form; one owner, one machine, its own two channels
       V(BOX(16, 18, 112, 104) + T(28, 36, 'itm', 'A public app?') + '<rect class="d" x="28" y="48" width="88" height="14" rx="5"/><rect class="d" x="28" y="68" width="88" height="14" rx="5"/><rect class="h" x="28" y="92" width="56" height="18" rx="6" opacity=".55"/>' + T(56, 105, 'itk', 'Sign up', 1) + '<path class="ino" d="M34 44l76 70M110 44l-76 70" opacity=".85"/>' +
         '<circle class="s f" cx="168" cy="58" r="11"/><path class="s" d="M150 92a18 16 0 0 1 36 0"/>' + T(168, 112, 'itm', 'one owner', 1) + AR(192, 72) +
-        BOX(220, 50, 46, 44) + T(243, 77, 'it', 'SV', 1) + T(243, 112, 'itm', 'automation', 1) + '<path class="s" d="M270 72h14M284 56v32M284 56h10M284 88h10"/>' + IMG('m/youtube.svg', 300, 44, 30, 22) + IMG('tiktok.svg', 306, 78, 18, 21) + T(180, 140, 'itm', 'no sign-up, no accounts: it only publishes to its own two channels', 1),
+        BOX(220, 50, 46, 44) + T(243, 77, 'it', 'SV', 1) + T(243, 112, 'itm', 'automation', 1) + '<path class="s" d="M270 72h14M284 56v32M284 56h10M284 88h10"/>' + IMG('m/youtube-blue.svg', 300, 44, 30, 22) + IMG('tiktok-blue.svg', 306, 78, 18, 21) + T(180, 140, 'itm', 'no sign-up, no accounts: it only publishes to its own two channels', 1),
         'No sign-up form: one owner runs the automation, which publishes only to its own YouTube and TikTok channels.'),
       // 2. data: nothing from visitors, totals from YouTube, comments answered with the owner's approval
       V(BOX(10, 12, 104, 112) + T(62, 30, 'itm', 'Visitors', 1) + T(62, 56, 'it', '0 cookies', 1) + T(62, 78, 'it', '0 trackers', 1) + T(62, 100, 'it', '0 ads', 1) +
